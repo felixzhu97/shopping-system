@@ -2,6 +2,8 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
+import swaggerUi from "swagger-ui-express";
+import swaggerSpecs from "./swagger";
 
 // 路由导入
 import productRoutes from "./routes/products";
@@ -13,13 +15,16 @@ import orderRoutes from "./routes/orders";
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 3002;
+const PORT = process.env.PORT || 3001;
 const MONGODB_URI =
   process.env.MONGODB_URI || "mongodb://localhost:27017/shopping-system";
 
 // 中间件
 app.use(cors());
 app.use(express.json());
+
+// Swagger文档路由
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
 
 // 路由
 app.use("/api/products", productRoutes);
