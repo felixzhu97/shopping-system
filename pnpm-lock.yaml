@@ -244,8 +244,8 @@ importers:
         specifier: 2.15.0
         version: 2.15.0(react-dom@19.1.0)(react@19.1.0)
       shared:
-        specifier: workspace:*
-        version: link:../../packages/shared
+        specifier: file:../../packages/shared
+        version: file:packages/shared
       sonner:
         specifier: ^1.7.1
         version: 1.7.4(react-dom@19.1.0)(react@19.1.0)
@@ -256,8 +256,8 @@ importers:
         specifier: ^1.0.7
         version: 1.0.7(tailwindcss@3.4.17)
       ui:
-        specifier: workspace:*
-        version: link:../../packages/ui
+        specifier: file:../../packages/ui
+        version: file:packages/ui
       vaul:
         specifier: ^0.9.6
         version: 0.9.9(@types/react-dom@19.1.2)(@types/react@19.1.2)(react-dom@19.1.0)(react@19.1.0)
@@ -12643,7 +12643,7 @@ packages:
       debug: 4.4.0(supports-color@5.5.0)
       pathe: 1.1.2
       picocolors: 1.1.1
-      vite: 5.4.18(@types/node@20.17.30)
+      vite: 5.4.18(@types/node@22.14.1)
     transitivePeerDependencies:
       - '@types/node'
       - less
@@ -12871,7 +12871,7 @@ packages:
       strip-literal: 2.1.1
       tinybench: 2.9.0
       tinypool: 0.8.4
-      vite: 5.4.18(@types/node@20.17.30)
+      vite: 5.4.18(@types/node@22.14.1)
       vite-node: 1.6.1
       why-is-node-running: 2.3.0
     transitivePeerDependencies:
@@ -13300,4 +13300,16 @@ packages:
 
   /zod@3.24.2:
     resolution: {integrity: sha512-lY7CDW43ECgW9u1TcT3IoXHflywfVqDYze4waEz812jR/bZ8FHDsl7pFQoSZTz5N+2NqRXs8GBwnAwo3ZNxqhQ==}
+    dev: false
+
+  file:packages/shared:
+    resolution: {directory: packages/shared, type: directory}
+    name: shared
+    dev: false
+
+  file:packages/ui:
+    resolution: {directory: packages/ui, type: directory}
+    name: ui
+    dependencies:
+      react: 19.1.0
     dev: false

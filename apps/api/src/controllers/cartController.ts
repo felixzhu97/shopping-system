@@ -71,7 +71,7 @@ export const addToCart = async (req: Request, res: Response) => {
 
     if (!cart) {
       cart = new Cart({
-        userId: new mongoose.Types.ObjectId(userId),
+        userId: new mongoose.Types.ObjectId(),
         items: [],
       });
     }
@@ -87,7 +87,7 @@ export const addToCart = async (req: Request, res: Response) => {
     } else {
       // 添加新产品到购物车
       cart.items.push({
-        productId: new mongoose.Types.ObjectId(productId),
+        productId: new mongoose.Types.ObjectId(),
         quantity,
       });
     }
