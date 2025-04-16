@@ -3,7 +3,9 @@
   "compilerOptions": {
     "baseUrl": ".",
     "declaration": true,
-    "jsx": "react-jsx",
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "incremental": false,
     "paths": {
       "@/*": ["./src/*"]
     }

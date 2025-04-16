@@ -7,7 +7,8 @@
 ```
 shopping-system/
 ├── apps/
-│   └── web/           # Next.js 前端应用
+│   ├── web/           # Next.js 前端应用
+│   └── api/           # Express.js 后端API服务
 ├── packages/
 │   ├── ui/            # UI组件库
 │   └── shared/        # 共享工具和类型
@@ -17,6 +18,9 @@ shopping-system/
 
 - [Turborepo](https://turbo.build/repo) - Monorepo 构建系统
 - [Next.js](https://nextjs.org/) - React 框架
+- [Express.js](https://expressjs.com/) - Node.js Web 框架
+- [MongoDB](https://www.mongodb.com/) - 文档数据库
+- [Mongoose](https://mongoosejs.com/) - MongoDB ODM
 - [TypeScript](https://www.typescriptlang.org/) - 类型系统
 - [PNPM](https://pnpm.io/) - 包管理器
 
@@ -83,7 +87,14 @@ pnpm install
 ### 启动开发环境
 
 ```bash
+# 启动所有服务
 pnpm dev
+
+# 只启动前端
+pnpm --filter web dev
+
+# 只启动后端
+pnpm --filter api dev
 ```
 
 ### 构建项目
