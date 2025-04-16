@@ -11,9 +11,13 @@
     "dev": "turbo run dev",
     "lint": "turbo run lint",
     "start": "turbo run start",
-    "clean": "turbo run clean && rm -rf node_modules"
+    "clean": "turbo run clean && rm -rf node_modules",
+    "changeset": "changeset",
+    "version": "changeset version",
+    "publish": "turbo run build && changeset publish"
   },
   "devDependencies": {
+    "@changesets/cli": "^2.29.1",
     "turbo": "^1.12.4",
     "typescript": "^5"
   },
