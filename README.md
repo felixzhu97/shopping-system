@@ -24,6 +24,7 @@ shopping-system/
 - [TypeScript](https://www.typescriptlang.org/) - 类型系统
 - [PNPM](https://pnpm.io/) - 包管理器
 - [Storybook](https://storybook.js.org/) - UI 组件开发环境
+- [Vercel](https://vercel.com/) - 部署平台
 
 ## 配置说明
 
@@ -84,6 +85,26 @@ shopping-system/
 
 1. `TURBO_TOKEN`: 从 [Vercel 账户设置](https://vercel.com/account/tokens) 获取
 2. `TURBO_TEAM`: 从 Vercel 团队设置中获取团队 ID
+
+### Vercel 部署配置
+
+项目使用 Vercel 进行部署，配置文件位于 `vercel.json`：
+
+```json
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "nextjs",
+  "buildCommand": "cd ../.. && pnpm turbo build --filter=web...",
+  "outputDirectory": ".next",
+  "installCommand": "cd ../.. && pnpm install"
+}
+```
+
+配置说明：
+- `framework`: 指定使用 Next.js 框架
+- `buildCommand`: 使用 Turborepo 构建 web 应用及其依赖
+- `outputDirectory`: Next.js 构建输出目录
+- `installCommand`: 安装 monorepo 所有依赖
 
 ### 工作空间配置
 
@@ -190,3 +211,58 @@ pnpm storybook
 ```
 
 默认运行在 http://localhost:6006
+
+## 部署指南
+
+### Vercel 部署
+
+1. 在 [Vercel](https://vercel.com) 创建新项目
+2. 导入 GitHub 仓库
+3. 配置构建设置：
+   - 根目录：`apps/web`
+   - 构建命令：`npm run build`
+   - 输出目录：`.next`
+   - 安装命令：`npm install`
+4. 配置环境变量：
+   - `TURBO_TOKEN`: Vercel 访问令牌
+   - `TURBO_TEAM`: Vercel 团队 ID
+   - `NODE_ENV`: `production`
+5. 点击 "Deploy" 开始部署
+
+### 部署故障排除
+
+如果遇到依赖安装问题：
+
+1. 确保项目根目录包含 `.npmrc` 文件，内容如下：
+```
+registry=https://registry.npmjs.org/
+legacy-peer-deps=true
+node-linker=hoisted
+strict-peer-dependencies=false
+auto-install-peers=true
+```
+
+2. 如果使用 PNPM 遇到问题，可以尝试：
+   - 删除 `pnpm-lock.yaml`
+   - 使用 `npm install` 重新安装依赖
+   - 重新部署项目
+
+3. 检查 package.json 中的脚本命令是否正确：
+```json
+{
+  "scripts": {
+    "build": "next build",
+    "start": "next start",
+    "dev": "next dev"
+  }
+}
+```
+
+### 自动部署
+
+项目配置了 GitHub Actions，当推送到 `main` 分支或创建 Pull Request 时会自动：
+
+1. 运行测试
+2. 构建项目
+3. 如果在 main 分支，触发 Vercel 生产环境部署
+4. 如果是 PR，创建预览部署
