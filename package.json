@@ -17,7 +17,9 @@
     "changeset": "changeset",
     "version": "changeset version",
     "publish": "turbo run build && changeset publish",
-    "prepare": "husky"
+    "prepare": "husky",
+    "test": "turbo run test",
+    "test:watch": "turbo run test:watch"
   },
   "devDependencies": {
     "@changesets/cli": "^2.29.1",
@@ -33,7 +35,8 @@
     "lint-staged": "^15.5.1",
     "prettier": "^3.5.3",
     "turbo": "^1.12.4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^1.4.0"
   },
   "packageManager": "pnpm@8.15.0"
 }

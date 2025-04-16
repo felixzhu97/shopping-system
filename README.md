@@ -23,6 +23,7 @@ shopping-system/
 - [Mongoose](https://mongoosejs.com/) - MongoDB ODM
 - [TypeScript](https://www.typescriptlang.org/) - 类型系统
 - [PNPM](https://pnpm.io/) - 包管理器
+- [Storybook](https://storybook.js.org/) - UI 组件开发环境
 
 ## 配置说明
 
@@ -34,6 +35,9 @@ shopping-system/
 {
   "$schema": "https://turbo.build/schema.json",
   "globalDependencies": ["**/.env.*local"],
+  "remoteCache": {
+    "enabled": true
+  },
   "pipeline": {
     "build": {
       "dependsOn": ["^build"],
@@ -49,6 +53,10 @@ shopping-system/
     },
     "start": {
       "dependsOn": ["build"]
+    },
+    "test": {
+      "dependsOn": ["^build"],
+      "outputs": []
     }
   }
 }
@@ -57,10 +65,25 @@ shopping-system/
 配置说明：
 
 - `globalDependencies`: 全局依赖文件，环境变量文件变化会触发所有任务重新运行
+- `remoteCache`: 启用 Turborepo 远程缓存功能
 - `pipeline.build`: 构建命令，依赖于所有上游包的构建完成
 - `pipeline.dev`: 开发命令，禁用缓存并设为持久运行
 - `pipeline.clean`: 清理命令，禁用缓存
 - `pipeline.start`: 启动命令，依赖于构建完成
+- `pipeline.test`: 测试命令，依赖于构建完成
+
+### GitHub Actions 配置
+
+项目使用 GitHub Actions 进行 CI/CD，配置文件位于 `.github/workflows/ci.yml`。主要功能：
+
+- 自动运行测试和构建
+- 集成 Turborepo 远程缓存
+- PNPM 依赖缓存优化
+
+要启用 Turborepo 远程缓存，需要配置以下环境变量：
+
+1. `TURBO_TOKEN`: 从 [Vercel 账户设置](https://vercel.com/account/tokens) 获取
+2. `TURBO_TEAM`: 从 Vercel 团队设置中获取团队 ID
 
 ### 工作空间配置
 
@@ -95,6 +118,9 @@ pnpm --filter web dev
 
 # 只启动后端
 pnpm --filter api dev
+
+# 启动 Storybook
+pnpm --filter web storybook
 ```
 
 ### 构建项目
@@ -107,6 +133,12 @@ pnpm build
 
 ```bash
 pnpm start
+```
+
+### 运行测试
+
+```bash
+pnpm test
 ```
 
 ### 添加依赖
@@ -147,3 +179,14 @@ pnpm turbo lint --filter=shared
 ```bash
 pnpm turbo build lint
 ```
+
+### Storybook 开发
+
+Storybook 用于 UI 组件开发和文档化。启动方式：
+
+```bash
+cd apps/web
+pnpm storybook
+```
+
+默认运行在 http://localhost:6006
