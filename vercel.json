@@ -1,8 +1,7 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "nextjs",
-  "buildCommand": "cd ../.. && npm run build --workspace=web",
-  "outputDirectory": "apps/web/.next",
-  "installCommand": "npm install --legacy-peer-deps",
-  "ignoreCommand": ""
+  "buildCommand": "cd ../.. && pnpm turbo build --filter=web...",
+  "outputDirectory": ".next",
+  "installCommand": "cd ../.. && pnpm install"
 } 
