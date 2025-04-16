@@ -1,0 +1,21 @@
+{
+  "name": "shopping-system",
+  "private": true,
+  "version": "1.0.0",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint",
+    "start": "turbo run start",
+    "clean": "turbo run clean && rm -rf node_modules"
+  },
+  "devDependencies": {
+    "turbo": "^1.12.4",
+    "typescript": "^5"
+  },
+  "packageManager": "pnpm@8.15.0"
+}
