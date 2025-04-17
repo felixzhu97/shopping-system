@@ -3,5 +3,6 @@
   "framework": "nextjs",
   "buildCommand": "turbo run build --filter=web...",
   "outputDirectory": ".next",
-  "installCommand": "pnpm turbo install"
+  "installCommand": "pnpm turbo install",
+  "rootDirectory": "apps/web"
 }
