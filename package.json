@@ -38,5 +38,8 @@
     "typescript": "^5",
     "vitest": "^1.4.0"
   },
+  "engines": {
+    "pnpm": "^8.0.0"
+  },
   "packageManager": "pnpm@8.15.0"
 }
