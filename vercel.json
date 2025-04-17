@@ -3,10 +3,5 @@
   "framework": "nextjs",
   "buildCommand": "cd .. && pnpm install && pnpm turbo run build --filter=web...",
   "outputDirectory": "apps/web/.next",
-  "installCommand": "npm install -g pnpm@8.15.0 && pnpm install",
-  "rootDirectory": "apps/web",
-  "ignoreCommand": "cd .. && grep -q \"web\"",
-  "crons": {
-    "version": 2
-  }
+  "installCommand": "npm install -g pnpm@8.15.0 && pnpm install"
 }
