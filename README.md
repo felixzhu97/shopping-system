@@ -29,6 +29,7 @@ shopping-system/
 - [PNPM](https://pnpm.io/) - 包管理器
 - [Storybook](https://storybook.js.org/) - UI 组件开发环境
 - [Vercel](https://vercel.com/) - 部署平台
+- [Vercel Speed Insights](https://vercel.com/docs/speed-insights) - 性能监控和分析
 
 ## 配置说明
 
@@ -105,6 +106,7 @@ shopping-system/
 ```
 
 配置说明：
+
 - `framework`: 指定使用 Next.js 框架
 - `buildCommand`: 使用 Turborepo 构建 web 应用及其依赖
 - `outputDirectory`: Next.js 构建输出目录
@@ -116,8 +118,8 @@ shopping-system/
 
 ```yaml
 packages:
-  - "packages/*"
-  - "apps/*"
+  - 'packages/*'
+  - 'apps/*'
 ```
 
 ### TypeScript 配置
@@ -139,18 +141,20 @@ packages:
 ### 环境准备
 
 1. 克隆项目
+
 ```bash
 git clone https://github.com/your-username/shopping-system.git
 cd shopping-system
 ```
 
 2. 安装依赖
+
 ```bash
 pnpm install
 ```
 
 3. 配置环境变量
-按照 [环境变量配置指南](./docs/ENVIRONMENT.md) 设置必要的环境变量。
+   按照 [环境变量配置指南](./docs/ENVIRONMENT.md) 设置必要的环境变量。
 
 ### 安装依赖
 
@@ -257,6 +261,7 @@ pnpm storybook
    - `TURBO_TOKEN`: Vercel 访问令牌
    - `TURBO_TEAM`: Vercel 团队 ID
    - `NODE_ENV`: `production`
+   - `SPEED_INSIGHTS_ENABLED`: `true` （用于启用 Speed Insights）
 5. 点击 "Deploy" 开始部署
 
 ### 部署故障排除
@@ -264,6 +269,7 @@ pnpm storybook
 如果遇到依赖安装问题：
 
 1. 确保项目根目录包含 `.npmrc` 文件，内容如下：
+
 ```
 registry=https://registry.npmjs.org/
 legacy-peer-deps=true
@@ -273,11 +279,13 @@ auto-install-peers=true
 ```
 
 2. 如果使用 PNPM 遇到问题，可以尝试：
+
    - 删除 `pnpm-lock.yaml`
    - 使用 `npm install` 重新安装依赖
    - 重新部署项目
 
 3. 检查 package.json 中的脚本命令是否正确：
+
 ```json
 {
   "scripts": {
