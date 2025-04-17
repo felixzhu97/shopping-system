@@ -14,6 +14,9 @@ NEXT_PUBLIC_API_URL=http://localhost:3001
 NEXTAUTH_URL=http://localhost:3000
 NEXTAUTH_SECRET=your-secret-key
 
+# 性能监控
+SPEED_INSIGHTS_ENABLED=true
+
 # 其他配置
 NODE_ENV=development
 ```
@@ -61,6 +64,7 @@ TURBO_TEAM=your-team-id
 - `NEXT_PUBLIC_API_URL`: 后端 API 的基础 URL
 - `NEXTAUTH_URL`: NextAuth.js 认证服务的 URL
 - `NEXTAUTH_SECRET`: NextAuth.js 用于加密会话的密钥
+- `SPEED_INSIGHTS_ENABLED`: 是否启用 Vercel Speed Insights 性能监控（可选，默认为 false）
 
 ### 后端环境变量
 
@@ -73,4 +77,4 @@ TURBO_TEAM=your-team-id
 ### Turborepo 环境变量
 
 - `TURBO_TOKEN`: Vercel 访问令牌，用于远程缓存
-- `TURBO_TEAM`: Vercel 团队 ID 
+- `TURBO_TEAM`: Vercel 团队 ID
