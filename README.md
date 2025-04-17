@@ -12,6 +12,10 @@ shopping-system/
 ├── packages/
 │   ├── ui/            # UI组件库
 │   └── shared/        # 共享工具和类型
+├── docs/              # 项目文档
+│   ├── COMMIT_CONVENTION.md    # 提交规范
+│   ├── VERSIONING.md          # 版本管理
+│   └── ENVIRONMENT.md         # 环境变量配置
 ```
 
 ## 使用技术
@@ -120,7 +124,33 @@ packages:
 
 根目录 `tsconfig.json` 为基础配置，各包通过 `extends` 继承这些配置并添加自己的特定配置。
 
+## 环境配置
+
+项目使用环境变量进行配置管理。在开始开发之前，请参考 [环境变量配置指南](./docs/ENVIRONMENT.md) 设置必要的环境变量。
+
 ## 开发指南
+
+### 前置要求
+
+- Node.js 18+
+- PNPM 8+
+- MongoDB 6+
+
+### 环境准备
+
+1. 克隆项目
+```bash
+git clone https://github.com/your-username/shopping-system.git
+cd shopping-system
+```
+
+2. 安装依赖
+```bash
+pnpm install
+```
+
+3. 配置环境变量
+按照 [环境变量配置指南](./docs/ENVIRONMENT.md) 设置必要的环境变量。
 
 ### 安装依赖
 
