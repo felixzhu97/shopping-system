@@ -1,0 +1,39 @@
+# 依赖目录
+node_modules
+.turbo
+
+# 本地环境文件
+.env.local
+.env.development.local
+.env.test.local
+
+# 构建输出
+.next
+out
+dist
+build
+
+# 调试文件
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# 系统文件
+.DS_Store
+*.pem
+
+# 测试覆盖率
+coverage
+
+# 日志文件
+logs
+*.log
+
+# 编辑器目录
+.idea
+.vscode
+
+# 忽略其他应用，只部署apps/web
+apps/*
+!apps/web 
