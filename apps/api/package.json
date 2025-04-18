@@ -9,7 +9,8 @@
     "lint": "eslint src/**/*.ts",
     "test": "vitest run",
     "test:watch": "vitest",
-    "seed:products": "ts-node src/scripts/seedProducts.ts"
+    "seed:products": "ts-node src/scripts/seedProducts.ts",
+    "seed:products200": "ts-node src/scripts/seedProducts200.ts"
   },
   "dependencies": {
     "cors": "^2.8.5",
