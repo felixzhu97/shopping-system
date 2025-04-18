@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { CreditCard, ChevronLeft } from 'lucide-react';
@@ -22,15 +22,68 @@ import { useToast } from '@/components/ui/use-toast';
 import { Navbar } from '@/components/navbar';
 import { useCart } from '@/lib/cart-context';
 
+// 添加表单数据类型
+interface FormData {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  address: string;
+  city: string;
+  province: string;
+  postalCode: string;
+  paymentMethod: string;
+  cardNumber?: string;
+  expiration?: string;
+  cvv?: string;
+}
+
+// 添加表单错误类型
+interface FormErrors {
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  phone?: string;
+  address?: string;
+  city?: string;
+  province?: string;
+  postalCode?: string;
+  cardNumber?: string;
+  expiration?: string;
+  cvv?: string;
+}
+
 export default function CheckoutPage() {
   const { cartItems, clearCart } = useCart();
   const { toast } = useToast();
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  // 添加表单状态
+  const [formData, setFormData] = useState<FormData>({
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    address: '',
+    city: '',
+    province: 'shanghai',
+    postalCode: '',
+    paymentMethod: 'credit-card',
+    cardNumber: '',
+    expiration: '',
+    cvv: '',
+  });
+  // 添加错误状态
+  const [errors, setErrors] = useState<FormErrors>({});
 
   // 如果购物车为空，重定向到购物车页面
+  useEffect(() => {
+    if (cartItems.length === 0) {
+      router.push('/cart');
+    }
+  }, [cartItems.length, router]);
+
   if (cartItems.length === 0) {
-    router.push('/cart');
     return null;
   }
 
@@ -39,8 +92,126 @@ export default function CheckoutPage() {
   const tax = subtotal * 0.06;
   const total = subtotal + shipping + tax;
 
+  // 处理输入变化
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value,
+    }));
+
+    // 清除该字段的错误
+    if (errors[name as keyof FormErrors]) {
+      setErrors(prev => ({
+        ...prev,
+        [name]: undefined,
+      }));
+    }
+  };
+
+  // 处理选择变化
+  const handleSelectChange = (name: string, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  // 验证表单
+  const validateForm = (): boolean => {
+    const newErrors: FormErrors = {};
+    let isValid = true;
+
+    // 验证基础信息
+    if (!formData.firstName.trim()) {
+      newErrors.firstName = '请输入姓氏';
+      isValid = false;
+    }
+
+    if (!formData.lastName.trim()) {
+      newErrors.lastName = '请输入名字';
+      isValid = false;
+    }
+
+    if (!formData.email.trim()) {
+      newErrors.email = '请输入邮箱';
+      isValid = false;
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = '请输入有效的邮箱地址';
+      isValid = false;
+    }
+
+    if (!formData.phone.trim()) {
+      newErrors.phone = '请输入手机号码';
+      isValid = false;
+    } else if (!/^\d{11}$/.test(formData.phone.replace(/\s/g, ''))) {
+      newErrors.phone = '请输入有效的11位手机号码';
+      isValid = false;
+    }
+
+    if (!formData.address.trim()) {
+      newErrors.address = '请输入详细地址';
+      isValid = false;
+    }
+
+    if (!formData.city.trim()) {
+      newErrors.city = '请输入城市';
+      isValid = false;
+    }
+
+    if (!formData.postalCode.trim()) {
+      newErrors.postalCode = '请输入邮政编码';
+      isValid = false;
+    } else if (!/^\d{6}$/.test(formData.postalCode)) {
+      newErrors.postalCode = '请输入有效的6位邮政编码';
+      isValid = false;
+    }
+
+    // 验证信用卡信息（如果选择了信用卡支付）
+    if (formData.paymentMethod === 'credit-card') {
+      if (!formData.cardNumber?.trim()) {
+        newErrors.cardNumber = '请输入卡号';
+        isValid = false;
+      } else if (!/^\d{16}$/.test(formData.cardNumber.replace(/\s/g, ''))) {
+        newErrors.cardNumber = '请输入有效的16位卡号';
+        isValid = false;
+      }
+
+      if (!formData.expiration?.trim()) {
+        newErrors.expiration = '请输入到期日';
+        isValid = false;
+      } else if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(formData.expiration)) {
+        newErrors.expiration = '请使用MM/YY格式';
+        isValid = false;
+      }
+
+      if (!formData.cvv?.trim()) {
+        newErrors.cvv = '请输入CVV码';
+        isValid = false;
+      } else if (!/^\d{3,4}$/.test(formData.cvv)) {
+        newErrors.cvv = '请输入有效的CVV码';
+        isValid = false;
+      }
+    }
+
+    setErrors(newErrors);
+    return isValid;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // 验证表单
+    if (!validateForm()) {
+      toast({
+        title: '表单验证失败',
+        description: '请检查并修正表单中的错误',
+        variant: 'destructive',
+        duration: 5000,
+      });
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -102,33 +273,90 @@ export default function CheckoutPage() {
                     <div className="grid sm:grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <Label htmlFor="firstName">姓氏</Label>
-                        <Input id="firstName" required />
+                        <Input
+                          id="firstName"
+                          name="firstName"
+                          value={formData.firstName}
+                          onChange={handleInputChange}
+                          required
+                          className={errors.firstName ? 'border-red-500' : ''}
+                        />
+                        {errors.firstName && (
+                          <p className="text-sm text-red-500">{errors.firstName}</p>
+                        )}
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="lastName">名字</Label>
-                        <Input id="lastName" required />
+                        <Input
+                          id="lastName"
+                          name="lastName"
+                          value={formData.lastName}
+                          onChange={handleInputChange}
+                          required
+                          className={errors.lastName ? 'border-red-500' : ''}
+                        />
+                        {errors.lastName && (
+                          <p className="text-sm text-red-500">{errors.lastName}</p>
+                        )}
                       </div>
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="email">邮箱</Label>
-                      <Input id="email" type="email" required />
+                      <Input
+                        id="email"
+                        name="email"
+                        type="email"
+                        value={formData.email}
+                        onChange={handleInputChange}
+                        required
+                        className={errors.email ? 'border-red-500' : ''}
+                      />
+                      {errors.email && <p className="text-sm text-red-500">{errors.email}</p>}
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="phone">手机号码</Label>
-                      <Input id="phone" type="tel" required />
+                      <Input
+                        id="phone"
+                        name="phone"
+                        type="tel"
+                        value={formData.phone}
+                        onChange={handleInputChange}
+                        required
+                        className={errors.phone ? 'border-red-500' : ''}
+                      />
+                      {errors.phone && <p className="text-sm text-red-500">{errors.phone}</p>}
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="address">详细地址</Label>
-                      <Input id="address" required />
+                      <Input
+                        id="address"
+                        name="address"
+                        value={formData.address}
+                        onChange={handleInputChange}
+                        required
+                        className={errors.address ? 'border-red-500' : ''}
+                      />
+                      {errors.address && <p className="text-sm text-red-500">{errors.address}</p>}
                     </div>
                     <div className="grid sm:grid-cols-3 gap-4">
                       <div className="space-y-2">
                         <Label htmlFor="city">城市</Label>
-                        <Input id="city" required />
+                        <Input
+                          id="city"
+                          name="city"
+                          value={formData.city}
+                          onChange={handleInputChange}
+                          required
+                          className={errors.city ? 'border-red-500' : ''}
+                        />
+                        {errors.city && <p className="text-sm text-red-500">{errors.city}</p>}
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="province">省份</Label>
-                        <Select defaultValue="shanghai">
+                        <Select
+                          defaultValue={formData.province}
+                          onValueChange={value => handleSelectChange('province', value)}
+                        >
                           <SelectTrigger id="province">
                             <SelectValue placeholder="选择省份" />
                           </SelectTrigger>
@@ -143,7 +371,17 @@ export default function CheckoutPage() {
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="postalCode">邮政编码</Label>
-                        <Input id="postalCode" required />
+                        <Input
+                          id="postalCode"
+                          name="postalCode"
+                          value={formData.postalCode}
+                          onChange={handleInputChange}
+                          required
+                          className={errors.postalCode ? 'border-red-500' : ''}
+                        />
+                        {errors.postalCode && (
+                          <p className="text-sm text-red-500">{errors.postalCode}</p>
+                        )}
                       </div>
                     </div>
                   </CardContent>
@@ -155,7 +393,10 @@ export default function CheckoutPage() {
                     <CardTitle>支付方式</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    <RadioGroup defaultValue="credit-card">
+                    <RadioGroup
+                      defaultValue={formData.paymentMethod}
+                      onValueChange={value => handleSelectChange('paymentMethod', value)}
+                    >
                       <div className="flex items-center space-x-2 border p-4 rounded-md">
                         <RadioGroupItem value="credit-card" id="credit-card" />
                         <Label htmlFor="credit-card" className="flex-1">
@@ -182,20 +423,52 @@ export default function CheckoutPage() {
                       </div>
                     </RadioGroup>
 
-                    <div className="space-y-2">
-                      <Label htmlFor="cardNumber">卡号</Label>
-                      <Input id="cardNumber" placeholder="**** **** **** ****" />
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="expiration">到期日</Label>
-                        <Input id="expiration" placeholder="MM/YY" />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="cvv">CVV</Label>
-                        <Input id="cvv" placeholder="***" />
-                      </div>
-                    </div>
+                    {formData.paymentMethod === 'credit-card' && (
+                      <>
+                        <div className="space-y-2">
+                          <Label htmlFor="cardNumber">卡号</Label>
+                          <Input
+                            id="cardNumber"
+                            name="cardNumber"
+                            placeholder="**** **** **** ****"
+                            value={formData.cardNumber}
+                            onChange={handleInputChange}
+                            className={errors.cardNumber ? 'border-red-500' : ''}
+                          />
+                          {errors.cardNumber && (
+                            <p className="text-sm text-red-500">{errors.cardNumber}</p>
+                          )}
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <Label htmlFor="expiration">到期日</Label>
+                            <Input
+                              id="expiration"
+                              name="expiration"
+                              placeholder="MM/YY"
+                              value={formData.expiration}
+                              onChange={handleInputChange}
+                              className={errors.expiration ? 'border-red-500' : ''}
+                            />
+                            {errors.expiration && (
+                              <p className="text-sm text-red-500">{errors.expiration}</p>
+                            )}
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor="cvv">CVV</Label>
+                            <Input
+                              id="cvv"
+                              name="cvv"
+                              placeholder="***"
+                              value={formData.cvv}
+                              onChange={handleInputChange}
+                              className={errors.cvv ? 'border-red-500' : ''}
+                            />
+                            {errors.cvv && <p className="text-sm text-red-500">{errors.cvv}</p>}
+                          </div>
+                        </div>
+                      </>
+                    )}
                   </CardContent>
                 </Card>
 
@@ -254,7 +527,7 @@ export default function CheckoutPage() {
         </div>
       </main>
 
-      <footer className="bg-gray-800 text-white py-8 mt-8">
+      <footer className="bg-gray-800 text-white py-8">
         <div className="container mx-auto px-4 text-center">
           <p className="text-gray-400">© 2025 购物系统. 保留所有权利.</p>
         </div>

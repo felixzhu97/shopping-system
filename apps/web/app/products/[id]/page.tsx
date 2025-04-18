@@ -36,9 +36,11 @@ function LoadingSkeleton() {
 function ProductDetail({ id }: { id: string }) {
   const [product, setProduct] = useState<Product | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isActionLoading, setIsActionLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [quantity, setQuantity] = useState(1);
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
+  const [imageLoaded, setImageLoaded] = useState(false);
   const { addToCart } = useCart();
   const { toast } = useToast();
   const router = useRouter();
@@ -47,6 +49,7 @@ function ProductDetail({ id }: { id: string }) {
     const fetchProduct = async () => {
       try {
         setIsLoading(true);
+        setImageLoaded(false);
         const productData = await api.getProduct(id);
         setProduct(productData);
 
@@ -75,6 +78,8 @@ function ProductDetail({ id }: { id: string }) {
     if (!product) return;
 
     try {
+      setIsActionLoading(true);
+
       await addToCart({
         id: product.id,
         name: product.name,
@@ -89,7 +94,6 @@ function ProductDetail({ id }: { id: string }) {
         duration: 3000,
       });
 
-      // 重置数量
       setQuantity(1);
     } catch (err) {
       toast({
@@ -98,6 +102,8 @@ function ProductDetail({ id }: { id: string }) {
         variant: 'destructive',
         duration: 3000,
       });
+    } finally {
+      setIsActionLoading(false);
     }
   };
 
@@ -105,7 +111,8 @@ function ProductDetail({ id }: { id: string }) {
     if (!product) return;
 
     try {
-      // 先添加到购物车
+      setIsActionLoading(true);
+
       await addToCart({
         id: product.id,
         name: product.name,
@@ -114,7 +121,6 @@ function ProductDetail({ id }: { id: string }) {
         image: product.image,
       });
 
-      // 直接跳转到结账页面
       router.push('/checkout');
     } catch (err) {
       toast({
@@ -123,6 +129,7 @@ function ProductDetail({ id }: { id: string }) {
         variant: 'destructive',
         duration: 3000,
       });
+      setIsActionLoading(false);
     }
   };
 
@@ -148,11 +155,14 @@ function ProductDetail({ id }: { id: string }) {
       <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
         {/* 产品图片 */}
         <div className="bg-white p-4 rounded-lg border">
-          <div className="aspect-square overflow-hidden rounded-md">
+          <div className="aspect-square overflow-hidden rounded-md relative">
+            {!imageLoaded && <Skeleton className="absolute inset-0 z-10" />}
             <img
               src={product.image || `/placeholder.svg?height=600&width=600&text=${product.name}`}
               alt={product.name}
-              className="h-full w-full object-contain"
+              className="h-full w-full object-contain transition-opacity duration-300"
+              style={{ opacity: imageLoaded ? 1 : 0 }}
+              onLoad={() => setImageLoaded(true)}
             />
           </div>
         </div>
@@ -233,19 +243,25 @@ function ProductDetail({ id }: { id: string }) {
                 size="lg"
                 className="sm:flex-1"
                 onClick={handleAddToCart}
-                disabled={!product.inStock}
+                disabled={isActionLoading || !product.inStock}
               >
-                <ShoppingCart className="mr-2 h-5 w-5" />
-                加入购物车
+                {isActionLoading ? (
+                  <>加载中...</>
+                ) : (
+                  <>
+                    <ShoppingCart className="mr-2 h-5 w-5" />
+                    加入购物车
+                  </>
+                )}
               </Button>
               <Button
                 size="lg"
                 variant="secondary"
                 className="sm:flex-1"
                 onClick={handleBuyNow}
-                disabled={!product.inStock}
+                disabled={isActionLoading || !product.inStock}
               >
-                立即购买
+                {isActionLoading ? '加载中...' : '立即购买'}
               </Button>
             </div>
 

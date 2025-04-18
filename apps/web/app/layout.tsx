@@ -1,31 +1,25 @@
 import type { Metadata } from 'next';
-import { SpeedInsights } from '@vercel/speed-insights/next';
-import { Analytics } from '@vercel/analytics/react';
+import { Inter } from 'next/font/google';
 import './globals.css';
-
-import { Toaster } from '@/components/ui/toaster';
 import { CartProvider } from '@/lib/cart-context';
+import { Toaster } from '@/components/ui/toaster';
+import { PageTransition } from '@/components/page-transition';
+
+const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
   title: '购物系统',
-  description: '一个现代的在线购物系统',
-  generator: 'v0.dev',
+  description: '一个简单的购物系统演示',
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="zh">
-      <body>
+    <html lang="zh-CN">
+      <body className={inter.className}>
         <CartProvider>
-          {children}
+          <PageTransition>{children}</PageTransition>
           <Toaster />
         </CartProvider>
-        <SpeedInsights />
-        <Analytics />
       </body>
     </html>
   );
