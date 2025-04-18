@@ -1,16 +1,7 @@
-export interface Product {
-  id: string;
-  name: string;
-  price: number;
-  originalPrice?: number;
-  description?: string;
-  image?: string;
-  category: string;
-  rating?: number;
-  reviewCount?: number;
-  inStock?: boolean;
-  stock?: number;
-}
+import { Product as SharedProduct } from 'shared';
+
+// 重新导出shared包中的Product类型
+export type Product = SharedProduct;
 
 export interface CartItem {
   id: string;

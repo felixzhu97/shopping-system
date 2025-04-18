@@ -1,7 +1,9 @@
+import { Request, Response } from 'express';
+import { Product as SharedProduct } from 'shared';
 import Product from '../models/Product';
 
 // 获取所有产品
-export const getAllProducts = async (req: any, res: any) => {
+export const getAllProducts = async (req: Request, res: Response) => {
   try {
     const { category } = req.query;
 
@@ -19,7 +21,7 @@ export const getAllProducts = async (req: any, res: any) => {
 };
 
 // 获取单个产品
-export const getProductById = async (req: any, res: any) => {
+export const getProductById = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const product = await Product.findById(id);
@@ -36,18 +38,10 @@ export const getProductById = async (req: any, res: any) => {
 };
 
 // 创建产品
-export const createProduct = async (req: any, res: any) => {
+export const createProduct = async (req: Request, res: Response) => {
   try {
-    const { name, description, price, image, category, stock } = req.body;
-
-    const newProduct = new Product({
-      name,
-      description,
-      price,
-      image,
-      category,
-      stock,
-    });
+    const productData: Omit<SharedProduct, 'id'> = req.body;
+    const newProduct = new Product(productData);
 
     const savedProduct = await newProduct.save();
     res.status(201).json(savedProduct);
@@ -58,10 +52,10 @@ export const createProduct = async (req: any, res: any) => {
 };
 
 // 更新产品
-export const updateProduct = async (req: any, res: any) => {
+export const updateProduct = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const { name, description, price, image, category, stock } = req.body;
+    const productData: Partial<Omit<SharedProduct, 'id'>> = req.body;
 
     const product = await Product.findById(id);
 
@@ -69,11 +63,7 @@ export const updateProduct = async (req: any, res: any) => {
       return res.status(404).json({ message: '产品不存在' });
     }
 
-    const updatedProduct = await Product.findByIdAndUpdate(
-      id,
-      { name, description, price, image, category, stock },
-      { new: true }
-    );
+    const updatedProduct = await Product.findByIdAndUpdate(id, productData, { new: true });
 
     res.status(200).json(updatedProduct);
   } catch (error) {
@@ -83,7 +73,7 @@ export const updateProduct = async (req: any, res: any) => {
 };
 
 // 删除产品
-export const deleteProduct = async (req: any, res: any) => {
+export const deleteProduct = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 

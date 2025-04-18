@@ -1,19 +1,10 @@
 import mongoose, { Schema, Document } from 'mongoose';
+import { Product as SharedProduct } from 'shared';
 
-export interface ProductType {
-  id?: string;
-  name: string;
-  description: string;
-  price: number;
-  image: string;
-  category: string;
-  stock: number;
-  rating?: number;
-  reviewCount?: number;
-  originalPrice?: number;
-}
+// 使用shared包中的Product类型，但不包含id字段，因为MongoDB会自动生成_id
+export type ProductType = Omit<SharedProduct, 'id'>;
 
-export interface ProductDocument extends Document, Omit<ProductType, 'id'> {
+export interface ProductDocument extends Document, ProductType {
   // MongoDB 会自动添加 _id，所以我们不需要 id 字段
 }
 
@@ -28,6 +19,7 @@ const ProductSchema: Schema = new Schema(
     rating: { type: Number, default: 0 },
     reviewCount: { type: Number, default: 0 },
     originalPrice: { type: Number },
+    inStock: { type: Boolean, default: true },
   },
   { timestamps: true }
 );

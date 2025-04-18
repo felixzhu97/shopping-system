@@ -7,6 +7,10 @@ export interface Product {
   image: string;
   category: string;
   stock: number;
+  rating?: number;
+  reviewCount?: number;
+  originalPrice?: number;
+  inStock?: boolean;
 }
 
 // 购物车项目类型
@@ -25,7 +29,7 @@ export interface User {
   id: string;
   username: string;
   email: string;
-  role: "user" | "admin";
+  role: 'user' | 'admin';
 }
 
 export interface Order {
@@ -33,7 +37,7 @@ export interface Order {
   userId: string;
   items: CartItem[];
   totalAmount: number;
-  status: "pending" | "processing" | "shipped" | "delivered" | "cancelled";
+  status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
   createdAt: Date;
   updatedAt: Date;
 }
