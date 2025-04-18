@@ -1,15 +1,58 @@
+'use client';
+
 import Link from 'next/link';
-import { Star } from 'lucide-react';
+import { Star, ShoppingCart } from 'lucide-react';
+import { useState } from 'react';
+import { useToast } from '@/components/ui/use-toast';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import type { Product } from '@/lib/types';
+import { useCart } from '@/lib/cart-context';
 
 interface ProductCardProps {
   product: Product;
 }
 
 export function ProductCard({ product }: ProductCardProps) {
+  const { addToCart } = useCart();
+  const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleAddToCart = async () => {
+    if (!product.inStock) return;
+
+    setIsLoading(true);
+
+    try {
+      // 将商品添加到购物车
+      await addToCart({
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        quantity: 1,
+        image: product.image,
+      });
+
+      // 显示添加成功的通知
+      toast({
+        title: '已添加到购物车',
+        description: `${product.name} 已成功添加到购物车`,
+        duration: 3000,
+      });
+    } catch (error) {
+      console.error('添加到购物车失败:', error);
+      toast({
+        title: '添加失败',
+        description: '添加商品到购物车时出错，请稍后再试',
+        variant: 'destructive',
+        duration: 3000,
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <Card className="overflow-hidden">
       <CardContent className="p-0">
@@ -50,7 +93,14 @@ export function ProductCard({ product }: ProductCardProps) {
         </Link>
       </CardContent>
       <CardFooter className="p-4 pt-0">
-        <Button className="w-full">加入购物车</Button>
+        <Button
+          className="w-full"
+          onClick={handleAddToCart}
+          disabled={isLoading || !product.inStock}
+        >
+          <ShoppingCart className="h-4 w-4 mr-2" />
+          {product.inStock ? '加入购物车' : '缺货'}
+        </Button>
       </CardFooter>
     </Card>
   );

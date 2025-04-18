@@ -1,6 +1,9 @@
+'use client';
+
 import Link from 'next/link';
 import { ChevronRight, Minus, Plus, ShoppingCart, Star, Truck } from 'lucide-react';
-import { Suspense } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -8,274 +11,395 @@ import { Navbar } from '@/components/navbar';
 import { ProductCard } from '@/components/product-card';
 import { Product } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useToast } from '@/components/ui/use-toast';
+import { useCart } from '@/lib/cart-context';
+import * as api from '@/lib/api';
 
-// 从API获取单个产品数据
-async function ProductDetail({ id }: { id: string }) {
-  try {
-    const apiUrl = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api'}/products/${id}`;
-    console.log('产品详情页面请求API:', apiUrl);
-
-    const response = await fetch(apiUrl, {
-      next: { revalidate: 3600 },
-    });
-
-    if (!response.ok) {
-      console.error('API响应错误:', response.status, response.statusText);
-      return null;
-    }
-
-    const product: Product = await response.json();
-
-    // 获取相关产品（同一类别）
-    const relatedApiUrl = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api'}/products?category=${product.category}`;
-    const relatedResponse = await fetch(relatedApiUrl, {
-      next: { revalidate: 3600 },
-    });
-
-    let relatedProducts: Product[] = [];
-    if (relatedResponse.ok) {
-      const allRelated = await relatedResponse.json();
-      relatedProducts = allRelated.filter((p: Product) => p.id !== id).slice(0, 4);
-    }
-
-    return (
-      <>
-        {/* 产品详情 */}
-        <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
-          {/* 产品图片 */}
-          <div className="bg-white p-4 rounded-lg border">
-            <div className="aspect-square overflow-hidden rounded-md">
-              <img
-                src={product.image || `/placeholder.svg?height=600&width=600&text=${product.name}`}
-                alt={product.name}
-                className="h-full w-full object-contain"
-              />
-            </div>
-          </div>
-
-          {/* 产品信息 */}
-          <div>
-            <h1 className="text-3xl font-bold">{product.name}</h1>
-
-            <div className="flex items-center mt-2 mb-4">
-              <div className="flex items-center">
-                {Array(5)
-                  .fill(0)
-                  .map((_, i) => (
-                    <Star
-                      key={i}
-                      className={`h-5 w-5 ${
-                        i < Math.floor(product.rating || 0)
-                          ? 'fill-yellow-400 text-yellow-400'
-                          : 'fill-gray-200 text-gray-200'
-                      }`}
-                    />
-                  ))}
-              </div>
-              <span className="ml-2 text-sm text-muted-foreground">
-                {(product.rating || 0).toFixed(1)} ({product.reviewCount || 0} 评价)
-              </span>
-            </div>
-
-            <div className="flex items-baseline gap-2 mt-4">
-              <span className="text-3xl font-bold">¥{product.price.toFixed(2)}</span>
-              {product.originalPrice && (
-                <span className="text-lg text-muted-foreground line-through">
-                  ¥{product.originalPrice.toFixed(2)}
-                </span>
-              )}
-              {product.originalPrice && (
-                <span className="text-sm font-medium text-green-600 bg-green-50 px-2 py-0.5 rounded">
-                  节省 ¥{(product.originalPrice - product.price).toFixed(2)}
-                </span>
-              )}
-            </div>
-
-            <div className="mt-6 space-y-6">
-              <div className="flex items-center text-sm text-green-600">
-                <Truck className="h-4 w-4 mr-2" />
-                <span>订单满¥200免运费</span>
-              </div>
-
-              <div className="space-y-2">
-                <div className="font-medium">数量</div>
-                <div className="flex items-center border rounded w-fit">
-                  <Button variant="ghost" size="icon" className="h-10 w-10 rounded-none">
-                    <Minus className="h-4 w-4" />
-                    <span className="sr-only">减少数量</span>
-                  </Button>
-                  <span className="w-12 text-center">1</span>
-                  <Button variant="ghost" size="icon" className="h-10 w-10 rounded-none">
-                    <Plus className="h-4 w-4" />
-                    <span className="sr-only">增加数量</span>
-                  </Button>
-                </div>
-              </div>
-
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Button size="lg" className="sm:flex-1">
-                  <ShoppingCart className="mr-2 h-5 w-5" />
-                  加入购物车
-                </Button>
-                <Button size="lg" variant="secondary" className="sm:flex-1">
-                  立即购买
-                </Button>
-              </div>
-
-              <div className="border-t pt-6">
-                <h3 className="font-medium mb-2">产品描述</h3>
-                <p className="text-muted-foreground">
-                  {product.description ||
-                    '这款优质产品提供卓越的品质和价值。适合日常使用，它将耐用性与优雅的设计相结合。由高品质材料制成，经久耐用，同时保持其时尚外观。'}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* 产品选项卡 */}
-        <div className="mt-12">
-          <Tabs defaultValue="details">
-            <TabsList className="w-full justify-start">
-              <TabsTrigger value="details">详情</TabsTrigger>
-              <TabsTrigger value="specifications">规格</TabsTrigger>
-              <TabsTrigger value="reviews">评价</TabsTrigger>
-            </TabsList>
-            <TabsContent value="details" className="mt-6">
-              <div className="prose max-w-none">
-                <p>
-                  体验{product.name}
-                  的卓越品质和性能。该产品以用户为中心设计，将创新功能与可靠的功能相结合，每次都能提供卓越的体验。
-                </p>
-                <p>
-                  无论您是专业用户还是普通用户，{product.name}
-                  都能适应您的需求，在任何情况下都能提供一致的结果。它的直观设计使其易于使用，而其坚固的结构确保它经得起时间的考验。
-                </p>
-                <ul>
-                  <li>优质材料</li>
-                  <li>符合人体工程学的舒适设计</li>
-                  <li>多功能性</li>
-                  <li>持久耐用</li>
-                </ul>
-              </div>
-            </TabsContent>
-            <TabsContent value="specifications" className="mt-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="bg-muted/40 p-4 rounded-lg">
-                  <h3 className="font-medium mb-2">尺寸</h3>
-                  <p className="text-sm">26.7 x 18.3 x 9.1 厘米</p>
-                </div>
-                <div className="bg-muted/40 p-4 rounded-lg">
-                  <h3 className="font-medium mb-2">重量</h3>
-                  <p className="text-sm">0.54 千克</p>
-                </div>
-                <div className="bg-muted/40 p-4 rounded-lg">
-                  <h3 className="font-medium mb-2">材质</h3>
-                  <p className="text-sm">高级铝合金和聚合物</p>
-                </div>
-                <div className="bg-muted/40 p-4 rounded-lg">
-                  <h3 className="font-medium mb-2">保修</h3>
-                  <p className="text-sm">1年有限保修</p>
-                </div>
-              </div>
-            </TabsContent>
-            <TabsContent value="reviews" className="mt-6">
-              <div className="space-y-6">
-                {[
-                  {
-                    name: '张明',
-                    rating: 5,
-                    date: '2个月前',
-                    comment: '非常喜欢这个产品！它超出了我所有的期望，让我的生活变得更加便捷。',
-                  },
-                  {
-                    name: '李华',
-                    rating: 4,
-                    date: '3个月前',
-                    comment: '价格合理，品质优良。绝对会推荐给朋友和家人。',
-                  },
-                  {
-                    name: '王芳',
-                    rating: 3,
-                    date: '4个月前',
-                    comment: '产品质量不错。功能符合描述，但没有特别出色的地方。不过配送很快。',
-                  },
-                ].map((review, index) => (
-                  <div key={index} className="border-b pb-6 last:border-0">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <h4 className="font-medium">{review.name}</h4>
-                        <div className="flex items-center mt-1">
-                          {Array(5)
-                            .fill(0)
-                            .map((_, i) => (
-                              <Star
-                                key={i}
-                                className={`h-4 w-4 ${
-                                  i < review.rating
-                                    ? 'fill-yellow-400 text-yellow-400'
-                                    : 'fill-gray-200 text-gray-200'
-                                }`}
-                              />
-                            ))}
-                        </div>
-                      </div>
-                      <span className="text-sm text-muted-foreground">{review.date}</span>
-                    </div>
-                    <p className="mt-2 text-muted-foreground">{review.comment}</p>
-                  </div>
-                ))}
-              </div>
-            </TabsContent>
-          </Tabs>
-        </div>
-
-        {/* 相关产品 */}
-        <div className="mt-16">
-          <h2 className="text-2xl font-bold mb-6">相关产品</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {relatedProducts && relatedProducts.length > 0 ? (
-              relatedProducts.map(product => <ProductCard key={product.id} product={product} />)
-            ) : (
-              <div className="col-span-full py-12 text-center">
-                <p className="text-muted-foreground">暂无相关产品</p>
-              </div>
-            )}
-          </div>
-        </div>
-      </>
-    );
-  } catch (error) {
-    console.error('获取产品数据失败:', error);
-    return null;
-  }
-}
-
-// 加载中状态
 function LoadingSkeleton() {
   return (
-    <div className="space-y-8">
-      <div className="grid md:grid-cols-2 gap-8">
-        <Skeleton className="aspect-square w-full" />
-        <div className="space-y-4">
-          <Skeleton className="h-10 w-3/4" />
-          <Skeleton className="h-6 w-1/2" />
-          <Skeleton className="h-10 w-1/3" />
-          <div className="space-y-3 pt-6">
-            <Skeleton className="h-4 w-full" />
-            <Skeleton className="h-4 w-full" />
-            <Skeleton className="h-4 w-2/3" />
-          </div>
+    <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
+      <Skeleton className="aspect-square w-full" />
+      <div className="space-y-4">
+        <Skeleton className="h-12 w-4/5" />
+        <Skeleton className="h-6 w-1/2" />
+        <Skeleton className="h-10 w-1/3" />
+        <div className="space-y-2">
+          <Skeleton className="h-6 w-1/4" />
+          <Skeleton className="h-20 w-full" />
         </div>
       </div>
     </div>
   );
 }
 
-export default async function ProductPage({ params }: { params: { id: string } }) {
-  // 在Next.js 15.2.4中需要使用await处理动态路由参数
-  const routeParams = await params;
+// 产品详情组件
+function ProductDetail({ id }: { id: string }) {
+  const [product, setProduct] = useState<Product | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [quantity, setQuantity] = useState(1);
+  const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
+  const { addToCart } = useCart();
+  const { toast } = useToast();
+  const router = useRouter();
 
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        setIsLoading(true);
+        const productData = await api.getProduct(id);
+        setProduct(productData);
+
+        // 获取相关产品
+        const allProducts = await api.getProducts(productData.category);
+        const related = allProducts.filter((p: Product) => p.id !== id).slice(0, 4);
+        setRelatedProducts(related);
+
+        setError(null);
+      } catch (err) {
+        console.error('获取产品数据失败:', err);
+        setError('获取产品数据失败，请稍后再试');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchProduct();
+  }, [id]);
+
+  const handleQuantityChange = (delta: number) => {
+    setQuantity(prev => Math.max(1, prev + delta));
+  };
+
+  const handleAddToCart = async () => {
+    if (!product) return;
+
+    try {
+      await addToCart({
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        quantity: quantity,
+        image: product.image,
+      });
+
+      toast({
+        title: '已添加到购物车',
+        description: `${product.name} × ${quantity} 已成功添加到购物车`,
+        duration: 3000,
+      });
+
+      // 重置数量
+      setQuantity(1);
+    } catch (err) {
+      toast({
+        title: '添加失败',
+        description: '添加商品到购物车时出错，请稍后再试',
+        variant: 'destructive',
+        duration: 3000,
+      });
+    }
+  };
+
+  const handleBuyNow = async () => {
+    if (!product) return;
+
+    try {
+      // 先添加到购物车
+      await addToCart({
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        quantity: quantity,
+        image: product.image,
+      });
+
+      // 直接跳转到结账页面
+      router.push('/checkout');
+    } catch (err) {
+      toast({
+        title: '操作失败',
+        description: '处理您的请求时出错，请稍后再试',
+        variant: 'destructive',
+        duration: 3000,
+      });
+    }
+  };
+
+  if (isLoading) {
+    return <LoadingSkeleton />;
+  }
+
+  if (error || !product) {
+    return (
+      <div className="text-center py-12">
+        <div className="text-xl font-medium text-gray-900 mb-2">产品不存在或发生错误</div>
+        <p className="text-gray-500 mb-6">{error || '无法加载产品信息'}</p>
+        <Button asChild>
+          <Link href="/products">返回产品列表</Link>
+        </Button>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      {/* 产品详情 */}
+      <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
+        {/* 产品图片 */}
+        <div className="bg-white p-4 rounded-lg border">
+          <div className="aspect-square overflow-hidden rounded-md">
+            <img
+              src={product.image || `/placeholder.svg?height=600&width=600&text=${product.name}`}
+              alt={product.name}
+              className="h-full w-full object-contain"
+            />
+          </div>
+        </div>
+
+        {/* 产品信息 */}
+        <div>
+          <h1 className="text-3xl font-bold">{product.name}</h1>
+
+          <div className="flex items-center mt-2 mb-4">
+            <div className="flex items-center">
+              {Array(5)
+                .fill(0)
+                .map((_, i) => (
+                  <Star
+                    key={i}
+                    className={`h-5 w-5 ${
+                      i < Math.floor(product.rating || 0)
+                        ? 'fill-yellow-400 text-yellow-400'
+                        : 'fill-gray-200 text-gray-200'
+                    }`}
+                  />
+                ))}
+            </div>
+            <span className="ml-2 text-sm text-muted-foreground">
+              {(product.rating || 0).toFixed(1)} ({product.reviewCount || 0} 评价)
+            </span>
+          </div>
+
+          <div className="flex items-baseline gap-2 mt-4">
+            <span className="text-3xl font-bold">¥{product.price.toFixed(2)}</span>
+            {product.originalPrice && (
+              <span className="text-lg text-muted-foreground line-through">
+                ¥{product.originalPrice.toFixed(2)}
+              </span>
+            )}
+            {product.originalPrice && (
+              <span className="text-sm font-medium text-green-600 bg-green-50 px-2 py-0.5 rounded">
+                节省 ¥{(product.originalPrice - product.price).toFixed(2)}
+              </span>
+            )}
+          </div>
+
+          <div className="mt-6 space-y-6">
+            <div className="flex items-center text-sm text-green-600">
+              <Truck className="h-4 w-4 mr-2" />
+              <span>订单满¥200免运费</span>
+            </div>
+
+            <div className="space-y-2">
+              <div className="font-medium">数量</div>
+              <div className="flex items-center border rounded w-fit">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-10 w-10 rounded-none"
+                  onClick={() => handleQuantityChange(-1)}
+                  disabled={quantity <= 1}
+                >
+                  <Minus className="h-4 w-4" />
+                  <span className="sr-only">减少数量</span>
+                </Button>
+                <span className="w-12 text-center">{quantity}</span>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-10 w-10 rounded-none"
+                  onClick={() => handleQuantityChange(1)}
+                  disabled={quantity >= (product.stock || 99)}
+                >
+                  <Plus className="h-4 w-4" />
+                  <span className="sr-only">增加数量</span>
+                </Button>
+              </div>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-4">
+              <Button
+                size="lg"
+                className="sm:flex-1"
+                onClick={handleAddToCart}
+                disabled={!product.inStock}
+              >
+                <ShoppingCart className="mr-2 h-5 w-5" />
+                加入购物车
+              </Button>
+              <Button
+                size="lg"
+                variant="secondary"
+                className="sm:flex-1"
+                onClick={handleBuyNow}
+                disabled={!product.inStock}
+              >
+                立即购买
+              </Button>
+            </div>
+
+            {!product.inStock && <div className="text-red-500 font-medium">该商品当前缺货</div>}
+
+            <div className="border-t pt-6">
+              <h3 className="font-medium mb-2">产品描述</h3>
+              <p className="text-muted-foreground">
+                {product.description ||
+                  '这款优质产品提供卓越的品质和价值。适合日常使用，它将耐用性与优雅的设计相结合。由高品质材料制成，经久耐用，同时保持其时尚外观。'}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* 产品选项卡 */}
+      <div className="mt-12">
+        <Tabs defaultValue="details">
+          <TabsList className="w-full border-b pb-px">
+            <TabsTrigger value="details">详细信息</TabsTrigger>
+            <TabsTrigger value="shipping">配送与退货</TabsTrigger>
+            <TabsTrigger value="reviews">用户评价</TabsTrigger>
+          </TabsList>
+          <TabsContent value="details" className="pt-4">
+            <div className="space-y-4">
+              <div>
+                <h4 className="font-medium">产品特点</h4>
+                <ul className="mt-2 space-y-1 list-disc list-inside text-muted-foreground">
+                  <li>优质材料，耐用性强</li>
+                  <li>精美设计，注重细节</li>
+                  <li>多功能用途，提升使用体验</li>
+                  <li>环保制造，符合现代标准</li>
+                </ul>
+              </div>
+              <div>
+                <h4 className="font-medium">规格参数</h4>
+                <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 text-sm">
+                  <div className="flex justify-between border-b pb-2">
+                    <span className="text-muted-foreground">品牌</span>
+                    <span>优质品牌</span>
+                  </div>
+                  <div className="flex justify-between border-b pb-2">
+                    <span className="text-muted-foreground">型号</span>
+                    <span>PRO-2023</span>
+                  </div>
+                  <div className="flex justify-between border-b pb-2">
+                    <span className="text-muted-foreground">尺寸</span>
+                    <span>适中</span>
+                  </div>
+                  <div className="flex justify-between border-b pb-2">
+                    <span className="text-muted-foreground">材质</span>
+                    <span>高级材料</span>
+                  </div>
+                  <div className="flex justify-between border-b pb-2">
+                    <span className="text-muted-foreground">保修</span>
+                    <span>1年</span>
+                  </div>
+                  <div className="flex justify-between border-b pb-2">
+                    <span className="text-muted-foreground">产地</span>
+                    <span>中国</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </TabsContent>
+          <TabsContent value="shipping" className="pt-4">
+            <div className="space-y-4">
+              <div>
+                <h4 className="font-medium">配送信息</h4>
+                <p className="mt-2 text-muted-foreground">
+                  我们提供全国范围内的配送服务。标准配送时间为1-3个工作日，偏远地区可能需要额外1-2天。订单满200元享受免费配送，否则配送费为15元。
+                </p>
+              </div>
+              <div>
+                <h4 className="font-medium">退货政策</h4>
+                <p className="mt-2 text-muted-foreground">
+                  自收到商品之日起30天内，如产品未使用且保持原包装完好，可申请无理由退货。部分特殊商品可能不支持退货，详情请参考商品描述。退货运费由买家承担。
+                </p>
+              </div>
+            </div>
+          </TabsContent>
+          <TabsContent value="reviews" className="pt-4">
+            <div className="space-y-6">
+              {[
+                {
+                  name: '张先生',
+                  rating: 5,
+                  date: '2023年12月15日',
+                  comment:
+                    '非常满意的购物体验，产品质量超出预期，快递很快，包装也很好，会继续支持！',
+                },
+                {
+                  name: '李女士',
+                  rating: 4,
+                  date: '2023年11月28日',
+                  comment:
+                    '整体不错，使用了一周感觉质量可靠，就是价格稍贵了点，希望有更多优惠活动。',
+                },
+                {
+                  name: '王先生',
+                  rating: 5,
+                  date: '2023年10月17日',
+                  comment:
+                    '朋友推荐购买的，确实名不虚传，各方面都很好，尤其是做工和质感，非常推荐！',
+                },
+              ].map((review, index) => (
+                <div key={index} className="border-b pb-6 last:border-0">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <h4 className="font-medium">{review.name}</h4>
+                      <div className="flex items-center mt-1">
+                        {Array(5)
+                          .fill(0)
+                          .map((_, i) => (
+                            <Star
+                              key={i}
+                              className={`h-4 w-4 ${
+                                i < review.rating
+                                  ? 'fill-yellow-400 text-yellow-400'
+                                  : 'fill-gray-200 text-gray-200'
+                              }`}
+                            />
+                          ))}
+                      </div>
+                    </div>
+                    <span className="text-sm text-muted-foreground">{review.date}</span>
+                  </div>
+                  <p className="mt-2 text-muted-foreground">{review.comment}</p>
+                </div>
+              ))}
+            </div>
+          </TabsContent>
+        </Tabs>
+      </div>
+
+      {/* 相关产品 */}
+      <div className="mt-16">
+        <h2 className="text-2xl font-bold mb-6">相关产品</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {relatedProducts && relatedProducts.length > 0 ? (
+            relatedProducts.map(product => <ProductCard key={product.id} product={product} />)
+          ) : (
+            <div className="col-span-full py-12 text-center">
+              <p className="text-muted-foreground">暂无相关产品</p>
+            </div>
+          )}
+        </div>
+      </div>
+    </>
+  );
+}
+
+export default function ProductPage({ params }: { params: { id: string } }) {
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar />
@@ -301,9 +425,7 @@ export default async function ProductPage({ params }: { params: { id: string } }
           </ol>
         </nav>
 
-        <Suspense fallback={<LoadingSkeleton />}>
-          <ProductDetail id={routeParams.id} />
-        </Suspense>
+        <ProductDetail id={params.id} />
       </main>
 
       <footer className="bg-gray-800 text-white py-8">

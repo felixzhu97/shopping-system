@@ -7,15 +7,25 @@ export const getCart = async (req: any, res: any) => {
   try {
     const { userId } = req.params;
 
-    let cart = await Cart.findOne({ userId }).populate({
-      path: 'items.productId',
-      select: 'name price image description',
-    });
+    // 检查用户ID是否为有效的ObjectId
+    const isValidObjectId = mongoose.isValidObjectId(userId);
+
+    // 根据userId查询购物车
+    let cart;
+    if (isValidObjectId) {
+      cart = await Cart.findOne({ userId }).populate({
+        path: 'items.productId',
+        select: 'name price image description',
+      });
+    } else {
+      // 如果userId不是有效的ObjectId，尝试根据字符串标识符查找
+      cart = null; // 非有效ObjectId时直接创建新购物车
+    }
 
     if (!cart) {
       // 如果用户没有购物车，创建一个空购物车
       cart = new Cart({
-        userId,
+        userId: isValidObjectId ? userId : new mongoose.Types.ObjectId(), // 如果不是有效的ObjectId就创建一个新的
         items: [],
       });
       await cart.save();
@@ -65,12 +75,21 @@ export const addToCart = async (req: any, res: any) => {
       return res.status(400).json({ message: '库存不足' });
     }
 
+    // 检查用户ID是否为有效的ObjectId
+    const isValidObjectId = mongoose.isValidObjectId(userId);
+
     // 查找或创建购物车
-    let cart = await Cart.findOne({ userId });
+    let cart;
+    if (isValidObjectId) {
+      cart = await Cart.findOne({ userId });
+    } else {
+      // 如果不是有效的ObjectId，尝试创建一个新的购物车
+      cart = null;
+    }
 
     if (!cart) {
       cart = new Cart({
-        userId: new mongoose.Types.ObjectId(),
+        userId: isValidObjectId ? userId : new mongoose.Types.ObjectId(),
         items: [],
       });
     }
@@ -84,7 +103,7 @@ export const addToCart = async (req: any, res: any) => {
     } else {
       // 添加新产品到购物车
       cart.items.push({
-        productId: new mongoose.Types.ObjectId(),
+        productId, // 直接使用productId，因为它已经是ObjectId或字符串格式
         quantity,
       });
     }
@@ -104,48 +123,55 @@ export const addToCart = async (req: any, res: any) => {
   }
 };
 
-// 更新购物车中的商品数量
+// 更新购物车商品数量
 export const updateCartItem = async (req: any, res: any) => {
   try {
     const { userId, productId } = req.params;
     const { quantity } = req.body;
 
-    if (quantity <= 0) {
-      return res.status(400).json({ message: '数量必须大于0' });
-    }
+    // 检查用户ID是否为有效的ObjectId
+    const isValidObjectId = mongoose.isValidObjectId(userId);
 
-    // 验证产品是否存在
-    const product = await Product.findById(productId);
-    if (!product) {
-      return res.status(404).json({ message: '产品不存在' });
+    // 查找购物车
+    let cart;
+    if (isValidObjectId) {
+      cart = await Cart.findOne({ userId });
+    } else {
+      // 使用其他方式查找购物车，例如根据字符串标识符
+      cart = null;
     }
-
-    // 检查库存
-    if (product.stock < quantity) {
-      return res.status(400).json({ message: '库存不足' });
-    }
-
-    // 更新购物车
-    const cart = await Cart.findOne({ userId });
 
     if (!cart) {
       return res.status(404).json({ message: '购物车不存在' });
     }
 
+    // 更新商品数量
     const itemIndex = cart.items.findIndex(item => item.productId.toString() === productId);
 
     if (itemIndex === -1) {
       return res.status(404).json({ message: '购物车中没有此商品' });
     }
 
-    cart.items[itemIndex].quantity = quantity;
+    if (quantity <= 0) {
+      // 如果数量小于等于0，从购物车中移除
+      cart.items.splice(itemIndex, 1);
+    } else {
+      // 更新数量
+      cart.items[itemIndex].quantity = quantity;
+    }
 
     await cart.save();
 
-    res.status(200).json(cart);
+    // 返回更新后的购物车
+    const updatedCart = await Cart.findById(cart._id).populate({
+      path: 'items.productId',
+      select: 'name price image description',
+    });
+
+    res.status(200).json(updatedCart);
   } catch (error) {
-    console.error('更新购物车商品失败:', error);
-    res.status(500).json({ message: '更新购物车商品失败' });
+    console.error('更新购物车商品数量失败:', error);
+    res.status(500).json({ message: '更新购物车商品数量失败' });
   }
 };
 
@@ -154,24 +180,41 @@ export const removeFromCart = async (req: any, res: any) => {
   try {
     const { userId, productId } = req.params;
 
-    // 更新购物车
-    const cart = await Cart.findOne({ userId });
+    // 检查用户ID是否为有效的ObjectId
+    const isValidObjectId = mongoose.isValidObjectId(userId);
+
+    // 查找购物车
+    let cart;
+    if (isValidObjectId) {
+      cart = await Cart.findOne({ userId });
+    } else {
+      // 使用其他方式查找购物车
+      cart = null;
+    }
 
     if (!cart) {
       return res.status(404).json({ message: '购物车不存在' });
     }
 
+    // 检查商品是否在购物车中
     const itemIndex = cart.items.findIndex(item => item.productId.toString() === productId);
 
     if (itemIndex === -1) {
       return res.status(404).json({ message: '购物车中没有此商品' });
     }
 
+    // 移除商品
     cart.items.splice(itemIndex, 1);
 
     await cart.save();
 
-    res.status(200).json(cart);
+    // 返回更新后的购物车
+    const updatedCart = await Cart.findById(cart._id).populate({
+      path: 'items.productId',
+      select: 'name price image description',
+    });
+
+    res.status(200).json(updatedCart);
   } catch (error) {
     console.error('从购物车移除商品失败:', error);
     res.status(500).json({ message: '从购物车移除商品失败' });
@@ -183,7 +226,17 @@ export const clearCart = async (req: any, res: any) => {
   try {
     const { userId } = req.params;
 
-    const cart = await Cart.findOne({ userId });
+    // 检查用户ID是否为有效的ObjectId
+    const isValidObjectId = mongoose.isValidObjectId(userId);
+
+    // 查找购物车
+    let cart;
+    if (isValidObjectId) {
+      cart = await Cart.findOne({ userId });
+    } else {
+      // 使用其他方式查找购物车
+      cart = null;
+    }
 
     if (!cart) {
       return res.status(404).json({ message: '购物车不存在' });
