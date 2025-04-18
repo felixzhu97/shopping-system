@@ -1,18 +1,43 @@
 // API基础URL
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
 
+// 类别名称映射表，将前端URL参数映射到后端数据库格式
+const categoryMapping: Record<string, string> = {
+  electronics: 'Electronics',
+  clothing: 'Clothing',
+  'home-kitchen': 'Home & Kitchen',
+  books: 'Books',
+};
+
 // 获取所有产品
 export async function getProducts(category?: string) {
-  const url = `${API_BASE_URL}/products${category ? `?category=${category}` : ''}`;
+  // 转换类别格式
+  let mappedCategory = category;
+  if (category && categoryMapping[category]) {
+    mappedCategory = categoryMapping[category];
+  }
+
+  // 特殊处理 Home & Kitchen 类别
+  const encodedCategory = mappedCategory ? encodeURIComponent(mappedCategory) : '';
+  const url = `${API_BASE_URL}/products${encodedCategory ? `?category=${encodedCategory}` : ''}`;
+
+  // 调试日志
+  console.log('Fetching products URL:', url);
+
   const response = await fetch(url, {
     cache: 'no-store', // 强制服务器端请求，忽略缓存
   });
 
   if (!response.ok) {
+    console.error('API响应错误:', response.status, response.statusText);
     throw new Error(`获取产品失败: ${response.status}`);
   }
 
-  return response.json();
+  const data = await response.json();
+  // 调试日志
+  console.log(`获取到 ${data.length || 0} 个产品`);
+
+  return data;
 }
 
 // 获取单个产品

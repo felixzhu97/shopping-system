@@ -5,7 +5,7 @@ import type React from 'react';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Search, ShoppingCart, Menu, User } from 'lucide-react';
-import { usePathname } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -19,7 +19,11 @@ export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [cartBadgeAnimate, setCartBadgeAnimate] = useState(false);
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const { cartItems, itemCount, subtotal } = useCart();
+
+  // 获取当前分类参数
+  const currentCategory = searchParams.get('category') || '';
 
   // 监听滚动位置改变导航栏样式
   useEffect(() => {
@@ -78,20 +82,42 @@ export function Navbar() {
               </Link>
               <Link
                 href="/products"
-                className={`text-lg font-medium ${pathname === '/products' ? 'text-primary' : ''}`}
+                className={`text-lg font-medium ${
+                  pathname === '/products' && !currentCategory ? 'text-primary' : ''
+                }`}
               >
                 全部商品
               </Link>
-              <Link href="/products?category=electronics" className="text-lg">
+              <Link
+                href="/products?category=electronics"
+                className={`text-lg font-medium ${
+                  currentCategory === 'electronics' ? 'text-primary' : ''
+                }`}
+              >
                 电子产品
               </Link>
-              <Link href="/products?category=clothing" className="text-lg">
+              <Link
+                href="/products?category=clothing"
+                className={`text-lg font-medium ${
+                  currentCategory === 'clothing' ? 'text-primary' : ''
+                }`}
+              >
                 服装
               </Link>
-              <Link href="/products?category=home-kitchen" className="text-lg">
+              <Link
+                href="/products?category=home-kitchen"
+                className={`text-lg font-medium ${
+                  currentCategory === 'home-kitchen' ? 'text-primary' : ''
+                }`}
+              >
                 家居厨房
               </Link>
-              <Link href="/products?category=books" className="text-lg">
+              <Link
+                href="/products?category=books"
+                className={`text-lg font-medium ${
+                  currentCategory === 'books' ? 'text-primary' : ''
+                }`}
+              >
                 图书
               </Link>
             </nav>
@@ -108,7 +134,9 @@ export function Navbar() {
           <Link
             href="/products"
             className={`text-sm font-medium transition-colors hover:text-primary ${
-              pathname === '/products' ? 'text-primary' : 'text-muted-foreground'
+              pathname === '/products' && !currentCategory
+                ? 'text-primary'
+                : 'text-muted-foreground'
             }`}
           >
             全部商品
@@ -116,7 +144,7 @@ export function Navbar() {
           <Link
             href="/products?category=electronics"
             className={`text-sm font-medium transition-colors hover:text-primary ${
-              pathname?.includes('electronics') ? 'text-primary' : 'text-muted-foreground'
+              currentCategory === 'electronics' ? 'text-primary' : 'text-muted-foreground'
             }`}
           >
             电子产品
@@ -124,7 +152,7 @@ export function Navbar() {
           <Link
             href="/products?category=clothing"
             className={`text-sm font-medium transition-colors hover:text-primary ${
-              pathname?.includes('clothing') ? 'text-primary' : 'text-muted-foreground'
+              currentCategory === 'clothing' ? 'text-primary' : 'text-muted-foreground'
             }`}
           >
             服装
@@ -132,7 +160,7 @@ export function Navbar() {
           <Link
             href="/products?category=home-kitchen"
             className={`text-sm font-medium transition-colors hover:text-primary ${
-              pathname?.includes('home-kitchen') ? 'text-primary' : 'text-muted-foreground'
+              currentCategory === 'home-kitchen' ? 'text-primary' : 'text-muted-foreground'
             }`}
           >
             家居厨房
@@ -140,7 +168,7 @@ export function Navbar() {
           <Link
             href="/products?category=books"
             className={`text-sm font-medium transition-colors hover:text-primary ${
-              pathname?.includes('books') ? 'text-primary' : 'text-muted-foreground'
+              currentCategory === 'books' ? 'text-primary' : 'text-muted-foreground'
             }`}
           >
             图书

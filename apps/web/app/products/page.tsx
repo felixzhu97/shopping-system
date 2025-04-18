@@ -21,6 +21,21 @@ import { Navbar } from '@/components/navbar';
 import { Product } from '@/lib/types';
 import * as api from '@/lib/api';
 
+// 分类名称映射表，将URL参数映射为友好的中文名称
+const getCategoryLabel = (categorySlug: string): string => {
+  const categoryMap: Record<string, string> = {
+    electronics: '电子产品',
+    clothing: '服装',
+    'home-kitchen': '家居厨房',
+    books: '图书',
+  };
+
+  return (
+    categoryMap[categorySlug] ||
+    categorySlug.charAt(0).toUpperCase() + categorySlug.slice(1).replace('-', ' & ')
+  );
+};
+
 // 虚拟列表的产品网格
 function VirtualizedProductGrid({ products }: { products: Product[] }) {
   const [visibleProducts, setVisibleProducts] = useState<Product[]>([]);
@@ -356,9 +371,12 @@ export default function ProductsPage() {
           <div className="flex-1">
             <div className="flex justify-between items-center mb-6">
               <h1 className="text-2xl font-bold">
-                {category
-                  ? category.charAt(0).toUpperCase() + category.slice(1).replace('-', ' & ')
-                  : '所有产品'}
+                {category ? getCategoryLabel(category) : '所有产品'}
+                {query && (
+                  <span className="ml-2 text-base font-normal text-muted-foreground">
+                    搜索: "{query}"
+                  </span>
+                )}
               </h1>
 
               <Select defaultValue={sort} onValueChange={handleSortChange}>

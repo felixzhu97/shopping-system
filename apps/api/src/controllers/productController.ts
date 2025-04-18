@@ -7,12 +7,39 @@ export const getAllProducts = async (req: Request, res: Response) => {
   try {
     const { category } = req.query;
 
+    console.log('查询参数:', req.query);
+    console.log('类别查询:', category);
+
     let query = {};
     if (category) {
-      query = { category };
+      // 处理类别格式差异
+      if (typeof category === 'string') {
+        // 将"home-kitchen"转换为"Home & Kitchen"的特殊处理
+        if (
+          category.toLowerCase() === 'home-kitchen' ||
+          category.toLowerCase() === 'home & kitchen'
+        ) {
+          query = {
+            $or: [
+              { category: 'Home & Kitchen' },
+              { category: 'Home-Kitchen' },
+              { category: category },
+            ],
+          };
+        } else {
+          // 使用正则表达式以提供大小写不敏感的匹配
+          query = { category: new RegExp(category, 'i') };
+        }
+      } else {
+        query = { category };
+      }
     }
 
+    console.log('数据库查询条件:', JSON.stringify(query));
+
     const products = await Product.find(query);
+    console.log(`找到 ${products.length} 个产品`);
+
     res.status(200).json(products);
   } catch (error) {
     console.error('获取产品列表失败:', error);
