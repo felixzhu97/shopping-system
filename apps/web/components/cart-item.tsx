@@ -1,13 +1,13 @@
 'use client';
 
 import { useState } from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
 import { Trash2, Minus, Plus } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { CartItem as CartItemType } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Image } from '@/components/ui/image';
 
 interface CartItemProps {
   item: CartItemType;
@@ -64,13 +64,12 @@ export function CartItem({ item, onUpdateQuantity, onRemove }: CartItemProps) {
           href={`/products/${item.id}`}
           className="relative h-24 w-24 overflow-hidden rounded-md border flex-shrink-0"
         >
-          {item.image ? (
-            <Image src={item.image} alt={item.name} fill className="object-cover" sizes="96px" />
-          ) : (
-            <div className="w-full h-full bg-gray-100 flex items-center justify-center text-gray-400 text-xs">
-              无图片
-            </div>
-          )}
+          <Image
+            src={item.image}
+            alt={item.name}
+            className="h-full w-full object-cover"
+            fallbackAlt={item.name}
+          />
         </Link>
 
         <div className="flex-1 space-y-1">

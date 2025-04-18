@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import type { Product } from '@/lib/types';
 import { useCart } from '@/lib/cart-context';
+import { Image } from '@/components/ui/image';
 
 interface ProductCardProps {
   product: Product;
@@ -58,10 +59,11 @@ export function ProductCard({ product }: ProductCardProps) {
       <CardContent className="p-0">
         <Link href={`/products/${product.id}`}>
           <div className="aspect-square overflow-hidden">
-            <img
-              src={product.image || `/placeholder.svg?height=300&width=300&text=${product.name}`}
+            <Image
+              src={product.image}
               alt={product.name}
               className="h-full w-full object-cover transition-transform hover:scale-105"
+              fallbackAlt={product.name}
             />
           </div>
           <div className="p-4">

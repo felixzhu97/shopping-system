@@ -14,6 +14,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/components/ui/use-toast';
 import { useCart } from '@/lib/cart-context';
 import * as api from '@/lib/api';
+import { Image } from '@/components/ui/image';
 
 function LoadingSkeleton() {
   return (
@@ -40,7 +41,6 @@ function ProductDetail({ id }: { id: string }) {
   const [error, setError] = useState<string | null>(null);
   const [quantity, setQuantity] = useState(1);
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
-  const [imageLoaded, setImageLoaded] = useState(false);
   const { addToCart } = useCart();
   const { toast } = useToast();
   const router = useRouter();
@@ -49,7 +49,6 @@ function ProductDetail({ id }: { id: string }) {
     const fetchProduct = async () => {
       try {
         setIsLoading(true);
-        setImageLoaded(false);
         const productData = await api.getProduct(id);
         setProduct(productData);
 
@@ -156,14 +155,16 @@ function ProductDetail({ id }: { id: string }) {
         {/* 产品图片 */}
         <div className="bg-white p-4 rounded-lg border">
           <div className="aspect-square overflow-hidden rounded-md relative">
-            {!imageLoaded && <Skeleton className="absolute inset-0 z-10" />}
-            <img
-              src={product.image || `/placeholder.svg?height=600&width=600&text=${product.name}`}
-              alt={product.name}
-              className="h-full w-full object-contain transition-opacity duration-300"
-              style={{ opacity: imageLoaded ? 1 : 0 }}
-              onLoad={() => setImageLoaded(true)}
-            />
+            {isLoading ? (
+              <Skeleton className="absolute inset-0 z-10" />
+            ) : (
+              <Image
+                src={product.image}
+                alt={product.name}
+                className="h-full w-full object-contain"
+                fallbackAlt={product.name}
+              />
+            )}
           </div>
         </div>
 
