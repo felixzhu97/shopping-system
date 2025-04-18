@@ -11,27 +11,33 @@ import { Product } from '@/lib/types';
 // 修改为从API获取数据的组件
 async function FeaturedProducts() {
   // 使用服务器组件获取数据
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api/products`,
-    {
+  try {
+    const apiUrl = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api'}/products`;
+    console.log('正在请求API:', apiUrl);
+
+    const response = await fetch(apiUrl, {
       next: { revalidate: 3600 }, // 每小时重新验证一次
+    });
+
+    if (!response.ok) {
+      console.error('API响应错误:', response.status, response.statusText);
+      throw new Error(`获取产品数据失败: ${response.status}`);
     }
-  );
 
-  if (!response.ok) {
-    throw new Error('获取产品数据失败');
+    const products = await response.json();
+    const featuredProducts = products.slice(0, 4); // 只获取前4个产品作为特色产品展示
+
+    return (
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        {featuredProducts.map((product: Product) => (
+          <ProductCard key={product.id} product={product} />
+        ))}
+      </div>
+    );
+  } catch (error) {
+    console.error('获取产品数据时出错:', error);
+    throw error;
   }
-
-  const products = await response.json();
-  const featuredProducts = products.slice(0, 4); // 只获取前4个产品作为特色产品展示
-
-  return (
-    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-      {featuredProducts.map((product: Product) => (
-        <ProductCard key={product.id} product={product} />
-      ))}
-    </div>
-  );
 }
 
 export default function Home() {

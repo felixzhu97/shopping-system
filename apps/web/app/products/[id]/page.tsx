@@ -12,22 +12,25 @@ import { Skeleton } from '@/components/ui/skeleton';
 // 从API获取单个产品数据
 async function ProductDetail({ id }: { id: string }) {
   try {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api/products/${id}`,
-      { next: { revalidate: 3600 } }
-    );
+    const apiUrl = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api'}/products/${id}`;
+    console.log('产品详情页面请求API:', apiUrl);
+
+    const response = await fetch(apiUrl, {
+      next: { revalidate: 3600 },
+    });
 
     if (!response.ok) {
+      console.error('API响应错误:', response.status, response.statusText);
       return null;
     }
 
     const product: Product = await response.json();
 
     // 获取相关产品（同一类别）
-    const relatedResponse = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api/products?category=${product.category}`,
-      { next: { revalidate: 3600 } }
-    );
+    const relatedApiUrl = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api'}/products?category=${product.category}`;
+    const relatedResponse = await fetch(relatedApiUrl, {
+      next: { revalidate: 3600 },
+    });
 
     let relatedProducts: Product[] = [];
     if (relatedResponse.ok) {
@@ -62,7 +65,7 @@ async function ProductDetail({ id }: { id: string }) {
                     <Star
                       key={i}
                       className={`h-5 w-5 ${
-                        i < Math.floor(product.rating)
+                        i < Math.floor(product.rating || 0)
                           ? 'fill-yellow-400 text-yellow-400'
                           : 'fill-gray-200 text-gray-200'
                       }`}
@@ -70,7 +73,7 @@ async function ProductDetail({ id }: { id: string }) {
                   ))}
               </div>
               <span className="ml-2 text-sm text-muted-foreground">
-                {product.rating.toFixed(1)} ({product.reviewCount} 评价)
+                {(product.rating || 0).toFixed(1)} ({product.reviewCount || 0} 评价)
               </span>
             </div>
 
@@ -231,9 +234,13 @@ async function ProductDetail({ id }: { id: string }) {
         <div className="mt-16">
           <h2 className="text-2xl font-bold mb-6">相关产品</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {relatedProducts.map(product => (
-              <ProductCard key={product.id} product={product} />
-            ))}
+            {relatedProducts && relatedProducts.length > 0 ? (
+              relatedProducts.map(product => <ProductCard key={product.id} product={product} />)
+            ) : (
+              <div className="col-span-full py-12 text-center">
+                <p className="text-muted-foreground">暂无相关产品</p>
+              </div>
+            )}
           </div>
         </div>
       </>
@@ -265,13 +272,16 @@ function LoadingSkeleton() {
   );
 }
 
-export default function ProductPage({ params }: { params: { id: string } }) {
+export default async function ProductPage({ params }: { params: { id: string } }) {
+  // 在Next.js 15.2.4中需要使用await处理动态路由参数
+  const routeParams = await params;
+
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar />
       <main className="flex-1 container mx-auto px-4 py-8">
         {/* 面包屑导航 */}
-        <nav className="flex mb-6 text-sm">
+        <nav className="text-sm mb-6">
           <ol className="flex items-center space-x-1">
             <li>
               <Link href="/" className="text-muted-foreground hover:text-foreground">
@@ -280,19 +290,19 @@ export default function ProductPage({ params }: { params: { id: string } }) {
             </li>
             <li className="flex items-center space-x-1">
               <ChevronRight className="h-4 w-4 text-muted-foreground" />
-              <Link href={`/products`} className="text-muted-foreground hover:text-foreground">
+              <Link href="/products" className="text-muted-foreground hover:text-foreground">
                 产品
               </Link>
             </li>
             <li className="flex items-center space-x-1">
               <ChevronRight className="h-4 w-4 text-muted-foreground" />
-              <span className="font-medium text-foreground">产品详情</span>
+              <span className="text-foreground">详情</span>
             </li>
           </ol>
         </nav>
 
         <Suspense fallback={<LoadingSkeleton />}>
-          <ProductDetail id={params.id} />
+          <ProductDetail id={routeParams.id} />
         </Suspense>
       </main>
 

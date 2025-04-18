@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document } from "mongoose";
+import mongoose, { Schema, Document } from 'mongoose';
 
 export interface ProductType {
   id?: string;
@@ -8,9 +8,12 @@ export interface ProductType {
   image: string;
   category: string;
   stock: number;
+  rating?: number;
+  reviewCount?: number;
+  originalPrice?: number;
 }
 
-export interface ProductDocument extends Document, Omit<ProductType, "id"> {
+export interface ProductDocument extends Document, Omit<ProductType, 'id'> {
   // MongoDB 会自动添加 _id，所以我们不需要 id 字段
 }
 
@@ -22,12 +25,15 @@ const ProductSchema: Schema = new Schema(
     image: { type: String, required: true },
     category: { type: String, required: true },
     stock: { type: Number, required: true, default: 0 },
+    rating: { type: Number, default: 0 },
+    reviewCount: { type: Number, default: 0 },
+    originalPrice: { type: Number },
   },
   { timestamps: true }
 );
 
 // 转换 _id 为 id
-ProductSchema.set("toJSON", {
+ProductSchema.set('toJSON', {
   virtuals: true,
   versionKey: false,
   transform: function (doc, ret) {
@@ -36,4 +42,4 @@ ProductSchema.set("toJSON", {
   },
 });
 
-export default mongoose.model<ProductDocument>("Product", ProductSchema);
+export default mongoose.model<ProductDocument>('Product', ProductSchema);

@@ -26,59 +26,71 @@ async function ProductsList({
   sort: string;
   query: string;
 }) {
-  // 从API获取产品
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api/products${category ? `?category=${category}` : ''}`,
-    { next: { revalidate: 3600 } }
-  );
+  try {
+    // 从API获取产品
+    const apiUrl = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api'}/products${category ? `?category=${category}` : ''}`;
+    console.log('产品页面请求API:', apiUrl);
 
-  if (!response.ok) {
-    throw new Error('获取产品数据失败');
+    const response = await fetch(apiUrl, {
+      next: { revalidate: 3600 },
+    });
+
+    if (!response.ok) {
+      console.error('API响应错误:', response.status, response.statusText);
+      throw new Error(`获取产品数据失败: ${response.status}`);
+    }
+
+    let products: Product[] = await response.json();
+
+    // 过滤查询
+    if (query) {
+      products = products.filter(product =>
+        product.name.toLowerCase().includes(query.toLowerCase())
+      );
+    }
+
+    // 排序产品
+    switch (sort) {
+      case 'price-asc':
+        products.sort((a, b) => a.price - b.price);
+        break;
+      case 'price-desc':
+        products.sort((a, b) => b.price - a.price);
+        break;
+      case 'rating':
+        products.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+        break;
+      // 默认是"featured"，无需排序
+    }
+
+    return (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {products.length > 0 ? (
+          products.map(product => <ProductCard key={product.id} product={product} />)
+        ) : (
+          <div className="col-span-full py-12 text-center">
+            <h3 className="text-lg font-medium mb-2">未找到产品</h3>
+            <p className="text-muted-foreground">请尝试调整您的搜索或筛选条件</p>
+          </div>
+        )}
+      </div>
+    );
+  } catch (error) {
+    console.error('获取产品数据时出错:', error);
+    throw error;
   }
-
-  let products: Product[] = await response.json();
-
-  // 过滤查询
-  if (query) {
-    products = products.filter(product => product.name.toLowerCase().includes(query.toLowerCase()));
-  }
-
-  // 排序产品
-  switch (sort) {
-    case 'price-asc':
-      products.sort((a, b) => a.price - b.price);
-      break;
-    case 'price-desc':
-      products.sort((a, b) => b.price - a.price);
-      break;
-    case 'rating':
-      products.sort((a, b) => b.rating - a.rating);
-      break;
-    // 默认是"featured"，无需排序
-  }
-
-  return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-      {products.length > 0 ? (
-        products.map(product => <ProductCard key={product.id} product={product} />)
-      ) : (
-        <div className="col-span-full py-12 text-center">
-          <h3 className="text-lg font-medium mb-2">未找到产品</h3>
-          <p className="text-muted-foreground">请尝试调整您的搜索或筛选条件</p>
-        </div>
-      )}
-    </div>
-  );
 }
 
-export default function ProductsPage({
+export default async function ProductsPage({
   searchParams,
 }: {
   searchParams: { category?: string; sort?: string; q?: string };
 }) {
-  const category = searchParams.category;
-  const sort = searchParams.sort || 'featured';
-  const query = searchParams.q || '';
+  // 在Next.js 15.2.4中需要使用await处理动态路由参数
+  const params = await searchParams;
+  const category = params.category;
+  const sort = params.sort || 'featured';
+  const query = params.q || '';
 
   return (
     <div className="flex flex-col min-h-screen">
