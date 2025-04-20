@@ -3,64 +3,38 @@ import Cart from '../models/Cart';
 import Product from '../models/Product';
 import mongoose from 'mongoose';
 import { CartItemType } from '../models/Order';
+import User from '../models/User';
 
 // 创建订单
 export const createOrder = async (req: any, res: any) => {
   try {
-    const { userId } = req.params;
+    const { userId, items, totalAmount, shippingAddress, paymentMethod } = req.body;
 
-    // 获取用户购物车
-    const cart = await Cart.findOne({ userId }).populate('items.productId');
-
-    if (!cart || cart.items.length === 0) {
-      return res.status(400).json({ message: '购物车为空，无法创建订单' });
-    }
-
-    // 计算总金额并检查库存
-    let totalAmount = 0;
-    const orderItems: CartItemType[] = [];
-
-    for (const item of cart.items) {
-      const product = item.productId as any;
-
-      // 检查库存
-      if (product.stock < item.quantity) {
-        return res.status(400).json({
-          message: `商品 ${product.name} 库存不足，剩余 ${product.stock} 件`,
-        });
-      }
-
-      totalAmount += product.price * item.quantity;
-
-      // 减少库存
-      await Product.findByIdAndUpdate(product._id, {
-        $inc: { stock: -item.quantity },
-      });
-
-      orderItems.push({
-        productId: product._id,
-        quantity: item.quantity,
-      });
+    // 确保用户存在
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404 as number).json({ message: '用户不存在' });
     }
 
     // 创建订单
-    const newOrder = new Order({
+    const order = new Order({
       userId,
-      items: orderItems,
+      items,
       totalAmount,
       status: 'pending',
+      shippingAddress,
+      paymentMethod,
     });
 
-    const savedOrder = await newOrder.save();
+    await order.save();
 
-    // 清空购物车
-    cart.items = [];
-    await cart.save();
+    // 清空购物车 (可选)
+    await Cart.findOneAndUpdate({ userId }, { $set: { items: [] } });
 
-    res.status(201).json(savedOrder);
+    res.status(201 as number).json(order);
   } catch (error) {
     console.error('创建订单失败:', error);
-    res.status(500).json({ message: '创建订单失败' });
+    res.status(500 as number).json({ message: '创建订单失败' });
   }
 };
 
@@ -69,15 +43,12 @@ export const getUserOrders = async (req: any, res: any) => {
   try {
     const { userId } = req.params;
 
-    const orders = await Order.find({ userId }).sort({ createdAt: -1 }).populate({
-      path: 'items.productId',
-      select: 'name price image',
-    });
+    const orders = await Order.find({ userId }).sort({ createdAt: -1 });
 
-    res.status(200).json(orders);
+    res.status(200 as number).json(orders);
   } catch (error) {
     console.error('获取用户订单失败:', error);
-    res.status(500).json({ message: '获取用户订单失败' });
+    res.status(500 as number).json({ message: '获取用户订单失败' });
   }
 };
 
@@ -86,19 +57,16 @@ export const getOrderById = async (req: any, res: any) => {
   try {
     const { id } = req.params;
 
-    const order = await Order.findById(id).populate({
-      path: 'items.productId',
-      select: 'name price image description',
-    });
+    const order = await Order.findById(id);
 
     if (!order) {
-      return res.status(404).json({ message: '订单不存在' });
+      return res.status(404 as number).json({ message: '订单不存在' });
     }
 
-    res.status(200).json(order);
+    res.status(200 as number).json(order);
   } catch (error) {
     console.error('获取订单详情失败:', error);
-    res.status(500).json({ message: '获取订单详情失败' });
+    res.status(500 as number).json({ message: '获取订单详情失败' });
   }
 };
 
@@ -108,17 +76,15 @@ export const updateOrderStatus = async (req: any, res: any) => {
     const { id } = req.params;
     const { status } = req.body;
 
-    // 验证状态值是否有效
+    // 验证状态值
     const validStatuses = ['pending', 'processing', 'shipped', 'delivered', 'cancelled'];
-
     if (!validStatuses.includes(status)) {
-      return res.status(400).json({ message: '无效的订单状态' });
+      return res.status(400 as number).json({ message: '无效的订单状态' });
     }
 
     const order = await Order.findById(id);
-
     if (!order) {
-      return res.status(404).json({ message: '订单不存在' });
+      return res.status(404 as number).json({ message: '订单不存在' });
     }
 
     // 如果订单被取消，恢复库存
@@ -133,9 +99,29 @@ export const updateOrderStatus = async (req: any, res: any) => {
     order.status = status;
     const updatedOrder = await order.save();
 
-    res.status(200).json(updatedOrder);
+    res.status(200 as number).json(updatedOrder);
   } catch (error) {
     console.error('更新订单状态失败:', error);
-    res.status(500).json({ message: '更新订单状态失败' });
+    res.status(500 as number).json({ message: '更新订单状态失败' });
+  }
+};
+
+export const getAllOrders = async (req: any, res: any) => {
+  try {
+    const { status } = req.params;
+
+    let query = {};
+    if (status && status !== 'all') {
+      query = { status };
+    }
+
+    const orders = await Order.find(query)
+      .sort({ createdAt: -1 })
+      .populate('userId', 'username email');
+
+    res.status(200 as number).json(orders);
+  } catch (error) {
+    console.error('获取所有订单失败:', error);
+    res.status(500 as number).json({ message: '获取所有订单失败' });
   }
 };

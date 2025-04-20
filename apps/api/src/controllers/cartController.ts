@@ -47,14 +47,14 @@ export const getCart = async (req: any, res: any) => {
       };
     });
 
-    res.status(200).json({
+    res.status(200 as number).json({
       id: cart._id,
       userId,
       items: cartItems,
     });
   } catch (error) {
     console.error('获取购物车失败:', error);
-    res.status(500).json({ message: '获取购物车失败' });
+    res.status(500 as number).json({ message: '获取购物车失败' });
   }
 };
 
@@ -67,12 +67,12 @@ export const addToCart = async (req: any, res: any) => {
     // 验证产品是否存在
     const product = await Product.findById(productId);
     if (!product) {
-      return res.status(404).json({ message: '产品不存在' });
+      return res.status(404 as number).json({ message: '产品不存在' });
     }
 
     // 检查库存
     if (product.stock < quantity) {
-      return res.status(400).json({ message: '库存不足' });
+      return res.status(400 as number).json({ message: '库存不足' });
     }
 
     // 检查用户ID是否为有效的ObjectId
@@ -116,10 +116,10 @@ export const addToCart = async (req: any, res: any) => {
       select: 'name price image description',
     });
 
-    res.status(200).json(updatedCart);
+    res.status(200 as number).json(updatedCart);
   } catch (error) {
     console.error('添加商品到购物车失败:', error);
-    res.status(500).json({ message: '添加商品到购物车失败' });
+    res.status(500 as number).json({ message: '添加商品到购物车失败' });
   }
 };
 
@@ -142,14 +142,14 @@ export const updateCartItem = async (req: any, res: any) => {
     }
 
     if (!cart) {
-      return res.status(404).json({ message: '购物车不存在' });
+      return res.status(404 as number).json({ message: '购物车不存在' });
     }
 
     // 更新商品数量
     const itemIndex = cart.items.findIndex(item => item.productId.toString() === productId);
 
     if (itemIndex === -1) {
-      return res.status(404).json({ message: '购物车中没有此商品' });
+      return res.status(404 as number).json({ message: '购物车中没有此商品' });
     }
 
     if (quantity <= 0) {
@@ -168,10 +168,10 @@ export const updateCartItem = async (req: any, res: any) => {
       select: 'name price image description',
     });
 
-    res.status(200).json(updatedCart);
+    res.status(200 as number).json(updatedCart);
   } catch (error) {
     console.error('更新购物车商品数量失败:', error);
-    res.status(500).json({ message: '更新购物车商品数量失败' });
+    res.status(500 as number).json({ message: '更新购物车商品数量失败' });
   }
 };
 
@@ -193,19 +193,18 @@ export const removeFromCart = async (req: any, res: any) => {
     }
 
     if (!cart) {
-      return res.status(404).json({ message: '购物车不存在' });
+      return res.status(404 as number).json({ message: '购物车不存在' });
     }
 
     // 检查商品是否在购物车中
     const itemIndex = cart.items.findIndex(item => item.productId.toString() === productId);
 
     if (itemIndex === -1) {
-      return res.status(404).json({ message: '购物车中没有此商品' });
+      return res.status(404 as number).json({ message: '购物车中没有此商品' });
     }
 
-    // 移除商品
+    // 从购物车中移除商品
     cart.items.splice(itemIndex, 1);
-
     await cart.save();
 
     // 返回更新后的购物车
@@ -214,10 +213,10 @@ export const removeFromCart = async (req: any, res: any) => {
       select: 'name price image description',
     });
 
-    res.status(200).json(updatedCart);
+    res.status(200 as number).json(updatedCart);
   } catch (error) {
     console.error('从购物车移除商品失败:', error);
-    res.status(500).json({ message: '从购物车移除商品失败' });
+    res.status(500 as number).json({ message: '从购物车移除商品失败' });
   }
 };
 
@@ -234,21 +233,20 @@ export const clearCart = async (req: any, res: any) => {
     if (isValidObjectId) {
       cart = await Cart.findOne({ userId });
     } else {
-      // 使用其他方式查找购物车
       cart = null;
     }
 
     if (!cart) {
-      return res.status(404).json({ message: '购物车不存在' });
+      return res.status(404 as number).json({ message: '购物车不存在' });
     }
 
+    // 清空购物车项目
     cart.items = [];
-
     await cart.save();
 
-    res.status(200).json({ message: '购物车已清空' });
+    res.status(200 as number).json({ message: '购物车已清空' });
   } catch (error) {
     console.error('清空购物车失败:', error);
-    res.status(500).json({ message: '清空购物车失败' });
+    res.status(500 as number).json({ message: '清空购物车失败' });
   }
 };
