@@ -1,7 +1,7 @@
 {
   "version": "1.0",
   "github": {
-    "token": "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",
+    "token": "${GITHUB_TOKEN}",
     "autofix": {
       "enabled": true,
       "actions": {

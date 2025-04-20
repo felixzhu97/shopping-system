@@ -16,6 +16,17 @@ const loadConfig = () => {
   try {
     const configPath = path.join(__dirname, 'config.json');
     const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+
+    // 处理环境变量
+    if (
+      config.github.token &&
+      config.github.token.startsWith('${') &&
+      config.github.token.endsWith('}')
+    ) {
+      const envVarName = config.github.token.slice(2, -1);
+      config.github.token = process.env[envVarName];
+    }
+
     return config;
   } catch (error) {
     console.error('加载配置文件失败:', error.message);
@@ -160,7 +171,7 @@ const main = async () => {
 
   const token = config.github.token;
   if (!token || token === 'YOUR_GITHUB_PAT_HERE') {
-    console.error('错误: GitHub PAT未设置');
+    console.error('错误: GitHub PAT未设置。请设置GITHUB_TOKEN环境变量或在配置中提供有效token');
     return;
   }
 
