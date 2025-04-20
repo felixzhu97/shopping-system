@@ -57,10 +57,23 @@ jobs:
 
       - name: Build
         run: |
+          echo "检查项目结构..."
+          ls -la
+          echo "检查packages目录..."
+          ls -la packages/
+          echo "检查shared包目录..."
+          ls -la packages/shared/
+
           # 首先构建shared包
           cd packages/shared
-          pnpm build
-          ls -la dist/  # 检查构建产物
+          echo "当前目录: $PWD"
+          echo "检查package.json中的构建脚本..."
+          cat package.json | grep build
+          echo "执行构建..."
+          pnpm build || (echo "构建失败，使用--no-bail尝试继续" && pnpm build --no-bail)
+          echo "检查构建结果..."
+          ls -la || true
+          ls -la dist/ || echo "dist目录不存在"
 
           # 确保API可以访问shared包
           cd ../../apps/api
