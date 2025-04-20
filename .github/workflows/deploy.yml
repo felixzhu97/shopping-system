@@ -7,6 +7,11 @@ on:
     branches: [main, master]
   workflow_dispatch: # 允许手动触发
 
+permissions:
+  contents: read
+  actions: write
+  checks: write
+
 jobs:
   # 测试作业
   test:
@@ -142,7 +147,7 @@ jobs:
             deploy-with-ts-fix.sh
 
       - name: 上传构建产物
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: build-artifacts
           path: build.tar.gz
@@ -156,7 +161,7 @@ jobs:
 
     steps:
       - name: 下载构建产物
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: build-artifacts
 
