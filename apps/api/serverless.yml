@@ -1,0 +1,13 @@
+component: express
+name: shopping-api
+app: shopping-system
+
+inputs:
+  src: ./
+  functionName: ${name}
+  region: ap-guangzhou
+  runtime: Nodejs14.18
+  exclude:
+    - .env
+  environment:
+    NODE_ENV: production

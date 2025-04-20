@@ -1,5 +1,5 @@
-import mongoose, { Schema, Document } from "mongoose";
-import { CartItem } from "shared/dist";
+import mongoose, { Schema, Document } from 'mongoose';
+import { CartItem } from 'shared';
 
 export interface CartDocument extends Document {
   userId: mongoose.Types.ObjectId;
@@ -9,7 +9,7 @@ export interface CartDocument extends Document {
 const CartItemSchema: Schema = new Schema({
   productId: {
     type: Schema.Types.ObjectId,
-    ref: "Product",
+    ref: 'Product',
     required: true,
   },
   quantity: {
@@ -23,7 +23,7 @@ const CartSchema: Schema = new Schema(
   {
     userId: {
       type: Schema.Types.ObjectId,
-      ref: "User",
+      ref: 'User',
       required: true,
       unique: true,
     },
@@ -33,7 +33,7 @@ const CartSchema: Schema = new Schema(
 );
 
 // 转换 _id 为 id
-CartSchema.set("toJSON", {
+CartSchema.set('toJSON', {
   virtuals: true,
   versionKey: false,
   transform: function (doc: any, ret: any) {
@@ -42,4 +42,4 @@ CartSchema.set("toJSON", {
   },
 });
 
-export default mongoose.model<CartDocument>("Cart", CartSchema);
+export default mongoose.model<CartDocument>('Cart', CartSchema);

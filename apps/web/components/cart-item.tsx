@@ -1,69 +1,127 @@
-"use client"
+'use client';
 
-import { Minus, Plus, Trash2 } from "lucide-react"
+import { useState } from 'react';
+import Link from 'next/link';
+import { Trash2, Minus, Plus } from 'lucide-react';
 
-import { Button } from "@/components/ui/button"
-import type { CartItem as CartItemType } from "@/lib/types"
+import { Button } from '@/components/ui/button';
+import { CartItem as CartItemType } from '@/lib/types';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Image } from '@/components/ui/image';
 
 interface CartItemProps {
-  item: CartItemType
-  onUpdateQuantity: (id: string, quantity: number) => void
-  onRemove: (id: string) => void
+  item: CartItemType;
+  onUpdateQuantity: (id: string, quantity: number) => Promise<void>;
+  onRemove: (id: string) => Promise<void>;
 }
 
 export function CartItem({ item, onUpdateQuantity, onRemove }: CartItemProps) {
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [isRemoving, setIsRemoving] = useState(false);
+  const [quantity, setQuantity] = useState(item.quantity);
+  const [error, setError] = useState<string | null>(null);
+
+  // 处理数量变化
+  const handleQuantityChange = async (delta: number) => {
+    const newQuantity = Math.max(1, quantity + delta);
+
+    if (newQuantity === quantity) return;
+
+    setIsUpdating(true);
+    setError(null);
+
+    try {
+      setQuantity(newQuantity);
+      await onUpdateQuantity(item.id, newQuantity);
+    } catch (err) {
+      setError('更新数量失败');
+      // 恢复原始数量
+      setQuantity(item.quantity);
+      console.error('更新购物车数量失败:', err);
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  // 处理移除商品
+  const handleRemove = async () => {
+    setIsRemoving(true);
+    setError(null);
+
+    try {
+      await onRemove(item.id);
+    } catch (err) {
+      setError('移除商品失败');
+      console.error('从购物车移除商品失败:', err);
+      setIsRemoving(false);
+    }
+  };
+
   return (
-    <div className="flex items-start gap-4 py-4 border-b">
-      <div className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border">
-        <img
-          src={item.image || `/placeholder.svg?height=200&width=200&text=${item.name}`}
-          alt={item.name}
-          className="h-full w-full object-cover"
-        />
-      </div>
+    <div className={`py-6 ${isRemoving ? 'opacity-50' : ''}`}>
+      <div className="flex items-start gap-4">
+        <Link
+          href={`/products/${item.id}`}
+          className="relative h-24 w-24 overflow-hidden rounded-md border flex-shrink-0"
+        >
+          <Image
+            src={item.image}
+            alt={item.name}
+            className="h-full w-full object-cover"
+            fallbackAlt={item.name}
+          />
+        </Link>
 
-      <div className="flex flex-1 flex-col">
-        <div className="flex justify-between">
-          <h3 className="text-sm font-medium">{item.name}</h3>
-          <p className="text-sm font-medium">${(item.price * item.quantity).toFixed(2)}</p>
-        </div>
-        <p className="mt-1 text-sm text-gray-500">${item.price.toFixed(2)} each</p>
+        <div className="flex-1 space-y-1">
+          <Link href={`/products/${item.id}`} className="font-medium hover:underline">
+            {item.name}
+          </Link>
+          <div className="text-base font-medium">¥{item.price.toFixed(2)}</div>
 
-        <div className="mt-2 flex items-center justify-between">
-          <div className="flex items-center border rounded">
+          <div className="flex flex-wrap items-center gap-2 pt-2">
+            <div className="inline-flex items-center border rounded-md">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 rounded-none"
+                onClick={() => handleQuantityChange(-1)}
+                disabled={isUpdating || quantity <= 1}
+              >
+                <Minus className="h-3 w-3" />
+                <span className="sr-only">减少数量</span>
+              </Button>
+              <span className="w-8 text-center text-sm">
+                {isUpdating ? <Skeleton className="h-4 w-4 mx-auto" /> : quantity}
+              </span>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 rounded-none"
+                onClick={() => handleQuantityChange(1)}
+                disabled={isUpdating}
+              >
+                <Plus className="h-3 w-3" />
+                <span className="sr-only">增加数量</span>
+              </Button>
+            </div>
+
             <Button
               variant="ghost"
-              size="icon"
-              className="h-8 w-8 rounded-none"
-              onClick={() => onUpdateQuantity(item.id, Math.max(1, item.quantity - 1))}
-              disabled={item.quantity <= 1}
+              size="sm"
+              className="h-8 px-2 text-muted-foreground"
+              onClick={handleRemove}
+              disabled={isRemoving}
             >
-              <Minus className="h-3 w-3" />
-              <span className="sr-only">Decrease quantity</span>
-            </Button>
-            <span className="w-8 text-center text-sm">{item.quantity}</span>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 rounded-none"
-              onClick={() => onUpdateQuantity(item.id, item.quantity + 1)}
-            >
-              <Plus className="h-3 w-3" />
-              <span className="sr-only">Increase quantity</span>
+              <Trash2 className="h-4 w-4 mr-1" />
+              {isRemoving ? '移除中...' : '移除'}
             </Button>
           </div>
 
-          <Button
-            variant="ghost"
-            size="sm"
-            className="text-red-500 hover:text-red-700 hover:bg-red-50 p-0 h-8"
-            onClick={() => onRemove(item.id)}
-          >
-            <Trash2 className="h-4 w-4 mr-1" />
-            <span className="text-xs">Remove</span>
-          </Button>
+          {error && <div className="text-sm text-red-500 mt-1">{error}</div>}
         </div>
+
+        <div className="font-medium">¥{(item.price * quantity).toFixed(2)}</div>
       </div>
     </div>
-  )
+  );
 }

@@ -1,10 +1,44 @@
-import Link from "next/link"
+import Link from 'next/link';
+import { Suspense } from 'react';
 
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardFooter } from "@/components/ui/card"
-import { ProductCard } from "@/components/product-card"
-import { Navbar } from "@/components/navbar"
-import { featuredProducts } from "@/lib/products"
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardFooter } from '@/components/ui/card';
+import { ProductCard } from '@/components/product-card';
+import { Navbar } from '@/components/navbar';
+import { featuredProducts } from '@/lib/products';
+import { Product } from '@/lib/types';
+
+// 修改为从API获取数据的组件
+async function FeaturedProducts() {
+  // 使用服务器组件获取数据
+  try {
+    const apiUrl = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api'}/products`;
+    console.log('正在请求API:', apiUrl);
+
+    const response = await fetch(apiUrl, {
+      next: { revalidate: 3600 }, // 每小时重新验证一次
+    });
+
+    if (!response.ok) {
+      console.error('API响应错误:', response.status, response.statusText);
+      throw new Error(`获取产品数据失败: ${response.status}`);
+    }
+
+    const products = await response.json();
+    const featuredProducts = products.slice(0, 4); // 只获取前4个产品作为特色产品展示
+
+    return (
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        {featuredProducts.map((product: Product) => (
+          <ProductCard key={product.id} product={product} />
+        ))}
+      </div>
+    );
+  } catch (error) {
+    console.error('获取产品数据时出错:', error);
+    throw error;
+  }
+}
 
 export default function Home() {
   return (
@@ -31,13 +65,28 @@ export default function Home() {
         </section>
 
         {/* Featured Products */}
-        <section className="py-12 bg-white">
-          <div className="container mx-auto px-4">
-            <h2 className="text-2xl font-bold mb-8">Featured Products</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-              {featuredProducts.map((product) => (
-                <ProductCard key={product.id} product={product} />
-              ))}
+        <section className="w-full py-12 md:py-24 lg:py-32 bg-gray-100 dark:bg-gray-800">
+          <div className="container px-4 md:px-6">
+            <div className="flex flex-col items-center justify-center space-y-4 text-center">
+              <div className="space-y-2">
+                <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">精选产品</h2>
+                <p className="max-w-[900px] text-gray-500 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed dark:text-gray-400">
+                  查看我们最受欢迎的商品，为您提供高品质、好价格的产品选择。
+                </p>
+              </div>
+            </div>
+            <div className="mx-auto grid max-w-5xl items-center gap-6 py-12 lg:grid-cols-1">
+              <Suspense fallback={<div className="text-center">加载中...</div>}>
+                <FeaturedProducts />
+              </Suspense>
+            </div>
+            <div className="flex justify-center">
+              <a
+                href="/products"
+                className="inline-flex h-10 items-center justify-center rounded-md bg-gray-900 px-8 text-sm font-medium text-gray-50 shadow transition-colors hover:bg-gray-900/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 disabled:pointer-events-none disabled:opacity-50 dark:bg-gray-50 dark:text-gray-900 dark:hover:bg-gray-50/90 dark:focus-visible:ring-gray-300"
+              >
+                浏览所有产品
+              </a>
             </div>
           </div>
         </section>
@@ -47,7 +96,7 @@ export default function Home() {
           <div className="container mx-auto px-4">
             <h2 className="text-2xl font-bold mb-8">Shop by Category</h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {["Electronics", "Clothing", "Home & Kitchen", "Books"].map((category) => (
+              {['Electronics', 'Clothing', 'Home & Kitchen', 'Books'].map(category => (
                 <Card key={category} className="overflow-hidden">
                   <CardContent className="p-0">
                     <img
@@ -58,7 +107,7 @@ export default function Home() {
                   </CardContent>
                   <CardFooter className="p-4">
                     <Link
-                      href={`/products?category=${category.toLowerCase().replace(" & ", "-")}`}
+                      href={`/products?category=${category.toLowerCase().replace(' & ', '-')}`}
                       className="text-sm font-medium hover:underline w-full text-center"
                     >
                       {category}
@@ -171,5 +220,5 @@ export default function Home() {
         </div>
       </footer>
     </div>
-  )
+  );
 }

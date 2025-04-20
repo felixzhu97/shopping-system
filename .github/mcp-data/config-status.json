@@ -1,0 +1,11 @@
+{
+  "initialized": true,
+  "timestamp": "2025-04-20T03:30:23Z",
+  "components": {
+    "mcp.yml": true,
+    "workflow": true,
+    "templates": true,
+    "providers": true,
+    "app-manifest": true
+  }
+}
