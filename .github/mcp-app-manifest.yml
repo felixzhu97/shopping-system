@@ -1,0 +1,28 @@
+name: 购物系统MCP助手
+description: 自动修复工作流问题并提供开发辅助的MCP助手
+url: https://github.com/apps/shopping-system-mcp-assistant
+callback_url: https://github.com/
+public: false
+
+# 仓库权限
+default_permissions:
+  contents: write
+  issues: write
+  pull_requests: write
+  workflows: write
+
+# 事件订阅
+default_events:
+  - issues
+  - issue_comment
+  - pull_request
+  - workflow_run
+
+# MCP集成配置
+mcp_integration:
+  enabled: true
+  context_path: '.github/mcp-data/context.json'
+  templates_path: '.github/mcp-templates'
+  providers:
+    - '.github/mcp-providers/context-provider.js'
+    - '.github/mcp-providers/workflow-fixer.js'
