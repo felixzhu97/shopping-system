@@ -22,17 +22,17 @@ jobs:
         with:
           fetch-depth: 2
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 18
-          cache: 'pnpm'
-
       - name: Setup PNPM
         uses: pnpm/action-setup@v2
         with:
           version: 8
           run_install: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'pnpm'
 
       - name: Get pnpm store directory
         shell: bash
@@ -54,4 +54,4 @@ jobs:
         run: pnpm build
 
       - name: Test
-        run: pnpm test 
+        run: pnpm test
