@@ -113,9 +113,10 @@ vercel login
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "nextjs",
-  "buildCommand": "cd ../.. && pnpm turbo build --filter=web...",
-  "outputDirectory": ".next",
-  "installCommand": "cd ../.. && pnpm install"
+  "buildCommand": "pnpm turbo run build --filter=web...",
+  "outputDirectory": "apps/web/.next",
+  "installCommand": "npm install -g pnpm@8.15.0 && pnpm install --no-frozen-lockfile",
+  "regions": ["hnd1"]
 }
 ```
 
@@ -202,22 +203,6 @@ vercel --prod
 5. 按照Vercel提供的说明配置DNS记录
 6. 等待DNS传播和SSL证书颁发
 
-## 数据库备份策略
-
-建议定期备份MongoDB数据：
-
-1. 使用MongoDB Atlas自动备份功能
-2. 配置备份保留策略
-3. 定期测试恢复流程
-
-自动备份配置步骤：
-
-1. 在Atlas控制台中，选择你的集群
-2. 进入"Backup"页面
-3. 点击"Edit Policy"
-4. 配置备份频率和保留时间
-5. 保存配置
-
 ## 监控和日志
 
 ### 系统监控
@@ -248,32 +233,3 @@ vercel logs your-project-name
 
 1. 检查MongoDB连接字符串是否正确
 2. 验证数据库用户凭据
-3. 确认网络访问控制设置允许来自应用服务器的连接
-
-### 应用性能问题
-
-1. 检查Vercel Analytics性能报告
-2. 监控MongoDB Atlas性能指标
-3. 考虑升级服务计划或优化应用代码
-
-## 部署检查清单
-
-部署前检查清单：
-
-- [ ] 所有测试通过
-- [ ] 环境变量配置正确
-- [ ] 数据库连接已验证
-- [ ] 静态资源已优化
-- [ ] API端点已测试
-- [ ] 安全配置已检查
-- [ ] 性能基准已建立
-
-部署后检查清单：
-
-- [ ] 验证应用是否正常运行
-- [ ] 检查关键功能是否工作
-- [ ] 确认数据库连接正常
-- [ ] 监测初始性能指标
-- [ ] 验证SSL证书是否正确
-- [ ] 检查日志中是否有错误
-- [ ] 执行基本负载测试

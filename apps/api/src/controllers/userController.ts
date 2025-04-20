@@ -51,8 +51,8 @@ export const login = async (req: any, res: any) => {
       return res.status(401 as number).json({ message: '用户名或密码错误' });
     }
 
-    // 验证密码
-    const isValidPassword = await user.comparePassword(password);
+    // 验证密码 - 修复TypeScript类型问题
+    const isValidPassword = await (user as any).comparePassword(password);
 
     if (!isValidPassword) {
       return res.status(401 as number).json({ message: '用户名或密码错误' });
