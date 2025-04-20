@@ -46,11 +46,30 @@ jobs:
       - name: 安装依赖
         run: pnpm install
 
-      - name: 运行测试
+      - name: 运行API测试
         run: |
           cd apps/api
           pnpm test
-          cd ../web
+
+      - name: 检查Web测试
+        id: check-web-tests
+        continue-on-error: true
+        run: |
+          cd apps/web
+          ls -la
+          # 检查是否存在测试文件
+          if find . -name "*.test.ts" -o -name "*.test.tsx" | grep -q .; then
+            echo "TESTS_EXIST=true" >> $GITHUB_ENV
+            echo "Web测试文件存在，将运行测试"
+          else
+            echo "TESTS_EXIST=false" >> $GITHUB_ENV
+            echo "Web测试文件不存在，跳过测试"
+          fi
+
+      - name: 运行Web测试
+        if: env.TESTS_EXIST == 'true'
+        run: |
+          cd apps/web
           pnpm test
 
   # 构建作业
