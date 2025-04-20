@@ -56,7 +56,33 @@ jobs:
         run: pnpm install
 
       - name: Build
-        run: pnpm build
+        run: |
+          # 首先构建shared包
+          cd packages/shared
+          pnpm build
+          ls -la dist/  # 检查构建产物
+
+          # 确保API可以访问shared包
+          cd ../../apps/api
+          # 检查package.json中的shared依赖
+          cat package.json | grep shared
+          # 确保node_modules中有shared的软链接
+          ls -la node_modules/shared || true
+          # 如果需要，创建到shared包的链接
+          mkdir -p node_modules
+          if [ ! -L "node_modules/shared" ]; then
+            echo "创建shared包链接"
+            ln -sf ../../../packages/shared node_modules/shared
+            ls -la node_modules/shared
+          fi
+
+          # 构建API
+          export NODE_PATH=$PWD/node_modules:$NODE_PATH
+          pnpm build
+
+          # 返回到根目录构建Web应用
+          cd ../web
+          pnpm build
 
       - name: 运行API测试
         run: |

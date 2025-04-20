@@ -119,10 +119,33 @@ jobs:
         run: |
           cd packages/shared
           pnpm build
+          ls -la dist/  # 检查构建产物
+
+      - name: 确保API可以访问shared包
+        run: |
+          echo "确保shared包链接正确"
+          cd apps/api
+          # 检查package.json中的shared依赖
+          cat package.json | grep shared
+          # 确保node_modules中有shared的软链接
+          ls -la node_modules/shared || true
+          # 如果需要，创建到shared包的链接
+          mkdir -p node_modules
+          if [ ! -L "node_modules/shared" ]; then
+            echo "创建shared包链接"
+            ln -sf ../../../packages/shared node_modules/shared
+            ls -la node_modules/shared
+          fi
 
       - name: 构建API
         run: |
           cd apps/api
+          # 设置NODE_PATH以确保可以找到shared包
+          export NODE_PATH=$PWD/node_modules:$NODE_PATH
+          # 添加调试信息
+          echo "NODE_PATH=$NODE_PATH"
+          echo "当前目录: $PWD"
+          ls -la ../packages/shared/dist || echo "shared/dist 不存在"
           pnpm build
 
       - name: 构建Web
