@@ -104,7 +104,7 @@ importers:
         specifier: 4.17.21
         version: 4.17.21
       '@types/node':
-        specifier: ^20.5.9
+        specifier: ^20.17.30
         version: 20.17.30
       '@types/supertest':
         specifier: ^6.0.2

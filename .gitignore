@@ -41,3 +41,4 @@ Thumbs.db
 .vercel
 
 packages/shared/tsconfig.tsbuildinfo
+deploy-to-vultr.sh

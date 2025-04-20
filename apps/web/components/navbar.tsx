@@ -5,7 +5,7 @@ import type React from 'react';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Search, ShoppingCart, Menu, User } from 'lucide-react';
-import { usePathname, useSearchParams } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -19,11 +19,24 @@ export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [cartBadgeAnimate, setCartBadgeAnimate] = useState(false);
   const pathname = usePathname();
-  const searchParams = useSearchParams();
   const { cartItems, itemCount, subtotal } = useCart();
 
-  // 获取当前分类参数
-  const currentCategory = searchParams.get('category') || '';
+  // 根据路径分析当前分类
+  const getCurrentCategory = (): string => {
+    if (!pathname) return '';
+    const url = new URL(pathname, 'http://example.com');
+    if (url.pathname.includes('/products')) {
+      // 简单方法：检查路径是否包含特定关键词
+      if (url.pathname.includes('/electronics')) return 'electronics';
+      if (url.pathname.includes('/clothing')) return 'clothing';
+      if (url.pathname.includes('/home-kitchen')) return 'home-kitchen';
+      if (url.pathname.includes('/books')) return 'books';
+    }
+    return '';
+  };
+
+  // 当前分类
+  const currentCategory = getCurrentCategory();
 
   // 监听滚动位置改变导航栏样式
   useEffect(() => {
@@ -249,7 +262,7 @@ export function Navbar() {
               onChange={e => setSearchQuery(e.target.value)}
             />
           </div>
-          <Button type="submit" className="rounded-l-none px-3">
+          <Button type="submit" className="rounded-l-none">
             搜索
           </Button>
         </form>
