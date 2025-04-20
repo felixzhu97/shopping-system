@@ -79,19 +79,46 @@ jobs:
           cd ../../apps/api
           # 检查package.json中的shared依赖
           cat package.json | grep shared
-          # 确保node_modules中有shared的软链接
-          ls -la node_modules/shared || true
-          # 如果需要，创建到shared包的链接
+
+          # 创建或更新tsconfig.json以正确引用shared包
+          echo "更新tsconfig.json以增加paths设置..."
+          echo '{' > tsconfig.json
+          echo '  "extends": "../../tsconfig.json",' >> tsconfig.json
+          echo '  "compilerOptions": {' >> tsconfig.json
+          echo '    "outDir": "dist",' >> tsconfig.json
+          echo '    "rootDir": "src",' >> tsconfig.json
+          echo '    "baseUrl": ".",' >> tsconfig.json
+          echo '    "paths": {' >> tsconfig.json
+          echo '      "shared": ["../../packages/shared/src"],' >> tsconfig.json
+          echo '      "shared/*": ["../../packages/shared/src/*"]' >> tsconfig.json
+          echo '    }' >> tsconfig.json
+          echo '  },' >> tsconfig.json
+          echo '  "include": ["src/**/*"],' >> tsconfig.json
+          echo '  "exclude": ["node_modules", "dist"]' >> tsconfig.json
+          echo '}' >> tsconfig.json
+
+          cat tsconfig.json
+
+          # 创建到shared包的强链接
+          echo "确保shared包链接..."
           mkdir -p node_modules
-          if [ ! -L "node_modules/shared" ]; then
-            echo "创建shared包链接"
-            ln -sf ../../../packages/shared node_modules/shared
-            ls -la node_modules/shared
-          fi
+          rm -rf node_modules/shared || true
+          ln -sf ../../packages/shared node_modules/shared
+          ls -la node_modules/shared
+
+          # 创建一个临时的路径映射文件
+          echo "创建路径映射文件..."
+          echo 'export const shared = require("../../packages/shared");' > src/shared-path.ts
+
+          # 安装tsconfig-paths以帮助解析模块
+          echo "安装tsconfig-paths..."
+          pnpm add -D tsconfig-paths
 
           # 构建API
-          export NODE_PATH=$PWD/node_modules:$NODE_PATH
-          pnpm build
+          export TS_NODE_PROJECT="tsconfig.json"
+          export NODE_PATH=$PWD/node_modules:$PWD/../../packages:$NODE_PATH
+          echo "执行构建..."
+          node -r tsconfig-paths/register ./node_modules/.bin/tsc || pnpm build
 
           # 返回到根目录构建Web应用
           cd ../web
