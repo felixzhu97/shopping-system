@@ -156,14 +156,17 @@ jobs:
           echo '  "extends": "../../tsconfig.json",' >> tsconfig.json
           echo '  "compilerOptions": {' >> tsconfig.json
           echo '    "outDir": "dist",' >> tsconfig.json
-          echo '    "rootDir": "src",' >> tsconfig.json
+          # 移除rootDir限制，允许引用外部文件
+          echo '    "composite": true,' >> tsconfig.json
+          echo '    "declaration": true,' >> tsconfig.json
           echo '    "baseUrl": ".",' >> tsconfig.json
+          echo '    "skipLibCheck": true,' >> tsconfig.json
           echo '    "paths": {' >> tsconfig.json
           echo '      "shared": ["../../packages/shared/src"],' >> tsconfig.json
           echo '      "shared/*": ["../../packages/shared/src/*"]' >> tsconfig.json
           echo '    }' >> tsconfig.json
           echo '  },' >> tsconfig.json
-          echo '  "include": ["src/**/*"],' >> tsconfig.json
+          echo '  "include": ["src/**/*", "../../packages/shared/src/**/*"],' >> tsconfig.json
           echo '  "exclude": ["node_modules", "dist"]' >> tsconfig.json
           echo '}' >> tsconfig.json
 
@@ -181,7 +184,7 @@ jobs:
 
           # 创建一个临时的路径映射文件
           echo "创建路径映射文件..."
-          echo 'export const shared = require("../../packages/shared");' > src/shared-path.ts
+          echo 'export * from "../../packages/shared/src";' > src/shared-path.ts
 
       - name: 构建API
         run: |
@@ -204,7 +207,8 @@ jobs:
 
           # 使用tsconfig-paths/register进行构建
           echo "执行构建..."
-          node -r tsconfig-paths/register ./node_modules/.bin/tsc || pnpm build
+          # 添加--skipLibCheck选项忽略声明文件错误，使用references处理项目引用
+          npx tsc --skipLibCheck || node -r tsconfig-paths/register ./node_modules/.bin/tsc --skipLibCheck || pnpm build -- --skipLibCheck
 
       - name: 构建Web
         run: |

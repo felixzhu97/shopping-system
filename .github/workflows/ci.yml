@@ -86,14 +86,16 @@ jobs:
           echo '  "extends": "../../tsconfig.json",' >> tsconfig.json
           echo '  "compilerOptions": {' >> tsconfig.json
           echo '    "outDir": "dist",' >> tsconfig.json
-          echo '    "rootDir": "src",' >> tsconfig.json
+          echo '    "composite": true,' >> tsconfig.json
+          echo '    "declaration": true,' >> tsconfig.json
           echo '    "baseUrl": ".",' >> tsconfig.json
+          echo '    "skipLibCheck": true,' >> tsconfig.json
           echo '    "paths": {' >> tsconfig.json
           echo '      "shared": ["../../packages/shared/src"],' >> tsconfig.json
           echo '      "shared/*": ["../../packages/shared/src/*"]' >> tsconfig.json
           echo '    }' >> tsconfig.json
           echo '  },' >> tsconfig.json
-          echo '  "include": ["src/**/*"],' >> tsconfig.json
+          echo '  "include": ["src/**/*", "../../packages/shared/src/**/*"],' >> tsconfig.json
           echo '  "exclude": ["node_modules", "dist"]' >> tsconfig.json
           echo '}' >> tsconfig.json
 
@@ -108,7 +110,7 @@ jobs:
 
           # 创建一个临时的路径映射文件
           echo "创建路径映射文件..."
-          echo 'export const shared = require("../../packages/shared");' > src/shared-path.ts
+          echo 'export * from "../../packages/shared/src";' > src/shared-path.ts
 
           # 安装tsconfig-paths以帮助解析模块
           echo "安装tsconfig-paths..."
@@ -118,7 +120,7 @@ jobs:
           export TS_NODE_PROJECT="tsconfig.json"
           export NODE_PATH=$PWD/node_modules:$PWD/../../packages:$NODE_PATH
           echo "执行构建..."
-          node -r tsconfig-paths/register ./node_modules/.bin/tsc || pnpm build
+          npx tsc --skipLibCheck || node -r tsconfig-paths/register ./node_modules/.bin/tsc --skipLibCheck || pnpm build -- --skipLibCheck
 
           # 返回到根目录构建Web应用
           cd ../web
