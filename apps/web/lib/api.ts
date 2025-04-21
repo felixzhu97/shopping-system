@@ -1,5 +1,5 @@
 // API基础URL
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || '/api/proxy';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http:localhost:3000/api';
 
 // 判断是否在构建环境中
 const IS_BUILD_TIME =
