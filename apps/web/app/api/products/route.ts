@@ -81,7 +81,7 @@ const mockProducts = [
     reviewCount: 112,
     inStock: true,
     stock: 80,
-    image: '/placeholder.svg?height=300&width=300&text=Speaker',
+    image: '/electronics.jpg',
   },
   {
     id: '7',
@@ -93,7 +93,7 @@ const mockProducts = [
     reviewCount: 64,
     inStock: true,
     stock: 60,
-    image: '/placeholder.svg?height=300&width=300&text=Jeans',
+    image: '/clothing.jpg',
   },
 ];
 

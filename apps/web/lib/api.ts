@@ -113,6 +113,18 @@ export async function getProducts(category?: string) {
 
 // 获取单个产品
 export async function getProduct(id: string) {
+  // 检查ID是否为模拟ID格式(以mock-开头)
+  if (id.startsWith('mock-')) {
+    console.log('检测到模拟ID，直接返回模拟数据');
+    const mockId = id;
+    const mockProduct = MOCK_PRODUCTS.find(p => p.id === mockId);
+    if (mockProduct) {
+      return mockProduct;
+    }
+    // 如果找不到指定ID的产品，返回第一个作为替代
+    return MOCK_PRODUCTS[0];
+  }
+
   const url = `${PRODUCTS_API_URL}/${id}`;
   console.log('获取产品详情URL:', url);
 
@@ -129,7 +141,11 @@ export async function getProduct(id: string) {
   } catch (error) {
     console.error('获取产品详情时出错:', error);
     // 如果API请求失败，返回模拟数据作为后备
-    const mockProduct = MOCK_PRODUCTS.find(p => p.id === id);
+    // 尝试查找编号相同的模拟产品
+    const numericId = id.replace(/\D/g, '');
+    const mockProduct = MOCK_PRODUCTS.find(
+      p => p.id === `mock-${numericId}` || p.id.endsWith(numericId)
+    );
     if (mockProduct) {
       return mockProduct;
     }

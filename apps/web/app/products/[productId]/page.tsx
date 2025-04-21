@@ -1,8 +1,8 @@
 import React from 'react';
 import { notFound } from 'next/navigation';
-import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { ShoppingCart } from 'lucide-react';
+import { Image } from '@/components/ui/image';
 
 // 定义产品类型
 interface Product {
@@ -54,7 +54,12 @@ export default async function ProductPage({ params }: { params: { productId: str
       <div className="grid md:grid-cols-2 gap-8">
         {/* 产品图片 */}
         <div className="relative aspect-square rounded-lg overflow-hidden bg-gray-100">
-          <Image src={product.image} alt={product.name} fill className="object-cover" priority />
+          <Image
+            src={product.image}
+            alt={product.name}
+            className="w-full h-full object-cover"
+            fallbackAlt={product.category}
+          />
         </div>
 
         {/* 产品信息 */}
