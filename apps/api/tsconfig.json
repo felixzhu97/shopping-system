@@ -2,7 +2,7 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "outDir": "./dist",
-    "rootDir": "../../",
+    "rootDir": "./src",
     "baseUrl": ".",
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
@@ -13,11 +13,11 @@
     "typeRoots": ["./node_modules/@types", "../../node_modules/@types", "./src/types"],
     "paths": {
       "*": ["node_modules/*", "src/types/*"],
-      "shared": ["../../packages/shared/src"],
-      "shared/*": ["../../packages/shared/src/*"]
+      "shared": ["../../packages/shared/dist"],
+      "shared/*": ["../../packages/shared/dist/*"]
     }
   },
-  "include": ["src/**/*", "../../packages/shared/src/**/*"],
+  "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"],
   "references": [
     {

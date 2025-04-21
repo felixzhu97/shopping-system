@@ -36,10 +36,13 @@ jobs:
         run: cd apps/api && pnpm add -D @types/swagger-jsdoc @types/swagger-ui-express
 
       - name: 构建shared包
-        run: pnpm --filter shared build
+        run: cd packages/shared && pnpm build
+
+      - name: 检查shared包输出
+        run: ls -la packages/shared/dist
 
       - name: 构建api包
-        run: pnpm --filter api build
+        run: cd apps/api && pnpm build
 
       - name: 部署到AWS Lambda
         run: cd apps/api && pnpm dlx serverless@3 deploy
