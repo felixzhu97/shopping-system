@@ -1,0 +1,21 @@
+service: shopping-api
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: ap-east-1 # 香港区域
+  memorySize: 512 # Lambda函数内存大小
+  timeout: 30 # 函数超时时间(秒)
+  environment:
+    NODE_ENV: production
+    MONGODB_URI: ${env:MONGODB_URI}
+    # 其他环境变量
+
+functions:
+  api:
+    handler: dist/lambda.handler # Lambda处理函数
+    events:
+      - http:
+          path: /{proxy+} # 捕获所有路径
+          method: ANY # 处理所有HTTP方法
+    cors: true

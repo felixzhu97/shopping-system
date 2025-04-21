@@ -1,0 +1,21 @@
+version: 1.0
+runtime: nodejs18
+build:
+  commands:
+    build:
+      - cd apps/api
+      - npm install
+      - npm run build
+run:
+  runtime-version: 18.17.0
+  command: cd apps/api && npm start
+  network:
+    port: 3001
+    env: PORT
+  env:
+    - name: NODE_ENV
+      value: production
+    - name: MONGODB_URI
+      value: '替换为您的MongoDB连接字符串'
+    - name: PORT
+      value: 3001
