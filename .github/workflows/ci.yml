@@ -1,152 +1,152 @@
-# name: CI
+name: CI
 
-# on:
-#   push:
-#     branches: ['main']
-#   pull_request:
-#     branches: ['main']
+on:
+  push:
+    branches: ['noemit']
+  pull_request:
+    branches: ['noemit']
 
-# permissions:
-#   contents: read
-#   actions: write
-#   checks: write
+permissions:
+  contents: read
+  actions: write
+  checks: write
 
-# env:
-#   TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
-#   TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+env:
+  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+  TURBO_TEAM: ${{ vars.TURBO_TEAM }}
 
-# jobs:
-#   build:
-#     name: Build and Test
-#     timeout-minutes: 15
-#     runs-on: ubuntu-latest
+jobs:
+  build:
+    name: Build and Test
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
 
-#     steps:
-#       - name: Check out code
-#         uses: actions/checkout@v4
-#         with:
-#           fetch-depth: 2
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
 
-#       - name: Setup PNPM
-#         uses: pnpm/action-setup@v2
-#         with:
-#           version: 8
-#           run_install: false
+      - name: Setup PNPM
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+          run_install: false
 
-#       - name: Setup Node.js
-#         uses: actions/setup-node@v4
-#         with:
-#           node-version: 18
-#           cache: 'pnpm'
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'pnpm'
 
-#       - name: Get pnpm store directory
-#         shell: bash
-#         run: |
-#           echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
 
-#       - name: Setup pnpm cache
-#         uses: actions/cache@v3
-#         with:
-#           path: ${{ env.STORE_PATH }}
-#           key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-#           restore-keys: |
-#             ${{ runner.os }}-pnpm-store-
+      - name: Setup pnpm cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
 
-#       - name: Install dependencies
-#         run: pnpm install
+      - name: Install dependencies
+        run: pnpm install
 
-#       - name: Build
-#         run: |
-#           echo "检查项目结构..."
-#           ls -la
-#           echo "检查packages目录..."
-#           ls -la packages/
-#           echo "检查shared包目录..."
-#           ls -la packages/shared/
+      - name: Build
+        run: |
+          echo "检查项目结构..."
+          ls -la
+          echo "检查packages目录..."
+          ls -la packages/
+          echo "检查shared包目录..."
+          ls -la packages/shared/
 
-#           # 首先构建shared包
-#           cd packages/shared
-#           echo "当前目录: $PWD"
-#           echo "检查package.json中的构建脚本..."
-#           cat package.json | grep build
-#           echo "执行构建..."
-#           pnpm build || (echo "构建失败，使用--no-bail尝试继续" && pnpm build --no-bail)
-#           echo "检查构建结果..."
-#           ls -la || true
-#           ls -la dist/ || echo "dist目录不存在"
+          # 首先构建shared包
+          cd packages/shared
+          echo "当前目录: $PWD"
+          echo "检查package.json中的构建脚本..."
+          cat package.json | grep build
+          echo "执行构建..."
+          pnpm build || (echo "构建失败，使用--no-bail尝试继续" && pnpm build --no-bail)
+          echo "检查构建结果..."
+          ls -la || true
+          ls -la dist/ || echo "dist目录不存在"
 
-#           # 确保API可以访问shared包
-#           cd ../../apps/api
-#           # 检查package.json中的shared依赖
-#           cat package.json | grep shared
+          # 确保API可以访问shared包
+          cd ../../apps/api
+          # 检查package.json中的shared依赖
+          cat package.json | grep shared
 
-#           # 创建或更新tsconfig.json以正确引用shared包
-#           echo "更新tsconfig.json以增加paths设置..."
-#           echo '{' > tsconfig.json
-#           echo '  "extends": "../../tsconfig.json",' >> tsconfig.json
-#           echo '  "compilerOptions": {' >> tsconfig.json
-#           echo '    "outDir": "dist",' >> tsconfig.json
-#           echo '    "composite": true,' >> tsconfig.json
-#           echo '    "declaration": true,' >> tsconfig.json
-#           echo '    "baseUrl": ".",' >> tsconfig.json
-#           echo '    "skipLibCheck": true,' >> tsconfig.json
-#           echo '    "paths": {' >> tsconfig.json
-#           echo '      "shared": ["../../packages/shared/src"],' >> tsconfig.json
-#           echo '      "shared/*": ["../../packages/shared/src/*"]' >> tsconfig.json
-#           echo '    }' >> tsconfig.json
-#           echo '  },' >> tsconfig.json
-#           echo '  "include": ["src/**/*", "../../packages/shared/src/**/*"],' >> tsconfig.json
-#           echo '  "exclude": ["node_modules", "dist"]' >> tsconfig.json
-#           echo '}' >> tsconfig.json
+          # 创建或更新tsconfig.json以正确引用shared包
+          echo "更新tsconfig.json以增加paths设置..."
+          echo '{' > tsconfig.json
+          echo '  "extends": "../../tsconfig.json",' >> tsconfig.json
+          echo '  "compilerOptions": {' >> tsconfig.json
+          echo '    "outDir": "dist",' >> tsconfig.json
+          echo '    "composite": true,' >> tsconfig.json
+          echo '    "declaration": true,' >> tsconfig.json
+          echo '    "baseUrl": ".",' >> tsconfig.json
+          echo '    "skipLibCheck": true,' >> tsconfig.json
+          echo '    "paths": {' >> tsconfig.json
+          echo '      "shared": ["../../packages/shared/src"],' >> tsconfig.json
+          echo '      "shared/*": ["../../packages/shared/src/*"]' >> tsconfig.json
+          echo '    }' >> tsconfig.json
+          echo '  },' >> tsconfig.json
+          echo '  "include": ["src/**/*", "../../packages/shared/src/**/*"],' >> tsconfig.json
+          echo '  "exclude": ["node_modules", "dist"]' >> tsconfig.json
+          echo '}' >> tsconfig.json
 
-#           cat tsconfig.json
+          cat tsconfig.json
 
-#           # 创建到shared包的强链接
-#           echo "确保shared包链接..."
-#           mkdir -p node_modules
-#           rm -rf node_modules/shared || true
-#           ln -sf ../../packages/shared node_modules/shared
-#           ls -la node_modules/shared
+          # 创建到shared包的强链接
+          echo "确保shared包链接..."
+          mkdir -p node_modules
+          rm -rf node_modules/shared || true
+          ln -sf ../../packages/shared node_modules/shared
+          ls -la node_modules/shared
 
-#           # 创建一个临时的路径映射文件
-#           echo "创建路径映射文件..."
-#           echo 'export * from "../../packages/shared/src";' > src/shared-path.ts
+          # 创建一个临时的路径映射文件
+          echo "创建路径映射文件..."
+          echo 'export * from "../../packages/shared/src";' > src/shared-path.ts
 
-#           # 安装tsconfig-paths以帮助解析模块
-#           echo "安装tsconfig-paths..."
-#           pnpm add -D tsconfig-paths
+          # 安装tsconfig-paths以帮助解析模块
+          echo "安装tsconfig-paths..."
+          pnpm add -D tsconfig-paths
 
-#           # 构建API
-#           export TS_NODE_PROJECT="tsconfig.json"
-#           export NODE_PATH=$PWD/node_modules:$PWD/../../packages:$NODE_PATH
-#           echo "执行构建..."
-#           npx tsc --skipLibCheck || node -r tsconfig-paths/register ./node_modules/.bin/tsc --skipLibCheck || pnpm build -- --skipLibCheck
+          # 构建API
+          export TS_NODE_PROJECT="tsconfig.json"
+          export NODE_PATH=$PWD/node_modules:$PWD/../../packages:$NODE_PATH
+          echo "执行构建..."
+          npx tsc --skipLibCheck || node -r tsconfig-paths/register ./node_modules/.bin/tsc --skipLibCheck || pnpm build -- --skipLibCheck
 
-#           # 返回到根目录构建Web应用
-#           cd ../web
-#           pnpm build
+          # 返回到根目录构建Web应用
+          cd ../web
+          pnpm build
 
-#       - name: 运行API测试
-#         run: |
-#           cd apps/api
-#           pnpm test
+      - name: 运行API测试
+        run: |
+          cd apps/api
+          pnpm test
 
-#       # 临时注释掉Web测试相关步骤，因为Web应用可能没有适当配置测试环境
-#       # - name: 创建空的Web测试文件
-#       #   run: |
-#       #     mkdir -p apps/web/src/tests
-#       #     echo 'import { describe, it, expect } from "vitest";
-#       #
-#       #     describe("基础测试", () => {
-#       #       it("应该通过", () => {
-#       #         expect(true).toBe(true);
-#       #       });
-#       #     });' > apps/web/src/tests/basic.test.ts
-#       #
-#       #     echo "创建了一个基础的Web测试文件"
-#       #     ls -la apps/web/src/tests/
+      # 临时注释掉Web测试相关步骤，因为Web应用可能没有适当配置测试环境
+      # - name: 创建空的Web测试文件
+      #   run: |
+      #     mkdir -p apps/web/src/tests
+      #     echo 'import { describe, it, expect } from "vitest";
+      #
+      #     describe("基础测试", () => {
+      #       it("应该通过", () => {
+      #         expect(true).toBe(true);
+      #       });
+      #     });' > apps/web/src/tests/basic.test.ts
+      #
+      #     echo "创建了一个基础的Web测试文件"
+      #     ls -la apps/web/src/tests/
 
-#       # - name: 运行Web测试
-#       #   run: |
-#       #     cd apps/web
-#       #     pnpm test
+      # - name: 运行Web测试
+      #   run: |
+      #     cd apps/web
+      #     pnpm test

@@ -1,45 +1,45 @@
-# name: Release
+name: Release
 
-# on:
-#   push:
-#     branches:
-#       - main
+on:
+  push:
+    branches:
+      - noemit
 
-# concurrency: ${{ github.workflow }}-${{ github.ref }}
+concurrency: ${{ github.workflow }}-${{ github.ref }}
 
-# jobs:
-#   release:
-#     name: Release
-#     runs-on: ubuntu-latest
-#     steps:
-#       - name: Checkout Repo
-#         uses: actions/checkout@v3
-#         with:
-#           # This makes Actions fetch all Git history so that Changesets can generate changelogs with the correct commits
-#           fetch-depth: 0
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+        with:
+          # This makes Actions fetch all Git history so that Changesets can generate changelogs with the correct commits
+          fetch-depth: 0
 
-#       - name: Setup Node.js
-#         uses: actions/setup-node@v3
-#         with:
-#           node-version: 18.x
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
 
-#       - name: Setup PNPM
-#         uses: pnpm/action-setup@v2
-#         with:
-#           version: 8.15.0
+      - name: Setup PNPM
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8.15.0
 
-#       - name: Install Dependencies
-#         run: pnpm install --frozen-lockfile
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
 
-#       - name: Create Release Pull Request or Publish to npm
-#         id: changesets
-#         uses: changesets/action@v1
-#         with:
-#           # This expects you to have a script called release which does a build for your packages and calls changeset publish
-#           publish: pnpm run publish
-#           version: pnpm run version
-#           commit: 'chore: 版本发布'
-#           title: 'chore: 版本发布'
-#         env:
-#           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Create Release Pull Request or Publish to npm
+        id: changesets
+        uses: changesets/action@v1
+        with:
+          # This expects you to have a script called release which does a build for your packages and calls changeset publish
+          publish: pnpm run publish
+          version: pnpm run version
+          commit: 'chore: 版本发布'
+          title: 'chore: 版本发布'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
