@@ -11,12 +11,6 @@ const categoryMapping: Record<string, string> = {
 
 // 获取所有产品
 export async function getProducts(category?: string) {
-  // 在静态构建时返回空数组，避免尝试访问本地API
-  if (typeof window === 'undefined' && process.env.NODE_ENV === 'production') {
-    console.log('静态构建中，跳过API请求');
-    return [];
-  }
-
   // 转换类别格式
   let mappedCategory = category;
   if (category && categoryMapping[category]) {
@@ -28,27 +22,22 @@ export async function getProducts(category?: string) {
   const url = `${API_BASE_URL}/products${encodedCategory ? `?category=${encodedCategory}` : ''}`;
 
   // 调试日志
-  console.log('正在请求API:', url);
+  console.log('Fetching products URL:', url);
 
-  try {
-    const response = await fetch(url, {
-      cache: 'no-store', // 强制服务器端请求，忽略缓存
-    });
+  const response = await fetch(url, {
+    cache: 'no-store', // 强制服务器端请求，忽略缓存
+  });
 
-    if (!response.ok) {
-      console.error('API响应错误:', response.status, response.statusText);
-      throw new Error(`获取产品失败: ${response.status}`);
-    }
-
-    const data = await response.json();
-    // 调试日志
-    console.log(`获取到 ${data.length || 0} 个产品`);
-
-    return data;
-  } catch (error) {
-    console.error('API请求失败:', error);
-    return [];
+  if (!response.ok) {
+    console.error('API响应错误:', response.status, response.statusText);
+    throw new Error(`获取产品失败: ${response.status}`);
   }
+
+  const data = await response.json();
+  // 调试日志
+  console.log(`获取到 ${data.length || 0} 个产品`);
+
+  return data;
 }
 
 // 获取单个产品
