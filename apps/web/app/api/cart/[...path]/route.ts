@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const API_BASE = 'https://guczejbq56.execute-api.ap-east-1.amazonaws.com/dev/api';
+const API_BASE = 'https://guczejbq56.execute-api.ap-east-1.amazonaws.com/dev/api/cart';
 
 export async function GET(request: NextRequest, { params }: { params: { path: string[] } }) {
-  // 确保路径正确处理，尤其是购物车路径
   const path = params.path ? params.path.join('/') : '';
   const { searchParams } = new URL(request.url);
 
@@ -12,30 +11,27 @@ export async function GET(request: NextRequest, { params }: { params: { path: st
     .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
     .join('&');
 
+  // 构建完整URL
   const apiUrl = `${API_BASE}/${path}${queryString ? `?${queryString}` : ''}`;
-
-  console.log('代理转发请求到:', apiUrl);
+  console.log('购物车代理转发GET请求到:', apiUrl);
 
   try {
-    // 移除内容类型头，让浏览器自动处理
     const response = await fetch(apiUrl, {
+      method: 'GET',
       headers: {
         Accept: 'application/json',
       },
-      // 增加请求超时
-      signal: AbortSignal.timeout(10000), // 10秒超时
     });
 
     if (!response.ok) {
-      throw new Error(`API 请求失败: ${response.status}`);
+      throw new Error(`购物车API请求失败: ${response.status}`);
     }
 
-    // 可能不是所有响应都是JSON格式的
+    // 尝试获取JSON响应
     try {
       const data = await response.json();
       return NextResponse.json(data);
     } catch (e) {
-      // 如果不是JSON，则返回文本响应
       const text = await response.text();
       return new NextResponse(text, {
         status: response.status,
@@ -45,8 +41,8 @@ export async function GET(request: NextRequest, { params }: { params: { path: st
       });
     }
   } catch (error: any) {
-    console.error('代理请求失败:', error);
-    return NextResponse.json({ error: '请求失败', details: error.message }, { status: 500 });
+    console.error('购物车代理请求失败:', error);
+    return NextResponse.json({ error: '购物车请求失败', details: error.message }, { status: 500 });
   }
 }
 
@@ -54,40 +50,23 @@ export async function POST(request: NextRequest, { params }: { params: { path: s
   const path = params.path ? params.path.join('/') : '';
 
   try {
-    let body: any;
-    let contentType = request.headers.get('Content-Type') || 'application/json';
-
-    // 根据内容类型处理请求体
-    if (contentType.includes('application/json')) {
-      body = await request.json();
-    } else if (contentType.includes('text/plain')) {
-      body = await request.text();
-    } else if (contentType.includes('application/x-www-form-urlencoded')) {
-      const formData = await request.formData();
-      body = {};
-      for (const [key, value] of formData.entries()) {
-        body[key] = value;
-      }
-    } else {
-      body = await request.text();
-    }
-
+    const body = await request.json();
     const apiUrl = `${API_BASE}/${path}`;
-    console.log('代理POST请求到:', apiUrl);
+    console.log('购物车代理转发POST请求到:', apiUrl, 'body:', body);
 
     const response = await fetch(apiUrl, {
       method: 'POST',
       headers: {
-        'Content-Type': contentType,
+        'Content-Type': 'application/json',
       },
-      body: typeof body === 'string' ? body : JSON.stringify(body),
-      signal: AbortSignal.timeout(10000), // 10秒超时
+      body: JSON.stringify(body),
     });
 
     if (!response.ok) {
-      throw new Error(`API 请求失败: ${response.status}`);
+      throw new Error(`购物车API请求失败: ${response.status}`);
     }
 
+    // 尝试获取JSON响应
     try {
       const data = await response.json();
       return NextResponse.json(data);
@@ -101,8 +80,8 @@ export async function POST(request: NextRequest, { params }: { params: { path: s
       });
     }
   } catch (error: any) {
-    console.error('代理POST请求失败:', error);
-    return NextResponse.json({ error: '请求失败', details: error.message }, { status: 500 });
+    console.error('购物车代理POST请求失败:', error);
+    return NextResponse.json({ error: '购物车请求失败', details: error.message }, { status: 500 });
   }
 }
 
@@ -110,32 +89,23 @@ export async function PUT(request: NextRequest, { params }: { params: { path: st
   const path = params.path ? params.path.join('/') : '';
 
   try {
-    let body: any;
-    let contentType = request.headers.get('Content-Type') || 'application/json';
-
-    // 根据内容类型处理请求体
-    if (contentType.includes('application/json')) {
-      body = await request.json();
-    } else {
-      body = await request.text();
-    }
-
+    const body = await request.json();
     const apiUrl = `${API_BASE}/${path}`;
-    console.log('代理PUT请求到:', apiUrl);
+    console.log('购物车代理转发PUT请求到:', apiUrl, 'body:', body);
 
     const response = await fetch(apiUrl, {
       method: 'PUT',
       headers: {
-        'Content-Type': contentType,
+        'Content-Type': 'application/json',
       },
-      body: typeof body === 'string' ? body : JSON.stringify(body),
-      signal: AbortSignal.timeout(10000), // 10秒超时
+      body: JSON.stringify(body),
     });
 
     if (!response.ok) {
-      throw new Error(`API 请求失败: ${response.status}`);
+      throw new Error(`购物车API请求失败: ${response.status}`);
     }
 
+    // 尝试获取JSON响应
     try {
       const data = await response.json();
       return NextResponse.json(data);
@@ -149,30 +119,30 @@ export async function PUT(request: NextRequest, { params }: { params: { path: st
       });
     }
   } catch (error: any) {
-    console.error('代理PUT请求失败:', error);
-    return NextResponse.json({ error: '请求失败', details: error.message }, { status: 500 });
+    console.error('购物车代理PUT请求失败:', error);
+    return NextResponse.json({ error: '购物车请求失败', details: error.message }, { status: 500 });
   }
 }
 
 export async function DELETE(request: NextRequest, { params }: { params: { path: string[] } }) {
   const path = params.path ? params.path.join('/') : '';
 
-  try {
-    const apiUrl = `${API_BASE}/${path}`;
-    console.log('代理DELETE请求到:', apiUrl);
+  const apiUrl = `${API_BASE}/${path}`;
+  console.log('购物车代理转发DELETE请求到:', apiUrl);
 
+  try {
     const response = await fetch(apiUrl, {
       method: 'DELETE',
       headers: {
         Accept: 'application/json',
       },
-      signal: AbortSignal.timeout(10000), // 10秒超时
     });
 
     if (!response.ok) {
-      throw new Error(`API 请求失败: ${response.status}`);
+      throw new Error(`购物车API请求失败: ${response.status}`);
     }
 
+    // 尝试获取JSON响应
     try {
       const data = await response.json();
       return NextResponse.json(data);
@@ -186,7 +156,7 @@ export async function DELETE(request: NextRequest, { params }: { params: { path:
       });
     }
   } catch (error: any) {
-    console.error('代理DELETE请求失败:', error);
-    return NextResponse.json({ error: '请求失败', details: error.message }, { status: 500 });
+    console.error('购物车代理DELETE请求失败:', error);
+    return NextResponse.json({ error: '购物车请求失败', details: error.message }, { status: 500 });
   }
 }

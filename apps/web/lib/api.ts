@@ -1,6 +1,9 @@
 // API基础URL
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || '/api/proxy';
 
+// 购物车API基础URL（使用单独的代理路由）
+const CART_API_URL = '/api/cart';
+
 // 判断是否在构建环境中
 const IS_BUILD_TIME =
   process.env.NODE_ENV === 'production' && process.env.VERCEL_ENV === 'production';
@@ -159,76 +162,112 @@ export async function getProduct(id: string) {
 
 // 获取购物车
 export async function getCart(userId: string) {
-  const url = `${API_BASE_URL}/cart/${userId}`;
-  const response = await fetch(url);
+  const url = `${CART_API_URL}/${userId}`;
+  console.log('获取购物车URL:', url);
 
-  if (!response.ok) {
-    throw new Error(`获取购物车失败: ${response.status}`);
+  try {
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      throw new Error(`获取购物车失败: ${response.status}`);
+    }
+
+    return response.json();
+  } catch (error) {
+    console.error('获取购物车失败:', error);
+    // 对于购物车，返回空数据作为后备
+    return { items: [] };
   }
-
-  return response.json();
 }
 
 // 添加商品到购物车
 export async function addToCart(userId: string, productId: string, quantity: number) {
-  const url = `${API_BASE_URL}/cart/${userId}`;
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ productId, quantity }),
-  });
+  const url = `${CART_API_URL}/${userId}`;
+  console.log('添加到购物车URL:', url);
 
-  if (!response.ok) {
-    throw new Error(`添加商品到购物车失败: ${response.status}`);
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ productId, quantity }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`添加商品到购物车失败: ${response.status}`);
+    }
+
+    return response.json();
+  } catch (error) {
+    console.error('添加商品到购物车失败:', error);
+    return { success: false, error: '添加失败，请稍后再试' };
   }
-
-  return response.json();
 }
 
 // 更新购物车商品数量
 export async function updateCartItem(userId: string, productId: string, quantity: number) {
-  const url = `${API_BASE_URL}/cart/${userId}/item/${productId}`;
-  const response = await fetch(url, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ quantity }),
-  });
+  const url = `${CART_API_URL}/${userId}/item/${productId}`;
+  console.log('更新购物车URL:', url);
 
-  if (!response.ok) {
-    throw new Error(`更新购物车商品数量失败: ${response.status}`);
+  try {
+    const response = await fetch(url, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ quantity }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`更新购物车商品数量失败: ${response.status}`);
+    }
+
+    return response.json();
+  } catch (error) {
+    console.error('更新购物车商品数量失败:', error);
+    return { success: false, error: '更新失败，请稍后再试' };
   }
-
-  return response.json();
 }
 
 // 从购物车中移除商品
 export async function removeFromCart(userId: string, productId: string) {
-  const url = `${API_BASE_URL}/cart/${userId}/item/${productId}`;
-  const response = await fetch(url, {
-    method: 'DELETE',
-  });
+  const url = `${CART_API_URL}/${userId}/item/${productId}`;
+  console.log('从购物车移除URL:', url);
 
-  if (!response.ok) {
-    throw new Error(`从购物车移除商品失败: ${response.status}`);
+  try {
+    const response = await fetch(url, {
+      method: 'DELETE',
+    });
+
+    if (!response.ok) {
+      throw new Error(`从购物车移除商品失败: ${response.status}`);
+    }
+
+    return response.json();
+  } catch (error) {
+    console.error('从购物车移除商品失败:', error);
+    return { success: false, error: '移除失败，请稍后再试' };
   }
-
-  return response.json();
 }
 
 // 清空购物车
 export async function clearCart(userId: string) {
-  const url = `${API_BASE_URL}/cart/${userId}`;
-  const response = await fetch(url, {
-    method: 'DELETE',
-  });
+  const url = `${CART_API_URL}/${userId}`;
+  console.log('清空购物车URL:', url);
 
-  if (!response.ok) {
-    throw new Error(`清空购物车失败: ${response.status}`);
+  try {
+    const response = await fetch(url, {
+      method: 'DELETE',
+    });
+
+    if (!response.ok) {
+      throw new Error(`清空购物车失败: ${response.status}`);
+    }
+
+    return response.json();
+  } catch (error) {
+    console.error('清空购物车失败:', error);
+    return { success: false, error: '清空失败，请稍后再试' };
   }
-
-  return response.json();
 }
