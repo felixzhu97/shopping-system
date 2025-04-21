@@ -14,6 +14,23 @@
         "NODE_ENV": "production",
         "MONGODB_URI": "mongodb+srv://root:POJSP81pDrjvmlN8@cluster0.d4udnkj.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
       },
+      "iam": {
+        "role": {
+          "statements": [
+            {
+              "Effect": "Allow",
+              "Action": [
+                "cloudformation:*",
+                "s3:*",
+                "lambda:*",
+                "apigateway:*",
+                "logs:*"
+              ],
+              "Resource": "*"
+            }
+          ]
+        }
+      },
       "stage": "dev",
       "versionFunctions": true,
       "compiledCloudFormationTemplate": {
@@ -152,6 +169,9 @@
                             "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/shopping-api-dev*:*:*"
                           }
                         ]
+                      },
+                      {
+                        "$ref": "$[\"service\"][\"provider\"][\"iam\"][\"role\"][\"statements\"][0]"
                       }
                     ]
                   }
@@ -180,7 +200,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/shopping-api/dev/1745202421219-2025-04-21T02:27:01.219Z/shopping-api.zip"
+                "S3Key": "serverless/shopping-api/dev/1745210429448-2025-04-21T04:40:29.448Z/shopping-api.zip"
               },
               "Handler": "dist/lambda.handler",
               "Runtime": "nodejs18.x",
@@ -204,14 +224,14 @@
               "ApiLogGroup"
             ]
           },
-          "ApiLambdaVersiongQsxQtYNhWReSwPhH28wkD6W4zzNMtih1B1k3X3jk": {
+          "ApiLambdaVersionf1hUxIC0WNNM2Yucqu441oJ6G89mekyUxAHFNbhh7o": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "ApiLambdaFunction"
               },
-              "CodeSha256": "hWxc43GeqlQYwHKgofiSB9dZaUMeerADEggWbOIYqw4="
+              "CodeSha256": "LcgscPIZN316RGZMOzaj8XQrIv9W83L7Unlv7bqsYZY="
             }
           },
           "ApiGatewayRestApi": {
@@ -236,6 +256,51 @@
                 ]
               },
               "PathPart": "{proxy+}",
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              }
+            }
+          },
+          "ApiGatewayMethodProxyVarOptions": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+              "AuthorizationType": "NONE",
+              "HttpMethod": "OPTIONS",
+              "MethodResponses": [
+                {
+                  "StatusCode": "200",
+                  "ResponseParameters": {
+                    "method.response.header.Access-Control-Allow-Origin": true,
+                    "method.response.header.Access-Control-Allow-Headers": true,
+                    "method.response.header.Access-Control-Allow-Methods": true
+                  },
+                  "ResponseModels": {}
+                }
+              ],
+              "RequestParameters": {},
+              "Integration": {
+                "Type": "MOCK",
+                "RequestTemplates": {
+                  "application/json": "{statusCode:200}"
+                },
+                "ContentHandling": "CONVERT_TO_TEXT",
+                "IntegrationResponses": [
+                  {
+                    "StatusCode": "200",
+                    "ResponseParameters": {
+                      "method.response.header.Access-Control-Allow-Origin": "'*'",
+                      "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent,X-Amzn-Trace-Id'",
+                      "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,DELETE,GET,HEAD,PATCH,POST,PUT'"
+                    },
+                    "ResponseTemplates": {
+                      "application/json": ""
+                    }
+                  }
+                ]
+              },
+              "ResourceId": {
+                "Ref": "ApiGatewayResourceProxyVar"
+              },
               "RestApiId": {
                 "Ref": "ApiGatewayRestApi"
               }
@@ -287,7 +352,7 @@
               "ApiLambdaPermissionApiGateway"
             ]
           },
-          "ApiGatewayDeployment1745202391487": {
+          "ApiGatewayDeployment1745210422938": {
             "Type": "AWS::ApiGateway::Deployment",
             "Properties": {
               "RestApiId": {
@@ -296,6 +361,7 @@
               "StageName": "dev"
             },
             "DependsOn": [
+              "ApiGatewayMethodProxyVarOptions",
               "ApiGatewayMethodProxyVarAny"
             ]
           },
@@ -349,7 +415,7 @@
           "ApiLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "ApiLambdaVersiongQsxQtYNhWReSwPhH28wkD6W4zzNMtih1B1k3X3jk"
+              "Ref": "ApiLambdaVersionf1hUxIC0WNNM2Yucqu441oJ6G89mekyUxAHFNbhh7o"
             },
             "Export": {
               "Name": "sls-shopping-api-dev-ApiLambdaFunctionQualifiedArn"
@@ -476,18 +542,34 @@
             "http": {
               "path": "{proxy+}",
               "method": "any",
+              "cors": {
+                "origin": "*",
+                "methods": [
+                  "OPTIONS",
+                  "ANY"
+                ],
+                "headers": [
+                  "Content-Type",
+                  "X-Amz-Date",
+                  "Authorization",
+                  "X-Api-Key",
+                  "X-Amz-Security-Token",
+                  "X-Amz-User-Agent",
+                  "X-Amzn-Trace-Id"
+                ],
+                "allowCredentials": false
+              },
               "integration": "AWS_PROXY"
             }
           }
         ],
-        "cors": true,
         "name": "shopping-api-dev-api",
         "package": {},
         "memory": 512,
         "timeout": 30,
         "runtime": "nodejs18.x",
         "vpc": {},
-        "versionLogicalId": "ApiLambdaVersiongQsxQtYNhWReSwPhH28wkD6W4zzNMtih1B1k3X3jk"
+        "versionLogicalId": "ApiLambdaVersionf1hUxIC0WNNM2Yucqu441oJ6G89mekyUxAHFNbhh7o"
       }
     },
     "configValidationMode": "warn",
@@ -506,7 +588,7 @@
     "artifact": "/Users/zhuzhiqiang/Workspace/shopping-system/apps/api/.serverless/shopping-api.zip"
   },
   "package": {
-    "artifactDirectoryName": "serverless/shopping-api/dev/1745202421219-2025-04-21T02:27:01.219Z",
+    "artifactDirectoryName": "serverless/shopping-api/dev/1745210429448-2025-04-21T04:40:29.448Z",
     "artifact": "shopping-api.zip"
   }
 }

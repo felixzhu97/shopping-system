@@ -40,6 +40,6 @@ Thumbs.db
 .turbo
 .vercel
 
-packages/shared/tsconfig.tsbuildinfo
-deploy-to-vultr.sh
-.deploy-to-vultr.back
+**/tsconfig.tsbuildinfo
+**/AWSCLIV2.pkg
+**/.serverless
