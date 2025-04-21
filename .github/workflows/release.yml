@@ -6,6 +6,7 @@ on:
       - release
     paths:
       - 'packages/**'
+      - 'apps/api/**' # 添加API路径监听
   workflow_dispatch:
     inputs:
       release_type:
@@ -83,3 +84,53 @@ jobs:
           body_path: CHANGELOG.md
           draft: false
           prerelease: false
+
+  deploy-lambda:
+    name: 部署Lambda函数
+    needs: release
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/release' # 仅在release分支执行
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 设置Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18.x
+
+      - name: 设置PNPM
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: 安装依赖
+        run: pnpm install
+
+      - name: 构建API
+        run: pnpm --filter api build
+
+      - name: 配置AWS凭证
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-east-1 # 使用您的AWS区域
+
+      - name: 创建部署包
+        run: |
+          cd apps/api/dist
+          zip -r ../deployment.zip .
+          cd ..
+          # 如果需要包含node_modules
+          zip -r deployment.zip node_modules
+
+      - name: 部署到Lambda
+        run: |
+          aws lambda update-function-code \
+            --function-name shopping-api \
+            --zip-file fileb://apps/api/deployment.zip \
+            --publish
+
+      - name: 清理部署工件
+        run: rm -f apps/api/deployment.zip
