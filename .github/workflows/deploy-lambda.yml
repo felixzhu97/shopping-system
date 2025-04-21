@@ -2,7 +2,7 @@ name: 部署到AWS Lambda
 
 on:
   push:
-    branches: [release, main]
+    branches: [release]
     paths:
       - 'apps/api/**'
       - 'packages/shared/**'
@@ -66,7 +66,8 @@ jobs:
 
   deploy:
     needs: build
-    if: github.ref == 'refs/heads/release' || github.event_name == 'workflow_dispatch'
+    # 修改：只在release分支或手动触发时部署
+    # if: github.ref == 'refs/heads/release' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
       - name: 检出代码
@@ -138,3 +139,8 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           MONGODB_URI: ${{ secrets.MONGODB_URI }}
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
+
+      - name: 部署完成通知
+        run: |
+          echo "Lambda函数已成功部署到AWS!"
+          echo "部署时间: $(date)"
