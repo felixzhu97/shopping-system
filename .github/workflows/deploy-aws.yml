@@ -2,7 +2,7 @@ name: 部署到AWS
 
 on:
   push:
-    branches: [main]
+    # branches: [main]
   workflow_dispatch:
 
 jobs:
@@ -42,7 +42,7 @@ jobs:
           eb use shopping-api-prod || eb create shopping-api-prod --instance-type t3.micro --single
           eb setenv MONGODB_URI=${{ secrets.MONGODB_URI }} PORT=8081 NODE_ENV=production
           eb deploy shopping-api-prod
-        
+
       # 选项2：部署到App Runner（如果您选择App Runner而不是Elastic Beanstalk，取消下面的注释）
       # - name: 部署到App Runner
       #   run: |
@@ -65,4 +65,4 @@ jobs:
           else
             echo "部署失败"
             # 在这里添加失败通知代码
-          fi 
+          fi

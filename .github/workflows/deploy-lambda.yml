@@ -5,15 +5,13 @@ on:
     branches: [main]
     paths:
       - 'apps/api/**'
+      - 'packages/shared/**'
       - '.github/workflows/deploy-lambda.yml'
   workflow_dispatch:
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: apps/api
     steps:
       - name: 检出代码
         uses: actions/checkout@v4
@@ -29,16 +27,19 @@ jobs:
         with:
           node-version: '18'
           cache: 'pnpm'
-          cache-dependency-path: 'apps/api/package.json'
+          cache-dependency-path: '**/package.json'
 
       - name: 安装依赖
         run: pnpm install
+
+      - name: 安装类型声明依赖
+        run: cd apps/api && pnpm add -D @types/swagger-jsdoc @types/swagger-ui-express
 
       - name: 构建应用
         run: pnpm exec turbo run build
 
       - name: 部署到AWS Lambda
-        run: pnpm dlx serverless@3 deploy
+        run: cd apps/api && pnpm dlx serverless@3 deploy
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
