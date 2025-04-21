@@ -42,3 +42,4 @@ Thumbs.db
 
 packages/shared/tsconfig.tsbuildinfo
 deploy-to-vultr.sh
+.deploy-to-vultr.back
