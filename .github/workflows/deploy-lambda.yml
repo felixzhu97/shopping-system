@@ -76,9 +76,25 @@ jobs:
       - name: 检查API包输出
         run: ls -la apps/api/dist
 
+      - name: 创建环境变量文件
+        run: |
+          cd apps/api
+          echo "NODE_ENV=production" > .env.deploy
+          echo "MONGODB_URI=${{ secrets.MONGODB_URI }}" >> .env.deploy
+          echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env.deploy
+          echo "已创建部署环境变量文件："
+          cat .env.deploy
+
+      - name: 添加环境变量到serverless.yml
+        run: |
+          cd apps/api
+          echo "正在确保serverless.yml中包含所有需要的环境变量"
+          grep -q "JWT_SECRET:" serverless.yml || sed -i '/environment:/a\    JWT_SECRET: ${env:JWT_SECRET}' serverless.yml
+
       - name: 部署到AWS Lambda
-        run: cd apps/api && pnpm dlx serverless@3 deploy
+        run: cd apps/api && pnpm dlx serverless@3 deploy --dotenv .env.deploy
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           MONGODB_URI: ${{ secrets.MONGODB_URI }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
