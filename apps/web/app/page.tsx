@@ -13,7 +13,7 @@ async function FeaturedProducts() {
   try {
     // 使用api模块中的getProducts函数
     const products = await api.getProducts();
-    const featuredProducts = products.slice(0, 4); // 只获取前4个产品作为特色产品展示
+    const featuredProducts = products.slice(0, 5); // 只获取前4个产品作为特色产品展示
 
     return (
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
@@ -41,9 +41,12 @@ export default function Home() {
       <main className="flex-1">
         {/* Hero Section */}
         <section className="relative">
-          <div className="bg-gradient-to-r from-yellow-400 to-yellow-200 h-[400px] w-full">
+          <div
+            className="h-[400px] w-full bg-cover bg-center"
+            style={{ backgroundImage: 'url(/hero-banner.jpg)' }}
+          >
             <div className="container mx-auto px-4 py-24">
-              <div className="max-w-xl">
+              <div className="max-w-xl bg-white/80 p-6 rounded-lg">
                 <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl mb-6">
                   Shop the best deals
                 </h1>
@@ -90,21 +93,26 @@ export default function Home() {
           <div className="container mx-auto px-4">
             <h2 className="text-2xl font-bold mb-8">Shop by Category</h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {['Electronics', 'Clothing', 'Home & Kitchen', 'Books'].map(category => (
-                <Card key={category} className="overflow-hidden">
+              {[
+                { name: 'Electronics', image: '/electronics.jpg' },
+                { name: 'Clothing', image: '/clothing.jpg' },
+                { name: 'Home & Kitchen', image: '/home-kitchen.jpg' },
+                { name: 'Books', image: '/books.jpg' },
+              ].map(category => (
+                <Card key={category.name} className="overflow-hidden">
                   <CardContent className="p-0">
                     <img
-                      src={`/placeholder.svg?height=200&width=300&text=${category}`}
-                      alt={category}
+                      src={category.image}
+                      alt={category.name}
                       className="w-full h-40 object-cover"
                     />
                   </CardContent>
                   <CardFooter className="p-4">
                     <Link
-                      href={`/products?category=${category.toLowerCase().replace(' & ', '-')}`}
+                      href={`/products?category=${category.name.toLowerCase().replace(' & ', '-')}`}
                       className="text-sm font-medium hover:underline w-full text-center"
                     >
-                      {category}
+                      {category.name}
                     </Link>
                   </CardFooter>
                 </Card>
