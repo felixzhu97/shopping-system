@@ -10,6 +10,17 @@ provider:
     NODE_ENV: production
     MONGODB_URI: ${env:MONGODB_URI}
     # 其他环境变量
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - cloudformation:*
+            - s3:*
+            - lambda:*
+            - apigateway:*
+            - logs:*
+          Resource: '*'
 
 functions:
   api:
@@ -18,4 +29,4 @@ functions:
       - http:
           path: /{proxy+} # 捕获所有路径
           method: ANY # 处理所有HTTP方法
-    cors: true
+          cors: true
