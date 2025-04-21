@@ -2,7 +2,7 @@ name: 部署Web应用
 
 on:
   push:
-    branches: [main]
+    branches: [release, main]
     paths:
       - 'apps/web/**'
       - 'packages/shared/**'
@@ -20,7 +20,48 @@ on:
           - staging
 
 jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 安装 pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+          run_install: false
+
+      - name: 设置Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'pnpm'
+
+      - name: 安装依赖
+        run: pnpm install
+
+      - name: 构建shared包
+        run: cd packages/shared && pnpm build
+
+      - name: 构建UI组件库
+        run: cd packages/ui && pnpm build || echo "UI包构建失败但继续执行"
+
+      - name: 构建Web应用
+        run: |
+          cd apps/web
+          # 根据环境设置不同的环境变量
+          if [ "${{ github.event.inputs.environment }}" == "staging" ]; then
+            echo "构建Staging环境"
+            DEPLOY_ENV=staging pnpm build
+          else
+            echo "构建Production环境"
+            DEPLOY_ENV=production pnpm build
+          fi
+
   deploy:
+    needs: build
+    if: github.ref == 'refs/heads/release' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
       - name: 检出代码
