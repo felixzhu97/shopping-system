@@ -7,7 +7,8 @@
   "license": "MIT",
   "scripts": {
     "lint": "eslint \"src/**/*.ts\"",
-    "build": "tsc",
+    "build": "tsc && pnpm run bundle",
+    "bundle": "esbuild src/index.ts --bundle --format=cjs --platform=node --outfile=dist/index.bundle.js",
     "dev": "tsc --watch",
     "clean": "rm -rf dist && rm -rf node_modules"
   },
@@ -15,6 +16,7 @@
     "typescript": "^5.2.2"
   },
   "devDependencies": {
+    "esbuild": "^0.20.2",
     "eslint": "^8.48.0"
   }
 }
