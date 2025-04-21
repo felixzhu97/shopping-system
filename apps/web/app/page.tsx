@@ -5,26 +5,14 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { ProductCard } from '@/components/product-card';
 import { Navbar } from '@/components/navbar';
-import { featuredProducts } from '@/lib/products';
 import { Product } from '@/lib/types';
+import * as api from '@/lib/api';
 
 // 修改为从API获取数据的组件
 async function FeaturedProducts() {
-  // 使用服务器组件获取数据
   try {
-    const apiUrl = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api'}/products`;
-    console.log('正在请求API:', apiUrl);
-
-    const response = await fetch(apiUrl, {
-      next: { revalidate: 3600 }, // 每小时重新验证一次
-    });
-
-    if (!response.ok) {
-      console.error('API响应错误:', response.status, response.statusText);
-      throw new Error(`获取产品数据失败: ${response.status}`);
-    }
-
-    const products = await response.json();
+    // 使用api模块中的getProducts函数
+    const products = await api.getProducts();
     const featuredProducts = products.slice(0, 4); // 只获取前4个产品作为特色产品展示
 
     return (
@@ -36,7 +24,13 @@ async function FeaturedProducts() {
     );
   } catch (error) {
     console.error('获取产品数据时出错:', error);
-    throw error;
+    // 出现错误时显示友好的错误消息
+    return (
+      <div className="text-center py-8">
+        <h3 className="text-lg font-medium mb-2">无法加载产品</h3>
+        <p className="text-gray-500">请稍后再试</p>
+      </div>
+    );
   }
 }
 
