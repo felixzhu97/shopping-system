@@ -18,11 +18,17 @@ jobs:
       - name: 检出代码
         uses: actions/checkout@v4
 
+      - name: 安装 pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+          run_install: false
+
       - name: 设置Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18'
-          cache: 'npm'
+          cache: 'pnpm'
           cache-dependency-path: 'apps/api/package.json'
 
       - name: 安装依赖
@@ -32,7 +38,7 @@ jobs:
         run: pnpm exec turbo run build
 
       - name: 部署到AWS Lambda
-        run: npx serverless deploy
+        run: pnpm dlx serverless deploy
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
