@@ -1,6 +1,9 @@
 // API基础URL
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || '/api/proxy';
 
+// 产品API基础URL（使用单独的代理路由）
+const PRODUCTS_API_URL = '/api/products';
+
 // 购物车API基础URL（使用单独的代理路由）
 const CART_API_URL = '/api/cart';
 
@@ -74,29 +77,12 @@ const categoryMapping: Record<string, string> = {
 
 // 获取所有产品
 export async function getProducts(category?: string) {
-  // 如果在构建时调用API，返回模拟数据
-  if (IS_BUILD_TIME) {
-    console.log('在构建过程中使用模拟数据');
-    // 如果指定了分类，则过滤模拟数据
-    if (category) {
-      const mappedCategory = categoryMapping[category] || category;
-      return MOCK_PRODUCTS.filter(p => p.category === mappedCategory);
-    }
-    return MOCK_PRODUCTS;
-  }
+  // 使用产品专用代理路由
+  const url = category
+    ? `${PRODUCTS_API_URL}?category=${encodeURIComponent(category)}`
+    : PRODUCTS_API_URL;
 
-  // 转换类别格式
-  let mappedCategory = category;
-  if (category && categoryMapping[category]) {
-    mappedCategory = categoryMapping[category];
-  }
-
-  // 特殊处理 Home & Kitchen 类别
-  const encodedCategory = mappedCategory ? encodeURIComponent(mappedCategory) : '';
-  const url = `${API_BASE_URL}/products${encodedCategory ? `?category=${encodedCategory}` : ''}`;
-
-  // 调试日志
-  console.log('Fetching products URL:', url);
+  console.log('获取产品列表URL:', url);
 
   try {
     const response = await fetch(url, {
@@ -109,12 +95,12 @@ export async function getProducts(category?: string) {
     }
 
     const data = await response.json();
-    // 调试日志
     console.log(`获取到 ${data.length || 0} 个产品`);
 
     return data;
   } catch (error) {
     console.error('获取产品数据时出错:', error);
+
     // 如果API请求失败，返回模拟数据作为后备
     console.log('API请求失败，使用模拟数据作为后备');
     if (category) {
@@ -127,18 +113,10 @@ export async function getProducts(category?: string) {
 
 // 获取单个产品
 export async function getProduct(id: string) {
-  // 如果在构建时调用API，返回模拟数据
-  if (IS_BUILD_TIME) {
-    const mockProduct = MOCK_PRODUCTS.find(p => p.id === id);
-    if (mockProduct) {
-      return mockProduct;
-    }
-    // 如果找不到指定ID的产品，返回第一个作为替代
-    return MOCK_PRODUCTS[0];
-  }
+  const url = `${PRODUCTS_API_URL}/${id}`;
+  console.log('获取产品详情URL:', url);
 
   try {
-    const url = `${API_BASE_URL}/products/${id}`;
     const response = await fetch(url, {
       cache: 'no-store',
     });
