@@ -92,7 +92,8 @@ function VirtualizedProductGrid({ products }: { products: Product[] }) {
   );
 }
 
-function ProductsList() {
+// 将使用useSearchParams的逻辑移到专门的Client组件中
+function ClientProductsList() {
   const searchParams = useSearchParams();
   const [products, setProducts] = useState<Product[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
@@ -176,7 +177,17 @@ function ProductsList() {
   return <VirtualizedProductGrid products={filteredProducts} />;
 }
 
-export default function ProductsPage() {
+// 外层组件不直接使用useSearchParams，只负责包装Suspense
+function ProductsList() {
+  return (
+    <Suspense fallback={<ProductsGridSkeleton />}>
+      <ClientProductsList />
+    </Suspense>
+  );
+}
+
+// 客户端产品页面组件，处理所有使用useSearchParams的逻辑
+function ClientProductsPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
@@ -392,9 +403,7 @@ export default function ProductsPage() {
               </Select>
             </div>
 
-            <Suspense fallback={<ProductsGridSkeleton />}>
-              <ProductsList />
-            </Suspense>
+            <ProductsList />
           </div>
         </div>
       </main>
@@ -405,6 +414,34 @@ export default function ProductsPage() {
         </div>
       </footer>
     </div>
+  );
+}
+
+// 外部组件只负责设置页面结构和Suspense边界
+export default function ProductsPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex flex-col min-h-screen">
+          <Navbar />
+          <main className="flex-1 container mx-auto px-4 py-8">
+            <div className="animate-pulse">
+              <div className="h-8 w-64 bg-gray-200 rounded mb-8"></div>
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div className="md:col-span-1">
+                  <div className="h-[400px] bg-gray-200 rounded"></div>
+                </div>
+                <div className="md:col-span-3">
+                  <ProductsGridSkeleton />
+                </div>
+              </div>
+            </div>
+          </main>
+        </div>
+      }
+    >
+      <ClientProductsPage />
+    </Suspense>
   );
 }
 

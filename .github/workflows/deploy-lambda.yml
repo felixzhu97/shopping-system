@@ -2,7 +2,7 @@ name: 部署到AWS Lambda
 
 on:
   push:
-    branches: [main]
+    branches: [release, main]
     paths:
       - 'apps/api/**'
       - 'packages/shared/**'
@@ -19,7 +19,54 @@ on:
           - staging
 
 jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 安装 pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+          run_install: false
+
+      - name: 设置Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'pnpm'
+          cache-dependency-path: '**/package.json'
+
+      - name: 安装依赖
+        run: pnpm install --no-frozen-lockfile
+
+      - name: 安装构建工具
+        run: |
+          pnpm add -Dw esbuild@0.20.2
+          cd apps/api && pnpm add -D @types/swagger-jsdoc @types/swagger-ui-express
+          cd ../../packages/shared && pnpm add -D esbuild@0.20.2
+          cd ../ui && pnpm add -D esbuild@0.20.2
+
+      - name: 构建shared包
+        run: cd packages/shared && pnpm build
+
+      - name: 检查shared包输出
+        run: ls -la packages/shared/dist
+
+      - name: 尝试构建UI包
+        run: cd packages/ui && ls && pnpm build || echo "UI包构建失败，但继续执行"
+        continue-on-error: true
+
+      - name: 构建API包
+        run: cd apps/api && pnpm build
+
+      - name: 检查API包输出
+        run: ls -la apps/api/dist
+
   deploy:
+    needs: build
+    if: github.ref == 'refs/heads/release' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
       - name: 检出代码
@@ -62,13 +109,6 @@ jobs:
       - name: 尝试构建UI包
         run: cd packages/ui && ls && pnpm build || echo "UI包构建失败，但继续执行"
         continue-on-error: true
-
-      - name: 检查UI包文件夹
-        run: |
-          echo "UI包根目录:"
-          ls -la packages/ui/
-          echo "查看是否有dist目录:"
-          ls -la packages/ui/dist || echo "UI包dist目录不存在"
 
       - name: 构建API包
         run: cd apps/api && pnpm build
