@@ -46,9 +46,14 @@ jobs:
         run: pnpm install
 
       - name: 更新版本
+        id: update-version
         run: |
           RELEASE_TYPE="${{ github.event.inputs.release_type || 'patch' }}"
+          echo "正在使用 $RELEASE_TYPE 更新版本..."
           pnpm version $RELEASE_TYPE --no-git-tag-version
+          # 将新版本保存到输出变量
+          VERSION=$(node -p "require('./package.json').version")
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
 
       - name: 构建包
         run: pnpm build
@@ -60,7 +65,7 @@ jobs:
 
       - name: 创建Git标签
         run: |
-          VERSION=$(node -p "require('./package.json').version")
+          VERSION="${{ steps.update-version.outputs.version }}"
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add .
@@ -73,8 +78,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: v${{ steps.package-version.outputs.version }}
-          release_name: 版本 ${{ steps.package-version.outputs.version }}
+          tag_name: v${{ steps.update-version.outputs.version }}
+          release_name: 版本 ${{ steps.update-version.outputs.version }}
           body_path: CHANGELOG.md
           draft: false
           prerelease: false
