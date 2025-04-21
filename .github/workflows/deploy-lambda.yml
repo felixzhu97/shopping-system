@@ -8,6 +8,15 @@ on:
       - 'packages/shared/**'
       - '.github/workflows/deploy-lambda.yml'
   workflow_dispatch:
+    inputs:
+      environment:
+        description: '部署环境'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+          - production
+          - staging
 
 jobs:
   deploy:
