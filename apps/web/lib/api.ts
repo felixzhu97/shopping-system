@@ -1,10 +1,10 @@
-// API基础URL
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || '/api/proxy';
+// API基础URL - 使用代理路由
+const API_BASE_URL = '/api/proxy';
 
-// 产品API基础URL（使用单独的代理路由）
+// 产品API基础URL（使用代理路由）
 const PRODUCTS_API_URL = '/api/products';
 
-// 购物车API基础URL（使用单独的代理路由）
+// 购物车API基础URL（使用代理路由）
 const CART_API_URL = '/api/cart';
 
 // 判断是否在构建环境中

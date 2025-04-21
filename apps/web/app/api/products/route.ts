@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-// 产品API基础URL
-const PRODUCT_API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+// 产品API基础URL - 使用Lambda部署的实际API
+const PRODUCT_API_URL = 'https://guczejbq56.execute-api.ap-east-1.amazonaws.com/dev/api';
 
 // 模拟产品数据
 const mockProducts = [
@@ -142,10 +142,14 @@ export async function GET(request: NextRequest) {
       apiUrl += `?category=${encodeURIComponent(category)}`;
     }
 
+    console.log('请求外部API:', apiUrl);
+
     // 尝试从实际API获取产品数据
     const apiResponse = await fetch(apiUrl, {
       headers: {
         'Content-Type': 'application/json',
+        Accept: 'application/json',
+        Origin: 'https://shopping-system-git-release-felixzhu97s-projects.vercel.app',
       },
       cache: 'no-store',
     });
@@ -153,6 +157,10 @@ export async function GET(request: NextRequest) {
     // 如果API请求成功，返回产品数据
     if (apiResponse.ok) {
       const products = await apiResponse.json();
+      console.log(
+        'API请求成功，返回数据条数:',
+        Array.isArray(products) ? products.length : 'not an array'
+      );
       const response = NextResponse.json(products);
       return setCorsHeaders(response);
     }

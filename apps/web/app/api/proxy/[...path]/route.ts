@@ -2,6 +2,21 @@ import { NextRequest, NextResponse } from 'next/server';
 
 const API_BASE = 'https://guczejbq56.execute-api.ap-east-1.amazonaws.com/dev/api';
 
+// 设置CORS头部
+function setCorsHeaders(response: NextResponse) {
+  response.headers.set('Access-Control-Allow-Origin', '*');
+  response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  response.headers.set('Access-Control-Max-Age', '86400');
+  return response;
+}
+
+// 处理OPTIONS预检请求
+export async function OPTIONS() {
+  const response = new NextResponse(null, { status: 204 });
+  return setCorsHeaders(response);
+}
+
 export async function GET(request: NextRequest, { params }: { params: { path: string[] } }) {
   // 确保路径正确处理，尤其是购物车路径
   const path = params.path ? params.path.join('/') : '';
@@ -21,6 +36,7 @@ export async function GET(request: NextRequest, { params }: { params: { path: st
     const response = await fetch(apiUrl, {
       headers: {
         Accept: 'application/json',
+        Origin: 'https://shopping-system-git-release-felixzhu97s-projects.vercel.app',
       },
       // 增加请求超时
       signal: AbortSignal.timeout(10000), // 10秒超时
@@ -33,20 +49,26 @@ export async function GET(request: NextRequest, { params }: { params: { path: st
     // 可能不是所有响应都是JSON格式的
     try {
       const data = await response.json();
-      return NextResponse.json(data);
+      const nextResponse = NextResponse.json(data);
+      return setCorsHeaders(nextResponse);
     } catch (e) {
       // 如果不是JSON，则返回文本响应
       const text = await response.text();
-      return new NextResponse(text, {
+      const textResponse = new NextResponse(text, {
         status: response.status,
         headers: {
           'Content-Type': response.headers.get('Content-Type') || 'text/plain',
         },
       });
+      return setCorsHeaders(textResponse);
     }
   } catch (error: any) {
     console.error('代理请求失败:', error);
-    return NextResponse.json({ error: '请求失败', details: error.message }, { status: 500 });
+    const errorResponse = NextResponse.json(
+      { error: '请求失败', details: error.message },
+      { status: 500 }
+    );
+    return setCorsHeaders(errorResponse);
   }
 }
 
@@ -79,6 +101,7 @@ export async function POST(request: NextRequest, { params }: { params: { path: s
       method: 'POST',
       headers: {
         'Content-Type': contentType,
+        Origin: 'https://shopping-system-git-release-felixzhu97s-projects.vercel.app',
       },
       body: typeof body === 'string' ? body : JSON.stringify(body),
       signal: AbortSignal.timeout(10000), // 10秒超时
@@ -90,19 +113,25 @@ export async function POST(request: NextRequest, { params }: { params: { path: s
 
     try {
       const data = await response.json();
-      return NextResponse.json(data);
+      const nextResponse = NextResponse.json(data);
+      return setCorsHeaders(nextResponse);
     } catch (e) {
       const text = await response.text();
-      return new NextResponse(text, {
+      const textResponse = new NextResponse(text, {
         status: response.status,
         headers: {
           'Content-Type': response.headers.get('Content-Type') || 'text/plain',
         },
       });
+      return setCorsHeaders(textResponse);
     }
   } catch (error: any) {
     console.error('代理POST请求失败:', error);
-    return NextResponse.json({ error: '请求失败', details: error.message }, { status: 500 });
+    const errorResponse = NextResponse.json(
+      { error: '请求失败', details: error.message },
+      { status: 500 }
+    );
+    return setCorsHeaders(errorResponse);
   }
 }
 
@@ -127,6 +156,7 @@ export async function PUT(request: NextRequest, { params }: { params: { path: st
       method: 'PUT',
       headers: {
         'Content-Type': contentType,
+        Origin: 'https://shopping-system-git-release-felixzhu97s-projects.vercel.app',
       },
       body: typeof body === 'string' ? body : JSON.stringify(body),
       signal: AbortSignal.timeout(10000), // 10秒超时
@@ -138,19 +168,25 @@ export async function PUT(request: NextRequest, { params }: { params: { path: st
 
     try {
       const data = await response.json();
-      return NextResponse.json(data);
+      const nextResponse = NextResponse.json(data);
+      return setCorsHeaders(nextResponse);
     } catch (e) {
       const text = await response.text();
-      return new NextResponse(text, {
+      const textResponse = new NextResponse(text, {
         status: response.status,
         headers: {
           'Content-Type': response.headers.get('Content-Type') || 'text/plain',
         },
       });
+      return setCorsHeaders(textResponse);
     }
   } catch (error: any) {
     console.error('代理PUT请求失败:', error);
-    return NextResponse.json({ error: '请求失败', details: error.message }, { status: 500 });
+    const errorResponse = NextResponse.json(
+      { error: '请求失败', details: error.message },
+      { status: 500 }
+    );
+    return setCorsHeaders(errorResponse);
   }
 }
 
@@ -165,6 +201,7 @@ export async function DELETE(request: NextRequest, { params }: { params: { path:
       method: 'DELETE',
       headers: {
         Accept: 'application/json',
+        Origin: 'https://shopping-system-git-release-felixzhu97s-projects.vercel.app',
       },
       signal: AbortSignal.timeout(10000), // 10秒超时
     });
@@ -175,18 +212,24 @@ export async function DELETE(request: NextRequest, { params }: { params: { path:
 
     try {
       const data = await response.json();
-      return NextResponse.json(data);
+      const nextResponse = NextResponse.json(data);
+      return setCorsHeaders(nextResponse);
     } catch (e) {
       const text = await response.text();
-      return new NextResponse(text, {
+      const textResponse = new NextResponse(text, {
         status: response.status,
         headers: {
           'Content-Type': response.headers.get('Content-Type') || 'text/plain',
         },
       });
+      return setCorsHeaders(textResponse);
     }
   } catch (error: any) {
     console.error('代理DELETE请求失败:', error);
-    return NextResponse.json({ error: '请求失败', details: error.message }, { status: 500 });
+    const errorResponse = NextResponse.json(
+      { error: '请求失败', details: error.message },
+      { status: 500 }
+    );
+    return setCorsHeaders(errorResponse);
   }
 }
