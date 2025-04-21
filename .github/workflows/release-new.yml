@@ -1,0 +1,80 @@
+name: 版本发布
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'packages/**'
+  workflow_dispatch:
+    inputs:
+      release_type:
+        description: '发布类型'
+        required: true
+        default: 'patch'
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+
+concurrency: ${{ github.workflow }}-${{ github.ref }}
+
+jobs:
+  release:
+    name: 创建发布
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+        with:
+          # 获取完整Git历史以便Changesets可以生成正确的变更日志
+          fetch-depth: 0
+
+      - name: 设置Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18.x
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: 设置PNPM
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: 安装依赖
+        run: pnpm install
+
+      - name: 更新版本
+        run: |
+          RELEASE_TYPE="${{ github.event.inputs.release_type || 'patch' }}"
+          pnpm version $RELEASE_TYPE --no-git-tag-version
+
+      - name: 构建包
+        run: pnpm build
+
+      - name: 创建变更日志
+        run: |
+          echo "## 变更内容" > CHANGELOG.md
+          git log -10 --pretty=format:"- %s" >> CHANGELOG.md
+
+      - name: 创建Git标签
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add .
+          git commit -m "chore: 发布 v$VERSION"
+          git tag -a "v$VERSION" -m "版本 $VERSION"
+          git push origin "v$VERSION"
+
+      - name: 创建GitHub发布
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ steps.package-version.outputs.version }}
+          release_name: 版本 ${{ steps.package-version.outputs.version }}
+          body_path: CHANGELOG.md
+          draft: false
+          prerelease: false

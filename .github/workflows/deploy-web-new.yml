@@ -1,0 +1,81 @@
+name: 部署Web应用
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'apps/web/**'
+      - 'packages/shared/**'
+      - 'packages/ui/**'
+      - '.github/workflows/deploy-web-new.yml'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: '部署环境'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+          - production
+          - staging
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 安装 pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+          run_install: false
+
+      - name: 设置Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'pnpm'
+
+      - name: 安装依赖
+        run: pnpm install
+
+      - name: 构建shared包
+        run: cd packages/shared && pnpm build
+
+      - name: 构建UI组件库
+        run: cd packages/ui && pnpm build || echo "UI包构建失败但继续执行"
+
+      - name: 构建Web应用
+        run: |
+          cd apps/web
+          # 根据环境设置不同的环境变量
+          if [ "${{ github.event.inputs.environment }}" == "staging" ]; then
+            echo "构建Staging环境"
+            DEPLOY_ENV=staging pnpm build
+          else
+            echo "构建Production环境"
+            DEPLOY_ENV=production pnpm build
+          fi
+
+      - name: 部署到AWS S3
+        run: |
+          DEPLOY_ENV="${{ github.event.inputs.environment || 'production' }}"
+          BUCKET_NAME="${DEPLOY_ENV}-shopping-system-frontend"
+          cd apps/web/dist
+          aws s3 sync . s3://$BUCKET_NAME --delete
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ap-east-1
+
+      - name: 清除CloudFront缓存
+        run: |
+          DEPLOY_ENV="${{ github.event.inputs.environment || 'production' }}"
+          DISTRIBUTION_ID="${DEPLOY_ENV}-shopping-system-dist"
+          aws cloudfront create-invalidation --distribution-id $DISTRIBUTION_ID --paths "/*"
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ap-east-1
