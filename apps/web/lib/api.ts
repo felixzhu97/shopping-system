@@ -87,6 +87,10 @@ export async function getProducts(category?: string) {
   try {
     const response = await fetch(url, {
       cache: 'no-store', // 强制服务器端请求，忽略缓存
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+      },
     });
 
     if (!response.ok) {
