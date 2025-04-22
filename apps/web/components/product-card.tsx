@@ -20,6 +20,9 @@ export function ProductCard({ product }: ProductCardProps) {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
 
+  // 确保产品ID是字符串
+  const productId = String(product.id);
+
   const handleAddToCart = async () => {
     if (!product.inStock) return;
 
@@ -28,7 +31,7 @@ export function ProductCard({ product }: ProductCardProps) {
     try {
       // 将商品添加到购物车
       await addToCart({
-        id: product.id,
+        id: productId,
         name: product.name,
         price: product.price,
         quantity: 1,
@@ -57,7 +60,7 @@ export function ProductCard({ product }: ProductCardProps) {
   return (
     <Card className="overflow-hidden">
       <CardContent className="p-0">
-        <Link href={`/products/${product.id}`}>
+        <Link href={`/products/${productId}`}>
           <div className="aspect-square overflow-hidden">
             <Image
               src={product.image}

@@ -10,7 +10,6 @@
     "lint": "eslint src/**/*.ts",
     "test": "vitest run",
     "test:watch": "vitest",
-    "seed:products": "ts-node src/scripts/seedProducts.ts",
     "seed:products200": "ts-node src/scripts/seedProducts200.ts",
     "deploy:lambda": "npm run build && serverless deploy",
     "remove:lambda": "serverless remove"

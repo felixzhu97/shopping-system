@@ -19,7 +19,7 @@ const MOCK_PRODUCTS = [
     description: '高性能5G智能手机，搭载最新处理器和高清摄像头。',
     price: 3999,
     originalPrice: 4599,
-    image: '/assets/products/phone.jpg',
+    image: '/electronics.jpg',
     category: 'Electronics',
     stock: 10,
     rating: 4.5,
@@ -32,7 +32,7 @@ const MOCK_PRODUCTS = [
     description: '舒适透气的纯棉T恤，适合日常穿着。',
     price: 99,
     originalPrice: 129,
-    image: '/assets/products/tshirt.jpg',
+    image: '/tshirt.jpg',
     category: 'Clothing',
     stock: 50,
     rating: 4.2,
@@ -45,7 +45,7 @@ const MOCK_PRODUCTS = [
     description: '专业级厨房刀具套装，锋利耐用。',
     price: 299,
     originalPrice: 399,
-    image: '/assets/products/kitchenware.jpg',
+    image: '/cookware.jpg',
     category: 'Home & Kitchen',
     stock: 15,
     rating: 4.7,
@@ -58,7 +58,7 @@ const MOCK_PRODUCTS = [
     description: '世界名著精选集，精装版。',
     price: 199,
     originalPrice: 249,
-    image: '/assets/products/books.jpg',
+    image: '/books.jpg',
     category: 'Books',
     stock: 25,
     rating: 4.8,
@@ -77,16 +77,30 @@ const categoryMapping: Record<string, string> = {
 
 // 获取所有产品
 export async function getProducts(category?: string) {
-  // 使用产品专用代理路由
-  const url = category
-    ? `${PRODUCTS_API_URL}?category=${encodeURIComponent(category)}`
-    : PRODUCTS_API_URL;
-
-  console.log('获取产品列表URL:', url);
-
+  // 使用产品专用代理路由，确保在服务器端或客户端上都能正确解析
+  let url;
   try {
+    if (typeof window !== 'undefined') {
+      // 客户端: 使用相对URL
+      url = category
+        ? `${PRODUCTS_API_URL}?category=${encodeURIComponent(category)}`
+        : PRODUCTS_API_URL;
+    } else {
+      // 服务器端: 必须使用绝对URL
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+      url = category
+        ? `${baseUrl}${PRODUCTS_API_URL}?category=${encodeURIComponent(category)}`
+        : `${baseUrl}${PRODUCTS_API_URL}`;
+    }
+
+    console.log('获取产品列表URL:', url);
+
     const response = await fetch(url, {
       cache: 'no-store', // 强制服务器端请求，忽略缓存
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+      },
     });
 
     if (!response.ok) {
@@ -113,34 +127,89 @@ export async function getProducts(category?: string) {
 
 // 获取单个产品
 export async function getProduct(id: string) {
-  const url = `${PRODUCTS_API_URL}/${id}`;
-  console.log('获取产品详情URL:', url);
+  // 确保ID是字符串
+  const productId = String(id);
 
-  try {
-    const response = await fetch(url, {
-      cache: 'no-store',
-    });
-
-    if (!response.ok) {
-      throw new Error(`获取产品详情失败: ${response.status}`);
-    }
-
-    return response.json();
-  } catch (error) {
-    console.error('获取产品详情时出错:', error);
-    // 如果API请求失败，返回模拟数据作为后备
-    const mockProduct = MOCK_PRODUCTS.find(p => p.id === id);
+  // 检查ID是否为模拟ID格式(以mock-开头)
+  if (productId.startsWith('mock-')) {
+    console.log('检测到模拟ID，直接返回模拟数据');
+    const mockProduct = MOCK_PRODUCTS.find(p => p.id === productId);
     if (mockProduct) {
       return mockProduct;
     }
     // 如果找不到指定ID的产品，返回第一个作为替代
+    console.log(`未找到模拟产品ID: ${productId}，返回默认产品`);
+    return MOCK_PRODUCTS[0];
+  }
+
+  // 构建URL，处理服务器端和客户端区别
+  let url;
+  try {
+    if (typeof window !== 'undefined') {
+      // 客户端环境
+      url = `${PRODUCTS_API_URL}/${productId}`;
+    } else {
+      // 服务器端环境
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+      url = `${baseUrl}${PRODUCTS_API_URL}/${productId}`;
+    }
+    console.log('获取产品详情URL:', url);
+
+    const response = await fetch(url, {
+      cache: 'no-store',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      console.error(`API响应错误: ${response.status} ${response.statusText}`);
+      throw new Error(`获取产品详情失败: ${response.status}`);
+    }
+
+    const product = await response.json();
+    console.log(`成功获取产品详情:`, product.name || 'Unknown product');
+    return product;
+  } catch (error) {
+    console.error('获取产品详情时出错:', error);
+
+    // 尝试匹配任何可能的ID模式
+    console.log(`API请求失败，尝试使用模拟数据匹配ID: ${productId}`);
+
+    // 1. 直接匹配
+    let mockProduct = MOCK_PRODUCTS.find(p => p.id === productId);
+    if (mockProduct) return mockProduct;
+
+    // 2. 尝试匹配数字部分
+    const numericId = productId.replace(/\D/g, '');
+    if (numericId) {
+      mockProduct = MOCK_PRODUCTS.find(
+        p =>
+          p.id === `mock-${numericId}` ||
+          p.id.includes(numericId) ||
+          String(p.id).replace(/\D/g, '') === numericId
+      );
+      if (mockProduct) return mockProduct;
+    }
+
+    // 3. 如果ID是纯数字，尝试按索引匹配
+    const idNum = parseInt(productId, 10);
+    if (!isNaN(idNum) && idNum > 0 && idNum <= MOCK_PRODUCTS.length) {
+      console.log(`使用索引 ${idNum - 1} 匹配模拟产品`);
+      return MOCK_PRODUCTS[idNum - 1];
+    }
+
+    // 4. 如果所有匹配都失败，返回第一个产品
+    console.log('无法找到匹配的产品，返回默认产品');
     return MOCK_PRODUCTS[0];
   }
 }
 
 // 获取购物车
 export async function getCart(userId: string) {
-  const url = `${CART_API_URL}/${userId}`;
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+  const url = `${baseUrl}${CART_API_URL}/${userId}`;
   console.log('获取购物车URL:', url);
 
   try {
