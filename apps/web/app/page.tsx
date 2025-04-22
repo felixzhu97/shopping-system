@@ -49,26 +49,26 @@ async function CategoryShowcase() {
         id: 'electronics',
         name: '电子产品',
         items: electronics.slice(0, 2),
-        image: '/electronics.jpg'
+        image: '/electronics.jpg',
       },
       {
         id: 'clothing',
         name: '服装',
         items: clothing.slice(0, 2),
-        image: '/clothing.jpg'
+        image: '/clothing.jpg',
       },
       {
         id: 'home-kitchen',
         name: '家居厨房',
         items: homeKitchen.slice(0, 2),
-        image: '/home-kitchen.jpg'
+        image: '/home-kitchen.jpg',
       },
       {
         id: 'books',
         name: '图书',
         items: books.slice(0, 2),
-        image: '/books.jpg'
-      }
+        image: '/books.jpg',
+      },
     ];
 
     return (
