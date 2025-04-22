@@ -13,7 +13,7 @@ async function FeaturedProducts() {
   try {
     // 使用api模块中的getProducts函数
     const products = await api.getProducts();
-    const featuredProducts = products.slice(0, 5); // 只获取前4个产品作为特色产品展示
+    const featuredProducts = products.slice(0, 4); // 只获取前8个产品作为特色产品展示
 
     return (
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">

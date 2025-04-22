@@ -56,7 +56,7 @@ JWT_SECRET=your_jwt_secret_key
 JWT_EXPIRES_IN=86400
 
 # API基础URL
-NEXT_PUBLIC_API_URL=http://localhost:3001/api
+NEXT_PUBLIC_API_URL=http://localhost:3001
 
 # Vercel部署URL（生产环境）
 NEXT_PUBLIC_VERCEL_URL=https://your-app.vercel.app

@@ -77,14 +77,24 @@ const categoryMapping: Record<string, string> = {
 
 // 获取所有产品
 export async function getProducts(category?: string) {
-  // 使用产品专用代理路由
-  const url = category
-    ? `${PRODUCTS_API_URL}?category=${encodeURIComponent(category)}`
-    : PRODUCTS_API_URL;
-
-  console.log('获取产品列表URL:', url);
-
+  // 使用产品专用代理路由，确保在服务器端或客户端上都能正确解析
+  let url;
   try {
+    if (typeof window !== 'undefined') {
+      // 客户端: 使用相对URL
+      url = category
+        ? `${PRODUCTS_API_URL}?category=${encodeURIComponent(category)}`
+        : PRODUCTS_API_URL;
+    } else {
+      // 服务器端: 必须使用绝对URL
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+      url = category
+        ? `${baseUrl}${PRODUCTS_API_URL}?category=${encodeURIComponent(category)}`
+        : `${baseUrl}${PRODUCTS_API_URL}`;
+    }
+
+    console.log('获取产品列表URL:', url);
+
     const response = await fetch(url, {
       cache: 'no-store', // 强制服务器端请求，忽略缓存
       method: 'GET',
@@ -132,11 +142,19 @@ export async function getProduct(id: string) {
     return MOCK_PRODUCTS[0];
   }
 
-  const url = `${PRODUCTS_API_URL}/${productId}`;
-  console.log('获取产品详情URL:', url);
-
+  // 构建URL，处理服务器端和客户端区别
+  let url;
   try {
-    console.log(`正在获取产品详情，ID: ${productId}`);
+    if (typeof window !== 'undefined') {
+      // 客户端环境
+      url = `${PRODUCTS_API_URL}/${productId}`;
+    } else {
+      // 服务器端环境
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+      url = `${baseUrl}${PRODUCTS_API_URL}/${productId}`;
+    }
+    console.log('获取产品详情URL:', url);
+
     const response = await fetch(url, {
       cache: 'no-store',
       headers: {
@@ -190,7 +208,8 @@ export async function getProduct(id: string) {
 
 // 获取购物车
 export async function getCart(userId: string) {
-  const url = `${CART_API_URL}/${userId}`;
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+  const url = `${baseUrl}${CART_API_URL}/${userId}`;
   console.log('获取购物车URL:', url);
 
   try {
