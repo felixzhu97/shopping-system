@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { ChevronRight, Minus, Plus, ShoppingCart, Star, Truck } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-
+import { use } from 'react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Navbar } from '@/components/navbar';
@@ -15,6 +15,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { useCart } from '@/lib/cart-context';
 import * as api from '@/lib/api';
 import { Image } from '@/components/ui/image';
+import type { Usable } from 'react';
 
 function LoadingSkeleton() {
   return (
@@ -416,7 +417,8 @@ function ProductDetail({ productId }: { productId: string }) {
   );
 }
 
-export default function ProductPage({ params }: { params: { productId: string } }) {
+export default function ProductPage({ params }: { params: Usable<{ productId: string }> }) {
+  const { productId } = use(params);
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar />
@@ -442,7 +444,7 @@ export default function ProductPage({ params }: { params: { productId: string } 
           </ol>
         </nav>
 
-        <ProductDetail productId={params.productId} />
+        <ProductDetail productId={productId} />
       </main>
 
       <footer className="bg-gray-800 text-white py-8">
