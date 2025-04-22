@@ -34,7 +34,7 @@ function LoadingSkeleton() {
 }
 
 // 产品详情组件
-function ProductDetail({ id }: { id: string }) {
+function ProductDetail({ productId }: { productId: string }) {
   const [product, setProduct] = useState<Product | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isActionLoading, setIsActionLoading] = useState(false);
@@ -49,12 +49,12 @@ function ProductDetail({ id }: { id: string }) {
     const fetchProduct = async () => {
       try {
         setIsLoading(true);
-        const productData = await api.getProduct(id);
+        const productData = await api.getProduct(productId);
         setProduct(productData);
 
         // 获取相关产品
         const allProducts = await api.getProducts(productData.category);
-        const related = allProducts.filter((p: Product) => p.id !== id).slice(0, 4);
+        const related = allProducts.filter((p: Product) => p.id !== productId).slice(0, 4);
         setRelatedProducts(related);
 
         setError(null);
@@ -67,7 +67,7 @@ function ProductDetail({ id }: { id: string }) {
     };
 
     fetchProduct();
-  }, [id]);
+  }, [productId]);
 
   const handleQuantityChange = (delta: number) => {
     setQuantity(prev => Math.max(1, prev + delta));
@@ -416,7 +416,7 @@ function ProductDetail({ id }: { id: string }) {
   );
 }
 
-export default function ProductPage({ params }: { params: { id: string } }) {
+export default function ProductPage({ params }: { params: { productId: string } }) {
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar />
@@ -442,7 +442,7 @@ export default function ProductPage({ params }: { params: { id: string } }) {
           </ol>
         </nav>
 
-        <ProductDetail id={params.id} />
+        <ProductDetail productId={params.productId} />
       </main>
 
       <footer className="bg-gray-800 text-white py-8">
