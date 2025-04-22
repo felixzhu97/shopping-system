@@ -113,43 +113,73 @@ export async function getProducts(category?: string) {
 
 // 获取单个产品
 export async function getProduct(id: string) {
+  // 确保ID是字符串
+  const productId = String(id);
+
   // 检查ID是否为模拟ID格式(以mock-开头)
-  if (id.startsWith('mock-')) {
+  if (productId.startsWith('mock-')) {
     console.log('检测到模拟ID，直接返回模拟数据');
-    const mockId = id;
-    const mockProduct = MOCK_PRODUCTS.find(p => p.id === mockId);
+    const mockProduct = MOCK_PRODUCTS.find(p => p.id === productId);
     if (mockProduct) {
       return mockProduct;
     }
     // 如果找不到指定ID的产品，返回第一个作为替代
+    console.log(`未找到模拟产品ID: ${productId}，返回默认产品`);
     return MOCK_PRODUCTS[0];
   }
 
-  const url = `${PRODUCTS_API_URL}/${id}`;
+  const url = `${PRODUCTS_API_URL}/${productId}`;
   console.log('获取产品详情URL:', url);
 
   try {
+    console.log(`正在获取产品详情，ID: ${productId}`);
     const response = await fetch(url, {
       cache: 'no-store',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
     });
 
     if (!response.ok) {
+      console.error(`API响应错误: ${response.status} ${response.statusText}`);
       throw new Error(`获取产品详情失败: ${response.status}`);
     }
 
-    return response.json();
+    const product = await response.json();
+    console.log(`成功获取产品详情:`, product.name || 'Unknown product');
+    return product;
   } catch (error) {
     console.error('获取产品详情时出错:', error);
-    // 如果API请求失败，返回模拟数据作为后备
-    // 尝试查找编号相同的模拟产品
-    const numericId = id.replace(/\D/g, '');
-    const mockProduct = MOCK_PRODUCTS.find(
-      p => p.id === `mock-${numericId}` || p.id.endsWith(numericId)
-    );
-    if (mockProduct) {
-      return mockProduct;
+
+    // 尝试匹配任何可能的ID模式
+    console.log(`API请求失败，尝试使用模拟数据匹配ID: ${productId}`);
+
+    // 1. 直接匹配
+    let mockProduct = MOCK_PRODUCTS.find(p => p.id === productId);
+    if (mockProduct) return mockProduct;
+
+    // 2. 尝试匹配数字部分
+    const numericId = productId.replace(/\D/g, '');
+    if (numericId) {
+      mockProduct = MOCK_PRODUCTS.find(
+        p =>
+          p.id === `mock-${numericId}` ||
+          p.id.includes(numericId) ||
+          String(p.id).replace(/\D/g, '') === numericId
+      );
+      if (mockProduct) return mockProduct;
     }
-    // 如果找不到指定ID的产品，返回第一个作为替代
+
+    // 3. 如果ID是纯数字，尝试按索引匹配
+    const idNum = parseInt(productId, 10);
+    if (!isNaN(idNum) && idNum > 0 && idNum <= MOCK_PRODUCTS.length) {
+      console.log(`使用索引 ${idNum - 1} 匹配模拟产品`);
+      return MOCK_PRODUCTS[idNum - 1];
+    }
+
+    // 4. 如果所有匹配都失败，返回第一个产品
+    console.log('无法找到匹配的产品，返回默认产品');
     return MOCK_PRODUCTS[0];
   }
 }

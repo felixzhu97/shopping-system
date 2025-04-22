@@ -78,14 +78,50 @@ export async function OPTIONS() {
   return setCorsHeaders(response);
 }
 
+// 查找模拟产品数据
+function findMockProduct(productId: string) {
+  console.log(`尝试查找模拟产品，ID: ${productId}`);
+
+  // 1. 直接匹配ID
+  let product = mockProducts.find(p => p.id === productId);
+  if (product) {
+    console.log(`发现精确匹配的模拟产品: ${product.name}`);
+    return product;
+  }
+
+  // 2. 尝试匹配数字部分
+  const numericId = productId.replace(/\D/g, '');
+  if (numericId) {
+    product = mockProducts.find(
+      p => String(p.id) === numericId || String(p.id).replace(/\D/g, '') === numericId
+    );
+    if (product) {
+      console.log(`通过数字匹配找到模拟产品: ${product.name}`);
+      return product;
+    }
+  }
+
+  // 3. 如果ID是纯数字，尝试按索引匹配
+  const idNum = parseInt(productId, 10);
+  if (!isNaN(idNum) && idNum > 0 && idNum <= mockProducts.length) {
+    product = mockProducts[idNum - 1];
+    console.log(`通过索引匹配找到模拟产品: ${product.name}`);
+    return product;
+  }
+
+  // 4. 没有找到匹配的产品
+  console.log(`未找到匹配的模拟产品，ID: ${productId}`);
+  return null;
+}
+
 // 获取单个产品详情的GET请求处理
 export async function GET(request: NextRequest, { params }: { params: { productId: string } }) {
   const productId = params.productId;
+  console.log(`处理产品详情请求，ID: ${productId}`);
 
   try {
     // 构建API URL
     const apiUrl = `${PRODUCT_API_URL}/products/${productId}`;
-
     console.log('请求产品详情API:', apiUrl);
 
     // 尝试从实际API获取产品数据
@@ -93,7 +129,9 @@ export async function GET(request: NextRequest, { params }: { params: { productI
       headers: {
         'Content-Type': 'application/json',
         Accept: 'application/json',
-        Origin: 'https://shopping-system-git-release-felixzhu97s-projects.vercel.app',
+        Origin:
+          request.headers.get('origin') ||
+          'https://shopping-system-git-release-felixzhu97s-projects.vercel.app',
       },
       cache: 'no-store',
     });
@@ -108,7 +146,7 @@ export async function GET(request: NextRequest, { params }: { params: { productI
 
     // 如果API请求失败，尝试从模拟数据中获取产品
     console.log(`API请求失败 (${apiResponse.status}), 使用模拟数据`);
-    const mockProduct = mockProducts.find(p => p.id === productId);
+    const mockProduct = findMockProduct(productId);
 
     if (mockProduct) {
       const response = NextResponse.json(mockProduct);
@@ -116,6 +154,7 @@ export async function GET(request: NextRequest, { params }: { params: { productI
     }
 
     // 如果找不到产品，返回404
+    console.log(`未找到产品，ID: ${productId}`);
     const errorResponse = NextResponse.json(
       { error: `产品ID: ${productId} 未找到` },
       { status: 404 }
@@ -125,7 +164,7 @@ export async function GET(request: NextRequest, { params }: { params: { productI
     console.error('获取产品详情时出错:', error);
 
     // 发生错误时，尝试返回模拟产品数据
-    const mockProduct = mockProducts.find(p => p.id === productId);
+    const mockProduct = findMockProduct(productId);
 
     if (mockProduct) {
       const response = NextResponse.json(mockProduct);
