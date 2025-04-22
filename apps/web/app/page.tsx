@@ -13,7 +13,7 @@ async function FeaturedProducts() {
   try {
     // 使用api模块中的getProducts函数
     const products = await api.getProducts();
-    const featuredProducts = products.slice(0, 4); // 只获取前4个产品作为特色产品展示
+    const featuredProducts = products.slice(0, 8); // 只获取前8个产品作为特色产品展示
 
     return (
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
@@ -34,6 +34,89 @@ async function FeaturedProducts() {
   }
 }
 
+// 获取类别产品数据的组件
+async function CategoryShowcase() {
+  try {
+    // 获取不同类别的产品数据
+    const electronics = await api.getProducts('electronics');
+    const clothing = await api.getProducts('clothing');
+    const homeKitchen = await api.getProducts('home-kitchen');
+    const books = await api.getProducts('books');
+
+    // 类别数据结构
+    const categories = [
+      {
+        id: 'electronics',
+        name: '电子产品',
+        items: electronics.slice(0, 2),
+        image: '/electronics.jpg',
+      },
+      {
+        id: 'clothing',
+        name: '服装',
+        items: clothing.slice(0, 2),
+        image: '/clothing.jpg',
+      },
+      {
+        id: 'home-kitchen',
+        name: '家居厨房',
+        items: homeKitchen.slice(0, 2),
+        image: '/home-kitchen.jpg',
+      },
+      {
+        id: 'books',
+        name: '图书',
+        items: books.slice(0, 2),
+        image: '/books.jpg',
+      },
+    ];
+
+    return (
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {categories.map(category => (
+          <div key={category.id} className="border rounded-lg overflow-hidden bg-white shadow-sm">
+            <div className="p-4 border-b">
+              <h3 className="text-xl font-bold">{category.name}</h3>
+            </div>
+            <div className="grid grid-cols-2 gap-4 p-4">
+              {category.items.map((item: Product) => (
+                <Link key={item.id} href={`/products/${item.id}`} className="block">
+                  <div className="flex flex-col items-center text-center">
+                    <div className="mb-2 h-40 w-full overflow-hidden rounded-md">
+                      <img
+                        src={item.image}
+                        alt={item.name}
+                        className="h-full w-full object-cover transition-transform hover:scale-105"
+                      />
+                    </div>
+                    <h4 className="text-sm font-medium line-clamp-1">{item.name}</h4>
+                  </div>
+                </Link>
+              ))}
+            </div>
+            <div className="p-3 bg-gray-50 text-center">
+              <Link
+                href={`/products?category=${category.id}`}
+                className="text-sm text-blue-600 hover:text-blue-800 hover:underline"
+              >
+                查看更多
+              </Link>
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  } catch (error) {
+    console.error('获取类别产品数据时出错:', error);
+    return (
+      <div className="text-center py-8">
+        <h3 className="text-lg font-medium mb-2">无法加载类别数据</h3>
+        <p className="text-gray-500">请稍后再试</p>
+      </div>
+    );
+  }
+}
+
 export default function Home() {
   return (
     <div className="flex flex-col min-h-screen">
@@ -41,9 +124,12 @@ export default function Home() {
       <main className="flex-1">
         {/* Hero Section */}
         <section className="relative">
-          <div className="bg-gradient-to-r from-yellow-400 to-yellow-200 h-[400px] w-full">
+          <div
+            className="h-[400px] w-full bg-cover bg-center"
+            style={{ backgroundImage: 'url(/hero-banner.jpg)' }}
+          >
             <div className="container mx-auto px-4 py-24">
-              <div className="max-w-xl">
+              <div className="max-w-xl bg-white/80 p-6 rounded-lg">
                 <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl mb-6">
                   Shop the best deals
                 </h1>
@@ -88,28 +174,10 @@ export default function Home() {
         {/* Categories */}
         <section className="py-12 bg-gray-50">
           <div className="container mx-auto px-4">
-            <h2 className="text-2xl font-bold mb-8">Shop by Category</h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {['Electronics', 'Clothing', 'Home & Kitchen', 'Books'].map(category => (
-                <Card key={category} className="overflow-hidden">
-                  <CardContent className="p-0">
-                    <img
-                      src={`/placeholder.svg?height=200&width=300&text=${category}`}
-                      alt={category}
-                      className="w-full h-40 object-cover"
-                    />
-                  </CardContent>
-                  <CardFooter className="p-4">
-                    <Link
-                      href={`/products?category=${category.toLowerCase().replace(' & ', '-')}`}
-                      className="text-sm font-medium hover:underline w-full text-center"
-                    >
-                      {category}
-                    </Link>
-                  </CardFooter>
-                </Card>
-              ))}
-            </div>
+            <h2 className="text-2xl font-bold mb-8">分类浏览</h2>
+            <Suspense fallback={<div className="text-center py-8">加载类别数据中...</div>}>
+              <CategoryShowcase />
+            </Suspense>
           </div>
         </section>
       </main>
@@ -209,7 +277,7 @@ export default function Home() {
             </div>
           </div>
           <div className="mt-8 pt-8 border-t border-gray-700 text-center">
-            <p className="text-gray-400">© 2025 Amazon Clone. All rights reserved.</p>
+            <p className="text-gray-400">© 2025 购物系统. 版权所有.</p>
           </div>
         </div>
       </footer>
