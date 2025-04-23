@@ -234,7 +234,7 @@ export default function Home() {
                     <Link href="/products">立即购买</Link>
                   </Button>
                   <Link
-                    href="/about"
+                    href="/products"
                     className="text-white text-lg font-medium hover:underline flex items-center"
                   >
                     了解更多 <span className="ml-1">→</span>
@@ -257,7 +257,11 @@ export default function Home() {
             <div className="mt-8 md:mt-0">
               <div className="flex flex-col items-end">
                 <div className="flex items-center mb-2">
-                  <img src="/avatar.png" alt="专家头像" className="w-8 h-8 rounded-full mr-2" />
+                  <img
+                    src="/specialist_avatar.png"
+                    alt="专家头像"
+                    className="w-8 h-8 rounded-full mr-2"
+                  />
                   <span className="text-gray-700">需要购物帮助？</span>
                 </div>
                 <Link href="/help" className="text-blue-500 hover:underline flex items-center">

@@ -2,9 +2,9 @@
 
 import type React from 'react';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { Search, ShoppingCart, Menu, User } from 'lucide-react';
+import { Search, ShoppingCart, Menu, User, X } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 
 import { Button } from '@/components/ui/button';
@@ -13,12 +13,14 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useCart } from '@/lib/cart-context';
+import { cn } from '@/lib/utils';
 
 export function Navbar() {
   const [searchQuery, setSearchQuery] = useState('');
   const [isScrolled, setIsScrolled] = useState(false);
   const [cartBadgeAnimate, setCartBadgeAnimate] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
+  const searchInputRef = useRef<HTMLInputElement>(null);
   const pathname = usePathname();
   const { cartItems, itemCount, subtotal } = useCart();
 
@@ -61,6 +63,8 @@ export function Navbar() {
   // 处理搜索
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!searchQuery.trim()) return;
+
     // 构建搜索URL
     const searchUrl = `/products?q=${encodeURIComponent(searchQuery)}`;
     window.location.href = searchUrl;
@@ -69,8 +73,30 @@ export function Navbar() {
 
   // 切换搜索框显示
   const toggleSearch = () => {
-    setShowSearch(!showSearch);
+    const newShowSearch = !showSearch;
+    setShowSearch(newShowSearch);
+
+    if (newShowSearch) {
+      // 当打开搜索框时聚焦
+      setTimeout(() => {
+        searchInputRef.current?.focus();
+      }, 100);
+    }
   };
+
+  // 按ESC键关闭搜索
+  useEffect(() => {
+    const handleEscKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && showSearch) {
+        setShowSearch(false);
+      }
+    };
+
+    document.addEventListener('keydown', handleEscKey);
+    return () => {
+      document.removeEventListener('keydown', handleEscKey);
+    };
+  }, [showSearch]);
 
   return (
     <header
@@ -226,36 +252,16 @@ export function Navbar() {
 
         {/* 右侧工具栏 */}
         <div className="flex items-center">
-          {/* 搜索按钮和搜索框 */}
-          <div className="relative">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={toggleSearch}
-              className="text-gray-800 p-1 mr-1 hover:bg-transparent"
-            >
-              <Search className="h-[17px] w-[17px]" />
-              <span className="sr-only">搜索</span>
-            </Button>
-
-            {showSearch && (
-              <div className="absolute right-0 top-full mt-2 bg-white rounded-lg shadow-lg p-2 w-64">
-                <form onSubmit={handleSearch} className="flex items-center">
-                  <Input
-                    type="search"
-                    placeholder="搜索商品..."
-                    className="w-full text-sm"
-                    value={searchQuery}
-                    onChange={e => setSearchQuery(e.target.value)}
-                    autoFocus
-                  />
-                  <Button type="submit" variant="ghost" size="icon" className="ml-1">
-                    <Search className="h-4 w-4" />
-                  </Button>
-                </form>
-              </div>
-            )}
-          </div>
+          {/* 搜索按钮 */}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={toggleSearch}
+            className="text-gray-800 p-1 mr-1 hover:bg-transparent"
+          >
+            <Search className="h-[17px] w-[17px]" />
+            <span className="sr-only">搜索</span>
+          </Button>
 
           {/* 用户按钮 */}
           <Link href="/account">
@@ -308,6 +314,38 @@ export function Navbar() {
           </TooltipProvider>
         </div>
       </div>
+
+      {/* 搜索栏 - 展开样式 */}
+      {showSearch && (
+        <div className="w-full border-t border-gray-200 bg-white animate-in slide-in-from-top duration-300">
+          <div className="container max-w-[1040px] mx-auto">
+            <div className="relative py-2 px-4">
+              <form onSubmit={handleSearch} className="relative">
+                <div className="flex items-center">
+                  <Search className="absolute left-3.5 h-4 w-4 text-gray-400" />
+                  <Input
+                    ref={searchInputRef}
+                    type="search"
+                    placeholder="搜索 apple.com"
+                    className="pl-10 pr-10 h-11 bg-[#1d1d1f0a] border-none shadow-none focus-visible:ring-0 rounded-lg"
+                    value={searchQuery}
+                    onChange={e => setSearchQuery(e.target.value)}
+                  />
+                  {searchQuery && (
+                    <button
+                      type="button"
+                      onClick={() => setSearchQuery('')}
+                      className="absolute right-3 text-gray-400 hover:text-gray-600"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  )}
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* 移动端搜索栏 */}
       <div className="md:hidden px-4 pb-3">
