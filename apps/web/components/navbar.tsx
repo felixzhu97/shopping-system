@@ -5,7 +5,7 @@ import type React from 'react';
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { Search, ShoppingCart, Menu, User, X, ChevronRight } from 'lucide-react';
-import { usePathname } from 'next/navigation';
+import { usePathname, useSearchParams, useRouter } from 'next/navigation';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -30,18 +30,20 @@ export function Navbar() {
   const [showSearch, setShowSearch] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const router = useRouter();
   const { cartItems, itemCount, subtotal } = useCart();
 
-  // 根据路径分析当前分类
+  // 根据路径和查询参数分析当前分类
   const getCurrentCategory = (): string => {
     if (!pathname) return '';
-    const url = new URL(pathname, 'http://example.com');
-    if (url.pathname.includes('/products')) {
-      // 简单方法：检查路径是否包含特定关键词
-      if (url.pathname.includes('/electronics')) return 'electronics';
-      if (url.pathname.includes('/clothing')) return 'clothing';
-      if (url.pathname.includes('/home-kitchen')) return 'home-kitchen';
-      if (url.pathname.includes('/books')) return 'books';
+
+    // 如果是产品页面，则从URL参数中获取类别
+    if (pathname.includes('/products')) {
+      const category = searchParams.get('category');
+      if (category) {
+        return category;
+      }
     }
     return '';
   };
@@ -79,9 +81,9 @@ export function Navbar() {
     e.preventDefault();
     if (!searchQuery.trim()) return;
 
-    // 构建搜索URL
+    // 构建搜索URL，重置其他参数
     const searchUrl = `/products?q=${encodeURIComponent(searchQuery)}`;
-    window.location.href = searchUrl;
+    router.push(searchUrl);
     setShowSearch(false);
   };
 

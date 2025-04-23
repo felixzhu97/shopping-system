@@ -273,16 +273,17 @@ function ClientProductsPage() {
   const handleCategoryChange = useCallback(
     (newCategory: string) => {
       startTransition(() => {
-        const params = new URLSearchParams(searchParams);
-        if (newCategory === 'all') {
-          params.delete('category');
-        } else {
+        const params = new URLSearchParams();
+        if (newCategory !== 'all') {
           params.set('category', newCategory);
         }
+        // 切换类别时重置搜索和排序，使用默认值
         router.push(`/products?${params.toString()}`);
+        params.delete('q');
+        params.delete('sort');
       });
     },
-    [router, searchParams]
+    [router]
   );
 
   // 处理排序变更
