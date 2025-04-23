@@ -1,12 +1,11 @@
 'use client';
 
 import { Suspense, useState, useEffect, useCallback, useTransition } from 'react';
-import { SlidersHorizontal } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useInView } from 'react-intersection-observer';
+import Link from 'next/link';
 
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import {
   Select,
@@ -16,10 +15,12 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
-import { ProductCard } from '@/components/product-card';
+import { AppleProductCard } from '@/components/apple-product-card';
 import { Navbar } from '@/components/navbar';
+import { Footer } from '@/components/footer';
 import { Product } from '@/lib/types';
 import * as api from '@/lib/api';
+import { cn } from '@/lib/utils';
 
 // 分类名称映射表，将URL参数映射为友好的中文名称
 const getCategoryLabel = (categorySlug: string): string => {
@@ -36,11 +37,11 @@ const getCategoryLabel = (categorySlug: string): string => {
   );
 };
 
-// 虚拟列表的产品网格
-function VirtualizedProductGrid({ products }: { products: Product[] }) {
+// 改造后的产品网格，以Apple Store风格展示
+function AppleStyleProductGrid({ products }: { products: Product[] }) {
   const [visibleProducts, setVisibleProducts] = useState<Product[]>([]);
   const [hasMore, setHasMore] = useState(true);
-  const PAGE_SIZE = 8; // 每批加载的产品数量
+  const PAGE_SIZE = 12; // 每批加载的产品数量，增加到12个以适应网格
 
   const { ref, inView } = useInView({
     threshold: 0.1,
@@ -72,15 +73,15 @@ function VirtualizedProductGrid({ products }: { products: Product[] }) {
 
   return (
     <>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {visibleProducts.map(product => (
-          <ProductCard key={product.id} product={product} />
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-8">
+        {visibleProducts.map((product, index) => (
+          <AppleProductCard key={`${product.id}-${index}`} product={product} />
         ))}
       </div>
 
       {/* 加载指示器 */}
       {hasMore && (
-        <div ref={ref} className="py-4 mt-4 flex justify-center">
+        <div ref={ref} className="py-8 mt-4 flex justify-center">
           <div className="flex space-x-4">
             {[...Array(4)].map((_, i) => (
               <Skeleton key={i} className="h-8 w-8 rounded-full" />
@@ -89,6 +90,53 @@ function VirtualizedProductGrid({ products }: { products: Product[] }) {
         </div>
       )}
     </>
+  );
+}
+
+// 为每个类别添加一个水平标题组件
+function CategoryHeader({ category }: { category: string }) {
+  const categoryInfo = {
+    electronics: {
+      title: '电子产品',
+      description: '探索最新科技产品，体验科技带来的便利与乐趣',
+      color: 'text-blue-600',
+      bgColor: 'bg-blue-50',
+    },
+    clothing: {
+      title: '服装',
+      description: '时尚穿搭，展现个性，彰显您的独特魅力',
+      color: 'text-purple-600',
+      bgColor: 'bg-purple-50',
+    },
+    'home-kitchen': {
+      title: '家居厨房',
+      description: '打造舒适生活空间，让家更有温度',
+      color: 'text-amber-600',
+      bgColor: 'bg-amber-50',
+    },
+    books: {
+      title: '图书',
+      description: '知识的海洋，尽在掌握，开启智慧之门',
+      color: 'text-green-600',
+      bgColor: 'bg-green-50',
+    },
+    default: {
+      title: '全部商品',
+      description: '浏览我们的所有精选商品',
+      color: 'text-gray-900',
+      bgColor: 'bg-gray-50',
+    },
+  };
+
+  const info = categoryInfo[category as keyof typeof categoryInfo] || categoryInfo.default;
+
+  return (
+    <div className={cn('py-8 mb-10', info.bgColor)}>
+      <div className="container mx-auto px-4 text-center">
+        <h1 className={cn('text-4xl font-semibold mb-4', info.color)}>{info.title}</h1>
+        <p className="text-xl text-gray-600 max-w-2xl mx-auto">{info.description}</p>
+      </div>
+    </div>
   );
 }
 
@@ -174,7 +222,7 @@ function ClientProductsList() {
     );
   }
 
-  return <VirtualizedProductGrid products={filteredProducts} />;
+  return <AppleStyleProductGrid products={filteredProducts} />;
 }
 
 // 外层组件不直接使用useSearchParams，只负责包装Suspense
@@ -191,11 +239,17 @@ function ClientProductsPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
+  const [currentSort, setCurrentSort] = useState('featured');
 
   // 获取所有查询参数
   const category = searchParams.get('category') || '';
   const sort = searchParams.get('sort') || 'featured';
   const query = searchParams.get('q') || '';
+
+  // 当URL参数变化时更新排序状态
+  useEffect(() => {
+    setCurrentSort(sort);
+  }, [sort]);
 
   // 预加载相关分类数据
   useEffect(() => {
@@ -225,16 +279,18 @@ function ClientProductsPage() {
   const handleCategoryChange = useCallback(
     (newCategory: string) => {
       startTransition(() => {
-        const params = new URLSearchParams(searchParams);
-        if (newCategory === 'all') {
-          params.delete('category');
-        } else {
+        // 清除所有参数，只保留类别
+        const params = new URLSearchParams();
+        if (newCategory !== 'all') {
           params.set('category', newCategory);
         }
+        // 切换类别时重置搜索和排序，使用默认值
         router.push(`/products?${params.toString()}`);
+        // 同步更新UI状态
+        setCurrentSort('featured');
       });
     },
-    [router, searchParams]
+    [router]
   );
 
   // 处理排序变更
@@ -244,6 +300,7 @@ function ClientProductsPage() {
         const params = new URLSearchParams(searchParams);
         params.set('sort', newSort);
         router.push(`/products?${params.toString()}`);
+        setCurrentSort(newSort);
       });
     },
     [router, searchParams]
@@ -266,153 +323,45 @@ function ClientProductsPage() {
     [router, searchParams]
   );
 
+  // Apple风格的分类导航菜单
+  const categories = [
+    { id: 'all', name: '全部' },
+    { id: 'electronics', name: '电子产品' },
+    { id: 'clothing', name: '服装' },
+    { id: 'home-kitchen', name: '家居厨房' },
+    { id: 'books', name: '图书' },
+  ];
+
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen bg-[#f5f5f7]">
       <Navbar />
-      <main className="flex-1 container mx-auto px-4 py-8">
-        <div className="flex flex-col md:flex-row gap-6">
-          {/* Filters sidebar */}
-          <aside className="w-full md:w-64 shrink-0">
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-lg font-semibold">筛选条件</h2>
-                  <SlidersHorizontal className="h-5 w-5" />
-                </div>
 
-                <div className="space-y-6">
-                  <div>
-                    <h3 className="font-medium mb-2">分类</h3>
-                    <div className="space-y-1">
-                      {[
-                        { id: 'all', label: '全部' },
-                        { id: 'electronics', label: '电子产品' },
-                        { id: 'clothing', label: '服装' },
-                        { id: 'home-kitchen', label: '家居厨房' },
-                        { id: 'books', label: '图书' },
-                      ].map(cat => (
-                        <div key={cat.id} className="flex items-center">
-                          <input
-                            type="radio"
-                            id={cat.id}
-                            name="category"
-                            className="mr-2"
-                            checked={cat.id === 'all' ? !category : category === cat.id}
-                            onChange={() => handleCategoryChange(cat.id)}
-                          />
-                          <label htmlFor={cat.id} className="text-sm">
-                            {cat.label}
-                          </label>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
+      {/* Apple风格分类标题 */}
+      <CategoryHeader category={category} />
 
-                  <div>
-                    <h3 className="font-medium mb-2">价格范围</h3>
-                    <div className="grid grid-cols-2 gap-2">
-                      <Input
-                        type="number"
-                        placeholder="最低价"
-                        className="text-sm"
-                        defaultValue={searchParams.get('minPrice') || ''}
-                        onChange={e => {
-                          const minPrice = e.target.value;
-                          const maxPrice = searchParams.get('maxPrice') || '';
-                          handlePriceFilter(minPrice, maxPrice);
-                        }}
-                      />
-                      <Input
-                        type="number"
-                        placeholder="最高价"
-                        className="text-sm"
-                        defaultValue={searchParams.get('maxPrice') || ''}
-                        onChange={e => {
-                          const maxPrice = e.target.value;
-                          const minPrice = searchParams.get('minPrice') || '';
-                          handlePriceFilter(minPrice, maxPrice);
-                        }}
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <h3 className="font-medium mb-2">评分</h3>
-                    <div className="space-y-1">
-                      {[4, 3, 2, 1].map(rating => (
-                        <div key={rating} className="flex items-center">
-                          <input
-                            type="checkbox"
-                            id={`rating-${rating}`}
-                            className="mr-2"
-                            defaultChecked={searchParams.get('rating') === rating.toString()}
-                            onChange={e => {
-                              startTransition(() => {
-                                const params = new URLSearchParams(searchParams);
-                                if (e.target.checked) {
-                                  params.set('rating', rating.toString());
-                                } else {
-                                  params.delete('rating');
-                                }
-                                router.push(`/products?${params.toString()}`);
-                              });
-                            }}
-                          />
-                          <label htmlFor={`rating-${rating}`} className="text-sm">
-                            {rating}+ 星
-                          </label>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  <Button
-                    className="w-full"
-                    disabled={isPending}
-                    onClick={() => router.push('/products')}
-                  >
-                    {isPending ? '处理中...' : '清除所有筛选'}
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </aside>
-
-          {/* Products grid */}
-          <div className="flex-1">
-            <div className="flex justify-between items-center mb-6">
-              <h1 className="text-2xl font-bold">
-                {category ? getCategoryLabel(category) : '所有产品'}
-                {query && (
-                  <span className="ml-2 text-base font-normal text-muted-foreground">
-                    搜索: "{query}"
-                  </span>
-                )}
-              </h1>
-
-              <Select defaultValue={sort} onValueChange={handleSortChange}>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="排序方式" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="featured">精选</SelectItem>
-                  <SelectItem value="price-asc">价格: 从低到高</SelectItem>
-                  <SelectItem value="price-desc">价格: 从高到低</SelectItem>
-                  <SelectItem value="rating">评分最高</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <ProductsList />
+      <main className="flex-1 container mx-auto px-4 pb-16">
+        {/* 搜索和筛选工具栏 */}
+        <div className="flex justify-end mb-8">
+          <div className="flex gap-2 items-center">
+            <span className="text-sm text-gray-500">排序方式:</span>
+            <Select value={currentSort} onValueChange={handleSortChange} disabled={isPending}>
+              <SelectTrigger className="w-40 rounded-full bg-white">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="featured">推荐</SelectItem>
+                <SelectItem value="price-asc">价格: 从低到高</SelectItem>
+                <SelectItem value="price-desc">价格: 从高到低</SelectItem>
+                <SelectItem value="rating">评分最高</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </div>
+
+        <ProductsList />
       </main>
 
-      <footer className="bg-gray-800 text-white py-8">
-        <div className="container mx-auto px-4 text-center">
-          <p className="text-gray-400">© 2025 购物系统. 保留所有权利.</p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }
@@ -422,20 +371,27 @@ export default function ProductsPage() {
   return (
     <Suspense
       fallback={
-        <div className="flex flex-col min-h-screen">
+        <div className="flex flex-col min-h-screen bg-[#f5f5f7]">
           <Navbar />
-          <main className="flex-1 container mx-auto px-4 py-8">
-            <div className="animate-pulse">
-              <div className="h-8 w-64 bg-gray-200 rounded mb-8"></div>
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                <div className="md:col-span-1">
-                  <div className="h-[400px] bg-gray-200 rounded"></div>
-                </div>
-                <div className="md:col-span-3">
-                  <ProductsGridSkeleton />
-                </div>
+          <div className="py-8 mb-10 bg-gray-50">
+            <div className="container mx-auto px-4 text-center">
+              <Skeleton className="h-10 w-[200px] mx-auto mb-4" />
+              <Skeleton className="h-6 w-[400px] mx-auto" />
+            </div>
+          </div>
+          <main className="flex-1 container mx-auto px-4 pb-16">
+            <div className="mb-8 overflow-x-auto">
+              <div className="flex space-x-6 pb-2">
+                {[...Array(5)].map((_, i) => (
+                  <Skeleton key={i} className="h-10 w-20 rounded-full" />
+                ))}
               </div>
             </div>
+            <div className="flex flex-col md:flex-row justify-between mb-8 gap-4">
+              <Skeleton className="h-10 w-[300px]" />
+              <Skeleton className="h-10 w-[150px]" />
+            </div>
+            <ProductsGridSkeleton />
           </main>
         </div>
       }
@@ -447,20 +403,20 @@ export default function ProductsPage() {
 
 function ProductsGridSkeleton() {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-8">
       {Array(8)
         .fill(0)
         .map((_, i) => (
-          <Card key={i} className="overflow-hidden">
-            <CardContent className="p-0">
-              <Skeleton className="h-[300px] w-full" />
-              <div className="p-4">
-                <Skeleton className="h-5 w-3/4 mb-2" />
-                <Skeleton className="h-4 w-1/4 mb-2" />
-                <Skeleton className="h-6 w-1/3" />
-              </div>
-            </CardContent>
-          </Card>
+          <div key={i} className="flex flex-col">
+            <div className="bg-gray-100 rounded-2xl p-4 mb-3 aspect-square flex items-center justify-center overflow-hidden">
+              <Skeleton className="h-3/4 w-3/4" />
+            </div>
+            <div className="flex flex-col items-center">
+              <Skeleton className="h-5 w-3/4 mb-2" />
+              <Skeleton className="h-4 w-1/2 mb-2" />
+              <Skeleton className="h-6 w-1/3" />
+            </div>
+          </div>
         ))}
     </div>
   );
