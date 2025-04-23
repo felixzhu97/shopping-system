@@ -380,12 +380,11 @@ export default function Home() {
 
         {/* Quick Links */}
         <QuickLinks />
-
-        {/* Extended Navigation */}
-        <ExtendedNavigation />
       </main>
 
       <footer className="text-gray-600">
+        {/* Extended Navigation */}
+        <ExtendedNavigation />
         <div className="container mx-auto px-4">
           <div className="border-t border-gray-200 py-8">
             <div className="md:flex md:items-center md:justify-between text-xs text-gray-500">
