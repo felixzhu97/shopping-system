@@ -1,13 +1,11 @@
 'use client';
 
 import { Suspense, useState, useEffect, useCallback, useTransition } from 'react';
-import { SlidersHorizontal } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useInView } from 'react-intersection-observer';
 import Link from 'next/link';
 
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import {
   Select,
@@ -17,13 +15,12 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
-import { ProductCard } from '@/components/product-card';
+import { AppleProductCard } from '@/components/apple-product-card';
 import { Navbar } from '@/components/navbar';
 import { Footer } from '@/components/footer';
 import { Product } from '@/lib/types';
 import * as api from '@/lib/api';
 import { cn } from '@/lib/utils';
-import { useCart } from '@/lib/cart-context';
 
 // 分类名称映射表，将URL参数映射为友好的中文名称
 const getCategoryLabel = (categorySlug: string): string => {
@@ -45,8 +42,6 @@ function AppleStyleProductGrid({ products }: { products: Product[] }) {
   const [visibleProducts, setVisibleProducts] = useState<Product[]>([]);
   const [hasMore, setHasMore] = useState(true);
   const PAGE_SIZE = 12; // 每批加载的产品数量，增加到12个以适应网格
-  const { addToCart } = useCart();
-  const [addingToCartId, setAddingToCartId] = useState<string | null>(null);
 
   const { ref, inView } = useInView({
     threshold: 0.1,
@@ -76,62 +71,11 @@ function AppleStyleProductGrid({ products }: { products: Product[] }) {
     }
   }, [inView, hasMore, products, visibleProducts]);
 
-  // 处理添加到购物车功能
-  const handleAddToCart = (product: Product) => {
-    setAddingToCartId(product.id);
-    try {
-      addToCart({
-        id: product.id,
-        name: product.name,
-        price: product.price,
-        quantity: 1,
-        image: product.image,
-      });
-      setTimeout(() => setAddingToCartId(null), 1000);
-    } catch (err) {
-      console.error('添加到购物车失败:', err);
-      setAddingToCartId(null);
-    }
-  };
-
   return (
     <>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-8">
         {visibleProducts.map(product => (
-          <div key={product.id} className="flex flex-col">
-            <Link href={`/products/${product.id}`} className="group">
-              <div className="bg-white rounded-2xl p-4 mb-3 aspect-square flex items-center justify-center overflow-hidden">
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  className="max-h-full max-w-full object-contain transition-transform group-hover:scale-105"
-                />
-              </div>
-              <div className="text-center">
-                <h3 className="text-sm font-medium text-gray-900 mb-1">{product.name}</h3>
-                <p className="text-sm text-gray-600 mb-1">
-                  {product.description?.substring(0, 60)}...
-                </p>
-                <p className="text-lg font-medium text-gray-900">¥{product.price.toFixed(2)}</p>
-              </div>
-            </Link>
-            <div className="mt-auto pt-4 flex justify-center">
-              <Button
-                variant="default"
-                size="sm"
-                className={cn(
-                  'rounded-full px-6',
-                  addingToCartId === product.id
-                    ? 'bg-green-600 hover:bg-green-700'
-                    : 'bg-blue-600 hover:bg-blue-700'
-                )}
-                onClick={() => handleAddToCart(product)}
-                disabled={addingToCartId === product.id}
-              >
-                {addingToCartId === product.id ? '已添加 ✓' : '加入购物车'}
-              </Button>
-            </div>
-          </div>
+          <AppleProductCard key={product.id} product={product} />
         ))}
       </div>
 
@@ -502,20 +446,20 @@ export default function ProductsPage() {
 
 function ProductsGridSkeleton() {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-8">
       {Array(8)
         .fill(0)
         .map((_, i) => (
-          <Card key={i} className="overflow-hidden">
-            <CardContent className="p-0">
-              <Skeleton className="h-[300px] w-full" />
-              <div className="p-4">
-                <Skeleton className="h-5 w-3/4 mb-2" />
-                <Skeleton className="h-4 w-1/4 mb-2" />
-                <Skeleton className="h-6 w-1/3" />
-              </div>
-            </CardContent>
-          </Card>
+          <div key={i} className="flex flex-col">
+            <div className="bg-gray-100 rounded-2xl p-4 mb-3 aspect-square flex items-center justify-center overflow-hidden">
+              <Skeleton className="h-3/4 w-3/4" />
+            </div>
+            <div className="flex flex-col items-center">
+              <Skeleton className="h-5 w-3/4 mb-2" />
+              <Skeleton className="h-4 w-1/2 mb-2" />
+              <Skeleton className="h-6 w-1/3" />
+            </div>
+          </div>
         ))}
     </div>
   );
