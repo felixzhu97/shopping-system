@@ -239,11 +239,17 @@ function ClientProductsPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
+  const [currentSort, setCurrentSort] = useState('featured');
 
   // 获取所有查询参数
   const category = searchParams.get('category') || '';
   const sort = searchParams.get('sort') || 'featured';
   const query = searchParams.get('q') || '';
+
+  // 当URL参数变化时更新排序状态
+  useEffect(() => {
+    setCurrentSort(sort);
+  }, [sort]);
 
   // 预加载相关分类数据
   useEffect(() => {
@@ -273,14 +279,15 @@ function ClientProductsPage() {
   const handleCategoryChange = useCallback(
     (newCategory: string) => {
       startTransition(() => {
+        // 清除所有参数，只保留类别
         const params = new URLSearchParams();
         if (newCategory !== 'all') {
           params.set('category', newCategory);
         }
         // 切换类别时重置搜索和排序，使用默认值
         router.push(`/products?${params.toString()}`);
-        params.delete('q');
-        params.delete('sort');
+        // 同步更新UI状态
+        setCurrentSort('featured');
       });
     },
     [router]
@@ -293,6 +300,7 @@ function ClientProductsPage() {
         const params = new URLSearchParams(searchParams);
         params.set('sort', newSort);
         router.push(`/products?${params.toString()}`);
+        setCurrentSort(newSort);
       });
     },
     [router, searchParams]
@@ -309,26 +317,6 @@ function ClientProductsPage() {
         if (maxPrice) params.set('maxPrice', maxPrice);
         else params.delete('maxPrice');
 
-        router.push(`/products?${params.toString()}`);
-      });
-    },
-    [router, searchParams]
-  );
-
-  // 处理搜索查询变更
-  const handleSearchChange = useCallback(
-    (e: React.FormEvent<HTMLFormElement>) => {
-      e.preventDefault();
-      const formData = new FormData(e.currentTarget);
-      const searchQuery = formData.get('q') as string;
-
-      startTransition(() => {
-        const params = new URLSearchParams(searchParams);
-        if (searchQuery) {
-          params.set('q', searchQuery);
-        } else {
-          params.delete('q');
-        }
         router.push(`/products?${params.toString()}`);
       });
     },
@@ -353,22 +341,10 @@ function ClientProductsPage() {
 
       <main className="flex-1 container mx-auto px-4 pb-16">
         {/* 搜索和筛选工具栏 */}
-        <div className="flex flex-col md:flex-row justify-between mb-8 gap-4">
-          <form onSubmit={handleSearchChange} className="flex-1 flex gap-2 max-w-md">
-            <Input
-              name="q"
-              defaultValue={query}
-              placeholder="搜索产品..."
-              className="rounded-full bg-white"
-            />
-            <Button type="submit" variant="outline" className="rounded-full">
-              搜索
-            </Button>
-          </form>
-
+        <div className="flex justify-end mb-8">
           <div className="flex gap-2 items-center">
             <span className="text-sm text-gray-500">排序方式:</span>
-            <Select value={sort} onValueChange={handleSortChange} disabled={isPending}>
+            <Select value={currentSort} onValueChange={handleSortChange} disabled={isPending}>
               <SelectTrigger className="w-40 rounded-full bg-white">
                 <SelectValue />
               </SelectTrigger>
