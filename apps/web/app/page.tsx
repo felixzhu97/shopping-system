@@ -233,10 +233,51 @@ export default function Home() {
           </div>
         </section>
 
+        {/* Store Headline */}
+        <section className="py-16 px-4">
+          <div className="container mx-auto px-4 flex flex-col md:flex-row md:justify-between md:items-end">
+            <div className="max-w-[600px]">
+              <h2 className="text-5xl font-semibold text-gray-800">购物系统.</h2>
+              <p className="text-4xl font-semibold text-gray-500 mt-2">
+                以最好的方式购买您喜爱的产品。
+              </p>
+            </div>
+            <div className="mt-8 md:mt-0">
+              <div className="flex flex-col items-end">
+                <div className="flex items-center mb-2">
+                  <img src="/avatar.png" alt="专家头像" className="w-8 h-8 rounded-full mr-2" />
+                  <span className="text-gray-700">需要购物帮助？</span>
+                </div>
+                <Link href="/help" className="text-blue-500 hover:underline flex items-center">
+                  咨询专家 <span className="ml-1">→</span>
+                </Link>
+                <div className="flex items-center mt-4">
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="mr-2"
+                  >
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="M12 8l4 4-4 4M8 12h8"></path>
+                  </svg>
+                  <Link href="/stores" className="text-blue-500 hover:underline flex items-center">
+                    查找门店位置 <span className="ml-1">→</span>
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* Categories */}
-        <section className="py-16">
+        <section className="pb-16">
           <div className="container mx-auto px-4">
-            <h2 className="text-4xl font-bold text-center mb-12">分类浏览</h2>
             <Suspense fallback={<div className="text-center py-8">加载类别数据中...</div>}>
               <CategoryShowcase />
             </Suspense>
