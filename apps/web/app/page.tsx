@@ -197,28 +197,40 @@ export default function Home() {
     <div className="flex flex-col min-h-screen bg-white">
       <Navbar />
       <main className="flex-1">
-        {/* Hero Section */}
+        {/* Hero Section - Apple Style */}
         <section className="relative bg-black">
-          <div
-            className="h-[500px] w-full bg-cover bg-center"
-            style={{ backgroundImage: 'url(/hero-banner.jpg)' }}
-          >
-            <div className="container mx-auto px-4 flex items-center h-full">
-              <div className="max-w-lg text-center mx-auto text-white">
-                <h1 className="text-5xl font-bold tracking-tight mb-6">购物系统</h1>
-                <p className="text-xl mb-8">以最好的方式购买您喜爱的产品</p>
-                <div className="flex justify-center gap-4">
-                  <Button asChild variant="default" size="lg" className="rounded-full px-8">
-                    <Link href="/products">立即购物</Link>
-                  </Button>
+          <div className="w-full">
+            {/* 视频背景，如果没有视频可以用高清图片代替 */}
+            <div
+              className="w-full h-[50vh] bg-cover bg-center"
+              style={{ backgroundImage: 'url(/hero-apple-style.jpg)' }}
+            >
+              {/* 渐变遮罩，增加文字可读性 */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
+
+              {/* 内容区域 */}
+              <div className="relative h-full flex flex-col justify-center items-center text-center px-4">
+                <h2 className="text-lg md:text-xl text-white/90 font-medium mb-2">全新上市</h2>
+                <h1 className="text-5xl md:text-7xl font-bold text-white mb-4">智能科技生活</h1>
+                <p className="text-xl md:text-2xl text-white/90 max-w-2xl mb-8">
+                  发现更智能、更便捷的生活方式
+                </p>
+
+                <div className="flex flex-col sm:flex-row gap-4 items-center mt-4">
                   <Button
                     asChild
-                    variant="outline"
+                    variant="default"
                     size="lg"
-                    className="rounded-full px-8 bg-transparent text-white border-white hover:bg-white/10"
+                    className="rounded-full px-8 py-6 bg-white text-black hover:bg-white/90 text-base"
                   >
-                    <Link href="/about">了解更多</Link>
+                    <Link href="/products">立即购买</Link>
                   </Button>
+                  <Link
+                    href="/about"
+                    className="text-white text-lg font-medium hover:underline flex items-center"
+                  >
+                    了解更多 <span className="ml-1">→</span>
+                  </Link>
                 </div>
               </div>
             </div>
