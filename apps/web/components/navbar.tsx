@@ -17,9 +17,10 @@ import { cn } from '@/lib/utils';
 
 // 定义快捷链接数据
 const quickLinks = [
-  { title: '智能设备', path: '/products?q=pro' },
-  { title: '智能耳机', path: '/products?q=耳机' },
-  { title: '智能手机', path: '/products?q=iphone' },
+  { title: '智能设备', path: '/products?category=electronics' },
+  { title: '精美服装', path: '/products?category=clothing' },
+  { title: '实用家具', path: '/products?category=home-kitchen' },
+  { title: '经典图书', path: '/products?category=books' },
 ];
 
 export function Navbar() {

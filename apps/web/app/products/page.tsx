@@ -351,26 +351,6 @@ function ClientProductsPage() {
       <CategoryHeader category={category} />
 
       <main className="flex-1 container mx-auto px-4 pb-16">
-        {/* Apple风格水平分类菜单 */}
-        <div className="mb-8 overflow-x-auto">
-          <div className="flex space-x-6 pb-2">
-            {categories.map(cat => (
-              <button
-                key={cat.id}
-                onClick={() => handleCategoryChange(cat.id)}
-                className={cn(
-                  'whitespace-nowrap px-4 py-2 text-sm font-medium rounded-full transition-colors',
-                  cat.id === (category || 'all')
-                    ? 'bg-gray-900 text-white'
-                    : 'bg-white text-gray-800 hover:bg-gray-100'
-                )}
-              >
-                {cat.name}
-              </button>
-            ))}
-          </div>
-        </div>
-
         {/* 搜索和筛选工具栏 */}
         <div className="flex flex-col md:flex-row justify-between mb-8 gap-4">
           <form onSubmit={handleSearchChange} className="flex-1 flex gap-2 max-w-md">
