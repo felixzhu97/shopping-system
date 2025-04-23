@@ -37,27 +37,29 @@ async function FeaturedProducts() {
 // 快速链接组件
 function QuickLinks() {
   const links = [
-    { name: '查找门店', href: '/stores', icon: '/icons/store.svg' },
-    { name: '订单状态', href: '/account/orders', icon: '/icons/order.svg' },
-    { name: '购物帮助', href: '/help', icon: '/icons/help.svg' },
-    { name: '退货', href: '/returns', icon: '/icons/return.svg' },
-    { name: '收藏夹', href: '/account/saved', icon: '/icons/heart.svg' },
+    { name: '查找门店', href: '/stores' },
+    { name: '订单状态', href: '/account/orders' },
+    { name: '购物帮助', href: '/help' },
+    { name: '退货', href: '/returns' },
+    { name: '收藏夹', href: '/account/saved' },
   ];
 
   return (
-    <div>
-      <h2 className="text-4xl font-semibold mb-8">快速链接</h2>
-      <div className="flex flex-wrap justify-between gap-4">
-        {links.map(link => (
-          <Link
-            key={link.name}
-            href={link.href}
-            className="flex items-center justify-between border border-gray-300 rounded-full px-6 py-3 min-w-[220px] hover:border-gray-600 transition-colors group"
-          >
-            <span className="text-base font-medium">{link.name}</span>
-            <span className="text-lg">→</span>
-          </Link>
-        ))}
+    <div className="py-8 bg-[#f5f5f7]">
+      <div className="container mx-auto px-4">
+        <h2 className="text-3xl font-semibold mb-6 text-gray-900">快速链接</h2>
+        <div className="flex flex-wrap gap-3">
+          {links.map(link => (
+            <Link
+              key={link.name}
+              href={link.href}
+              className="border border-gray-300 rounded-full px-5 py-2 text-sm inline-flex items-center hover:border-gray-800 transition-colors"
+            >
+              <span>{link.name}</span>
+              <span className="ml-1">↗</span>
+            </Link>
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -294,16 +296,12 @@ export default function Home() {
         </section>
 
         {/* Quick Links - Moved to bottom */}
-        <section className="py-16 bg-gray-50">
-          <div className="container mx-auto px-4">
-            <QuickLinks />
-          </div>
-        </section>
+        <QuickLinks />
       </main>
 
-      <footer className="bg-gray-100 py-12 text-gray-600">
+      <footer className="bg-white text-gray-600">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 py-12 border-t border-gray-200">
             <div>
               <h3 className="font-semibold mb-4">了解我们</h3>
               <ul className="space-y-2">
@@ -395,8 +393,28 @@ export default function Home() {
               </ul>
             </div>
           </div>
-          <div className="mt-12 pt-8 border-t border-gray-200 text-center">
-            <p className="text-gray-500">© 2025 购物系统. 版权所有.</p>
+
+          <div className="border-t border-gray-200 py-8">
+            <div className="md:flex md:items-center md:justify-between text-xs text-gray-500">
+              <p>Copyright © 2025 购物系统. 版权所有.</p>
+              <div className="flex flex-wrap mt-4 md:mt-0 gap-x-6">
+                <Link href="/privacy" className="hover:underline">
+                  隐私政策
+                </Link>
+                <Link href="/terms" className="hover:underline">
+                  使用条款
+                </Link>
+                <Link href="/sales" className="hover:underline">
+                  销售政策
+                </Link>
+                <Link href="/legal" className="hover:underline">
+                  法律信息
+                </Link>
+                <Link href="/sitemap" className="hover:underline">
+                  网站地图
+                </Link>
+              </div>
+            </div>
           </div>
         </div>
       </footer>
