@@ -1,8 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { ChevronRight, Minus, Plus, ShoppingCart, Star, Truck, Check } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { ChevronRight, Minus, Plus, ShoppingCart, Star, Truck, Check, Search } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { use } from 'react';
 import { Button } from '@/components/ui/button';
@@ -48,6 +48,8 @@ function ProductDetail({ productId }: { productId: string }) {
   const [quantity, setQuantity] = useState(1);
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [fullscreenImage, setFullscreenImage] = useState(false);
+  const imageContainerRef = useRef<HTMLDivElement>(null);
   const { addToCart } = useCart();
   const { toast } = useToast();
   const router = useRouter();
@@ -164,18 +166,73 @@ function ProductDetail({ productId }: { productId: string }) {
     `https://picsum.photos/seed/${product.id}-2/800/800`,
   ];
 
+  // 处理图片点击 - 用于移动设备
+  const handleImageClick = () => {
+    setFullscreenImage(true);
+  };
+
+  // 关闭全屏图片
+  const handleCloseFullscreen = () => {
+    setFullscreenImage(false);
+  };
+
   return (
     <>
+      {/* 全屏图片展示 - 移动设备使用 */}
+      {fullscreenImage && (
+        <div
+          className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4"
+          onClick={handleCloseFullscreen}
+        >
+          <div className="relative w-full max-w-3xl">
+            <button
+              className="absolute top-2 right-2 bg-white/20 rounded-full p-2"
+              onClick={handleCloseFullscreen}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="white"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+            <img
+              src={selectedImage || product.image}
+              alt={product.name}
+              className="w-full h-auto rounded-lg"
+            />
+          </div>
+        </div>
+      )}
+
       {/* Apple风格产品详情 */}
       <div className="grid md:grid-cols-2 gap-8 lg:gap-16">
         {/* 产品图片部分，左侧 */}
         <div className="space-y-4">
-          <div className="aspect-square bg-[#fafafa] rounded-3xl overflow-hidden flex items-center justify-center p-8">
+          <div
+            className="aspect-square bg-[#fafafa] rounded-3xl overflow-hidden flex items-center justify-center p-8 relative cursor-zoom-in"
+            onClick={handleImageClick}
+            ref={imageContainerRef}
+          >
             <img
               src={selectedImage || product.image}
               alt={product.name}
               className="max-h-full max-w-full object-contain transition-all duration-300"
             />
+
+            {/* 点击查看大图提示 */}
+            <div className="absolute bottom-3 right-3 bg-white/80 backdrop-blur-sm rounded-full p-2 flex items-center gap-2 text-xs text-gray-600 shadow-sm">
+              <Search className="h-3 w-3" />
+              <span>点击查看大图</span>
+            </div>
           </div>
 
           {/* 缩略图导航 */}
@@ -544,27 +601,6 @@ export default function ProductPage({ params }: { params: Usable<{ productId: st
     <div className="flex flex-col min-h-screen bg-[#f5f5f7]">
       <Navbar />
       <main className="flex-1 container mx-auto px-4 py-12">
-        {/* 面包屑导航 */}
-        <nav className="text-sm mb-8">
-          <ol className="flex items-center space-x-1">
-            <li>
-              <Link href="/" className="text-gray-500 hover:text-gray-900">
-                首页
-              </Link>
-            </li>
-            <li className="flex items-center space-x-1">
-              <ChevronRight className="h-4 w-4 text-gray-400" />
-              <Link href="/products" className="text-gray-500 hover:text-gray-900">
-                产品
-              </Link>
-            </li>
-            <li className="flex items-center space-x-1">
-              <ChevronRight className="h-4 w-4 text-gray-400" />
-              <span className="text-gray-900">详情</span>
-            </li>
-          </ol>
-        </nav>
-
         <ProductDetail productId={productId} />
       </main>
 
