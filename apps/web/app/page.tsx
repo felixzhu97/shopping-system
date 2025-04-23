@@ -45,7 +45,7 @@ function QuickLinks() {
   ];
 
   return (
-    <div className="py-8 bg-[#f5f5f7]">
+    <div className="py-8">
       <div className="container mx-auto px-4">
         <h2 className="text-3xl font-semibold mb-6 text-gray-900">快速链接</h2>
         <div className="flex flex-wrap gap-3">
@@ -58,6 +58,89 @@ function QuickLinks() {
               <span>{link.name}</span>
               <span className="ml-1">↗</span>
             </Link>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// 扩展导航区域组件
+function ExtendedNavigation() {
+  const navItems = [
+    {
+      title: '商品与服务',
+      links: [
+        { name: '全部商品', href: '/products' },
+        { name: '电子产品', href: '/products/electronics' },
+        { name: '服装', href: '/products/clothing' },
+        { name: '家居厨房', href: '/products/home-kitchen' },
+        { name: '图书', href: '/products/books' },
+        { name: '配件', href: '/products/accessories' },
+        { name: '礼品卡', href: '/gift-cards' },
+      ],
+    },
+    {
+      title: '账户',
+      links: [
+        { name: '管理您的账户', href: '/account' },
+        { name: '会员账户', href: '/account/membership' },
+        { name: '我的订单', href: '/account/orders' },
+        { name: '我的收藏', href: '/account/saved' },
+      ],
+    },
+    {
+      title: '购物指南',
+      links: [
+        { name: '查找门店', href: '/stores' },
+        { name: '今日优惠', href: '/promotions' },
+        { name: '购物帮助', href: '/help' },
+        { name: '配送政策', href: '/shipping' },
+        { name: '退换货政策', href: '/returns' },
+        { name: '支付方式', href: '/payment' },
+      ],
+    },
+    {
+      title: '关于我们',
+      links: [
+        { name: '公司简介', href: '/about' },
+        { name: '新闻中心', href: '/news' },
+        { name: '招贤纳士', href: '/careers' },
+        { name: '企业责任', href: '/responsibility' },
+        { name: '联系我们', href: '/contact' },
+      ],
+    },
+    {
+      title: '商务合作',
+      links: [
+        { name: '商务购买', href: '/business' },
+        { name: '教育优惠', href: '/education' },
+        { name: '供应商合作', href: '/suppliers' },
+        { name: '广告服务', href: '/advertising' },
+      ],
+    },
+  ];
+
+  return (
+    <div className="py-12 border-t border-gray-200">
+      <div className="container mx-auto px-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-8">
+          {navItems.map(category => (
+            <div key={category.title}>
+              <h3 className="font-semibold text-sm text-gray-900 mb-4">{category.title}</h3>
+              <ul className="space-y-2">
+                {category.links.map(link => (
+                  <li key={link.name}>
+                    <Link
+                      href={link.href}
+                      className="text-sm text-gray-600 hover:text-gray-900 hover:underline"
+                    >
+                      {link.name}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
           ))}
         </div>
       </div>
@@ -201,7 +284,7 @@ async function CategoryShowcase() {
 
 export default function Home() {
   return (
-    <div className="flex flex-col min-h-screen bg-white">
+    <div className="flex flex-col min-h-screen bg-[#f5f5f7]">
       <Navbar />
       <main className="flex-1">
         {/* Hero Section - Apple Style */}
@@ -295,105 +378,15 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Quick Links - Moved to bottom */}
+        {/* Quick Links */}
         <QuickLinks />
+
+        {/* Extended Navigation */}
+        <ExtendedNavigation />
       </main>
 
-      <footer className="bg-white text-gray-600">
+      <footer className="text-gray-600">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 py-12 border-t border-gray-200">
-            <div>
-              <h3 className="font-semibold mb-4">了解我们</h3>
-              <ul className="space-y-2">
-                <li>
-                  <Link href="#" className="text-gray-600 hover:text-gray-900">
-                    关于我们
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="text-gray-600 hover:text-gray-900">
-                    招贤纳士
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="text-gray-600 hover:text-gray-900">
-                    新闻中心
-                  </Link>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="font-semibold mb-4">与我们合作</h3>
-              <ul className="space-y-2">
-                <li>
-                  <Link href="#" className="text-gray-600 hover:text-gray-900">
-                    销售商品
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="text-gray-600 hover:text-gray-900">
-                    成为会员
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="text-gray-600 hover:text-gray-900">
-                    广告投放
-                  </Link>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="font-semibold mb-4">支付方式</h3>
-              <ul className="space-y-2">
-                <li>
-                  <Link href="#" className="text-gray-600 hover:text-gray-900">
-                    会员卡
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="text-gray-600 hover:text-gray-900">
-                    积分支付
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="text-gray-600 hover:text-gray-900">
-                    充值余额
-                  </Link>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="font-semibold mb-4">帮助中心</h3>
-              <ul className="space-y-2">
-                <li>
-                  <Link href="#" className="text-gray-600 hover:text-gray-900">
-                    我的账户
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="text-gray-600 hover:text-gray-900">
-                    我的订单
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="text-gray-600 hover:text-gray-900">
-                    配送政策
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="text-gray-600 hover:text-gray-900">
-                    退换货说明
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="text-gray-600 hover:text-gray-900">
-                    帮助
-                  </Link>
-                </li>
-              </ul>
-            </div>
-          </div>
-
           <div className="border-t border-gray-200 py-8">
             <div className="md:flex md:items-center md:justify-between text-xs text-gray-500">
               <p>Copyright © 2025 购物系统. 版权所有.</p>
