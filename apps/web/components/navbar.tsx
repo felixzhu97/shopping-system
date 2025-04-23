@@ -2,7 +2,7 @@
 
 import type React from 'react';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, Suspense } from 'react';
 import Link from 'next/link';
 import { Search, ShoppingCart, Menu, User, X, ChevronRight } from 'lucide-react';
 import { usePathname, useSearchParams, useRouter } from 'next/navigation';
@@ -23,7 +23,8 @@ const quickLinks = [
   { title: '经典图书', path: '/products?category=books' },
 ];
 
-export function Navbar() {
+// 提取出使用 useSearchParams 的客户端组件
+function NavbarClient() {
   const [searchQuery, setSearchQuery] = useState('');
   const [isScrolled, setIsScrolled] = useState(false);
   const [cartBadgeAnimate, setCartBadgeAnimate] = useState(false);
@@ -409,5 +410,42 @@ export function Navbar() {
         </div>
       </div>
     </div>
+  );
+}
+
+// 导出主导航栏组件，用Suspense包裹客户端组件
+export function Navbar() {
+  return (
+    <Suspense fallback={<NavbarFallback />}>
+      <NavbarClient />
+    </Suspense>
+  );
+}
+
+// 导航栏加载占位符
+function NavbarFallback() {
+  return (
+    <header className="sticky top-0 z-50 w-full bg-[rgba(251,251,253,0.8)] backdrop-blur-md">
+      <div className="max-w-[1040px] mx-auto h-12 md:h-12 flex items-center justify-between px-4">
+        <div className="w-5 h-5" />
+        <div className="flex items-center mx-auto md:mx-0">
+          <svg height="22" width="14" className="hidden md:block">
+            <rect width="14" height="22" fill="transparent" />
+          </svg>
+        </div>
+        <div className="hidden md:flex justify-center flex-1 h-full">
+          <div className="flex items-center h-full space-x-4">
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="h-3 w-12 rounded-full bg-gray-200" />
+            ))}
+          </div>
+        </div>
+        <div className="flex items-center space-x-2">
+          {[...Array(3)].map((_, i) => (
+            <div key={i} className="h-8 w-8 rounded-full bg-gray-200" />
+          ))}
+        </div>
+      </div>
+    </header>
   );
 }
