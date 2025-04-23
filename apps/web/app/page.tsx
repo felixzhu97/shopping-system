@@ -45,15 +45,20 @@ function QuickLinks() {
   ];
 
   return (
-    <div className="flex flex-wrap justify-center gap-6 md:gap-10">
-      {links.map(link => (
-        <Link key={link.name} href={link.href} className="flex flex-col items-center group">
-          <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mb-2 group-hover:bg-gray-200 transition-colors">
-            <span className="text-2xl">{link.name.charAt(0)}</span>
-          </div>
-          <span className="text-sm text-gray-700 group-hover:text-gray-900">{link.name}</span>
-        </Link>
-      ))}
+    <div>
+      <h2 className="text-4xl font-semibold mb-8">快速链接</h2>
+      <div className="flex flex-wrap justify-between gap-4">
+        {links.map(link => (
+          <Link
+            key={link.name}
+            href={link.href}
+            className="flex items-center justify-between border border-gray-300 rounded-full px-6 py-3 min-w-[220px] hover:border-gray-600 transition-colors group"
+          >
+            <span className="text-base font-medium">{link.name}</span>
+            <span className="text-lg">→</span>
+          </Link>
+        ))}
+      </div>
     </div>
   );
 }
@@ -237,14 +242,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Quick Links */}
-        <section className="py-12 border-b">
-          <div className="container mx-auto px-4">
-            <h2 className="sr-only">快速链接</h2>
-            <QuickLinks />
-          </div>
-        </section>
-
         {/* Store Headline */}
         <section className="py-16 px-4">
           <div className="container mx-auto px-4 flex flex-col md:flex-row md:justify-between md:items-end">
@@ -296,27 +293,10 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Featured Products */}
-        <section className="w-full py-16 bg-gray-50">
-          <div className="container px-4 mx-auto">
-            <div className="flex flex-col items-center justify-center space-y-4 text-center mb-12">
-              <div className="space-y-2">
-                <h2 className="text-4xl font-bold">精选商品</h2>
-                <p className="max-w-[700px] text-gray-600 text-lg">
-                  查看我们最受欢迎的商品，为您提供高品质、好价格的产品选择。
-                </p>
-              </div>
-            </div>
-            <div className="mx-auto max-w-6xl">
-              <Suspense fallback={<div className="text-center">加载中...</div>}>
-                <FeaturedProducts />
-              </Suspense>
-            </div>
-            <div className="flex justify-center mt-10">
-              <Button asChild variant="outline" size="lg" className="rounded-full px-8">
-                <Link href="/products">浏览所有产品</Link>
-              </Button>
-            </div>
+        {/* Quick Links - Moved to bottom */}
+        <section className="py-16 bg-gray-50">
+          <div className="container mx-auto px-4">
+            <QuickLinks />
           </div>
         </section>
       </main>
