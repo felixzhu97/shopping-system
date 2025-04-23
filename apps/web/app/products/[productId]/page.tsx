@@ -1,47 +1,55 @@
 'use client';
 
 import Link from 'next/link';
-import { ChevronRight, Minus, Plus, ShoppingCart, Star, Truck } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { ChevronRight, Minus, Plus, ShoppingCart, Star, Truck, Check, Search } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { use } from 'react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Navbar } from '@/components/navbar';
-import { ProductCard } from '@/components/product-card';
+import { AppleProductCard } from '@/components/apple-product-card';
+import { Footer } from '@/components/footer';
 import { Product } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/components/ui/use-toast';
 import { useCart } from '@/lib/cart-context';
 import * as api from '@/lib/api';
-import { Image } from '@/components/ui/image';
+import { cn } from '@/lib/utils';
 import type { Usable } from 'react';
 
 function LoadingSkeleton() {
   return (
-    <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
-      <Skeleton className="aspect-square w-full" />
-      <div className="space-y-4">
+    <div className="grid md:grid-cols-2 gap-8 lg:gap-16">
+      <div className="aspect-square rounded-3xl overflow-hidden bg-gray-100">
+        <Skeleton className="w-full h-full" />
+      </div>
+      <div className="space-y-6">
         <Skeleton className="h-12 w-4/5" />
-        <Skeleton className="h-6 w-1/2" />
+        <Skeleton className="h-6 w-3/5" />
         <Skeleton className="h-10 w-1/3" />
-        <div className="space-y-2">
-          <Skeleton className="h-6 w-1/4" />
-          <Skeleton className="h-20 w-full" />
+        <Skeleton className="h-24 w-full" />
+        <div className="space-y-4 pt-6">
+          <Skeleton className="h-12 w-full" />
+          <Skeleton className="h-12 w-full" />
         </div>
       </div>
     </div>
   );
 }
 
-// 产品详情组件
+// Apple风格的产品详情组件
 function ProductDetail({ productId }: { productId: string }) {
   const [product, setProduct] = useState<Product | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isActionLoading, setIsActionLoading] = useState(false);
+  const [addedToCart, setAddedToCart] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [quantity, setQuantity] = useState(1);
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [fullscreenImage, setFullscreenImage] = useState(false);
+  const imageContainerRef = useRef<HTMLDivElement>(null);
   const { addToCart } = useCart();
   const { toast } = useToast();
   const router = useRouter();
@@ -52,6 +60,7 @@ function ProductDetail({ productId }: { productId: string }) {
         setIsLoading(true);
         const productData = await api.getProduct(productId);
         setProduct(productData);
+        setSelectedImage(productData.image);
 
         // 获取相关产品
         const allProducts = await api.getProducts(productData.category);
@@ -88,13 +97,14 @@ function ProductDetail({ productId }: { productId: string }) {
         image: product.image,
       });
 
+      setAddedToCart(true);
+      setTimeout(() => setAddedToCart(false), 2000);
+
       toast({
         title: '已添加到购物车',
         description: `${product.name} × ${quantity} 已成功添加到购物车`,
         duration: 3000,
       });
-
-      setQuantity(1);
     } catch (err) {
       toast({
         title: '添加失败',
@@ -142,212 +152,363 @@ function ProductDetail({ productId }: { productId: string }) {
       <div className="text-center py-12">
         <div className="text-xl font-medium text-gray-900 mb-2">产品不存在或发生错误</div>
         <p className="text-gray-500 mb-6">{error || '无法加载产品信息'}</p>
-        <Button asChild>
+        <Button asChild variant="outline" className="rounded-full px-6">
           <Link href="/products">返回产品列表</Link>
         </Button>
       </div>
     );
   }
 
+  // 模拟产品多张图片
+  const productImages = [
+    product.image,
+    `https://picsum.photos/seed/${product.id}-1/800/800`,
+    `https://picsum.photos/seed/${product.id}-2/800/800`,
+  ];
+
+  // 处理图片点击 - 用于移动设备
+  const handleImageClick = () => {
+    setFullscreenImage(true);
+  };
+
+  // 关闭全屏图片
+  const handleCloseFullscreen = () => {
+    setFullscreenImage(false);
+  };
+
   return (
     <>
-      {/* 产品详情 */}
-      <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
-        {/* 产品图片 */}
-        <div className="bg-white p-4 rounded-lg border">
-          <div className="aspect-square overflow-hidden rounded-md relative">
-            {isLoading ? (
-              <Skeleton className="absolute inset-0 z-10" />
-            ) : (
-              <Image
-                src={product.image}
-                alt={product.name}
-                className="h-full w-full object-contain"
-                fallbackAlt={product.name}
-              />
-            )}
+      {/* 全屏图片展示 - 移动设备使用 */}
+      {fullscreenImage && (
+        <div
+          className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4"
+          onClick={handleCloseFullscreen}
+        >
+          <div className="relative w-full max-w-3xl">
+            <button
+              className="absolute top-2 right-2 bg-white/20 rounded-full p-2"
+              onClick={handleCloseFullscreen}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="white"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+            <img
+              src={selectedImage || product.image}
+              alt={product.name}
+              className="w-full h-auto rounded-lg"
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Apple风格产品详情 */}
+      <div className="grid md:grid-cols-2 gap-8 lg:gap-16">
+        {/* 产品图片部分，左侧 */}
+        <div className="space-y-4">
+          <div
+            className="aspect-square bg-[#fafafa] rounded-3xl overflow-hidden flex items-center justify-center p-8 relative cursor-zoom-in"
+            onClick={handleImageClick}
+            ref={imageContainerRef}
+          >
+            <img
+              src={selectedImage || product.image}
+              alt={product.name}
+              className="max-h-full max-w-full object-contain transition-all duration-300"
+            />
+
+            {/* 点击查看大图提示 */}
+            <div className="absolute bottom-3 right-3 bg-white/80 backdrop-blur-sm rounded-full p-2 flex items-center gap-2 text-xs text-gray-600 shadow-sm">
+              <Search className="h-3 w-3" />
+              <span>点击查看大图</span>
+            </div>
+          </div>
+
+          {/* 缩略图导航 */}
+          <div className="flex justify-center gap-4">
+            {productImages.map((img, index) => (
+              <button
+                key={index}
+                className={cn(
+                  'w-20 h-20 rounded-xl overflow-hidden border-2 bg-[#fafafa]',
+                  selectedImage === img ? 'border-blue-500' : 'border-transparent'
+                )}
+                onClick={() => setSelectedImage(img)}
+              >
+                <img
+                  src={img}
+                  alt={`${product.name} 视图 ${index + 1}`}
+                  className="w-full h-full object-contain p-2"
+                />
+              </button>
+            ))}
           </div>
         </div>
 
-        {/* 产品信息 */}
-        <div>
-          <h1 className="text-3xl font-bold">{product.name}</h1>
-
-          <div className="flex items-center mt-2 mb-4">
-            <div className="flex items-center">
-              {Array(5)
-                .fill(0)
-                .map((_, i) => (
-                  <Star
-                    key={i}
-                    className={`h-5 w-5 ${
-                      i < Math.floor(product.rating || 0)
-                        ? 'fill-yellow-400 text-yellow-400'
-                        : 'fill-gray-200 text-gray-200'
-                    }`}
-                  />
-                ))}
+        {/* 产品信息部分，右侧 */}
+        <div className="flex flex-col">
+          {/* 类别和名称 */}
+          <div className="mb-6">
+            <div className="text-sm text-blue-600 font-medium mb-1">
+              {getCategoryLabel(product.category)}
             </div>
-            <span className="ml-2 text-sm text-muted-foreground">
-              {(product.rating || 0).toFixed(1)} ({product.reviewCount || 0} 评价)
-            </span>
+            <h1 className="text-4xl font-semibold text-gray-900 tracking-tight">{product.name}</h1>
+
+            {/* 评分 */}
+            <div className="flex items-center mt-3">
+              <div className="flex items-center">
+                {Array(5)
+                  .fill(0)
+                  .map((_, i) => (
+                    <Star
+                      key={i}
+                      className={`h-4 w-4 ${
+                        i < Math.floor(product.rating || 0)
+                          ? 'fill-yellow-400 text-yellow-400'
+                          : 'fill-gray-200 text-gray-200'
+                      }`}
+                    />
+                  ))}
+              </div>
+              <span className="ml-2 text-sm text-gray-500">
+                {(product.rating || 0).toFixed(1)} ({product.reviewCount || 0} 评价)
+              </span>
+            </div>
           </div>
 
-          <div className="flex items-baseline gap-2 mt-4">
-            <span className="text-3xl font-bold">¥{product.price.toFixed(2)}</span>
+          {/* 价格区域 */}
+          <div className="mb-8">
+            <div className="flex items-baseline gap-3">
+              <span className="text-3xl font-medium">¥{product.price.toFixed(2)}</span>
+              {product.originalPrice && (
+                <span className="text-lg text-gray-500 line-through">
+                  ¥{product.originalPrice.toFixed(2)}
+                </span>
+              )}
+            </div>
             {product.originalPrice && (
-              <span className="text-lg text-muted-foreground line-through">
-                ¥{product.originalPrice.toFixed(2)}
-              </span>
-            )}
-            {product.originalPrice && (
-              <span className="text-sm font-medium text-green-600 bg-green-50 px-2 py-0.5 rounded">
-                节省 ¥{(product.originalPrice - product.price).toFixed(2)}
-              </span>
+              <div className="mt-1 text-sm text-green-600">
+                节省 ¥{(product.originalPrice - product.price).toFixed(2)} (
+                {Math.round((1 - product.price / product.originalPrice) * 100)}% 优惠)
+              </div>
             )}
           </div>
 
-          <div className="mt-6 space-y-6">
+          {/* 产品描述 */}
+          <div className="mb-8 text-gray-600">
+            <p>
+              {product.description ||
+                '这款优质产品提供卓越的品质和价值。适合日常使用，它将耐用性与优雅的设计相结合。由高品质材料制成，经久耐用，同时保持其时尚外观。'}
+            </p>
+          </div>
+
+          {/* 库存和配送信息 */}
+          <div className="mb-8 space-y-3">
+            <div className="flex items-center text-sm">
+              <div
+                className={cn(
+                  'w-4 h-4 rounded-full mr-2 flex items-center justify-center',
+                  product.inStock ? 'bg-green-500' : 'bg-red-500'
+                )}
+              >
+                {product.inStock && <Check className="h-3 w-3 text-white" />}
+              </div>
+              <span>{product.inStock ? '现货' : '缺货'}</span>
+            </div>
+
             <div className="flex items-center text-sm text-green-600">
               <Truck className="h-4 w-4 mr-2" />
-              <span>订单满¥200免运费</span>
+              <span>订单满¥200免运费，预计{product.inStock ? '1-3天内发货' : '暂时无法发货'}</span>
             </div>
+          </div>
 
-            <div className="space-y-2">
-              <div className="font-medium">数量</div>
-              <div className="flex items-center border rounded w-fit">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-10 w-10 rounded-none"
-                  onClick={() => handleQuantityChange(-1)}
-                  disabled={quantity <= 1}
-                >
-                  <Minus className="h-4 w-4" />
-                  <span className="sr-only">减少数量</span>
-                </Button>
-                <span className="w-12 text-center">{quantity}</span>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-10 w-10 rounded-none"
-                  onClick={() => handleQuantityChange(1)}
-                  disabled={quantity >= (product.stock || 99)}
-                >
-                  <Plus className="h-4 w-4" />
-                  <span className="sr-only">增加数量</span>
-                </Button>
-              </div>
-            </div>
-
-            <div className="flex flex-col sm:flex-row gap-4">
+          {/* 数量选择器 */}
+          <div className="mb-8">
+            <div className="font-medium mb-2">数量</div>
+            <div className="inline-flex items-center border border-gray-300 rounded-full">
               <Button
-                size="lg"
-                className="sm:flex-1"
-                onClick={handleAddToCart}
-                disabled={isActionLoading || !product.inStock}
+                variant="ghost"
+                size="icon"
+                className="h-10 w-10 rounded-full text-gray-600"
+                onClick={() => handleQuantityChange(-1)}
+                disabled={quantity <= 1}
               >
-                {isActionLoading ? (
-                  <>加载中...</>
-                ) : (
-                  <>
-                    <ShoppingCart className="mr-2 h-5 w-5" />
-                    加入购物车
-                  </>
-                )}
+                <Minus className="h-4 w-4" />
+                <span className="sr-only">减少数量</span>
               </Button>
+              <span className="w-12 text-center">{quantity}</span>
               <Button
-                size="lg"
-                variant="secondary"
-                className="sm:flex-1"
-                onClick={handleBuyNow}
-                disabled={isActionLoading || !product.inStock}
+                variant="ghost"
+                size="icon"
+                className="h-10 w-10 rounded-full text-gray-600"
+                onClick={() => handleQuantityChange(1)}
+                disabled={quantity >= (product.stock || 99)}
               >
-                {isActionLoading ? '加载中...' : '立即购买'}
+                <Plus className="h-4 w-4" />
+                <span className="sr-only">增加数量</span>
               </Button>
             </div>
+          </div>
 
-            {!product.inStock && <div className="text-red-500 font-medium">该商品当前缺货</div>}
+          {/* 操作按钮 */}
+          <div className="flex flex-col gap-4 mt-auto">
+            <Button
+              size="lg"
+              className={cn(
+                'rounded-full h-14 text-base transition-all duration-300',
+                addedToCart ? 'bg-green-600 hover:bg-green-700' : 'bg-blue-600 hover:bg-blue-700'
+              )}
+              onClick={handleAddToCart}
+              disabled={isActionLoading || !product.inStock}
+            >
+              {isActionLoading ? (
+                <>加载中...</>
+              ) : addedToCart ? (
+                <>
+                  <Check className="mr-2 h-5 w-5" />
+                  已添加到购物车
+                </>
+              ) : (
+                <>
+                  <ShoppingCart className="mr-2 h-5 w-5" />
+                  加入购物车
+                </>
+              )}
+            </Button>
 
-            <div className="border-t pt-6">
-              <h3 className="font-medium mb-2">产品描述</h3>
-              <p className="text-muted-foreground">
-                {product.description ||
-                  '这款优质产品提供卓越的品质和价值。适合日常使用，它将耐用性与优雅的设计相结合。由高品质材料制成，经久耐用，同时保持其时尚外观。'}
-              </p>
-            </div>
+            <Button
+              size="lg"
+              variant="outline"
+              className="rounded-full h-14 text-base border-2"
+              onClick={handleBuyNow}
+              disabled={isActionLoading || !product.inStock}
+            >
+              {isActionLoading ? '加载中...' : '立即购买'}
+            </Button>
+
+            {!product.inStock && (
+              <div className="text-red-500 font-medium text-center mt-2">该商品当前缺货</div>
+            )}
           </div>
         </div>
       </div>
 
-      {/* 产品选项卡 */}
-      <div className="mt-12">
-        <Tabs defaultValue="details">
-          <TabsList className="w-full border-b pb-px">
-            <TabsTrigger value="details">详细信息</TabsTrigger>
-            <TabsTrigger value="shipping">配送与退货</TabsTrigger>
-            <TabsTrigger value="reviews">用户评价</TabsTrigger>
+      {/* 产品详情选项卡 - Apple风格 */}
+      <div className="mt-16 max-w-4xl mx-auto">
+        <Tabs defaultValue="details" className="w-full">
+          <TabsList className="w-full grid grid-cols-3 bg-gray-100 rounded-full p-1 h-12">
+            <TabsTrigger value="details" className="rounded-full data-[state=active]:bg-white">
+              详细信息
+            </TabsTrigger>
+            <TabsTrigger value="shipping" className="rounded-full data-[state=active]:bg-white">
+              配送与退货
+            </TabsTrigger>
+            <TabsTrigger value="reviews" className="rounded-full data-[state=active]:bg-white">
+              用户评价
+            </TabsTrigger>
           </TabsList>
-          <TabsContent value="details" className="pt-4">
-            <div className="space-y-4">
+
+          <TabsContent value="details" className="pt-8">
+            <div className="space-y-8">
               <div>
-                <h4 className="font-medium">产品特点</h4>
-                <ul className="mt-2 space-y-1 list-disc list-inside text-muted-foreground">
-                  <li>优质材料，耐用性强</li>
-                  <li>精美设计，注重细节</li>
-                  <li>多功能用途，提升使用体验</li>
-                  <li>环保制造，符合现代标准</li>
+                <h3 className="text-xl font-medium mb-4">产品特点</h3>
+                <ul className="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-600">
+                  <li className="flex items-start">
+                    <div className="bg-blue-100 text-blue-600 rounded-full p-1 mr-3 mt-0.5">
+                      <Check className="h-4 w-4" />
+                    </div>
+                    <span>优质材料，耐用性强</span>
+                  </li>
+                  <li className="flex items-start">
+                    <div className="bg-blue-100 text-blue-600 rounded-full p-1 mr-3 mt-0.5">
+                      <Check className="h-4 w-4" />
+                    </div>
+                    <span>精美设计，注重细节</span>
+                  </li>
+                  <li className="flex items-start">
+                    <div className="bg-blue-100 text-blue-600 rounded-full p-1 mr-3 mt-0.5">
+                      <Check className="h-4 w-4" />
+                    </div>
+                    <span>多功能用途，提升使用体验</span>
+                  </li>
+                  <li className="flex items-start">
+                    <div className="bg-blue-100 text-blue-600 rounded-full p-1 mr-3 mt-0.5">
+                      <Check className="h-4 w-4" />
+                    </div>
+                    <span>环保制造，符合现代标准</span>
+                  </li>
                 </ul>
               </div>
+
               <div>
-                <h4 className="font-medium">规格参数</h4>
-                <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 text-sm">
-                  <div className="flex justify-between border-b pb-2">
-                    <span className="text-muted-foreground">品牌</span>
-                    <span>优质品牌</span>
-                  </div>
-                  <div className="flex justify-between border-b pb-2">
-                    <span className="text-muted-foreground">型号</span>
-                    <span>PRO-2023</span>
-                  </div>
-                  <div className="flex justify-between border-b pb-2">
-                    <span className="text-muted-foreground">尺寸</span>
-                    <span>适中</span>
-                  </div>
-                  <div className="flex justify-between border-b pb-2">
-                    <span className="text-muted-foreground">材质</span>
-                    <span>高级材料</span>
-                  </div>
-                  <div className="flex justify-between border-b pb-2">
-                    <span className="text-muted-foreground">保修</span>
-                    <span>1年</span>
-                  </div>
-                  <div className="flex justify-between border-b pb-2">
-                    <span className="text-muted-foreground">产地</span>
-                    <span>中国</span>
+                <h3 className="text-xl font-medium mb-4">规格参数</h3>
+                <div className="bg-gray-50 rounded-2xl p-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-4">
+                      <div className="flex justify-between">
+                        <span className="text-gray-500">品牌</span>
+                        <span className="font-medium">优质品牌</span>
+                      </div>
+                      <div className="border-t border-gray-200 pt-4 flex justify-between">
+                        <span className="text-gray-500">型号</span>
+                        <span className="font-medium">PRO-2023</span>
+                      </div>
+                      <div className="border-t border-gray-200 pt-4 flex justify-between">
+                        <span className="text-gray-500">尺寸</span>
+                        <span className="font-medium">适中</span>
+                      </div>
+                    </div>
+
+                    <div className="space-y-4">
+                      <div className="flex justify-between">
+                        <span className="text-gray-500">材质</span>
+                        <span className="font-medium">高级材料</span>
+                      </div>
+                      <div className="border-t border-gray-200 pt-4 flex justify-between">
+                        <span className="text-gray-500">保修</span>
+                        <span className="font-medium">1年</span>
+                      </div>
+                      <div className="border-t border-gray-200 pt-4 flex justify-between">
+                        <span className="text-gray-500">产地</span>
+                        <span className="font-medium">中国</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </TabsContent>
-          <TabsContent value="shipping" className="pt-4">
-            <div className="space-y-4">
+
+          <TabsContent value="shipping" className="pt-8">
+            <div className="space-y-8">
               <div>
-                <h4 className="font-medium">配送信息</h4>
-                <p className="mt-2 text-muted-foreground">
+                <h3 className="text-xl font-medium mb-4">配送信息</h3>
+                <p className="text-gray-600 bg-gray-50 rounded-2xl p-6">
                   我们提供全国范围内的配送服务。标准配送时间为1-3个工作日，偏远地区可能需要额外1-2天。订单满200元享受免费配送，否则配送费为15元。
                 </p>
               </div>
               <div>
-                <h4 className="font-medium">退货政策</h4>
-                <p className="mt-2 text-muted-foreground">
+                <h3 className="text-xl font-medium mb-4">退货政策</h3>
+                <p className="text-gray-600 bg-gray-50 rounded-2xl p-6">
                   自收到商品之日起30天内，如产品未使用且保持原包装完好，可申请无理由退货。部分特殊商品可能不支持退货，详情请参考商品描述。退货运费由买家承担。
                 </p>
               </div>
             </div>
           </TabsContent>
-          <TabsContent value="reviews" className="pt-4">
-            <div className="space-y-6">
+
+          <TabsContent value="reviews" className="pt-8">
+            <div className="space-y-8">
               {[
                 {
                   name: '张先生',
@@ -371,7 +532,7 @@ function ProductDetail({ productId }: { productId: string }) {
                     '朋友推荐购买的，确实名不虚传，各方面都很好，尤其是做工和质感，非常推荐！',
                 },
               ].map((review, index) => (
-                <div key={index} className="border-b pb-6 last:border-0">
+                <div key={index} className="bg-gray-50 rounded-2xl p-6">
                   <div className="flex justify-between items-start">
                     <div>
                       <h4 className="font-medium">{review.name}</h4>
@@ -390,9 +551,9 @@ function ProductDetail({ productId }: { productId: string }) {
                           ))}
                       </div>
                     </div>
-                    <span className="text-sm text-muted-foreground">{review.date}</span>
+                    <span className="text-sm text-gray-500">{review.date}</span>
                   </div>
-                  <p className="mt-2 text-muted-foreground">{review.comment}</p>
+                  <p className="mt-4 text-gray-600">{review.comment}</p>
                 </div>
               ))}
             </div>
@@ -400,15 +561,17 @@ function ProductDetail({ productId }: { productId: string }) {
         </Tabs>
       </div>
 
-      {/* 相关产品 */}
-      <div className="mt-16">
-        <h2 className="text-2xl font-bold mb-6">相关产品</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      {/* 相关产品 - Apple风格 */}
+      <div className="mt-20">
+        <h2 className="text-3xl font-semibold text-center mb-12">更多推荐</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {relatedProducts && relatedProducts.length > 0 ? (
-            relatedProducts.map(product => <ProductCard key={product.id} product={product} />)
+            relatedProducts.map(product => (
+              <AppleProductCard key={product.id} product={product} showDescription={false} />
+            ))
           ) : (
             <div className="col-span-full py-12 text-center">
-              <p className="text-muted-foreground">暂无相关产品</p>
+              <p className="text-gray-500">暂无相关产品</p>
             </div>
           )}
         </div>
@@ -417,41 +580,31 @@ function ProductDetail({ productId }: { productId: string }) {
   );
 }
 
+// 获取类别友好名称
+function getCategoryLabel(category: string): string {
+  const categoryMap: Record<string, string> = {
+    electronics: '电子产品',
+    clothing: '服装',
+    'home-kitchen': '家居厨房',
+    books: '图书',
+  };
+
+  return (
+    categoryMap[category] ||
+    category.charAt(0).toUpperCase() + category.slice(1).replace('-', ' & ')
+  );
+}
+
 export default function ProductPage({ params }: { params: Usable<{ productId: string }> }) {
   const { productId } = use(params);
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen bg-[#f5f5f7]">
       <Navbar />
-      <main className="flex-1 container mx-auto px-4 py-8">
-        {/* 面包屑导航 */}
-        <nav className="text-sm mb-6">
-          <ol className="flex items-center space-x-1">
-            <li>
-              <Link href="/" className="text-muted-foreground hover:text-foreground">
-                首页
-              </Link>
-            </li>
-            <li className="flex items-center space-x-1">
-              <ChevronRight className="h-4 w-4 text-muted-foreground" />
-              <Link href="/products" className="text-muted-foreground hover:text-foreground">
-                产品
-              </Link>
-            </li>
-            <li className="flex items-center space-x-1">
-              <ChevronRight className="h-4 w-4 text-muted-foreground" />
-              <span className="text-foreground">详情</span>
-            </li>
-          </ol>
-        </nav>
-
+      <main className="flex-1 container mx-auto px-4 py-12">
         <ProductDetail productId={productId} />
       </main>
 
-      <footer className="bg-gray-800 text-white py-8">
-        <div className="container mx-auto px-4 text-center">
-          <p className="text-gray-400">© 2025 购物系统. 保留所有权利.</p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

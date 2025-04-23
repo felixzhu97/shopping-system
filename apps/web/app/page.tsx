@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { ProductCard } from '@/components/product-card';
 import { Navbar } from '@/components/navbar';
+import { Footer } from '@/components/footer';
 import { Product } from '@/lib/types';
 import * as api from '@/lib/api';
 
@@ -13,10 +14,10 @@ async function FeaturedProducts() {
   try {
     // 使用api模块中的getProducts函数
     const products = await api.getProducts();
-    const featuredProducts = products.slice(0, 8); // 只获取前8个产品作为特色产品展示
+    const featuredProducts = products.slice(0, 6); // 只获取前6个产品作为特色产品展示
 
     return (
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3">
         {featuredProducts.map((product: Product) => (
           <ProductCard key={product.id} product={product} />
         ))}
@@ -34,6 +35,37 @@ async function FeaturedProducts() {
   }
 }
 
+// 快速链接组件
+function QuickLinks() {
+  const links = [
+    { name: '查找门店', href: '/stores' },
+    { name: '订单状态', href: '/account/orders' },
+    { name: '购物帮助', href: '/help' },
+    { name: '退货', href: '/returns' },
+    { name: '收藏夹', href: '/account/saved' },
+  ];
+
+  return (
+    <div className="py-8">
+      <div className="container mx-auto px-4">
+        <h2 className="text-3xl font-semibold mb-6 text-gray-900">快速链接</h2>
+        <div className="flex flex-wrap gap-3">
+          {links.map(link => (
+            <Link
+              key={link.name}
+              href={link.href}
+              className="border border-gray-300 rounded-full px-5 py-2 text-sm inline-flex items-center hover:border-gray-800 transition-colors"
+            >
+              <span>{link.name}</span>
+              <span className="ml-1">↗</span>
+            </Link>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // 获取类别产品数据的组件
 async function CategoryShowcase() {
   try {
@@ -48,59 +80,110 @@ async function CategoryShowcase() {
       {
         id: 'electronics',
         name: '电子产品',
-        items: electronics.slice(0, 2),
+        description: '探索最新科技产品，体验科技带来的便利与乐趣',
+        items: electronics.slice(0, 9),
         image: '/electronics.jpg',
+        color: 'bg-blue-50',
+        titleColor: 'text-blue-600',
       },
       {
         id: 'clothing',
         name: '服装',
-        items: clothing.slice(0, 2),
+        description: '时尚穿搭，展现个性，彰显您的独特魅力',
+        items: clothing.slice(0, 9),
         image: '/clothing.jpg',
+        color: 'bg-purple-50',
+        titleColor: 'text-purple-600',
       },
       {
         id: 'home-kitchen',
         name: '家居厨房',
-        items: homeKitchen.slice(0, 2),
+        description: '打造舒适生活空间，让家更有温度',
+        items: homeKitchen.slice(0, 9),
         image: '/home-kitchen.jpg',
+        color: 'bg-amber-50',
+        titleColor: 'text-amber-600',
       },
       {
         id: 'books',
         name: '图书',
-        items: books.slice(0, 2),
+        description: '知识的海洋，尽在掌握，开启智慧之门',
+        items: books.slice(0, 9),
         image: '/books.jpg',
+        color: 'bg-green-50',
+        titleColor: 'text-green-600',
       },
     ];
 
     return (
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="space-y-24">
         {categories.map(category => (
-          <div key={category.id} className="border rounded-lg overflow-hidden bg-white shadow-sm">
-            <div className="p-4 border-b">
-              <h3 className="text-xl font-bold">{category.name}</h3>
-            </div>
-            <div className="grid grid-cols-2 gap-4 p-4">
-              {category.items.map((item: Product) => (
-                <Link key={item.id} href={`/products/${item.id}`} className="block">
-                  <div className="flex flex-col items-center text-center">
-                    <div className="mb-2 h-40 w-full overflow-hidden rounded-md">
-                      <img
-                        src={item.image}
-                        alt={item.name}
-                        className="h-full w-full object-cover transition-transform hover:scale-105"
-                      />
+          <div key={category.id} className="mb-16">
+            <h3 className={`text-3xl font-semibold mb-6 ${category.titleColor}`}>
+              {category.name}
+            </h3>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-11 gap-4">
+              {/* 第一个卡片：分类简介 */}
+              <div
+                className={`col-span-1 sm:col-span-2 md:col-span-3 lg:col-span-2 xl:col-span-2 rounded-2xl overflow-hidden ${category.color} hover:shadow-md transition-shadow`}
+              >
+                <Link href={`/products?category=${category.id}`} className="block h-full">
+                  <div className="p-6 flex flex-col h-full">
+                    <h4 className="text-2xl font-semibold mb-3">{category.name}</h4>
+                    <p className="text-sm text-gray-600 mb-6">{category.description}</p>
+                    <div className="mt-auto">
+                      <div className="h-40 w-full overflow-hidden rounded-xl mb-4">
+                        <img
+                          src={category.image}
+                          alt={category.name}
+                          className="h-full w-full object-cover"
+                        />
+                      </div>
+                      <div
+                        className={`${category.titleColor.replace('text-', 'text-')} hover:underline text-sm font-medium`}
+                      >
+                        了解更多 &gt;
+                      </div>
                     </div>
-                    <h4 className="text-sm font-medium line-clamp-1">{item.name}</h4>
                   </div>
                 </Link>
+              </div>
+
+              {/* 中间9个商品卡片 */}
+              {category.items.map((item: Product) => (
+                <div
+                  key={item.id}
+                  className="col-span-1 rounded-2xl overflow-hidden bg-white shadow-sm hover:shadow-md transition-shadow"
+                >
+                  <Link href={`/products/${item.id}`} className="block h-full">
+                    <div className="p-4">
+                      <div className="h-36 w-full overflow-hidden rounded-xl mb-3">
+                        <img
+                          src={item.image}
+                          alt={item.name}
+                          className="h-full w-full object-cover transition-transform hover:scale-105"
+                        />
+                      </div>
+                      <h4 className="text-sm font-medium line-clamp-1">{item.name}</h4>
+                      <p className="text-sm text-gray-600 mt-1">¥{item.price.toFixed(2)}</p>
+                    </div>
+                  </Link>
+                </div>
               ))}
-            </div>
-            <div className="p-3 bg-gray-50 text-center">
-              <Link
-                href={`/products?category=${category.id}`}
-                className="text-sm text-blue-600 hover:text-blue-800 hover:underline"
-              >
-                查看更多
-              </Link>
+
+              {/* 最后一个卡片：跳转到分类 */}
+              <div className="col-span-1 rounded-2xl overflow-hidden bg-gradient-to-br from-white to-gray-100 shadow-sm hover:shadow-md transition-shadow">
+                <Link href={`/products?category=${category.id}`} className="block h-full">
+                  <div className="p-6 flex flex-col items-center justify-center h-full text-center">
+                    <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center mb-4">
+                      <span className={`text-xl ${category.titleColor}`}>&gt;</span>
+                    </div>
+                    <h4 className="text-lg font-medium mb-2">查看所有</h4>
+                    <p className="text-sm text-gray-600">{category.name}</p>
+                  </div>
+                </Link>
+              </div>
             </div>
           </div>
         ))}
@@ -119,168 +202,109 @@ async function CategoryShowcase() {
 
 export default function Home() {
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen bg-[#f5f5f7]">
       <Navbar />
       <main className="flex-1">
-        {/* Hero Section */}
-        <section className="relative">
-          <div
-            className="h-[400px] w-full bg-cover bg-center"
-            style={{ backgroundImage: 'url(/hero-banner.jpg)' }}
-          >
-            <div className="container mx-auto px-4 py-24">
-              <div className="max-w-xl bg-white/80 p-6 rounded-lg">
-                <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl mb-6">
-                  Shop the best deals
-                </h1>
-                <p className="text-lg text-gray-700 mb-8">
-                  Discover amazing products at unbeatable prices. Free shipping on qualified orders.
+        {/* Hero Section - Apple Style */}
+        <section className="relative bg-black">
+          <div className="w-full">
+            {/* 视频背景，如果没有视频可以用高清图片代替 */}
+            <div
+              className="w-full h-[50vh] bg-cover bg-center"
+              style={{ backgroundImage: 'url(/hero-apple-style.jpg)' }}
+            >
+              {/* 渐变遮罩，增加文字可读性 */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
+
+              {/* 内容区域 */}
+              <div className="relative h-full flex flex-col justify-center items-center text-center px-4">
+                <h2 className="text-lg md:text-xl text-white/90 font-medium mb-2">全新上市</h2>
+                <h1 className="text-5xl md:text-7xl font-bold text-white mb-4">智能科技生活</h1>
+                <p className="text-xl md:text-2xl text-white/90 max-w-2xl mb-8">
+                  发现更智能、更便捷的生活方式
                 </p>
-                <Button asChild size="lg">
-                  <Link href="/products">Shop Now</Link>
-                </Button>
+
+                <div className="flex flex-col sm:flex-row gap-4 items-center mt-4">
+                  <Button
+                    asChild
+                    variant="default"
+                    size="lg"
+                    className="rounded-full px-8 py-6 bg-white text-black hover:bg-white/90 text-base"
+                  >
+                    <Link href="/products">立即购买</Link>
+                  </Button>
+                  <Link
+                    href="/products"
+                    className="text-white text-lg font-medium hover:underline flex items-center"
+                  >
+                    了解更多 <span className="ml-1">→</span>
+                  </Link>
+                </div>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Featured Products */}
-        <section className="w-full py-12 md:py-24 lg:py-32 bg-gray-100 dark:bg-gray-800">
-          <div className="container px-4 md:px-6">
-            <div className="flex flex-col items-center justify-center space-y-4 text-center">
-              <div className="space-y-2">
-                <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">精选产品</h2>
-                <p className="max-w-[900px] text-gray-500 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed dark:text-gray-400">
-                  查看我们最受欢迎的商品，为您提供高品质、好价格的产品选择。
-                </p>
+        {/* Store Headline */}
+        <section className="py-16 px-4">
+          <div className="container mx-auto px-4 flex flex-col md:flex-row md:justify-between md:items-end">
+            <div className="max-w-[600px]">
+              <h2 className="text-5xl font-semibold text-gray-800">购物系统.</h2>
+              <p className="text-4xl font-semibold text-gray-500 mt-2">
+                以最好的方式购买您喜爱的产品。
+              </p>
+            </div>
+            <div className="mt-8 md:mt-0">
+              <div className="flex flex-col items-end">
+                <div className="flex items-center mb-2">
+                  <img
+                    src="/specialist_avatar.png"
+                    alt="专家头像"
+                    className="w-8 h-8 rounded-full mr-2"
+                  />
+                  <span className="text-gray-700">需要购物帮助？</span>
+                </div>
+                <Link href="/help" className="text-blue-500 hover:underline flex items-center">
+                  咨询专家 <span className="ml-1">→</span>
+                </Link>
+                <div className="flex items-center mt-4">
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="mr-2"
+                  >
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="M12 8l4 4-4 4M8 12h8"></path>
+                  </svg>
+                  <Link href="/stores" className="text-blue-500 hover:underline flex items-center">
+                    查找门店位置 <span className="ml-1">→</span>
+                  </Link>
+                </div>
               </div>
-            </div>
-            <div className="mx-auto grid max-w-5xl items-center gap-6 py-12 lg:grid-cols-1">
-              <Suspense fallback={<div className="text-center">加载中...</div>}>
-                <FeaturedProducts />
-              </Suspense>
-            </div>
-            <div className="flex justify-center">
-              <a
-                href="/products"
-                className="inline-flex h-10 items-center justify-center rounded-md bg-gray-900 px-8 text-sm font-medium text-gray-50 shadow transition-colors hover:bg-gray-900/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 disabled:pointer-events-none disabled:opacity-50 dark:bg-gray-50 dark:text-gray-900 dark:hover:bg-gray-50/90 dark:focus-visible:ring-gray-300"
-              >
-                浏览所有产品
-              </a>
             </div>
           </div>
         </section>
 
         {/* Categories */}
-        <section className="py-12 bg-gray-50">
+        <section className="pb-16">
           <div className="container mx-auto px-4">
-            <h2 className="text-2xl font-bold mb-8">分类浏览</h2>
             <Suspense fallback={<div className="text-center py-8">加载类别数据中...</div>}>
               <CategoryShowcase />
             </Suspense>
           </div>
         </section>
+
+        {/* Quick Links */}
+        <QuickLinks />
       </main>
 
-      <footer className="bg-gray-800 text-white py-8">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div>
-              <h3 className="font-bold mb-4">Get to Know Us</h3>
-              <ul className="space-y-2">
-                <li>
-                  <Link href="#" className="text-gray-300 hover:text-white">
-                    About Us
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="text-gray-300 hover:text-white">
-                    Careers
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="text-gray-300 hover:text-white">
-                    Press Releases
-                  </Link>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="font-bold mb-4">Make Money with Us</h3>
-              <ul className="space-y-2">
-                <li>
-                  <Link href="#" className="text-gray-300 hover:text-white">
-                    Sell products
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="text-gray-300 hover:text-white">
-                    Become an Affiliate
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="text-gray-300 hover:text-white">
-                    Advertise Your Products
-                  </Link>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="font-bold mb-4">Payment Products</h3>
-              <ul className="space-y-2">
-                <li>
-                  <Link href="#" className="text-gray-300 hover:text-white">
-                    Business Card
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="text-gray-300 hover:text-white">
-                    Shop with Points
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="text-gray-300 hover:text-white">
-                    Reload Your Balance
-                  </Link>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="font-bold mb-4">Let Us Help You</h3>
-              <ul className="space-y-2">
-                <li>
-                  <Link href="#" className="text-gray-300 hover:text-white">
-                    Your Account
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="text-gray-300 hover:text-white">
-                    Your Orders
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="text-gray-300 hover:text-white">
-                    Shipping Rates & Policies
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="text-gray-300 hover:text-white">
-                    Returns & Replacements
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="text-gray-300 hover:text-white">
-                    Help
-                  </Link>
-                </li>
-              </ul>
-            </div>
-          </div>
-          <div className="mt-8 pt-8 border-t border-gray-700 text-center">
-            <p className="text-gray-400">© 2025 购物系统. 版权所有.</p>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

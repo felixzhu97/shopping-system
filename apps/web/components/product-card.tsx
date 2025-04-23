@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Star, ShoppingCart } from 'lucide-react';
+import { ShoppingCart } from 'lucide-react';
 import { useState } from 'react';
 import { useToast } from '@/components/ui/use-toast';
 
@@ -58,55 +58,44 @@ export function ProductCard({ product }: ProductCardProps) {
   };
 
   return (
-    <Card className="overflow-hidden">
-      <CardContent className="p-0">
-        <Link href={`/products/${productId}`}>
-          <div className="aspect-square overflow-hidden">
-            <Image
-              src={product.image}
-              alt={product.name}
-              className="h-full w-full object-cover transition-transform hover:scale-105"
-              fallbackAlt={product.name}
-            />
-          </div>
-          <div className="p-4">
-            <h3 className="font-medium line-clamp-1">{product.name}</h3>
-            <div className="flex items-center gap-0.5 mt-1">
-              {Array(5)
-                .fill(0)
-                .map((_, i) => (
-                  <Star
-                    key={i}
-                    className={`h-4 w-4 ${
-                      i < Math.floor(product.rating || 0)
-                        ? 'fill-yellow-400 text-yellow-400'
-                        : 'fill-gray-200 text-gray-200'
-                    }`}
-                  />
-                ))}
-              <span className="text-xs text-gray-500 ml-1">({product.reviewCount || 0})</span>
+    <div className="group flex flex-col">
+      <Link href={`/products/${productId}`} className="flex flex-col flex-1">
+        <div className="relative mb-4 overflow-hidden rounded-xl bg-gray-100 p-6">
+          <Image
+            src={product.image}
+            alt={product.name}
+            className="mx-auto h-48 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
+            fallbackAlt={product.name}
+          />
+        </div>
+        <div className="flex flex-col space-y-1 text-center">
+          <h3 className="text-sm font-medium text-gray-600">{product.name}</h3>
+          <p className="text-base font-semibold">¥{product.price.toFixed(2)}</p>
+          {product.originalPrice && (
+            <p className="text-xs text-gray-500">
+              原价: <span className="line-through">¥{product.originalPrice.toFixed(2)}</span>
+            </p>
+          )}
+          {product.rating && (
+            <div className="mx-auto mt-1 flex items-center justify-center space-x-1 text-xs text-gray-500">
+              <span className="font-medium">{product.rating.toFixed(1)}</span>
+              <span>★</span>
+              <span>({product.reviewCount || 0}条评价)</span>
             </div>
-            <div className="mt-2 flex items-baseline gap-2">
-              <span className="text-lg font-bold">¥{product.price.toFixed(2)}</span>
-              {product.originalPrice && (
-                <span className="text-sm text-gray-500 line-through">
-                  ¥{product.originalPrice.toFixed(2)}
-                </span>
-              )}
-            </div>
-          </div>
-        </Link>
-      </CardContent>
-      <CardFooter className="p-4 pt-0">
+          )}
+        </div>
+      </Link>
+      <div className="mt-4">
         <Button
-          className="w-full"
+          variant="outline"
+          className="w-full rounded-full border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-900 transition-colors hover:bg-gray-100"
           onClick={handleAddToCart}
           disabled={isLoading || !product.inStock}
         >
-          <ShoppingCart className="h-4 w-4 mr-2" />
+          <ShoppingCart className="mr-2 h-4 w-4" />
           {product.inStock ? '加入购物车' : '缺货'}
         </Button>
-      </CardFooter>
-    </Card>
+      </div>
+    </div>
   );
 }

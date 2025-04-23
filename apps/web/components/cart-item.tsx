@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { CartItem as CartItemType } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Image } from '@/components/ui/image';
+import { cn } from '@/lib/utils';
 
 interface CartItemProps {
   item: CartItemType;
@@ -58,45 +59,52 @@ export function CartItem({ item, onUpdateQuantity, onRemove }: CartItemProps) {
   };
 
   return (
-    <div className={`py-6 ${isRemoving ? 'opacity-50' : ''}`}>
-      <div className="flex items-start gap-4">
+    <div className={`py-6 ${isRemoving ? 'opacity-50' : ''} transition-opacity`}>
+      <div className="flex items-start gap-6">
         <Link
           href={`/products/${item.id}`}
-          className="relative h-24 w-24 overflow-hidden rounded-md border flex-shrink-0"
+          className="relative h-24 w-24 overflow-hidden rounded-xl bg-[#f5f5f7] p-2 flex-shrink-0 transition-transform hover:scale-105"
         >
           <Image
             src={item.image}
             alt={item.name}
-            className="h-full w-full object-cover"
+            className="h-full w-full object-contain"
             fallbackAlt={item.name}
           />
         </Link>
 
         <div className="flex-1 space-y-1">
-          <Link href={`/products/${item.id}`} className="font-medium hover:underline">
+          <Link
+            href={`/products/${item.id}`}
+            className="font-medium text-gray-900 hover:text-blue-600 transition-colors"
+          >
             {item.name}
           </Link>
-          <div className="text-base font-medium">¥{item.price.toFixed(2)}</div>
 
-          <div className="flex flex-wrap items-center gap-2 pt-2">
-            <div className="inline-flex items-center border rounded-md">
+          <div className="text-sm text-gray-500">单价: ¥{item.price.toFixed(2)}</div>
+
+          <div className="flex flex-wrap items-center justify-between gap-2 pt-3">
+            <div className="inline-flex items-center border border-gray-300 rounded-full overflow-hidden">
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-8 w-8 rounded-none"
+                className={cn(
+                  'h-8 w-8 rounded-none text-gray-600',
+                  quantity <= 1 ? 'opacity-50' : 'hover:bg-gray-100'
+                )}
                 onClick={() => handleQuantityChange(-1)}
                 disabled={isUpdating || quantity <= 1}
               >
                 <Minus className="h-3 w-3" />
                 <span className="sr-only">减少数量</span>
               </Button>
-              <span className="w-8 text-center text-sm">
+              <span className="w-10 text-center text-sm font-medium">
                 {isUpdating ? <Skeleton className="h-4 w-4 mx-auto" /> : quantity}
               </span>
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-8 w-8 rounded-none"
+                className="h-8 w-8 rounded-none text-gray-600 hover:bg-gray-100"
                 onClick={() => handleQuantityChange(1)}
                 disabled={isUpdating}
               >
@@ -105,22 +113,24 @@ export function CartItem({ item, onUpdateQuantity, onRemove }: CartItemProps) {
               </Button>
             </div>
 
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-8 px-2 text-muted-foreground"
-              onClick={handleRemove}
-              disabled={isRemoving}
-            >
-              <Trash2 className="h-4 w-4 mr-1" />
-              {isRemoving ? '移除中...' : '移除'}
-            </Button>
+            <div className="flex items-center gap-4">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 px-2 text-gray-600 hover:text-red-600 transition-colors"
+                onClick={handleRemove}
+                disabled={isRemoving}
+              >
+                <Trash2 className="h-4 w-4 mr-1" />
+                <span className="text-sm">{isRemoving ? '移除中...' : '移除'}</span>
+              </Button>
+
+              <div className="font-medium">¥{(item.price * quantity).toFixed(2)}</div>
+            </div>
           </div>
 
           {error && <div className="text-sm text-red-500 mt-1">{error}</div>}
         </div>
-
-        <div className="font-medium">¥{(item.price * quantity).toFixed(2)}</div>
       </div>
     </div>
   );
