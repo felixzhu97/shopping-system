@@ -30,8 +30,6 @@ export const getAllProducts = async (req: Request, res: Response) => {
           // 使用正则表达式以提供大小写不敏感的匹配
           query = { category: new RegExp(category, 'i') };
         }
-      } else {
-        query = { category };
       }
     }
 
