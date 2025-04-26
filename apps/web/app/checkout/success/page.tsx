@@ -2,6 +2,7 @@
 
 import React, { useEffect } from 'react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import {
   CheckCircle,
   Package,
@@ -19,6 +20,9 @@ import { Footer } from '@/components/footer';
 import { Separator } from '@/components/ui/separator';
 
 export default function CheckoutSuccessPage() {
+  const searchParams = useSearchParams();
+  const orderId = searchParams.get('orderId');
+
   // 使用useEffect确保只在客户端渲染
   useEffect(() => {
     // 可以在这里添加一些额外的逻辑，例如清除本地存储的购物车数据等
@@ -68,9 +72,14 @@ export default function CheckoutSuccessPage() {
                 <div className="flex-1">
                   <h3 className="font-medium text-gray-900 mb-1">标准配送</h3>
                   <p className="text-gray-500 text-sm">预计1-3个工作日送达</p>
-                  <p className="text-blue-600 text-sm mt-2 hover:underline cursor-pointer">
-                    跟踪订单状态
-                  </p>
+                  {orderId && (
+                    <Link
+                      href={`/orders/${orderId}`}
+                      className="text-blue-600 text-sm mt-2 hover:underline cursor-pointer"
+                    >
+                      跟踪订单状态
+                    </Link>
+                  )}
                 </div>
               </div>
 

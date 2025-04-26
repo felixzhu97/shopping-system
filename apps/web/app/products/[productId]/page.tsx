@@ -1,10 +1,10 @@
 'use client';
 
 import Link from 'next/link';
-import { ChevronRight, Minus, Plus, ShoppingCart, Star, Truck, Check, Search } from 'lucide-react';
-import { useState, useEffect, useRef } from 'react';
+import { Check, Minus, Plus, Search, ShoppingCart, Star, Truck } from 'lucide-react';
+import type { Usable } from 'react';
+import { use, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { use } from 'react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Navbar } from '@/components/navbar';
@@ -16,7 +16,6 @@ import { useToast } from '@/components/ui/use-toast';
 import { useCart } from '@/lib/cart-context';
 import * as api from '@/lib/api';
 import { cn } from '@/lib/utils';
-import type { Usable } from 'react';
 
 function LoadingSkeleton() {
   return (

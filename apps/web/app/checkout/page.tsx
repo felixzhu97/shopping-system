@@ -269,8 +269,8 @@ export default function CheckoutPage() {
         duration: 5000,
       });
 
-      // 跳转到订单成功页面
-      router.push('/checkout/success');
+      // 跳转到订单成功页面，并传递订单ID
+      router.push(`/checkout/success?orderId=123`); // 这里应该使用实际的订单ID
     } catch (error) {
       console.error('提交订单失败:', error);
       toast({

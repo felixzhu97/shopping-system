@@ -1,12 +1,10 @@
 'use client';
 
-import { Suspense, useState, useEffect, useCallback, useTransition } from 'react';
+import { Suspense, useCallback, useEffect, useState, useTransition } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useInView } from 'react-intersection-observer';
-import Link from 'next/link';
 
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import {
   Select,
   SelectContent,
