@@ -7,6 +7,15 @@ export default defineConfig({
     coverage: {
       reporter: ['text', 'json', 'html'],
     },
+    globals: true,
+    environment: 'node',
+    pool: 'threads',
+    poolOptions: {
+      threads: {
+        minThreads: 1,
+        maxThreads: 1,
+      },
+    },
   },
   resolve: {
     alias: {
@@ -17,4 +26,4 @@ export default defineConfig({
       '@utils': resolve(__dirname, './src/utils'),
     },
   },
-}); 
+});
