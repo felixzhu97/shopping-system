@@ -28,7 +28,7 @@ export async function GET(request: NextRequest, { params }: { params: { path: st
     .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
     .join('&');
 
-  const apiUrl = `${API_BASE}/${path}${queryString ? `?${queryString}` : ''}`;
+  const apiUrl = `${API_BASE}/${requestPath}${queryString ? `?${queryString}` : ''}`;
 
   console.log('代理转发请求到:', apiUrl);
 
