@@ -2,9 +2,9 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { Request, Response } from 'express';
 import mongoose from 'mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
-import Cart from '../models/Cart';
-import Product from '../models/Product';
-import * as cartController from '../controllers/cartController';
+import Cart from '../../models/Cart';
+import Product from '../../models/Product';
+import * as cartController from '../../controllers/cartController';
 
 // 模拟 Express 的 Request 和 Response 对象
 const mockRequest = (body: any = {}, params: any = {}, query: any = {}) =>

@@ -2,8 +2,8 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { Request, Response } from 'express';
 import mongoose from 'mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
-import User from '../models/User';
-import * as userController from '../controllers/userController';
+import User from '../../models/User';
+import * as userController from '../../controllers/userController';
 
 // 模拟 Express 的 Request 和 Response 对象
 const mockRequest = (body: any = {}, params: any = {}) =>

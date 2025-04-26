@@ -2,8 +2,8 @@ import { MongoMemoryServer } from 'mongodb-memory-server';
 import mongoose from 'mongoose';
 import { Request, Response } from 'express';
 import { describe, it, expect, beforeAll, beforeEach, afterAll, vi } from 'vitest';
-import * as productController from '../controllers/productController';
-import Product from '../models/Product';
+import * as productController from '../../controllers/productController';
+import Product from '../../models/Product';
 
 describe('ProductController', () => {
   let mongoServer: MongoMemoryServer;
