@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-// 产品API基础URL - 使用Lambda部署的实际API
-const PRODUCT_API_URL = 'https://guczejbq56.execute-api.ap-east-1.amazonaws.com/dev/api';
+// 产品API基础URL - 使用本地后台服务
+const PRODUCT_API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 // 模拟产品数据
 const mockProducts = [
@@ -97,6 +97,14 @@ const mockProducts = [
   },
 ];
 
+// 类别名称映射表，将前端URL参数映射到后端数据库格式
+const categoryMapping: Record<string, string> = {
+  electronics: 'Electronics',
+  clothing: 'Clothing',
+  'home-kitchen': 'Home & Kitchen',
+  books: 'Books',
+};
+
 // 设置CORS头部
 function setCorsHeaders(response: NextResponse) {
   // 允许所有来源访问
@@ -118,84 +126,42 @@ export async function OPTIONS() {
 
 // 产品列表API的GET请求处理
 export async function GET(request: NextRequest) {
-  // 获取URL查询参数
-  const { searchParams } = new URL(request.url);
-  const category = searchParams.get('category');
-
   try {
-    // 构建API URL，添加类别查询参数
-    let apiUrl = `${PRODUCT_API_URL}/products`;
-    if (category) {
-      apiUrl += `?category=${encodeURIComponent(category)}`;
-    }
+    // 获取查询参数
+    const { searchParams } = new URL(request.url);
+    const category = searchParams.get('category');
 
-    console.log('请求外部API:', apiUrl);
+    // 构建API URL
+    const apiUrl = category
+      ? `${PRODUCT_API_URL}/products?category=${encodeURIComponent(category)}`
+      : `${PRODUCT_API_URL}/products`;
+
+    console.log('获取产品列表URL:', apiUrl);
 
     // 尝试从实际API获取产品数据
     const apiResponse = await fetch(apiUrl, {
       headers: {
         'Content-Type': 'application/json',
         Accept: 'application/json',
-        Origin: 'https://shopping-system-git-release-felixzhu97s-projects.vercel.app',
       },
-      cache: 'no-store',
     });
 
-    // 如果API请求成功，返回产品数据
     if (apiResponse.ok) {
-      const products = await apiResponse.json();
-      console.log(
-        'API请求成功，返回数据条数:',
-        Array.isArray(products) ? products.length : 'not an array'
-      );
-      const response = NextResponse.json(products);
-      return setCorsHeaders(response);
+      const data = await apiResponse.json();
+      return NextResponse.json(data);
     }
 
-    // 如果API请求失败，使用模拟数据
-    console.log(`API请求失败 (${apiResponse.status}), 使用模拟数据`);
-    let filteredProducts = mockProducts;
-
-    // 如果指定了类别，过滤模拟数据
+    // 如果API请求失败，返回模拟数据
+    console.log('API请求失败，使用模拟数据');
     if (category) {
-      // 将URL中的类别参数映射到数据库格式
-      const categoryMapping: Record<string, string> = {
-        electronics: 'Electronics',
-        clothing: 'Clothing',
-        'home-kitchen': 'Home & Kitchen',
-        books: 'Books',
-      };
-
-      const mappedCategory = categoryMapping[category.toLowerCase()] || category;
-      filteredProducts = mockProducts.filter(
-        p => p.category.toLowerCase() === mappedCategory.toLowerCase()
-      );
+      const mappedCategory = categoryMapping[category] || category;
+      const filteredProducts = mockProducts.filter(p => p.category === mappedCategory);
+      return NextResponse.json(filteredProducts);
     }
-
-    const response = NextResponse.json(filteredProducts);
-    return setCorsHeaders(response);
+    return NextResponse.json(mockProducts);
   } catch (error) {
-    console.error('获取产品列表时出错:', error);
-
-    // 发生错误时，返回模拟产品数据
-    let filteredProducts = mockProducts;
-
-    // 如果指定了类别，过滤模拟数据
-    if (category) {
-      const categoryMapping: Record<string, string> = {
-        electronics: 'Electronics',
-        clothing: 'Clothing',
-        'home-kitchen': 'Home & Kitchen',
-        books: 'Books',
-      };
-
-      const mappedCategory = categoryMapping[category.toLowerCase()] || category;
-      filteredProducts = mockProducts.filter(
-        p => p.category.toLowerCase() === mappedCategory.toLowerCase()
-      );
-    }
-
-    const response = NextResponse.json(filteredProducts);
-    return setCorsHeaders(response);
+    console.error('获取产品数据时出错:', error);
+    // 发生错误时返回模拟数据
+    return NextResponse.json(mockProducts);
   }
 }

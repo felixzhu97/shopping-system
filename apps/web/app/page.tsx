@@ -2,38 +2,10 @@ import Link from 'next/link';
 import { Suspense } from 'react';
 
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardFooter } from '@/components/ui/card';
-import { ProductCard } from '@/components/product-card';
 import { Navbar } from '@/components/navbar';
 import { Footer } from '@/components/footer';
 import { Product } from '@/lib/types';
 import * as api from '@/lib/api';
-
-// 修改为从API获取数据的组件
-async function FeaturedProducts() {
-  try {
-    // 使用api模块中的getProducts函数
-    const products = await api.getProducts();
-    const featuredProducts = products.slice(0, 6); // 只获取前6个产品作为特色产品展示
-
-    return (
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3">
-        {featuredProducts.map((product: Product) => (
-          <ProductCard key={product.id} product={product} />
-        ))}
-      </div>
-    );
-  } catch (error) {
-    console.error('获取产品数据时出错:', error);
-    // 出现错误时显示友好的错误消息
-    return (
-      <div className="text-center py-8">
-        <h3 className="text-lg font-medium mb-2">无法加载产品</h3>
-        <p className="text-gray-500">请稍后再试</p>
-      </div>
-    );
-  }
-}
 
 // 获取类别产品数据的组件
 async function CategoryShowcase() {
