@@ -30,6 +30,7 @@ import { Footer } from '@/components/footer';
 import { useCart } from '@/lib/cart-context';
 import { Image } from '@/components/ui/image';
 import { cn } from '@/lib/utils';
+import { saveCheckoutInfo, getCheckoutInfo } from '@/lib/storage';
 
 // 添加表单数据类型
 interface FormData {
@@ -67,7 +68,6 @@ export default function CheckoutPage() {
   const { toast } = useToast();
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  // 添加表单状态
   const [formData, setFormData] = useState<FormData>({
     firstName: '',
     lastName: '',
@@ -82,8 +82,22 @@ export default function CheckoutPage() {
     expiration: '',
     cvv: '',
   });
-  // 添加错误状态
   const [errors, setErrors] = useState<FormErrors>({});
+
+  // 从本地存储加载结算信息
+  useEffect(() => {
+    const savedInfo = getCheckoutInfo();
+    if (savedInfo) {
+      setFormData(prev => ({
+        ...prev,
+        ...savedInfo,
+        // 不保存敏感信息
+        cardNumber: '',
+        expiration: '',
+        cvv: '',
+      }));
+    }
+  }, []);
 
   // 如果购物车为空，重定向到购物车页面
   useEffect(() => {
@@ -96,7 +110,10 @@ export default function CheckoutPage() {
     return null;
   }
 
-  const subtotal = cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
+  const subtotal = cartItems.reduce((total, item) => {
+    if (!item.product) return total;
+    return total + item.product.price * item.quantity;
+  }, 0);
   const shipping = subtotal > 200 ? 0 : 15;
   const tax = subtotal * 0.06;
   const total = subtotal + shipping + tax;
@@ -224,6 +241,20 @@ export default function CheckoutPage() {
     setIsSubmitting(true);
 
     try {
+      // 保存结算信息到本地存储（不包含敏感信息）
+      const infoToSave = {
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        phone: formData.phone,
+        address: formData.address,
+        city: formData.city,
+        province: formData.province,
+        postalCode: formData.postalCode,
+        paymentMethod: formData.paymentMethod,
+      };
+      saveCheckoutInfo(infoToSave);
+
       // 这里应该有真实的API调用来创建订单
       // 模拟API调用的等待时间
       await new Promise(resolve => setTimeout(resolve, 1500));
@@ -270,8 +301,9 @@ export default function CheckoutPage() {
 
           <h1 className="text-3xl font-semibold text-gray-900 mb-8">结算</h1>
 
-          <div className="grid lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-2">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* 左侧表单 */}
+            <div className="space-y-6">
               <form onSubmit={handleSubmit}>
                 <div className="space-y-8">
                   {/* 配送信息 */}
@@ -644,79 +676,50 @@ export default function CheckoutPage() {
               </form>
             </div>
 
-            {/* 订单摘要 */}
-            <div>
-              <div className="bg-white rounded-2xl shadow-sm p-6 md:p-8 sticky top-24">
-                <h2 className="text-xl font-semibold mb-6">订单摘要</h2>
-                <div className="space-y-5">
-                  <div className="max-h-80 overflow-auto pr-2 space-y-4">
-                    {cartItems.map(item => (
-                      <div key={item.id} className="flex items-center gap-4">
-                        <div className="relative h-16 w-16 overflow-hidden rounded-xl bg-[#f5f5f7] p-2 flex-shrink-0">
+            {/* 右侧订单摘要 */}
+            <div className="space-y-6">
+              <div className="bg-white rounded-lg shadow-sm p-6">
+                <h2 className="text-lg font-semibold mb-4">订单摘要</h2>
+                <div className="space-y-4">
+                  {cartItems.map(item => {
+                    if (!item.product) return null;
+                    return (
+                      <div key={item.productId} className="flex items-center space-x-4">
+                        <div className="relative w-16 h-16">
                           <Image
-                            src={item.image}
-                            alt={item.name}
-                            className="h-full w-full object-contain"
-                            fallbackAlt={item.name}
+                            src={item.product.image}
+                            alt={item.product.name}
+                            className="object-cover rounded-lg"
+                            wrapperClassName="w-16 h-16"
                           />
                         </div>
-                        <div className="flex-1 min-w-0">
-                          <h4 className="font-medium text-sm text-gray-900 truncate">
-                            {item.name}
-                          </h4>
-                          <div className="text-sm text-gray-500">
-                            ¥{item.price.toFixed(2)} × {item.quantity}
-                          </div>
+                        <div className="flex-1">
+                          <h3 className="font-medium">{item.product.name}</h3>
+                          <p className="text-sm text-gray-500">数量: {item.quantity}</p>
                         </div>
-                        <div className="font-medium text-sm">
-                          ¥{(item.price * item.quantity).toFixed(2)}
-                        </div>
+                        <p className="font-medium">¥{item.product.price * item.quantity}</p>
                       </div>
-                    ))}
+                    );
+                  })}
+                </div>
+                <Separator className="my-4" />
+                <div className="space-y-2">
+                  <div className="flex justify-between">
+                    <span>小计</span>
+                    <span>¥{subtotal}</span>
                   </div>
-
-                  <Separator className="my-4" />
-
-                  <div className="space-y-3">
-                    <div className="flex justify-between text-sm text-gray-600">
-                      <span>小计</span>
-                      <span>¥{subtotal.toFixed(2)}</span>
-                    </div>
-                    <div className="flex justify-between text-sm text-gray-600">
-                      <span>运费</span>
-                      <span className={shipping === 0 ? 'text-green-600' : ''}>
-                        {shipping === 0 ? '免费' : `¥${shipping.toFixed(2)}`}
-                      </span>
-                    </div>
-                    {shipping === 0 && (
-                      <div className="text-xs text-green-600 -mt-2 flex items-center">
-                        <CheckCircle2 className="h-3 w-3 mr-1" />
-                        您已获得免费配送
-                      </div>
-                    )}
-                    <div className="flex justify-between text-sm text-gray-600">
-                      <span>税费</span>
-                      <span>¥{tax.toFixed(2)}</span>
-                    </div>
+                  <div className="flex justify-between">
+                    <span>运费</span>
+                    <span>{shipping === 0 ? '免费' : `¥${shipping}`}</span>
                   </div>
-
-                  <Separator className="my-4" />
-
-                  <div className="flex justify-between font-medium text-lg">
+                  <div className="flex justify-between">
+                    <span>税费</span>
+                    <span>¥{tax.toFixed(2)}</span>
+                  </div>
+                  <Separator className="my-2" />
+                  <div className="flex justify-between font-semibold">
                     <span>总计</span>
                     <span>¥{total.toFixed(2)}</span>
-                  </div>
-
-                  <div className="bg-gray-50 p-4 rounded-xl text-sm mt-6">
-                    <div className="flex items-start">
-                      <Package className="h-5 w-5 text-gray-700 mr-2 mt-0.5 flex-shrink-0" />
-                      <div>
-                        <p className="font-medium text-gray-900">配送说明</p>
-                        <p className="text-gray-600 mt-1">
-                          标准配送时间为1-3个工作日，订单满¥200享受免费配送服务。
-                        </p>
-                      </div>
-                    </div>
                   </div>
                 </div>
               </div>

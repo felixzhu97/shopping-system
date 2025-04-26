@@ -197,40 +197,6 @@ export default function Home() {
                 以最好的方式购买您喜爱的产品。
               </p>
             </div>
-            <div className="mt-8 md:mt-0">
-              <div className="flex flex-col items-end">
-                <div className="flex items-center mb-2">
-                  <img
-                    src="/specialist_avatar.png"
-                    alt="专家头像"
-                    className="w-8 h-8 rounded-full mr-2"
-                  />
-                  <span className="text-gray-700">需要购物帮助？</span>
-                </div>
-                <Link href="/help" className="text-blue-500 hover:underline flex items-center">
-                  咨询专家 <span className="ml-1">→</span>
-                </Link>
-                <div className="flex items-center mt-4">
-                  <svg
-                    width="20"
-                    height="20"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="mr-2"
-                  >
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <path d="M12 8l4 4-4 4M8 12h8"></path>
-                  </svg>
-                  <Link href="/stores" className="text-blue-500 hover:underline flex items-center">
-                    查找门店位置 <span className="ml-1">→</span>
-                  </Link>
-                </div>
-              </div>
-            </div>
           </div>
         </section>
 
