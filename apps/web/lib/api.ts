@@ -1,5 +1,5 @@
-import { Product, Cart, ApiResponse } from 'shared';
-import { MOCK_PRODUCTS } from '../mocks/mocks';
+import { ApiResponse, Cart, Product } from 'shared';
+import { MOCK_PRODUCTS } from '../mocks/products';
 
 // 配置常量
 const API_CONFIG = {
