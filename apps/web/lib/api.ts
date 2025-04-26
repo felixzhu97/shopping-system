@@ -3,13 +3,17 @@ import { MOCK_PRODUCTS } from '../mocks/products';
 
 // 配置常量
 const API_CONFIG = {
-  baseUrl: process.env.NEXT_PUBLIC_API_URL,
-  productsUrl: '/api/products',
-  cartUrl: '/api/cart',
+  baseUrl: '/api/proxy',
+  productsUrl: '/products',
+  cartUrl: '/cart',
   timeout: 5000, // 5秒超时
   maxRetries: 0 as number,
   retryDelay: 1000, // 1秒重试延迟
+  cacheTime: 5 * 60 * 1000, // 5分钟缓存时间
 } as const;
+
+// 可变的配置项
+let cacheTime = API_CONFIG.cacheTime;
 
 // 类别名称映射表
 const CATEGORY_MAPPING: Record<string, string> = {
@@ -19,17 +23,57 @@ const CATEGORY_MAPPING: Record<string, string> = {
   books: 'Books',
 } as const;
 
+// 请求缓存
+const requestCache = new Map<string, { data: any; timestamp: number }>();
+
+// 请求拦截器
+const requestInterceptors: ((config: RequestInit) => RequestInit)[] = [];
+const responseInterceptors: ((response: Response) => Promise<Response>)[] = [];
+
+// 添加请求拦截器
+export function addRequestInterceptor(interceptor: (config: RequestInit) => RequestInit) {
+  requestInterceptors.push(interceptor);
+}
+
+// 添加响应拦截器
+export function addResponseInterceptor(interceptor: (response: Response) => Promise<Response>) {
+  responseInterceptors.push(interceptor);
+}
+
+// 应用请求拦截器
+function applyRequestInterceptors(config: RequestInit): RequestInit {
+  return requestInterceptors.reduce((acc, interceptor) => interceptor(acc), config);
+}
+
+// 应用响应拦截器
+async function applyResponseInterceptors(response: Response): Promise<Response> {
+  for (const interceptor of responseInterceptors) {
+    response = await interceptor(response);
+  }
+  return response;
+}
+
 // 通用请求函数
 async function fetchWithRetry<T>(
   url: string,
   options: RequestInit = {},
   retries = API_CONFIG.maxRetries
 ): Promise<ApiResponse<T>> {
+  const cacheKey = `${url}-${JSON.stringify(options)}`;
+  const cachedData = requestCache.get(cacheKey);
+
+  // 检查缓存
+  if (cachedData && Date.now() - cachedData.timestamp < cacheTime) {
+    console.log('使用缓存数据:', url);
+    return { data: cachedData.data, success: true };
+  }
+
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), API_CONFIG.timeout);
 
   try {
-    const response = await fetch(url, {
+    // 应用请求拦截器
+    const finalOptions = applyRequestInterceptors({
       ...options,
       signal: controller.signal,
       headers: {
@@ -39,13 +83,23 @@ async function fetchWithRetry<T>(
       },
     });
 
+    const response = await fetch(url, finalOptions);
     clearTimeout(timeoutId);
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+    // 应用响应拦截器
+    const processedResponse = await applyResponseInterceptors(response);
+
+    if (!processedResponse.ok) {
+      throw new Error(`HTTP error! status: ${processedResponse.status}`);
     }
 
-    const data = await response.json();
+    const data = await processedResponse.json();
+
+    // 缓存响应数据
+    if (options.method === 'GET') {
+      requestCache.set(cacheKey, { data, timestamp: Date.now() });
+    }
+
     return { data, success: true };
   } catch (error) {
     clearTimeout(timeoutId);
@@ -153,4 +207,14 @@ export async function clearCart(userId: string): Promise<ApiResponse<Cart>> {
   return fetchWithRetry<Cart>(url, {
     method: 'DELETE',
   });
+}
+
+// 清除缓存
+export function clearCache() {
+  requestCache.clear();
+}
+
+// 设置缓存时间
+export function setCacheTime(ms: number) {
+  cacheTime = ms;
 }

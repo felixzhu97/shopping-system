@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const API_BASE = 'https://guczejbq56.execute-api.ap-east-1.amazonaws.com/dev/api';
+const API_BASE = process.env.NEXT_PUBLIC_API_URL + '/api';
 
 // 设置CORS头部
 function setCorsHeaders(response: NextResponse) {
@@ -36,7 +36,7 @@ export async function GET(request: NextRequest, { params }: { params: { path: st
     const response = await fetch(apiUrl, {
       headers: {
         Accept: 'application/json',
-        Origin: 'https://shopping-system-git-release-felixzhu97s-projects.vercel.app',
+        Origin: '*',
       },
       // 增加请求超时
       signal: AbortSignal.timeout(10000), // 10秒超时
@@ -101,7 +101,7 @@ export async function POST(request: NextRequest, { params }: { params: { path: s
       method: 'POST',
       headers: {
         'Content-Type': contentType,
-        Origin: 'https://shopping-system-git-release-felixzhu97s-projects.vercel.app',
+        Origin: '*',
       },
       body: typeof body === 'string' ? body : JSON.stringify(body),
       signal: AbortSignal.timeout(10000), // 10秒超时
@@ -156,7 +156,7 @@ export async function PUT(request: NextRequest, { params }: { params: { path: st
       method: 'PUT',
       headers: {
         'Content-Type': contentType,
-        Origin: 'https://shopping-system-git-release-felixzhu97s-projects.vercel.app',
+        Origin: '*',
       },
       body: typeof body === 'string' ? body : JSON.stringify(body),
       signal: AbortSignal.timeout(10000), // 10秒超时
@@ -201,7 +201,7 @@ export async function DELETE(request: NextRequest, { params }: { params: { path:
       method: 'DELETE',
       headers: {
         Accept: 'application/json',
-        Origin: 'https://shopping-system-git-release-felixzhu97s-projects.vercel.app',
+        Origin: '*',
       },
       signal: AbortSignal.timeout(10000), // 10秒超时
     });
