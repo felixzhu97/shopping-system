@@ -19,7 +19,8 @@ export async function OPTIONS() {
 
 export async function GET(request: NextRequest, { params }: { params: { path: string[] } }) {
   // 确保路径正确处理，尤其是购物车路径
-  const path = params.path ? params.path.join('/') : '';
+  const { path } = await params;
+  const requestPath = path ? path.join('/') : '';
   const { searchParams } = new URL(request.url);
 
   // 构建查询字符串
