@@ -31,6 +31,7 @@ import { useCartStore } from '@/lib/cart-store';
 import { Image } from '@/components/ui/image';
 import { cn } from '@/lib/utils';
 import { saveCheckoutInfo, getCheckoutInfo } from '@/lib/storage';
+import { provinces } from '@/components/china-region';
 
 // 添加表单数据类型
 interface FormData {
@@ -83,6 +84,8 @@ export default function CheckoutPage() {
     cvv: '',
   });
   const [errors, setErrors] = useState<FormErrors>({});
+  const [selectedProvince, setSelectedProvince] = useState(provinces[0].name);
+  const [selectedCity, setSelectedCity] = useState(provinces[0].cities[0]);
 
   // 从本地存储加载结算信息
   useEffect(() => {
@@ -141,6 +144,20 @@ export default function CheckoutPage() {
       ...prev,
       [name]: value,
     }));
+  };
+
+  // 省份变化时，自动切换城市
+  const handleProvinceChange = (value: string) => {
+    setSelectedProvince(value);
+    const province = provinces.find(p => p.name === value);
+    setSelectedCity(province?.cities[0] || '');
+    setFormData(prev => ({ ...prev, province: value, city: province?.cities[0] || '' }));
+  };
+
+  // 城市变化
+  const handleCityChange = (value: string) => {
+    setSelectedCity(value);
+    setFormData(prev => ({ ...prev, city: value }));
   };
 
   // 验证表单
@@ -436,46 +453,38 @@ export default function CheckoutPage() {
                       </div>
                       <div className="grid sm:grid-cols-3 gap-6">
                         <div className="space-y-2">
-                          <Label htmlFor="city" className="text-sm font-medium text-gray-700">
-                            城市
-                          </Label>
-                          <Input
-                            id="city"
-                            name="city"
-                            value={formData.city}
-                            onChange={handleInputChange}
-                            required
-                            className={cn(
-                              'h-12 rounded-xl transition-colors',
-                              errors.city
-                                ? 'border-red-500 focus:ring-red-500'
-                                : 'focus:ring-blue-500'
-                            )}
-                          />
-                          {errors.city && (
-                            <p className="text-sm text-red-500 flex items-center mt-1">
-                              <AlertCircle className="h-3 w-3 mr-1" />
-                              {errors.city}
-                            </p>
-                          )}
-                        </div>
-                        <div className="space-y-2">
                           <Label htmlFor="province" className="text-sm font-medium text-gray-700">
                             省份
                           </Label>
-                          <Select
-                            defaultValue={formData.province}
-                            onValueChange={value => handleSelectChange('province', value)}
-                          >
+                          <Select value={selectedProvince} onValueChange={handleProvinceChange}>
                             <SelectTrigger id="province" className="h-12 rounded-xl">
                               <SelectValue placeholder="选择省份" />
                             </SelectTrigger>
-                            <SelectContent className="rounded-xl">
-                              <SelectItem value="beijing">北京市</SelectItem>
-                              <SelectItem value="shanghai">上海市</SelectItem>
-                              <SelectItem value="guangdong">广东省</SelectItem>
-                              <SelectItem value="jiangsu">江苏省</SelectItem>
-                              <SelectItem value="zhejiang">浙江省</SelectItem>
+                            <SelectContent className="rounded-xl max-h-72 overflow-y-auto">
+                              {provinces.map(prov => (
+                                <SelectItem key={prov.name} value={prov.name}>
+                                  {prov.name}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="city" className="text-sm font-medium text-gray-700">
+                            城市
+                          </Label>
+                          <Select value={selectedCity} onValueChange={handleCityChange}>
+                            <SelectTrigger id="city" className="h-12 rounded-xl">
+                              <SelectValue placeholder="选择城市" />
+                            </SelectTrigger>
+                            <SelectContent className="rounded-xl max-h-72 overflow-y-auto">
+                              {(provinces.find(p => p.name === selectedProvince)?.cities || []).map(
+                                city => (
+                                  <SelectItem key={city} value={city}>
+                                    {city}
+                                  </SelectItem>
+                                )
+                              )}
                             </SelectContent>
                           </Select>
                         </div>
