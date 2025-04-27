@@ -142,20 +142,22 @@ function CategoryHeader({ category }: { category: string }) {
 // 将使用useSearchParams的逻辑移到专门的Client组件中
 function ClientProductsList() {
   const searchParams = useSearchParams();
-  const { products, isLoading, error, fetchProducts } = useProductStore();
+  const { productsByCategory, productsLoadedByCategory, isLoading, error, fetchProducts } =
+    useProductStore();
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
 
   // 获取所有查询参数
-  const category = searchParams.get('category') || '';
+  const category = searchParams.get('category') || 'all';
   const sort = searchParams.get('sort') || 'featured';
   const query = searchParams.get('q') || '';
 
   useEffect(() => {
-    fetchProducts(category || undefined);
+    fetchProducts(category);
   }, [category, fetchProducts]);
 
   // 过滤和排序产品
   useEffect(() => {
+    const products = productsByCategory[category] || [];
     let result = [...products];
     if (query) {
       result = result.filter(product => product.name.toLowerCase().includes(query.toLowerCase()));
@@ -172,9 +174,9 @@ function ClientProductsList() {
         break;
     }
     setFilteredProducts(result);
-  }, [products, query, sort]);
+  }, [productsByCategory, category, query, sort]);
 
-  if (isLoading) {
+  if (isLoading && !productsLoadedByCategory[category]) {
     return <ProductsGridSkeleton />;
   }
 
@@ -225,30 +227,6 @@ function ClientProductsPage() {
   useEffect(() => {
     setCurrentSort(sort);
   }, [sort]);
-
-  // 预加载相关分类数据
-  useEffect(() => {
-    const preloadCategories = async () => {
-      const categories = ['electronics', 'clothing', 'home-kitchen', 'books'];
-
-      // 预加载当前类别之外的其他类别
-      for (const cat of categories) {
-        if (cat !== category) {
-          try {
-            // 使用低优先级获取数据
-            setTimeout(() => {
-              api.getProducts(cat);
-            }, 1000);
-          } catch (err) {
-            // 忽略预加载错误
-            console.log('预加载数据失败:', err);
-          }
-        }
-      }
-    };
-
-    preloadCategories();
-  }, [category]);
 
   // 处理分类变更
   const handleCategoryChange = useCallback(

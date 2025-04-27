@@ -40,7 +40,8 @@ function LoadingSkeleton() {
 
 // Apple风格的产品详情组件
 function ProductDetail({ productId }: { productId: string }) {
-  const { product, relatedProducts, isLoading, error, fetchProduct, fetchRelatedProducts } = useProductStore();
+  const { product, relatedProducts, isLoading, error, fetchProduct, fetchRelatedProducts } =
+    useProductStore();
   const [isActionLoading, setIsActionLoading] = useState(false);
   const [addedToCart, setAddedToCart] = useState(false);
   const [quantity, setQuantity] = useState(1);
