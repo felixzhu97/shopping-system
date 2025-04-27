@@ -32,7 +32,7 @@ export const useCartStore = create<CartStore>()(
       addToCart: async (item: CartItem) => {
         try {
           set({ isLoading: true, error: null });
-          await api.addToCart(TEMP_USER_ID, item);
+          await api.addToCart(TEMP_USER_ID, item.id, item.quantity);
           const updatedCart = [...get().cartItems, item];
           set({ cartItems: updatedCart });
           toast({
@@ -54,7 +54,7 @@ export const useCartStore = create<CartStore>()(
       updateQuantity: async (id: string, quantity: number) => {
         try {
           set({ isLoading: true, error: null });
-          await api.updateCartItemQuantity(TEMP_USER_ID, id, quantity);
+          await api.updateCartItem(TEMP_USER_ID, id, quantity);
           const updatedCart = get().cartItems.map(item =>
             item.id === id ? { ...item, quantity } : item
           );
@@ -117,8 +117,8 @@ export const useCartStore = create<CartStore>()(
       fetchCartFromApi: async () => {
         try {
           set({ isLoading: true, error: null });
-          const items = await api.getCartItems(TEMP_USER_ID);
-          set({ cartItems: items });
+          const cart = await api.getCart(TEMP_USER_ID);
+          set({ cartItems: cart.items });
         } catch (err) {
           set({ error: '获取购物车失败' });
         } finally {
