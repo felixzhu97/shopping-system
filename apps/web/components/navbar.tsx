@@ -12,7 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { useCart } from '@/lib/cart-context';
+import { useCartStore } from '@/lib/cart-store';
 import { cn } from '@/lib/utils';
 
 // 定义快捷链接数据
@@ -33,7 +33,9 @@ function NavbarClient() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const router = useRouter();
-  const { cartItems, itemCount, subtotal } = useCart();
+  const { cartItems } = useCartStore();
+  const itemCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+  const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   // 根据路径和查询参数分析当前分类
   const getCurrentCategory = (): string => {

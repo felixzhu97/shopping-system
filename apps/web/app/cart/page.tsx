@@ -13,11 +13,12 @@ import { useToast } from '@/components/ui/use-toast';
 import { CartItem } from '@/components/cart-item';
 import { Navbar } from '@/components/navbar';
 import { Footer } from '@/components/footer';
-import { useCart } from '@/lib/cart-context';
+import { useCartStore } from '@/lib/cart-store';
 import { cn } from '@/lib/utils';
 
 export default function CartPage() {
-  const { cartItems, updateQuantity, removeFromCart, clearCart, isLoading, error } = useCart();
+  const { cartItems, addToCart, updateQuantity, removeFromCart, clearCart, isLoading, error } =
+    useCartStore();
   const { toast } = useToast();
   const router = useRouter();
 

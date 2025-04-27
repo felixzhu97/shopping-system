@@ -2,7 +2,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { Navbar } from '../components/navbar';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { useRouter } from 'next/navigation';
-import { useCart } from '@/lib/cart-context';
+import { useCartStore } from '@/lib/cart-store';
 
 // 模拟 next/navigation
 vi.mock('next/navigation', () => ({
@@ -12,8 +12,8 @@ vi.mock('next/navigation', () => ({
 }));
 
 // 模拟 cart-context
-vi.mock('@/lib/cart-context', () => ({
-  useCart: vi.fn(),
+vi.mock('@/lib/cart-store', () => ({
+  useCartStore: vi.fn(),
 }));
 
 describe('Navbar', () => {
@@ -24,7 +24,7 @@ describe('Navbar', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     (useRouter as ReturnType<typeof vi.fn>).mockReturnValue(mockRouter);
-    (useCart as any).mockReturnValue({
+    (useCartStore as any).mockReturnValue({
       cartItems: [],
       itemCount: 0,
       subtotal: 0,
@@ -80,7 +80,7 @@ describe('Navbar', () => {
   });
 
   it('渲染购物车图标和数量', () => {
-    (useCart as any).mockReturnValue({
+    (useCartStore as any).mockReturnValue({
       cartItems: [],
       itemCount: 5,
       subtotal: 0,

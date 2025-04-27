@@ -13,7 +13,7 @@ import { Footer } from '@/components/footer';
 import { Product } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/components/ui/use-toast';
-import { useCart } from '@/lib/cart-context';
+import { useCartStore } from '@/lib/cart-store';
 import * as api from '@/lib/api';
 import { cn } from '@/lib/utils';
 
@@ -49,7 +49,7 @@ function ProductDetail({ productId }: { productId: string }) {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [fullscreenImage, setFullscreenImage] = useState(false);
   const imageContainerRef = useRef<HTMLDivElement>(null);
-  const { addToCart } = useCart();
+  const { addToCart } = useCartStore();
   const { toast } = useToast();
   const router = useRouter();
 

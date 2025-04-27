@@ -27,7 +27,7 @@ import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/components/ui/use-toast';
 import { Navbar } from '@/components/navbar';
 import { Footer } from '@/components/footer';
-import { useCart } from '@/lib/cart-context';
+import { useCartStore } from '@/lib/cart-store';
 import { Image } from '@/components/ui/image';
 import { cn } from '@/lib/utils';
 import { saveCheckoutInfo, getCheckoutInfo } from '@/lib/storage';
@@ -64,7 +64,7 @@ interface FormErrors {
 }
 
 export default function CheckoutPage() {
-  const { cartItems, clearCart } = useCart();
+  const { cartItems, clearCart } = useCartStore();
   const { toast } = useToast();
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
