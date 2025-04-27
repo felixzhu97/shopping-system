@@ -72,13 +72,7 @@ function ProductDetail({ productId }: { productId: string }) {
     if (!product) return;
     try {
       setIsAddToCartLoading(true);
-      await addToCart({
-        id: product.id,
-        name: product.name,
-        price: product.price,
-        quantity: quantity,
-        image: product.image,
-      });
+      await addToCart(product, quantity);
       setAddedToCart(true);
       setTimeout(() => setAddedToCart(false), 2000);
       toast({
@@ -102,13 +96,7 @@ function ProductDetail({ productId }: { productId: string }) {
     if (!product) return;
     try {
       setIsBuyNowLoading(true);
-      await addToCart({
-        id: product.id,
-        name: product.name,
-        price: product.price,
-        quantity: quantity,
-        image: product.image,
-      });
+      await addToCart(product, quantity);
       router.push('/checkout');
     } catch (err) {
       toast({
