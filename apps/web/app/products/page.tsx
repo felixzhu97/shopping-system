@@ -20,6 +20,7 @@ import { Product } from '@/lib/types';
 import * as api from '@/lib/api';
 import { cn } from '@/lib/utils';
 import { useProductStore } from '@/lib/product-store';
+import { ProductCardSkeleton } from '@/components/product-card-skeleton';
 
 // 分类名称映射表，将URL参数映射为友好的中文名称
 const getCategoryLabel = (categorySlug: string): string => {
@@ -40,6 +41,7 @@ const getCategoryLabel = (categorySlug: string): string => {
 function AppleStyleProductGrid({ products }: { products: Product[] }) {
   const [visibleProducts, setVisibleProducts] = useState<Product[]>([]);
   const [hasMore, setHasMore] = useState(true);
+  const [isBatchLoading, setIsBatchLoading] = useState(false);
   const PAGE_SIZE = 12; // 每批加载的产品数量，增加到12个以适应网格
 
   const { ref, inView } = useInView({
@@ -55,20 +57,19 @@ function AppleStyleProductGrid({ products }: { products: Product[] }) {
 
   // 当滚动到底部时加载更多产品
   useEffect(() => {
-    if (inView && hasMore) {
-      const nextBatch = products.slice(visibleProducts.length, visibleProducts.length + PAGE_SIZE);
-
-      if (nextBatch.length > 0) {
-        // 使用 setTimeout 避免阻塞主线程
-        setTimeout(() => {
-          setVisibleProducts(prev => [...prev, ...nextBatch]);
-          setHasMore(visibleProducts.length + nextBatch.length < products.length);
-        }, 100);
-      } else {
-        setHasMore(false);
-      }
+    if (inView && hasMore && !isBatchLoading) {
+      setIsBatchLoading(true);
+      setTimeout(() => {
+        const nextBatch = products.slice(
+          visibleProducts.length,
+          visibleProducts.length + PAGE_SIZE
+        );
+        setVisibleProducts(prev => [...prev, ...nextBatch]);
+        setHasMore(visibleProducts.length + nextBatch.length < products.length);
+        setIsBatchLoading(false);
+      }, 500); // 模拟加载延迟
     }
-  }, [inView, hasMore, products, visibleProducts]);
+  }, [inView, hasMore, products, visibleProducts, isBatchLoading]);
 
   return (
     <>
@@ -77,15 +78,16 @@ function AppleStyleProductGrid({ products }: { products: Product[] }) {
           <AppleProductCard key={`${product.id}-${index}`} product={product} />
         ))}
       </div>
-
-      {/* 加载指示器 */}
+      {/* 只在加载更多时显示 loading */}
       {hasMore && (
         <div ref={ref} className="py-8 mt-4 flex justify-center">
-          <div className="flex space-x-4">
-            {[...Array(4)].map((_, i) => (
-              <Skeleton key={i} className="h-8 w-8 rounded-full" />
-            ))}
-          </div>
+          {isBatchLoading ? (
+            <div className="flex space-x-4">
+              {[...Array(4)].map((_, i) => (
+                <Skeleton key={i} className="h-8 w-8 rounded-full" />
+              ))}
+            </div>
+          ) : null}
         </div>
       )}
     </>
@@ -176,8 +178,18 @@ function ClientProductsList() {
     setFilteredProducts(result);
   }, [productsByCategory, category, query, sort]);
 
-  if (isLoading && !productsLoadedByCategory[category]) {
+  // 优先显示骨架屏
+  if (isLoading || !productsLoadedByCategory[category]) {
     return <ProductsGridSkeleton />;
+  }
+
+  if (!isLoading && productsLoadedByCategory[category] && filteredProducts.length === 0) {
+    return (
+      <div className="col-span-full py-12 text-center">
+        <h3 className="text-lg font-medium mb-2">未找到产品</h3>
+        <p className="text-muted-foreground">请尝试调整您的搜索或筛选条件</p>
+      </div>
+    );
   }
 
   if (error) {
@@ -186,15 +198,6 @@ function ClientProductsList() {
         <div className="text-xl font-medium text-red-500 mb-2">加载出错</div>
         <p className="text-gray-500 mb-6">{error}</p>
         <Button onClick={() => window.location.reload()}>重试</Button>
-      </div>
-    );
-  }
-
-  if (filteredProducts.length === 0) {
-    return (
-      <div className="col-span-full py-12 text-center">
-        <h3 className="text-lg font-medium mb-2">未找到产品</h3>
-        <p className="text-muted-foreground">请尝试调整您的搜索或筛选条件</p>
       </div>
     );
   }
@@ -360,16 +363,7 @@ function ProductsGridSkeleton() {
       {Array(8)
         .fill(0)
         .map((_, i) => (
-          <div key={i} className="flex flex-col">
-            <div className="bg-gray-100 rounded-2xl p-4 mb-3 aspect-square flex items-center justify-center overflow-hidden">
-              <Skeleton className="h-3/4 w-3/4" />
-            </div>
-            <div className="flex flex-col items-center">
-              <Skeleton className="h-5 w-3/4 mb-2" />
-              <Skeleton className="h-4 w-1/2 mb-2" />
-              <Skeleton className="h-6 w-1/3" />
-            </div>
-          </div>
+          <ProductCardSkeleton key={i} />
         ))}
     </div>
   );
