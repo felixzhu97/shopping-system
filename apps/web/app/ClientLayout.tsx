@@ -1,10 +1,9 @@
 'use client';
 
-import { ReactNode, useState, useEffect } from 'react';
-import LoginModal from '@/components/LoginModal';
+import { ReactNode, useEffect } from 'react';
 import { useUserStore } from '@/lib/user-store';
 import { Toaster } from '@/components/ui/toaster';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 
 const PUBLIC_PATHS = [
   '/', // 首页
@@ -19,20 +18,19 @@ function isPublicPath(path: string) {
 
 export default function ClientLayout({ children }: { children: ReactNode }) {
   const token = useUserStore(state => state.token);
-  const [loginOpen, setLoginOpen] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
 
   useEffect(() => {
-    if (!token && !isPublicPath(pathname)) {
-      setLoginOpen(true);
+    if (!token && !isPublicPath(pathname) && pathname !== '/login') {
+      router.replace(`/login?redirect=${encodeURIComponent(pathname)}`);
     }
-  }, [token, pathname]);
+  }, [token, pathname, router]);
 
   return (
     <>
-      <LoginModal open={loginOpen} onClose={() => setLoginOpen(false)} />
       {/* 未登录且非公开页面时，不渲染内容 */}
-      {!token && !isPublicPath(pathname) ? null : children}
+      {!token && !isPublicPath(pathname) && pathname !== '/login' ? null : children}
       <Toaster />
     </>
   );
