@@ -26,7 +26,7 @@ Authorization: Bearer <access_token>
 #### 用户登录
 
 ```
-POST /auth/login
+POST /users/login
 ```
 
 请求体:
@@ -59,7 +59,7 @@ POST /auth/login
 #### 用户注册
 
 ```
-POST /auth/register
+POST /users/register
 ```
 
 请求体:

@@ -5,6 +5,7 @@ export const API_CONFIG = {
   proxyUrl: '/api/proxy',
   productsUrl: '/products',
   cartUrl: '/cart',
+  usersUrl: '/users',
 } as const;
 
 export const CATEGORY_MAPPING: Record<string, string> = {

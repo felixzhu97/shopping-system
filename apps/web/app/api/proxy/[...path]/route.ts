@@ -73,7 +73,10 @@ export async function GET(request: NextRequest, { params }: { params: { path: st
   }
 }
 
-export async function POST(request: NextRequest, { params }: { params: { path: string[] } }) {
+export async function POST(
+  request: NextRequest,
+  { params }: { params: { path: string[] } }
+): Promise<NextResponse> {
   const path = params.path ? params.path.join('/') : '';
 
   try {
@@ -109,7 +112,10 @@ export async function POST(request: NextRequest, { params }: { params: { path: s
     });
 
     if (!response.ok) {
-      throw new Error(`API 请求失败: ${response.status}`);
+      const error = await response.json();
+      throw new Error(error.message, {
+        cause: { status: response.status },
+      });
     }
 
     try {
@@ -129,8 +135,11 @@ export async function POST(request: NextRequest, { params }: { params: { path: s
   } catch (error: any) {
     console.error('代理POST请求失败:', error);
     const errorResponse = NextResponse.json(
-      { error: '请求失败', details: error.message },
-      { status: 500 }
+      {
+        error: error.cause.statusText,
+        details: error.message,
+      },
+      { status: error.cause.status }
     );
     return setCorsHeaders(errorResponse);
   }

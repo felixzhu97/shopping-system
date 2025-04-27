@@ -42,10 +42,14 @@ export const register = async (req: any, res: any) => {
 // 用户登录
 export const login = async (req: any, res: any) => {
   try {
-    const { username, password } = req.body;
+    const { username, email, password } = req.body;
 
-    // 查找用户
-    const user = await User.findOne({ username });
+    // 构造$or条件，避免null，指定any类型
+    const orConditions: any[] = [];
+    if (username) orConditions.push({ username });
+    if (email) orConditions.push({ email });
+
+    const user = await User.findOne(orConditions.length > 0 ? { $or: orConditions } : {});
 
     if (!user) {
       return res.status(401 as number).json({ message: '用户名或密码错误' });
