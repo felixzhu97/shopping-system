@@ -19,6 +19,7 @@ import { Footer } from '@/components/footer';
 import { Product } from '@/lib/types';
 import * as api from '@/lib/api';
 import { cn } from '@/lib/utils';
+import { useProductStore } from '@/lib/product-store';
 
 // 分类名称映射表，将URL参数映射为友好的中文名称
 const getCategoryLabel = (categorySlug: string): string => {
@@ -141,46 +142,24 @@ function CategoryHeader({ category }: { category: string }) {
 // 将使用useSearchParams的逻辑移到专门的Client组件中
 function ClientProductsList() {
   const searchParams = useSearchParams();
-  const [products, setProducts] = useState<Product[]>([]);
+  const { products, isLoading, error, fetchProducts } = useProductStore();
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   // 获取所有查询参数
   const category = searchParams.get('category') || '';
   const sort = searchParams.get('sort') || 'featured';
   const query = searchParams.get('q') || '';
 
-  // 获取产品数据
   useEffect(() => {
-    const fetchProducts = async () => {
-      setIsLoading(true);
-      try {
-        const data = await api.getProducts(category || undefined);
-        setProducts(data);
-        setError(null);
-      } catch (err) {
-        console.error('获取产品数据失败:', err);
-        setError('获取产品数据失败，请稍后再试');
-        setProducts([]);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchProducts();
-  }, [category]);
+    fetchProducts(category || undefined);
+  }, [category, fetchProducts]);
 
   // 过滤和排序产品
   useEffect(() => {
     let result = [...products];
-
-    // 过滤查询
     if (query) {
       result = result.filter(product => product.name.toLowerCase().includes(query.toLowerCase()));
     }
-
-    // 排序产品
     switch (sort) {
       case 'price-asc':
         result.sort((a, b) => a.price - b.price);
@@ -191,9 +170,7 @@ function ClientProductsList() {
       case 'rating':
         result.sort((a, b) => (b.rating || 0) - (a.rating || 0));
         break;
-      // 默认是"featured"，无需排序
     }
-
     setFilteredProducts(result);
   }, [products, query, sort]);
 

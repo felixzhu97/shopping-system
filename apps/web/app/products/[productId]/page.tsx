@@ -16,6 +16,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { useCartStore } from '@/lib/cart-store';
 import * as api from '@/lib/api';
 import { cn } from '@/lib/utils';
+import { useProductStore } from '@/lib/product-store';
 
 function LoadingSkeleton() {
   return (
@@ -39,13 +40,10 @@ function LoadingSkeleton() {
 
 // Apple风格的产品详情组件
 function ProductDetail({ productId }: { productId: string }) {
-  const [product, setProduct] = useState<Product | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const { product, relatedProducts, isLoading, error, fetchProduct, fetchRelatedProducts } = useProductStore();
   const [isActionLoading, setIsActionLoading] = useState(false);
   const [addedToCart, setAddedToCart] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [quantity, setQuantity] = useState(1);
-  const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [fullscreenImage, setFullscreenImage] = useState(false);
   const imageContainerRef = useRef<HTMLDivElement>(null);
@@ -54,29 +52,15 @@ function ProductDetail({ productId }: { productId: string }) {
   const router = useRouter();
 
   useEffect(() => {
-    const fetchProduct = async () => {
-      try {
-        setIsLoading(true);
-        const productData = await api.getProduct(productId);
-        setProduct(productData);
-        setSelectedImage(productData.image);
+    fetchProduct(productId);
+  }, [productId, fetchProduct]);
 
-        // 获取相关产品
-        const allProducts = await api.getProducts(productData.category);
-        const related = allProducts.filter((p: Product) => p.id !== productId).slice(0, 4);
-        setRelatedProducts(related);
-
-        setError(null);
-      } catch (err) {
-        console.error('获取产品数据失败:', err);
-        setError('获取产品数据失败，请稍后再试');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchProduct();
-  }, [productId]);
+  useEffect(() => {
+    if (product) {
+      setSelectedImage(product.image);
+      fetchRelatedProducts(product.category, product.id);
+    }
+  }, [product, fetchRelatedProducts]);
 
   const handleQuantityChange = (delta: number) => {
     setQuantity(prev => Math.max(1, prev + delta));
