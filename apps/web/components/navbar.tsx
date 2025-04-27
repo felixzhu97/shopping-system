@@ -33,9 +33,12 @@ function NavbarClient() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const router = useRouter();
-  const { cartItems } = useCartStore();
-  const itemCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
-  const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const { items } = useCartStore();
+  const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
+  const subtotal = items.reduce((sum, item) => {
+    const price = item.product?.price || 0;
+    return sum + price * item.quantity;
+  }, 0);
 
   // 根据路径和查询参数分析当前分类
   const getCurrentCategory = (): string => {

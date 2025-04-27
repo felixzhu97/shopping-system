@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { CartItem } from './types';
+import type { CartItem, Product } from './types';
 import * as api from './api';
 import { toast } from '@/components/ui/use-toast';
 
@@ -8,119 +8,129 @@ const CART_STORAGE_KEY = 'shopping-cart';
 const TEMP_USER_ID = '000000000000000000000001';
 
 interface CartStore {
-  cartItems: CartItem[];
+  items: CartItem[];
   isLoading: boolean;
   error: string | null;
-  itemCount: number;
   subtotal: number;
-  addToCart: (item: CartItem) => Promise<void>;
-  updateQuantity: (id: string, quantity: number) => Promise<void>;
-  removeFromCart: (id: string) => Promise<void>;
-  clearCart: () => Promise<void>;
+  shipping: number;
+  tax: number;
+  total: number;
+  addToCart: (product: Product, quantity?: number) => void;
+  updateQuantity: (productId: string, quantity: number) => void;
+  removeFromCart: (productId: string) => void;
+  clearCart: () => void;
   fetchCartFromApi: () => Promise<void>;
+  _calculateTotals: () => void;
 }
+
+const SHIPPING_RATE = 10; // 固定运费
+const TAX_RATE = 0.13; // 13% 税率
 
 export const useCartStore = create<CartStore>()(
   persist(
     (set, get) => ({
-      cartItems: [],
+      items: [],
       isLoading: false,
       error: null,
-      itemCount: 0,
       subtotal: 0,
+      shipping: 0,
+      tax: 0,
+      total: 0,
 
-      addToCart: async (item: CartItem) => {
+      _calculateTotals: () => {
+        const items = get().items;
+        const subtotal = items.reduce((total, item) => {
+          const price = item.product?.price || 0;
+          return total + price * item.quantity;
+        }, 0);
+
+        const shipping = items.length > 0 ? SHIPPING_RATE : 0;
+        const tax = subtotal * TAX_RATE;
+        const total = subtotal + shipping + tax;
+
+        set({ subtotal, shipping, tax, total });
+      },
+
+      addToCart: (product: Product, quantity = 1) => {
         try {
-          set({ isLoading: true, error: null });
-          await api.addToCart(TEMP_USER_ID, item.id, item.quantity);
-          const updatedCart = [...get().cartItems, item];
-          set({ cartItems: updatedCart });
-          toast({
-            title: '添加成功',
-            description: '商品已添加到购物车',
+          set(state => {
+            const existingItem = state.items.find(item => item.productId === product.id);
+
+            if (existingItem) {
+              const updatedItems = state.items.map(item =>
+                item.productId === product.id
+                  ? { ...item, quantity: item.quantity + quantity }
+                  : item
+              );
+              return { items: updatedItems };
+            }
+
+            const newItem: CartItem = {
+              productId: product.id,
+              quantity,
+              product,
+            };
+
+            return { items: [...state.items, newItem] };
           });
-        } catch (err) {
-          set({ error: '添加商品失败' });
-          toast({
-            title: '添加失败',
-            description: '请稍后重试',
-            variant: 'destructive',
-          });
-        } finally {
-          set({ isLoading: false });
+
+          get()._calculateTotals();
+        } catch (error) {
+          set({ error: '添加商品到购物车时发生错误' });
         }
       },
 
-      updateQuantity: async (id: string, quantity: number) => {
+      updateQuantity: (productId: string, quantity: number) => {
         try {
-          set({ isLoading: true, error: null });
-          await api.updateCartItem(TEMP_USER_ID, id, quantity);
-          const updatedCart = get().cartItems.map(item =>
-            item.id === id ? { ...item, quantity } : item
-          );
-          set({ cartItems: updatedCart });
-        } catch (err) {
-          set({ error: '更新数量失败' });
-          toast({
-            title: '更新失败',
-            description: '请稍后重试',
-            variant: 'destructive',
-          });
-        } finally {
-          set({ isLoading: false });
+          if (quantity < 1) {
+            throw new Error('商品数量必须大于 0');
+          }
+
+          set(state => ({
+            items: state.items.map(item =>
+              item.productId === productId ? { ...item, quantity } : item
+            ),
+          }));
+
+          get()._calculateTotals();
+        } catch (error) {
+          set({ error: '更新商品数量时发生错误' });
         }
       },
 
-      removeFromCart: async (id: string) => {
+      removeFromCart: (productId: string) => {
         try {
-          set({ isLoading: true, error: null });
-          await api.removeFromCart(TEMP_USER_ID, id);
-          const updatedCart = get().cartItems.filter(item => item.id !== id);
-          set({ cartItems: updatedCart });
-          toast({
-            title: '删除成功',
-            description: '商品已从购物车移除',
-          });
-        } catch (err) {
-          set({ error: '删除商品失败' });
-          toast({
-            title: '删除失败',
-            description: '请稍后重试',
-            variant: 'destructive',
-          });
-        } finally {
-          set({ isLoading: false });
+          set(state => ({
+            items: state.items.filter(item => item.productId !== productId),
+          }));
+
+          get()._calculateTotals();
+        } catch (error) {
+          set({ error: '移除商品时发生错误' });
         }
       },
 
-      clearCart: async () => {
+      clearCart: () => {
         try {
-          set({ isLoading: true, error: null });
-          await api.clearCart(TEMP_USER_ID);
-          set({ cartItems: [] });
-          toast({
-            title: '清空成功',
-            description: '购物车已清空',
-          });
-        } catch (err) {
-          set({ error: '清空购物车失败' });
-          toast({
-            title: '清空失败',
-            description: '请稍后重试',
-            variant: 'destructive',
-          });
-        } finally {
-          set({ isLoading: false });
+          set({ items: [] });
+          get()._calculateTotals();
+        } catch (error) {
+          set({ error: '清空购物车时发生错误' });
         }
       },
 
       fetchCartFromApi: async () => {
         try {
           set({ isLoading: true, error: null });
-          const cart = await api.getCart(TEMP_USER_ID);
-          set({ cartItems: cart.items });
-        } catch (err) {
-          set({ error: '获取购物车失败' });
+
+          // TODO: 实现 API 调用
+          const response = await fetch('/api/cart');
+          const data = await response.json();
+
+          set({ items: data.items });
+          get()._calculateTotals();
+        } catch (error) {
+          set({ error: '获取购物车数据时发生错误' });
         } finally {
           set({ isLoading: false });
         }
@@ -128,7 +138,9 @@ export const useCartStore = create<CartStore>()(
     }),
     {
       name: CART_STORAGE_KEY,
-      partialize: state => ({ cartItems: state.cartItems }),
+      partialize: state => ({
+        items: state.items,
+      }),
     }
   )
 );

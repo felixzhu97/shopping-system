@@ -64,7 +64,7 @@ interface FormErrors {
 }
 
 export default function CheckoutPage() {
-  const { cartItems, clearCart } = useCartStore();
+  const { items, clearCart } = useCartStore();
   const { toast } = useToast();
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -101,16 +101,16 @@ export default function CheckoutPage() {
 
   // 如果购物车为空，重定向到购物车页面
   useEffect(() => {
-    if (cartItems.length === 0) {
+    if (items.length === 0) {
       router.push('/cart');
     }
-  }, [cartItems.length, router]);
+  }, [items.length, router]);
 
-  if (cartItems.length === 0) {
+  if (items.length === 0) {
     return null;
   }
 
-  const subtotal = cartItems.reduce((total, item) => {
+  const subtotal = items.reduce((total, item) => {
     if (!item.product) return total;
     return total + item.product.price * item.quantity;
   }, 0);
@@ -681,7 +681,7 @@ export default function CheckoutPage() {
               <div className="bg-white rounded-lg shadow-sm p-6">
                 <h2 className="text-lg font-semibold mb-4">订单摘要</h2>
                 <div className="space-y-4">
-                  {cartItems.map(item => {
+                  {items.map(item => {
                     if (!item.product) return null;
                     return (
                       <div key={item.productId} className="flex items-center space-x-4">

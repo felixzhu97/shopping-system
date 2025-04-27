@@ -42,7 +42,8 @@ function LoadingSkeleton() {
 function ProductDetail({ productId }: { productId: string }) {
   const { product, relatedProducts, isLoading, error, fetchProduct, fetchRelatedProducts } =
     useProductStore();
-  const [isActionLoading, setIsActionLoading] = useState(false);
+  const [isAddToCartLoading, setIsAddToCartLoading] = useState(false);
+  const [isBuyNowLoading, setIsBuyNowLoading] = useState(false);
   const [addedToCart, setAddedToCart] = useState(false);
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -69,10 +70,8 @@ function ProductDetail({ productId }: { productId: string }) {
 
   const handleAddToCart = async () => {
     if (!product) return;
-
     try {
-      setIsActionLoading(true);
-
+      setIsAddToCartLoading(true);
       await addToCart({
         id: product.id,
         name: product.name,
@@ -80,10 +79,8 @@ function ProductDetail({ productId }: { productId: string }) {
         quantity: quantity,
         image: product.image,
       });
-
       setAddedToCart(true);
       setTimeout(() => setAddedToCart(false), 2000);
-
       toast({
         title: '已添加到购物车',
         description: `${product.name} × ${quantity} 已成功添加到购物车`,
@@ -97,16 +94,14 @@ function ProductDetail({ productId }: { productId: string }) {
         duration: 3000,
       });
     } finally {
-      setIsActionLoading(false);
+      setIsAddToCartLoading(false);
     }
   };
 
   const handleBuyNow = async () => {
     if (!product) return;
-
     try {
-      setIsActionLoading(true);
-
+      setIsBuyNowLoading(true);
       await addToCart({
         id: product.id,
         name: product.name,
@@ -114,7 +109,6 @@ function ProductDetail({ productId }: { productId: string }) {
         quantity: quantity,
         image: product.image,
       });
-
       router.push('/checkout');
     } catch (err) {
       toast({
@@ -123,7 +117,8 @@ function ProductDetail({ productId }: { productId: string }) {
         variant: 'destructive',
         duration: 3000,
       });
-      setIsActionLoading(false);
+    } finally {
+      setIsBuyNowLoading(false);
     }
   };
 
@@ -354,9 +349,9 @@ function ProductDetail({ productId }: { productId: string }) {
                 addedToCart ? 'bg-green-600 hover:bg-green-700' : 'bg-blue-600 hover:bg-blue-700'
               )}
               onClick={handleAddToCart}
-              disabled={isActionLoading || !product.inStock}
+              disabled={isAddToCartLoading || !product.inStock}
             >
-              {isActionLoading ? (
+              {isAddToCartLoading ? (
                 <>加载中...</>
               ) : addedToCart ? (
                 <>
@@ -376,9 +371,9 @@ function ProductDetail({ productId }: { productId: string }) {
               variant="outline"
               className="rounded-full h-14 text-base border-2"
               onClick={handleBuyNow}
-              disabled={isActionLoading || !product.inStock}
+              disabled={isBuyNowLoading || !product.inStock}
             >
-              {isActionLoading ? '加载中...' : '立即购买'}
+              {isBuyNowLoading ? '加载中...' : '立即购买'}
             </Button>
 
             {!product.inStock && (
