@@ -15,7 +15,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { useCartStore } from '@/lib/stores/cart-store';
 import { cn } from '@/lib/utils/utils';
 import { useProductStore } from '@/lib/stores/product-store';
-
+import Image from '@/components/ui/image';
 function LoadingSkeleton() {
   return (
     <div className="grid md:grid-cols-2 gap-8 lg:gap-16">
@@ -169,10 +169,11 @@ function ProductDetail({ productId }: { productId: string }) {
                 <line x1="6" y1="6" x2="18" y2="18"></line>
               </svg>
             </button>
-            <img
+            <Image
               src={selectedImage || product.image}
               alt={product.name}
               className="w-full h-auto rounded-lg"
+              loading="lazy"
             />
           </div>
         </div>
@@ -187,10 +188,11 @@ function ProductDetail({ productId }: { productId: string }) {
             onClick={handleImageClick}
             ref={imageContainerRef}
           >
-            <img
+            <Image
               src={selectedImage || product.image}
               alt={product.name}
               className="max-h-full max-w-full object-contain transition-all duration-300"
+              loading="lazy"
             />
 
             {/* 点击查看大图提示 */}
@@ -211,10 +213,11 @@ function ProductDetail({ productId }: { productId: string }) {
                 )}
                 onClick={() => setSelectedImage(img)}
               >
-                <img
+                <Image
                   src={img}
                   alt={`${product.name} 视图 ${index + 1}`}
                   className="w-full h-full object-contain p-2"
+                  loading="lazy"
                 />
               </button>
             ))}

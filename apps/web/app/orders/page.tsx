@@ -11,7 +11,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { getUserOrders } from '@/lib/api/orders';
 import { Order } from '@/lib/types';
 import { getUserId } from '@/lib/utils/users';
-
+import Image from '@/components/ui/image';
 export default function OrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -139,10 +139,11 @@ export default function OrdersPage() {
                 <div className="space-y-2">
                   {order.items.map(item => (
                     <div key={item.productId} className="flex items-center gap-4">
-                      <img
+                      <Image
                         src={item.image}
                         alt={item.name}
                         className="w-12 h-12 object-cover rounded-lg"
+                        loading="lazy"
                       />
                       <div className="flex-1">
                         <h3 className="font-medium">{item.name}</h3>

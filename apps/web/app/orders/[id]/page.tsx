@@ -1,6 +1,6 @@
 'use client';
 
-import { use, useEffect, useState } from 'react';
+import { Usable, use, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Package, Truck, CheckCircle, Clock, XCircle, Home, ArrowLeft } from 'lucide-react';
 
@@ -10,8 +10,9 @@ import { Footer } from '@/components/footer';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Order } from '@/lib/types';
 import { getOrderById } from '@/lib/api/orders';
+import Image from '@/components/ui/image';
 
-export default function OrderDetailPage({ params }: { params: { id: string } }) {
+export default function OrderDetailPage(params: Usable<{ id: string }>) {
   const [order, setOrder] = useState<Order | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const { id } = use(params);
@@ -148,10 +149,11 @@ export default function OrderDetailPage({ params }: { params: { id: string } }) 
               <div className="space-y-4">
                 {order.items.map(item => (
                   <div key={item.productId} className="flex items-center gap-4">
-                    <img
+                    <Image
                       src={item.image}
                       alt={item.name}
                       className="w-16 h-16 object-cover rounded-lg"
+                      loading="lazy"
                     />
                     <div className="flex-1">
                       <h3 className="font-medium">{item.name}</h3>

@@ -56,6 +56,7 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(
             alt={fallbackAlt || alt}
             ref={ref}
             {...props}
+            loading="lazy"
           />
         ) : (
           <img
@@ -65,6 +66,7 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(
             onError={handleError}
             ref={ref}
             {...props}
+            loading="lazy"
           />
         )}
       </div>

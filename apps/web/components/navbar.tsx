@@ -12,6 +12,7 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Badge } from '@/components/ui/badge';
 import { useCartStore } from '@/lib/stores/cart-store';
 import PanelDropdown from '@/components/ui/panel-dropdown';
+import Image from '@/components/ui/image';
 
 // 定义快捷链接数据
 const quickLinks = [
@@ -324,10 +325,11 @@ function NavbarClient() {
                               className="flex items-center mb-4 last:mb-0"
                               key={item.product?.id || idx}
                             >
-                              <img
+                              <Image
                                 src={item.product?.image || ''}
                                 alt={item.product?.name || ''}
                                 className="w-10 h-10 rounded-lg object-cover mr-4 border"
+                                loading="lazy"
                               />
                               <div className="flex-1 min-w-0">
                                 <div className="font-semibold text-sm text-gray-900 truncate">

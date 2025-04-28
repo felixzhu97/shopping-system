@@ -6,6 +6,7 @@ import { Navbar } from '@/components/navbar';
 import { Footer } from '@/components/footer';
 import { Product } from '@/lib/types';
 import * as api from '@/lib/api';
+import Image from '@/components/ui/image';
 
 // 获取类别产品数据的组件
 async function CategoryShowcase() {
@@ -76,10 +77,11 @@ async function CategoryShowcase() {
                       <p className="text-sm text-gray-600 mb-6">{category.description}</p>
                       <div className="mt-auto">
                         <div className="h-40 w-full overflow-hidden rounded-xl mb-4">
-                          <img
+                          <Image
                             src={category.image}
                             alt={category.name}
                             className="h-full w-full object-cover"
+                            loading="lazy"
                           />
                         </div>
                         <div
@@ -101,10 +103,11 @@ async function CategoryShowcase() {
                     <Link href={`/products/${item.id}`} className="block h-full">
                       <div className="p-4">
                         <div className="h-36 w-full overflow-hidden rounded-xl mb-3">
-                          <img
+                          <Image
                             src={item.image}
                             alt={item.name}
                             className="h-full w-full object-cover transition-transform hover:scale-105"
+                            loading="lazy"
                           />
                         </div>
                         <h4 className="text-sm font-medium line-clamp-1">{item.name}</h4>

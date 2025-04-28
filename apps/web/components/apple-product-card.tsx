@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { Product } from '@/lib/types';
-
+import Image from '@/components/ui/image';
 interface AppleProductCardProps {
   product: Product;
   showDescription?: boolean;
@@ -17,10 +17,11 @@ export function AppleProductCard({ product, showDescription = true }: AppleProdu
       <Link href={`/products/${productId}`} className="group relative">
         {/* 商品图片区域 */}
         <div className="aspect-square bg-[#fafafa] rounded-2xl p-4 mb-3 flex items-center justify-center overflow-hidden relative">
-          <img
+          <Image
             src={product.image}
             alt={product.name}
             className="max-h-full max-w-full object-contain transition-transform group-hover:scale-105"
+            loading="lazy"
           />
         </div>
 
