@@ -17,7 +17,7 @@ import { AppleProductCard } from '@/components/apple-product-card';
 import { Navbar } from '@/components/navbar';
 import { Footer } from '@/components/footer';
 import { Product } from '@/lib/types';
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/utils/utils';
 import { useProductStore } from '@/lib/stores/product-store';
 import { ProductCardSkeleton } from '@/components/product-card-skeleton';
 

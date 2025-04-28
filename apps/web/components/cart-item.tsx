@@ -2,13 +2,13 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { Trash2, Minus, Plus } from 'lucide-react';
+import { Minus, Plus, Trash2 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { CartItem as CartItemType } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Image } from '@/components/ui/image';
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/utils/utils';
 
 interface CartItemProps {
   item: CartItemType;

@@ -13,7 +13,7 @@ import { Footer } from '@/components/footer';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/components/ui/use-toast';
 import { useCartStore } from '@/lib/stores/cart-store';
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/utils/utils';
 import { useProductStore } from '@/lib/stores/product-store';
 
 function LoadingSkeleton() {

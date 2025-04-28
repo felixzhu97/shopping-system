@@ -1,4 +1,4 @@
-import { encrypt, decrypt } from './crypto';
+import { decrypt, encrypt } from './utils/crypto';
 
 // 本地存储工具函数
 

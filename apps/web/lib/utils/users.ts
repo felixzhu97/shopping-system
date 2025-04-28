@@ -1,5 +1,5 @@
 import { User } from 'shared';
-import { decrypt, encrypt } from '../crypto';
+import { decrypt, encrypt } from './crypto';
 
 export const saveToken = (user: User): string => {
   const token = encrypt(JSON.stringify(user));

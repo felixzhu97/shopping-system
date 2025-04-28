@@ -22,7 +22,7 @@ import { Navbar } from '@/components/navbar';
 import { Footer } from '@/components/footer';
 import { useCartStore } from '@/lib/stores/cart-store';
 import { Image } from '@/components/ui/image';
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/utils/utils';
 import { getCheckoutInfo, saveCheckoutInfo } from '@/lib/storage';
 import { provinces } from '@/components/china-region';
 import { createOrder } from '@/lib/api/orders';
