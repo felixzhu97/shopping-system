@@ -1,15 +1,15 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { CheckCircle, Clock, Home, Package, Truck, XCircle } from 'lucide-react';
 import Link from 'next/link';
-import { Package, Truck, CheckCircle, Clock, XCircle, Home } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
-import { Button } from '@/components/ui/button';
-import { Navbar } from '@/components/navbar';
 import { Footer } from '@/components/footer';
+import { Navbar } from '@/components/navbar';
+import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Order } from '@/lib/types';
 import { getUserOrders } from '@/lib/api/orders';
+import { Order } from '@/lib/types';
 import { getUserId } from '@/lib/utils/users';
 
 export default function OrdersPage() {

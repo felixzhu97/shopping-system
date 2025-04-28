@@ -1,19 +1,16 @@
 'use client';
 
 import type React from 'react';
-
-import { useState, useEffect, useRef, Suspense } from 'react';
+import { Suspense, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { Search, ShoppingCart, Menu, User, X, ChevronRight } from 'lucide-react';
-import { usePathname, useSearchParams, useRouter } from 'next/navigation';
+import { ChevronRight, Menu, Search, ShoppingCart, X } from 'lucide-react';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Badge } from '@/components/ui/badge';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { useCartStore } from '@/lib/cart-store';
-import { cn } from '@/lib/utils';
+import { useCartStore } from '@/lib/stores/cart-store';
 import PanelDropdown from '@/components/ui/panel-dropdown';
 
 // 定义快捷链接数据

@@ -17,9 +17,8 @@ import { AppleProductCard } from '@/components/apple-product-card';
 import { Navbar } from '@/components/navbar';
 import { Footer } from '@/components/footer';
 import { Product } from '@/lib/types';
-import * as api from '@/lib/api';
 import { cn } from '@/lib/utils';
-import { useProductStore } from '@/lib/product-store';
+import { useProductStore } from '@/lib/stores/product-store';
 import { ProductCardSkeleton } from '@/components/product-card-skeleton';
 
 // 分类名称映射表，将URL参数映射为友好的中文名称

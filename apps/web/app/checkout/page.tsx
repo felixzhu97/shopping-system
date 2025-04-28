@@ -1,9 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { CreditCard, ChevronLeft, AlertCircle } from 'lucide-react';
+import { AlertCircle, ChevronLeft, CreditCard } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -20,10 +20,10 @@ import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/components/ui/use-toast';
 import { Navbar } from '@/components/navbar';
 import { Footer } from '@/components/footer';
-import { useCartStore } from '@/lib/cart-store';
+import { useCartStore } from '@/lib/stores/cart-store';
 import { Image } from '@/components/ui/image';
 import { cn } from '@/lib/utils';
-import { saveCheckoutInfo, getCheckoutInfo } from '@/lib/storage';
+import { getCheckoutInfo, saveCheckoutInfo } from '@/lib/storage';
 import { provinces } from '@/components/china-region';
 import { createOrder } from '@/lib/api/orders';
 import { getUserId } from '@/lib/utils/users';

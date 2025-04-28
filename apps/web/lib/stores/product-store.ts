@@ -1,6 +1,6 @@
 import { create } from 'zustand';
-import * as api from './api';
-import type { Product } from './types';
+import * as api from '../api';
+import type { Product } from '../types';
 
 interface ProductStore {
   productsByCategory: Record<string, Product[]>;

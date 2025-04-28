@@ -10,13 +10,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Navbar } from '@/components/navbar';
 import { AppleProductCard } from '@/components/apple-product-card';
 import { Footer } from '@/components/footer';
-import { Product } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/components/ui/use-toast';
-import { useCartStore } from '@/lib/cart-store';
-import * as api from '@/lib/api';
+import { useCartStore } from '@/lib/stores/cart-store';
 import { cn } from '@/lib/utils';
-import { useProductStore } from '@/lib/product-store';
+import { useProductStore } from '@/lib/stores/product-store';
 
 function LoadingSkeleton() {
   return (

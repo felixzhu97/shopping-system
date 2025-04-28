@@ -2,8 +2,9 @@
 
 import { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useUserStore } from '@/lib/user-store';
-import { login, register } from '@/lib/api/auth';
+import { useUserStore } from '@/lib/stores/user-store';
+
+import { login, register } from '@/lib/api/users';
 
 export default function LoginPage() {
   // 登录相关

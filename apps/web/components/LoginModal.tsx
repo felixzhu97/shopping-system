@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { useUserStore } from '@/lib/user-store';
-import { login, register } from '@/lib/api/auth';
+import { useUserStore } from '@/lib/stores/user-store';
+
+import { login, register } from '@/lib/api/users';
 
 // 生成随机邮箱
 function generateRandomEmail() {

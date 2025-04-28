@@ -1,8 +1,8 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { Navbar } from '../components/navbar';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useRouter } from 'next/navigation';
-import { useCartStore } from '@/lib/cart-store';
+import { useCartStore } from '@/lib/stores/cart-store';
 
 // 模拟 next/navigation
 vi.mock('next/navigation', () => ({

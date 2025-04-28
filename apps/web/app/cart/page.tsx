@@ -3,18 +3,16 @@
 import { useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ArrowRight, CreditCard, ShoppingBag, Package, ArrowLeft } from 'lucide-react';
+import { ArrowLeft, ArrowRight, CreditCard, Package, ShoppingBag } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/components/ui/use-toast';
 import { CartItem } from '@/components/cart-item';
 import { Navbar } from '@/components/navbar';
 import { Footer } from '@/components/footer';
-import { useCartStore } from '@/lib/cart-store';
-import { cn } from '@/lib/utils';
+import { useCartStore } from '@/lib/stores/cart-store';
 
 export default function CartPage() {
   const { items, addToCart, updateQuantity, removeFromCart, clearCart, isLoading, error } =
