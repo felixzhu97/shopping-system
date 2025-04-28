@@ -22,7 +22,7 @@ export async function getOrderById(id: string): Promise<Order> {
 }
 
 // 创建订单
-export async function createOrder(userId: string, orderData: Order) {
+export async function createOrder(userId: string, orderData: any) {
   const url = `${API_CONFIG.orderUrl}/${userId}`;
   const response = await fetchApi<Order>(url, {
     method: 'POST',

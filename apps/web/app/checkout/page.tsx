@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { AlertCircle, ChevronLeft, CreditCard } from 'lucide-react';
+import React from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -58,6 +59,31 @@ interface FormErrors {
   expiration?: string;
   cvv?: string;
 }
+
+// 订单摘要商品项组件
+const OrderSummaryItem = React.memo(function OrderSummaryItem({ item }: { item: any }) {
+  if (!item.product) return null;
+  return (
+    <div key={item.productId} className="flex items-center space-x-4">
+      <div className="relative w-16 h-16">
+        <Image
+          src={item.product.image}
+          alt={item.product.name}
+          className="object-cover rounded-lg"
+          wrapperClassName="w-16 h-16"
+          width={64}
+          height={64}
+          loading="lazy"
+        />
+      </div>
+      <div className="flex-1">
+        <h3 className="font-medium">{item.product.name}</h3>
+        <p className="text-sm text-gray-500">数量: {item.quantity}</p>
+      </div>
+      <p className="font-medium">¥{item.product.price * item.quantity}</p>
+    </div>
+  );
+});
 
 export default function CheckoutPage() {
   const { items, clearCart } = useCartStore();
@@ -269,6 +295,16 @@ export default function CheckoutPage() {
 
       // 组装订单数据
       const userId = getUserId();
+      if (!userId) {
+        toast({
+          title: '未登录',
+          description: '请先登录后再提交订单',
+          variant: 'destructive',
+          duration: 5000,
+        });
+        setIsSubmitting(false);
+        return;
+      }
       const orderData = {
         shippingAddress: {
           address: formData.address,
@@ -316,6 +352,34 @@ export default function CheckoutPage() {
       <Navbar />
       <main className="flex-1 container mx-auto px-4 py-12">
         <div className="max-w-6xl mx-auto">
+          {/* 全屏Loading遮罩 */}
+          {isSubmitting && (
+            <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
+              <div className="bg-white rounded-xl p-8 flex flex-col items-center shadow-xl">
+                <svg
+                  className="animate-spin h-8 w-8 text-blue-600 mb-4"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
+                </svg>
+                <div className="text-lg font-medium text-gray-700">订单提交中，请稍候...</div>
+              </div>
+            </div>
+          )}
           <div className="mb-8">
             <Link
               href="/cart"
@@ -700,26 +764,9 @@ export default function CheckoutPage() {
               <div className="bg-white rounded-lg shadow-sm p-6">
                 <h2 className="text-lg font-semibold mb-4">订单摘要</h2>
                 <div className="space-y-4">
-                  {items.map(item => {
-                    if (!item.product) return null;
-                    return (
-                      <div key={item.productId} className="flex items-center space-x-4">
-                        <div className="relative w-16 h-16">
-                          <Image
-                            src={item.product.image}
-                            alt={item.product.name}
-                            className="object-cover rounded-lg"
-                            wrapperClassName="w-16 h-16"
-                          />
-                        </div>
-                        <div className="flex-1">
-                          <h3 className="font-medium">{item.product.name}</h3>
-                          <p className="text-sm text-gray-500">数量: {item.quantity}</p>
-                        </div>
-                        <p className="font-medium">¥{item.product.price * item.quantity}</p>
-                      </div>
-                    );
-                  })}
+                  {items.map(item => (
+                    <OrderSummaryItem key={item.productId} item={item} />
+                  ))}
                 </div>
                 <Separator className="my-4" />
                 <div className="space-y-2">

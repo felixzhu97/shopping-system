@@ -12,7 +12,7 @@ import { Order } from '@/lib/types';
 import { getOrderById } from '@/lib/api/orders';
 import Image from '@/components/ui/image';
 
-export default function OrderDetailPage(params: Usable<{ id: string }>) {
+export default function OrderDetailPage({ params }: { params: Usable<{ id: string }> }) {
   const [order, setOrder] = useState<Order | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const { id } = use(params);

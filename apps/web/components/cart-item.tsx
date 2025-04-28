@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { Minus, Plus, Trash2 } from 'lucide-react';
 
@@ -16,7 +16,7 @@ interface CartItemProps {
   onRemove: (productId: string) => void;
 }
 
-export function CartItem({ item, onUpdateQuantity, onRemove }: CartItemProps) {
+const CartItem = React.memo(function CartItem({ item, onUpdateQuantity, onRemove }: CartItemProps) {
   const [isUpdating, setIsUpdating] = useState(false);
   const [isRemoving, setIsRemoving] = useState(false);
   const [quantity, setQuantity] = useState(item.quantity);
@@ -73,6 +73,8 @@ export function CartItem({ item, onUpdateQuantity, onRemove }: CartItemProps) {
             alt={item.product.name}
             className="h-full w-full object-contain"
             fallbackAlt={item.product.name}
+            width={96}
+            height={96}
           />
         </Link>
 
@@ -137,4 +139,6 @@ export function CartItem({ item, onUpdateQuantity, onRemove }: CartItemProps) {
       </div>
     </div>
   );
-}
+});
+
+export { CartItem };
