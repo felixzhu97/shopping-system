@@ -112,8 +112,20 @@ export async function POST(
     });
 
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message, {
+      // 兼容后端返回非JSON（如HTML错误页）
+      let errorText = '';
+      let errorJson: any = null;
+      const contentType = response.headers.get('Content-Type') || '';
+      if (contentType.includes('application/json')) {
+        try {
+          errorJson = await response.json();
+        } catch {
+          errorJson = null;
+        }
+      } else {
+        errorText = await response.text();
+      }
+      throw new Error(errorJson?.message || errorText || '请求失败', {
         cause: { status: response.status },
       });
     }

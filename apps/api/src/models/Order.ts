@@ -8,16 +8,31 @@ export interface CartItemType {
 
 export interface OrderDocument extends Document, Omit<OrderType, 'id'> {}
 
-const CartItemSchema: Schema = new Schema({
+const OrderItemSchema: Schema = new Schema({
   productId: {
     type: Schema.Types.ObjectId,
     ref: 'Product',
+    required: true,
+  },
+  name: {
+    type: String,
+    required: true,
+  },
+  image: {
+    type: String,
+    required: true,
+  },
+  price: {
+    type: Number,
     required: true,
   },
   quantity: {
     type: Number,
     required: true,
     min: 1,
+  },
+  description: {
+    type: String,
   },
 });
 
@@ -28,7 +43,7 @@ const OrderSchema: Schema = new Schema(
       ref: 'User',
       required: true,
     },
-    items: [CartItemSchema],
+    items: [OrderItemSchema],
     totalAmount: {
       type: Number,
       required: true,
