@@ -1,42 +1,35 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { use, useEffect, useState } from 'react';
 import Link from 'next/link';
-import { useParams } from 'next/navigation';
-import { Package, Truck, CheckCircle, Clock, XCircle, ArrowLeft, Home } from 'lucide-react';
+import { Package, Truck, CheckCircle, Clock, XCircle, Home, ArrowLeft } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Navbar } from '@/components/navbar';
 import { Footer } from '@/components/footer';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useToast } from '@/components/ui/use-toast';
 import { Order } from '@/lib/types';
 import { getOrderById } from '@/lib/api/orders';
 
-export default function OrderDetailPage() {
-  const { orderId } = useParams();
+export default function OrderDetailPage({ params }: { params: { id: string } }) {
   const [order, setOrder] = useState<Order | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const { toast } = useToast();
+  const { id } = use(params);
 
   useEffect(() => {
     const fetchOrder = async () => {
       try {
-        const order = await getOrderById(orderId as string);
+        const order = await getOrderById(id);
         setOrder(order);
       } catch (error) {
-        toast({
-          title: '获取订单失败',
-          description: '无法加载订单信息，请稍后再试',
-          variant: 'destructive',
-        });
+        console.error('获取订单详情失败', error);
       } finally {
         setIsLoading(false);
       }
     };
 
     fetchOrder();
-  }, [orderId, toast]);
+  }, [id]);
 
   const getStatusIcon = (status: Order['status']) => {
     switch (status) {
@@ -94,8 +87,11 @@ export default function OrderDetailPage() {
         <main className="flex-1 container mx-auto px-4 py-12">
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="text-2xl font-semibold mb-4">订单不存在</h1>
-            <p className="text-gray-500 mb-8">无法找到您请求的订单信息</p>
+            <p className="text-gray-500 mb-8">您访问的订单不存在或已被删除</p>
             <div className="flex justify-center gap-4">
+              <Button asChild>
+                <Link href="/orders">返回订单列表</Link>
+              </Button>
               <Button asChild variant="outline">
                 <Link href="/">
                   <Home className="mr-2 h-4 w-4" />
@@ -116,55 +112,55 @@ export default function OrderDetailPage() {
       <main className="flex-1 container mx-auto px-4 py-12">
         <div className="max-w-3xl mx-auto">
           <div className="mb-8">
-            <Button asChild variant="ghost" className="text-blue-600 hover:text-blue-800">
-              <Link href="/orders">
+            <Button asChild variant="ghost" className="mb-4">
+              <Link href="/orders" className="flex items-center">
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 返回订单列表
               </Link>
             </Button>
-          </div>
-
-          {/* 订单状态卡片 */}
-          <div className="bg-white rounded-2xl shadow-sm p-6 mb-6">
-            <div className="flex items-center gap-4">
-              {getStatusIcon(order.status)}
-              <div>
-                <h2 className="text-lg font-semibold">订单状态</h2>
-                <p className="text-gray-500">{getStatusText(order.status)}</p>
+            <div className="flex items-center justify-between">
+              <h1 className="text-2xl font-semibold">订单详情</h1>
+              <div className="flex items-center gap-2">
+                {getStatusIcon(order.status)}
+                <span className="font-medium">{getStatusText(order.status)}</span>
               </div>
             </div>
           </div>
 
-          {/* 订单商品列表 */}
           <div className="bg-white rounded-2xl shadow-sm p-6 mb-6">
-            <h2 className="text-lg font-semibold mb-4">订单商品</h2>
-            <div className="space-y-4">
-              {order.items.map(item => (
-                <div key={item.productId} className="flex items-center gap-4">
-                  <img
-                    src={item.image}
-                    alt={item.name}
-                    className="w-16 h-16 object-cover rounded-lg"
-                  />
-                  <div className="flex-1">
-                    <h3 className="font-medium">{item.name}</h3>
-                    <p className="text-gray-500">数量: {item.quantity}</p>
-                  </div>
-                  <p className="font-medium">¥{item.price * item.quantity}</p>
-                </div>
-              ))}
+            <div className="grid grid-cols-2 gap-4 mb-6">
+              <div>
+                <h3 className="text-sm font-medium text-gray-500">订单编号</h3>
+                <p className="mt-1">#{order.id}</p>
+              </div>
+              <div>
+                <h3 className="text-sm font-medium text-gray-500">下单时间</h3>
+                <p className="mt-1">{new Date(order.createdAt).toLocaleString()}</p>
+              </div>
+              <div>
+                <h3 className="text-sm font-medium text-gray-500">订单总额</h3>
+                <p className="mt-1 text-lg font-semibold">¥{order.totalAmount}</p>
+              </div>
             </div>
-          </div>
 
-          {/* 配送信息 */}
-          <div className="bg-white rounded-2xl shadow-sm p-6">
-            <h2 className="text-lg font-semibold mb-4">配送信息</h2>
-            <div className="space-y-2 text-gray-600">
-              <p>{order.shippingAddress.address}</p>
-              <p>
-                {order.shippingAddress.city} {order.shippingAddress.province}{' '}
-                {order.shippingAddress.postalCode}
-              </p>
+            <div className="border-t pt-6">
+              <h2 className="text-lg font-semibold mb-4">商品信息</h2>
+              <div className="space-y-4">
+                {order.items.map(item => (
+                  <div key={item.productId} className="flex items-center gap-4">
+                    <img
+                      src={item.image}
+                      alt={item.name}
+                      className="w-16 h-16 object-cover rounded-lg"
+                    />
+                    <div className="flex-1">
+                      <h3 className="font-medium">{item.name}</h3>
+                      <p className="text-gray-500">数量: {item.quantity}</p>
+                    </div>
+                    <p className="font-medium">¥{item.price * item.quantity}</p>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>

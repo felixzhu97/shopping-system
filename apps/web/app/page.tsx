@@ -216,10 +216,10 @@ export default function Home() {
             <div className="flex flex-wrap gap-3">
               {[
                 { name: '查找门店', href: '/stores' },
-                { name: '订单状态', href: '/account/orders' },
+                { name: '订单状态', href: '/orders' },
                 { name: '购物帮助', href: '/help' },
                 { name: '退货', href: '/returns' },
-                { name: '收藏夹', href: '/account/saved' },
+                { name: '收藏夹', href: '/saved' },
               ].map(link => (
                 <Link
                   key={link.name}

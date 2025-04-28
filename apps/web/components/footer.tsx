@@ -20,7 +20,7 @@ function ExtendedNavigation() {
       links: [
         { name: '管理您的账户', href: '/account' },
         { name: '会员账户', href: '/account/membership' },
-        { name: '我的订单', href: '/account/orders' },
+        { name: '我的订单', href: '/orders' },
         { name: '我的收藏', href: '/account/saved' },
       ],
     },

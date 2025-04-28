@@ -36,10 +36,6 @@ function NavbarClient() {
   const router = useRouter();
   const { items } = useCartStore();
   const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
-  const subtotal = items.reduce((sum, item) => {
-    const price = item.product?.price || 0;
-    return sum + price * item.quantity;
-  }, 0);
   const [showCart, setShowCart] = useState(false);
 
   // 根据路径和查询参数分析当前分类
@@ -365,13 +361,8 @@ function NavbarClient() {
                     <div className="text-xs text-gray-500 font-semibold mb-2">My Profile</div>
                     <ul className="text-gray-700 text-sm space-y-1">
                       <li>
-                        <Link href="/account/orders" className="hover:underline">
+                        <Link href="/orders" className="hover:underline">
                           Orders
-                        </Link>
-                      </li>
-                      <li>
-                        <Link href="/account/saved" className="hover:underline">
-                          Your Saves
                         </Link>
                       </li>
                       <li>

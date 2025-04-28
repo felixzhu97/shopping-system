@@ -297,7 +297,7 @@ export default function CheckoutPage() {
       });
 
       // 跳转到订单成功页面，并传递订单ID
-      router.push(`/checkout/success?orderId=${order._id}`);
+      router.push(`/checkout/success?orderId=${order.id}`);
     } catch (error) {
       console.error('提交订单失败:', error);
       toast({
