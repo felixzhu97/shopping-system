@@ -14,6 +14,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useCartStore } from '@/lib/cart-store';
 import { cn } from '@/lib/utils';
+import PanelDropdown from '@/components/ui/panel-dropdown';
 
 // 定义快捷链接数据
 const quickLinks = [
@@ -39,6 +40,7 @@ function NavbarClient() {
     const price = item.product?.price || 0;
     return sum + price * item.quantity;
   }, 0);
+  const [showCart, setShowCart] = useState(false);
 
   // 根据路径和查询参数分析当前分类
   const getCurrentCategory = (): string => {
@@ -301,43 +303,101 @@ function NavbarClient() {
               </Button>
             </Link>
 
-            {/* 购物车按钮 */}
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Link href="/cart">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="relative text-gray-800 p-1 hover:bg-transparent"
-                    >
-                      <ShoppingCart className="h-[17px] w-[17px]" />
-                      {itemCount > 0 && (
-                        <Badge
-                          variant="destructive"
-                          className={`absolute -top-1 -right-1 h-[14px] w-[14px] p-0 flex items-center justify-center rounded-full text-[10px] ${
-                            cartBadgeAnimate ? 'animate-bounce' : ''
-                          }`}
-                        >
-                          {itemCount}
-                        </Badge>
-                      )}
-                      <span className="sr-only">购物车</span>
-                    </Button>
-                  </Link>
-                </TooltipTrigger>
+            {/* 购物车按钮（下拉弹窗） */}
+            <div className="relative">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="relative text-gray-800 p-1 hover:bg-transparent"
+                onClick={() => setShowCart(v => !v)}
+                aria-label="购物车"
+              >
+                <ShoppingCart className="h-[17px] w-[17px]" />
                 {itemCount > 0 && (
-                  <TooltipContent side="bottom">
-                    <div className="text-xs">
-                      <p className="font-semibold">
-                        {itemCount}件商品 - ¥{subtotal.toFixed(2)}
-                      </p>
-                      <p className="text-muted-foreground">点击查看购物车</p>
-                    </div>
-                  </TooltipContent>
+                  <Badge
+                    variant="destructive"
+                    className={`absolute -top-1 -right-1 h-[14px] w-[14px] p-0 flex items-center justify-center rounded-full text-[10px] ${
+                      cartBadgeAnimate ? 'animate-bounce' : ''
+                    }`}
+                  >
+                    {itemCount}
+                  </Badge>
                 )}
-              </Tooltip>
-            </TooltipProvider>
+                <span className="sr-only">购物车</span>
+              </Button>
+              <PanelDropdown open={showCart} onClose={() => setShowCart(false)}>
+                <div className="w-full h-full flex items-start justify-center">
+                  <div
+                    className="bg-white rounded-2xl shadow-xl mt-8 p-8 flex flex-col"
+                    style={{ width: 480 }}
+                  >
+                    <h2 className="text-2xl font-semibold mb-6">Bag</h2>
+                    <div className="mb-6">
+                      {items.length === 0 ? (
+                        <div className="text-gray-500">购物车为空</div>
+                      ) : (
+                        <>
+                          {items.slice(0, 3).map((item, idx) => (
+                            <div
+                              className="flex items-center mb-4 last:mb-0"
+                              key={item.product?.id || idx}
+                            >
+                              <img
+                                src={item.product?.image || ''}
+                                alt={item.product?.name || ''}
+                                className="w-12 h-12 rounded-xl object-cover mr-4"
+                              />
+                              <div>
+                                <div className="font-medium text-gray-900 mb-1 line-clamp-1">
+                                  {item.product?.name || ''}
+                                </div>
+                                <div className="text-sm text-gray-600 line-clamp-2">
+                                  {item.product?.description || ''}
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                          {items.length > 3 && (
+                            <div className="text-xs text-gray-500 mt-2">
+                              还有{items.length - 3}件商品在购物袋中
+                            </div>
+                          )}
+                        </>
+                      )}
+                    </div>
+                    <Button
+                      className="bg-blue-600 text-white rounded-lg px-6 py-2 mb-8 w-full"
+                      onClick={() => router.push('/cart')}
+                    >
+                      Review Bag
+                    </Button>
+                    <div className="text-sm text-gray-700 font-medium mb-2">My Profile</div>
+                    <ul className="text-gray-600 text-sm space-y-2">
+                      <li>
+                        <Link href="/account/orders" className="hover:underline">
+                          Orders
+                        </Link>
+                      </li>
+                      <li>
+                        <Link href="/account/saved" className="hover:underline">
+                          Your Saves
+                        </Link>
+                      </li>
+                      <li>
+                        <Link href="/account" className="hover:underline">
+                          Account
+                        </Link>
+                      </li>
+                      <li>
+                        <Link href="/login" className="hover:underline">
+                          Sign in
+                        </Link>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </PanelDropdown>
+            </div>
           </div>
         </div>
 
@@ -362,11 +422,10 @@ function NavbarClient() {
       </header>
 
       {/* 搜索栏 - 类似Apple官网的悬浮展开效果 */}
-      <div
-        className={cn(
-          'fixed inset-x-0 top-12 z-40 overflow-hidden transition-all duration-300 ease-in-out bg-[rgba(251,251,253,0.95)] backdrop-blur-md border-b border-gray-200 shadow-sm',
-          showSearch ? 'h-[204px] opacity-100' : 'h-0 opacity-0'
-        )}
+      <PanelDropdown
+        open={showSearch}
+        onClose={() => setShowSearch(false)}
+        heightClassName="h-[204px]"
       >
         <div className="container max-w-[1040px] mx-auto h-full">
           <div className="pt-5 px-4 h-full flex flex-col">
@@ -392,7 +451,6 @@ function NavbarClient() {
                 )}
               </div>
             </form>
-
             {/* 快捷链接 */}
             <div className="mt-4 flex-1 overflow-hidden">
               <div className="text-xs uppercase text-gray-500 font-medium mb-2">快捷链接</div>
@@ -413,7 +471,7 @@ function NavbarClient() {
             </div>
           </div>
         </div>
-      </div>
+      </PanelDropdown>
     </div>
   );
 }
