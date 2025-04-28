@@ -8,33 +8,30 @@ import { Button } from '@/components/ui/button';
 import { Navbar } from '@/components/navbar';
 import { Footer } from '@/components/footer';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useToast } from '@/components/ui/use-toast';
 import { Order } from '@/lib/types';
-import { getOrders } from '@/lib/api/orders';
+import { getUserOrders } from '@/lib/api/orders';
+import { getUserId } from '@/lib/utils/users';
 
 export default function OrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const { toast } = useToast();
 
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const orders = await getOrders();
+        const userId = getUserId();
+        if (!userId) throw new Error('未登录');
+        const orders = await getUserOrders(userId);
         setOrders(orders);
       } catch (error) {
-        toast({
-          title: '获取订单失败',
-          description: '无法加载订单列表，请稍后再试',
-          variant: 'destructive',
-        });
+        console.error('获取订单失败', error);
       } finally {
         setIsLoading(false);
       }
     };
 
     fetchOrders();
-  }, [toast]);
+  }, []);
 
   const getStatusIcon = (status: Order['status']) => {
     switch (status) {

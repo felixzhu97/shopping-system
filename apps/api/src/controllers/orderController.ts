@@ -12,13 +12,28 @@ export const createOrder = async (req: any, res: any) => {
     // 确保用户存在
     const user = await User.findById(userId);
     if (!user) {
-      return res.status(404 as number).json({ message: '用户不存在' });
+      return res.status(404).json({ message: '用户不存在' });
     }
+
+    // 查询所有商品详细信息
+    const detailedItems = await Promise.all(
+      items.map(async (item: any) => {
+        const product = await Product.findById(item.productId);
+        return {
+          productId: item.productId,
+          quantity: item.quantity,
+          name: product?.name || '',
+          image: product?.image || '',
+          price: product?.price || 0,
+          description: product?.description || '',
+        };
+      })
+    );
 
     // 创建订单
     const order = new Order({
       userId,
-      items,
+      items: detailedItems,
       totalAmount,
       status: 'pending',
       shippingAddress,
@@ -30,10 +45,10 @@ export const createOrder = async (req: any, res: any) => {
     // 清空购物车 (可选)
     await Cart.findOneAndUpdate({ userId }, { $set: { items: [] } });
 
-    res.status(201 as number).json(order);
+    res.status(201).json(order);
   } catch (error) {
     console.error('创建订单失败:', error);
-    res.status(500 as number).json({ message: '创建订单失败' });
+    res.status(500).json({ message: '创建订单失败' });
   }
 };
 

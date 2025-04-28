@@ -3,14 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import {
-  CreditCard,
-  ChevronLeft,
-  Package,
-  CreditCardIcon,
-  AlertCircle,
-  CheckCircle2,
-} from 'lucide-react';
+import { CreditCard, ChevronLeft, AlertCircle } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -275,7 +268,7 @@ export default function CheckoutPage() {
       saveCheckoutInfo(infoToSave);
 
       // 组装订单数据
-      const userId = getUserId(); // TODO: 替换为真实用户ID
+      const userId = getUserId();
       const orderData = {
         shippingAddress: {
           address: formData.address,
@@ -284,7 +277,7 @@ export default function CheckoutPage() {
           country: formData.province,
         },
         paymentMethod: formData.paymentMethod,
-        orderItems: items.map(item => ({
+        items: items.map(item => ({
           productId: item.product?.id || item.productId,
           quantity: item.quantity,
         })),

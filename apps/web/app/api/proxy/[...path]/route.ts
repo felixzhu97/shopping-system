@@ -136,10 +136,9 @@ export async function POST(
     console.error('代理POST请求失败:', error);
     const errorResponse = NextResponse.json(
       {
-        error: error.cause.statusText,
         details: error.message,
       },
-      { status: error.cause.status }
+      error.cause ? { status: error.cause.status } : { status: 500 }
     );
     return setCorsHeaders(errorResponse);
   }

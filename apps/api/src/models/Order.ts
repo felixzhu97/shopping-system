@@ -1,17 +1,9 @@
 import mongoose, { Schema, Document } from 'mongoose';
-import { OrderStatus } from 'shared';
+import { Order as OrderType } from 'shared';
 
 export interface CartItemType {
   productId: string;
   quantity: number;
-}
-
-export interface OrderType {
-  id?: string;
-  userId: string;
-  items: CartItemType[];
-  totalAmount: number;
-  status: OrderStatus;
 }
 
 export interface OrderDocument extends Document, Omit<OrderType, 'id'> {}

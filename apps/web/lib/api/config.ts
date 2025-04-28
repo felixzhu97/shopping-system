@@ -6,6 +6,7 @@ export const API_CONFIG = {
   productsUrl: '/products',
   cartUrl: '/cart',
   usersUrl: '/users',
+  orderUrl: '/orders',
 } as const;
 
 export const CATEGORY_MAPPING: Record<string, string> = {
