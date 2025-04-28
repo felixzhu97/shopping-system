@@ -796,7 +796,7 @@
               "$ref": "#/components/schemas/CartItem"
             }
           },
-          "totalPrice": {
+          "totalAmount": {
             "type": "number",
             "description": "总价"
           }
@@ -989,7 +989,7 @@
               }
             }
           },
-          "totalPrice": {
+          "totalAmount": {
             "type": "number",
             "description": "总价"
           },

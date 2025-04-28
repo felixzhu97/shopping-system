@@ -1,14 +1,13 @@
 import Order from '../models/Order';
 import Cart from '../models/Cart';
 import Product from '../models/Product';
-import mongoose from 'mongoose';
-import { CartItemType } from '../models/Order';
 import User from '../models/User';
 
 // 创建订单
 export const createOrder = async (req: any, res: any) => {
   try {
-    const { userId, items, totalAmount, shippingAddress, paymentMethod } = req.body;
+    const { userId } = req.params;
+    const { items, totalAmount, shippingAddress, paymentMethod } = req.body;
 
     // 确保用户存在
     const user = await User.findById(userId);

@@ -1,3 +1,5 @@
+export type OrderStatus = 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+
 // 产品类型
 export interface Product {
   id: string;
@@ -37,7 +39,7 @@ export interface Order {
   userId: string;
   items: CartItem[];
   totalAmount: number;
-  status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+  status: OrderStatus;
   createdAt: Date;
   updatedAt: Date;
 }

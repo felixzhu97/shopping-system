@@ -32,6 +32,8 @@ import { Image } from '@/components/ui/image';
 import { cn } from '@/lib/utils';
 import { saveCheckoutInfo, getCheckoutInfo } from '@/lib/storage';
 import { provinces } from '@/components/china-region';
+import { createOrder } from '@/lib/api/orders';
+import { getUserId } from '@/lib/utils/users';
 
 // 添加表单数据类型
 interface FormData {
@@ -272,9 +274,24 @@ export default function CheckoutPage() {
       };
       saveCheckoutInfo(infoToSave);
 
-      // 这里应该有真实的API调用来创建订单
-      // 模拟API调用的等待时间
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // 组装订单数据
+      const userId = getUserId(); // TODO: 替换为真实用户ID
+      const orderData = {
+        shippingAddress: {
+          address: formData.address,
+          city: formData.city,
+          postalCode: formData.postalCode,
+          country: formData.province,
+        },
+        paymentMethod: formData.paymentMethod,
+        orderItems: items.map(item => ({
+          productId: item.product?.id || item.productId,
+          quantity: item.quantity,
+        })),
+        totalAmount: total,
+      };
+      // 调用API保存订单
+      const order = await createOrder(userId, orderData);
 
       // 清空购物车
       await clearCart();
@@ -287,7 +304,7 @@ export default function CheckoutPage() {
       });
 
       // 跳转到订单成功页面，并传递订单ID
-      router.push(`/checkout/success?orderId=123`); // 这里应该使用实际的订单ID
+      router.push(`/checkout/success?orderId=${order._id}`);
     } catch (error) {
       console.error('提交订单失败:', error);
       toast({

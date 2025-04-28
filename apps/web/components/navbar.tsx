@@ -291,18 +291,6 @@ function NavbarClient() {
               <span className="sr-only">搜索</span>
             </Button>
 
-            {/* 用户按钮 */}
-            <Link href="/account">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="text-gray-800 p-1 mr-1 hover:bg-transparent"
-              >
-                <User className="h-[17px] w-[17px]" />
-                <span className="sr-only">账户</span>
-              </Button>
-            </Link>
-
             {/* 购物车按钮（下拉弹窗） */}
             <div className="relative">
               <Button
@@ -325,16 +313,17 @@ function NavbarClient() {
                 )}
                 <span className="sr-only">购物车</span>
               </Button>
-              <PanelDropdown open={showCart} onClose={() => setShowCart(false)}>
-                <div className="w-full h-full flex items-start justify-center">
-                  <div
-                    className="bg-white rounded-2xl shadow-xl mt-8 p-8 flex flex-col"
-                    style={{ width: 480 }}
-                  >
-                    <h2 className="text-2xl font-semibold mb-6">Bag</h2>
-                    <div className="mb-6">
+              <PanelDropdown
+                open={showCart}
+                onClose={() => setShowCart(false)}
+                containerClassName="bg-[#fafafc]"
+              >
+                <div className="w-full flex justify-center">
+                  <div className="w-full max-w-[600px] px-10 py-12">
+                    <div className="font-bold text-2xl mb-8">Bag</div>
+                    <div className="mb-8">
                       {items.length === 0 ? (
-                        <div className="text-gray-500">购物车为空</div>
+                        <div className="text-gray-500 text-sm py-8">Your bag is empty.</div>
                       ) : (
                         <>
                           {items.slice(0, 3).map((item, idx) => (
@@ -345,13 +334,13 @@ function NavbarClient() {
                               <img
                                 src={item.product?.image || ''}
                                 alt={item.product?.name || ''}
-                                className="w-12 h-12 rounded-xl object-cover mr-4"
+                                className="w-10 h-10 rounded-lg object-cover mr-4 border"
                               />
-                              <div>
-                                <div className="font-medium text-gray-900 mb-1 line-clamp-1">
+                              <div className="flex-1 min-w-0">
+                                <div className="font-semibold text-sm text-gray-900 truncate">
                                   {item.product?.name || ''}
                                 </div>
-                                <div className="text-sm text-gray-600 line-clamp-2">
+                                <div className="text-xs text-gray-500 truncate">
                                   {item.product?.description || ''}
                                 </div>
                               </div>
@@ -359,20 +348,22 @@ function NavbarClient() {
                           ))}
                           {items.length > 3 && (
                             <div className="text-xs text-gray-500 mt-2">
-                              还有{items.length - 3}件商品在购物袋中
+                              {items.length - 3} more items in your Bag
                             </div>
                           )}
                         </>
                       )}
                     </div>
-                    <Button
-                      className="bg-blue-600 text-white rounded-lg px-6 py-2 mb-8 w-full"
-                      onClick={() => router.push('/cart')}
-                    >
-                      Review Bag
-                    </Button>
-                    <div className="text-sm text-gray-700 font-medium mb-2">My Profile</div>
-                    <ul className="text-gray-600 text-sm space-y-2">
+                    <div className="mb-10">
+                      <Button
+                        className="bg-blue-600 text-white rounded-lg px-8 h-11 text-base font-medium hover:bg-blue-700 transition"
+                        onClick={() => router.push('/cart')}
+                      >
+                        Review Bag
+                      </Button>
+                    </div>
+                    <div className="text-xs text-gray-500 font-semibold mb-2">My Profile</div>
+                    <ul className="text-gray-700 text-sm space-y-1">
                       <li>
                         <Link href="/account/orders" className="hover:underline">
                           Orders

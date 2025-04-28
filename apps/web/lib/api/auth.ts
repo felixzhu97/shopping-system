@@ -1,6 +1,7 @@
 import { User } from 'shared';
 import { API_CONFIG, fetchApi } from './config';
 import { encrypt } from '../crypto';
+import { saveToken } from '../utils/users';
 
 export async function login(email: string, password: string): Promise<string> {
   const url = `${API_CONFIG.usersUrl}/login`;
@@ -14,7 +15,7 @@ export async function login(email: string, password: string): Promise<string> {
   }
 
   // 直接返回token
-  return encrypt(JSON.stringify(res.data));
+  return saveToken(res.data);
 }
 
 // 新增注册API
@@ -30,5 +31,5 @@ export async function register(email: string, password: string): Promise<string>
     throw new Error(res.error || '注册失败');
   }
   // 直接返回token
-  return encrypt(JSON.stringify(res.data));
+  return saveToken(res.data);
 }

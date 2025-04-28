@@ -17,3 +17,16 @@ export async function getOrderById(id: string): Promise<Order> {
   }
   return response.json();
 }
+
+// 创建订单
+export async function createOrder(userId: string, orderData: any) {
+  const response = await fetch(`/api/orders/${userId}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(orderData),
+  });
+  if (!response.ok) {
+    throw new Error('创建订单失败');
+  }
+  return response.json();
+}

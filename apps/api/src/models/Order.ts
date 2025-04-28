@@ -1,4 +1,5 @@
-import mongoose, { Schema, Document } from "mongoose";
+import mongoose, { Schema, Document } from 'mongoose';
+import { OrderStatus } from 'shared';
 
 export interface CartItemType {
   productId: string;
@@ -10,15 +11,15 @@ export interface OrderType {
   userId: string;
   items: CartItemType[];
   totalAmount: number;
-  status: "pending" | "processing" | "shipped" | "delivered" | "cancelled";
+  status: OrderStatus;
 }
 
-export interface OrderDocument extends Document, Omit<OrderType, "id"> {}
+export interface OrderDocument extends Document, Omit<OrderType, 'id'> {}
 
 const CartItemSchema: Schema = new Schema({
   productId: {
     type: Schema.Types.ObjectId,
-    ref: "Product",
+    ref: 'Product',
     required: true,
   },
   quantity: {
@@ -32,7 +33,7 @@ const OrderSchema: Schema = new Schema(
   {
     userId: {
       type: Schema.Types.ObjectId,
-      ref: "User",
+      ref: 'User',
       required: true,
     },
     items: [CartItemSchema],
@@ -42,15 +43,15 @@ const OrderSchema: Schema = new Schema(
     },
     status: {
       type: String,
-      enum: ["pending", "processing", "shipped", "delivered", "cancelled"],
-      default: "pending",
+      enum: ['pending', 'processing', 'shipped', 'delivered', 'cancelled'],
+      default: 'pending',
     },
   },
   { timestamps: true }
 );
 
 // 转换 _id 为 id
-OrderSchema.set("toJSON", {
+OrderSchema.set('toJSON', {
   virtuals: true,
   versionKey: false,
   transform: function (doc: any, ret: any) {
@@ -59,4 +60,4 @@ OrderSchema.set("toJSON", {
   },
 });
 
-export default mongoose.model<OrderDocument>("Order", OrderSchema);
+export default mongoose.model<OrderDocument>('Order', OrderSchema);
