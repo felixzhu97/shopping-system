@@ -5,6 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Navbar } from '@/components/navbar';
 import { Footer } from '@/components/footer';
 import { useState } from 'react';
+import { updateUserById } from '@/lib/api/users';
+import { getUserId } from '@/lib/utils/users';
 
 function EditShippingAddressModal({
   open,
@@ -18,14 +20,27 @@ function EditShippingAddressModal({
   initialData: any;
 }) {
   const [form, setForm] = useState(initialData);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onSave(form);
+    setLoading(true);
+    setError(null);
+    try {
+      const userId = getUserId();
+      if (!userId) throw new Error('未登录');
+      await updateUserById(userId, { address: form });
+      onSave(form);
+    } catch (err: any) {
+      setError(err.message || '保存失败');
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (!open) return null;
@@ -117,17 +132,20 @@ function EditShippingAddressModal({
             required
           />
           <div className="text-xs text-gray-500 mt-1">手机号提交后不可更改，请确保填写正确。</div>
+          <div className="text-xs text-red-500">{error}</div>
           <div className="flex gap-4 mt-6">
             <button
               type="submit"
               className="flex-1 bg-blue-600 hover:bg-blue-700 text-white rounded-lg py-2 font-semibold text-lg transition"
+              disabled={loading}
             >
-              保存
+              {loading ? '保存中...' : '保存'}
             </button>
             <button
               type="button"
               className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg py-2 font-semibold text-lg transition"
               onClick={onClose}
+              disabled={loading}
             >
               取消
             </button>

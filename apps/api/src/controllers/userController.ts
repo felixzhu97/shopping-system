@@ -88,7 +88,23 @@ export const getUserById = async (req: any, res: any) => {
       return res.status(404 as number).json({ message: '用户不存在' });
     }
 
-    res.status(200 as number).json(user);
+    // 明确返回 address 字段
+    let userObj: any = user.toObject();
+    if (!userObj.address) {
+      userObj.address = {
+        firstName: '',
+        lastName: '',
+        company: '',
+        street: '',
+        apt: '',
+        zip: '',
+        city: '',
+        country: '',
+        phone: '',
+      };
+    }
+
+    res.status(200 as number).json(userObj);
   } catch (error) {
     console.error('获取用户信息失败:', error);
     res.status(500 as number).json({ message: '获取用户信息失败' });
@@ -99,7 +115,7 @@ export const getUserById = async (req: any, res: any) => {
 export const updateUser = async (req: any, res: any) => {
   try {
     const { id } = req.params;
-    const { username, email } = req.body;
+    const { username, email, address } = req.body;
 
     // 检查用户是否存在
     const user = await User.findById(id);
@@ -123,8 +139,13 @@ export const updateUser = async (req: any, res: any) => {
       }
     }
 
-    // 更新用户信息
-    const updatedUser = await User.findByIdAndUpdate(id, { username, email }, { new: true }).select(
+    // 更新用户信息和地址
+    const updateData: any = {};
+    if (username) updateData.username = username;
+    if (email) updateData.email = email;
+    if (address) updateData.address = address;
+
+    const updatedUser = await User.findByIdAndUpdate(id, updateData, { new: true }).select(
       '-password'
     );
 
