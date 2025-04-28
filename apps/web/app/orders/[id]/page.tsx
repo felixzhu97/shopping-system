@@ -119,49 +119,60 @@ export default function OrderDetailPage({ params }: { params: Usable<{ id: strin
                 返回订单列表
               </Link>
             </Button>
-            <div className="flex items-center justify-between">
-              <h1 className="text-2xl font-semibold">订单详情</h1>
-              <div className="flex items-center gap-2">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
                 {getStatusIcon(order.status)}
-                <span className="font-medium">{getStatusText(order.status)}</span>
+                <span className="font-semibold text-lg text-gray-900">订单 #{order.id}</span>
+                <span className="text-xs text-yellow-600 font-medium ml-2">
+                  {getStatusText(order.status)}
+                </span>
               </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-2xl shadow-sm p-6 mb-6">
-            <div className="grid grid-cols-2 gap-4 mb-6">
-              <div>
-                <h3 className="text-sm font-medium text-gray-500">订单编号</h3>
-                <p className="mt-1">#{order.id}</p>
-              </div>
-              <div>
-                <h3 className="text-sm font-medium text-gray-500">下单时间</h3>
-                <p className="mt-1">{new Date(order.createdAt).toLocaleString()}</p>
-              </div>
-              <div>
-                <h3 className="text-sm font-medium text-gray-500">订单总额</h3>
-                <p className="mt-1 text-lg font-semibold">¥{order.totalAmount}</p>
+              <div className="text-right min-w-[90px]">
+                <div className="font-bold text-xl text-gray-900">¥{order.totalAmount}</div>
+                <div className="text-xs text-gray-400 mt-1">
+                  {new Date(order.createdAt).toLocaleDateString()}
+                </div>
               </div>
             </div>
 
-            <div className="border-t pt-6">
-              <h2 className="text-lg font-semibold mb-4">商品信息</h2>
-              <div className="space-y-4">
+            <div className="bg-white rounded-2xl shadow-md p-0 overflow-hidden">
+              {/* 商品列表 */}
+              <div className="divide-y divide-gray-100">
                 {order.items.map(item => (
-                  <div key={item.productId} className="flex items-center gap-4">
-                    <Image
-                      src={item.image}
-                      alt={item.name}
-                      className="w-16 h-16 object-cover rounded-lg"
-                      loading="lazy"
+                  <div key={item.productId} className="flex items-center gap-4 px-6 py-4">
+                    <img
+                      src={item.image || item.product?.image}
+                      alt={item.name || item.product?.name}
+                      className="w-16 h-16 object-cover rounded-xl bg-gray-100 border"
                     />
-                    <div className="flex-1">
-                      <h3 className="font-medium">{item.name}</h3>
-                      <p className="text-gray-500">数量: {item.quantity}</p>
+                    <div className="flex-1 min-w-0">
+                      <div className="font-medium text-gray-900 truncate">
+                        {item.name || item.product?.name}
+                      </div>
+                      <div className="text-gray-500 text-xs mt-0.5">数量: {item.quantity}</div>
                     </div>
-                    <p className="font-medium">¥{item.price * item.quantity}</p>
+                    <div className="font-semibold text-right text-gray-800 min-w-[60px]">
+                      ¥{(item.price ?? item.product?.price ?? 0) * item.quantity}
+                    </div>
                   </div>
                 ))}
+              </div>
+              {/* 订单信息分区 */}
+              <div className="border-t px-6 py-4 grid grid-cols-2 gap-4 bg-gray-50">
+                <div>
+                  <div className="text-xs text-gray-500 mb-1">订单编号</div>
+                  <div className="text-sm text-gray-900">#{order.id}</div>
+                </div>
+                <div>
+                  <div className="text-xs text-gray-500 mb-1">下单时间</div>
+                  <div className="text-sm text-gray-900">
+                    {new Date(order.createdAt).toLocaleString()}
+                  </div>
+                </div>
+                <div>
+                  <div className="text-xs text-gray-500 mb-1">订单总额</div>
+                  <div className="text-base font-bold text-gray-900">¥{order.totalAmount}</div>
+                </div>
               </div>
             </div>
           </div>
