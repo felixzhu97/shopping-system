@@ -47,14 +47,17 @@ declare module 'shared' {
   }
 
   export interface Payment {
+    // ------User------
     firstName: string;
     lastName: string;
     email: string;
     phone: string;
+    // ------Address------
     address: string;
     city: string;
     province: string;
     postalCode: string;
+    // ------Payment------
     paymentMethod: 'alipay' | 'wechat' | 'credit-card';
     cardNumber: string;
     expiration: string;

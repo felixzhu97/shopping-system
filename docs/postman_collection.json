@@ -455,6 +455,82 @@
           "response": []
         }
       ]
+    },
+    {
+      "name": "支付管理",
+      "item": [
+        {
+          "name": "创建支付信息",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{BASE_URL}}/api/payments",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "payments"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"用户ID\",\n  \"paymentMethod\": \"支付方式\",\n  \"amount\": 100.00\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "创建新的支付信息"
+          },
+          "response": []
+        },
+        {
+          "name": "更新支付信息",
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "{{BASE_URL}}/api/payments/:userId",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "payments", ":userId"],
+              "variable": [
+                {
+                  "key": "userId",
+                  "value": "",
+                  "description": "用户ID"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"paymentMethod\": \"新支付方式\",\n  \"cardNumber\": \"1234567890123456\",\n  \"expiration\": \"2025-01-01\",\n  \"cvv\": \"123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "更新指定用户的支付信息"
+          },
+          "response": []
+        },
+        {
+          "name": "获取用户支付信息",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{BASE_URL}}/api/payments/:userId",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "payments", ":userId"],
+              "variable": [
+                {
+                  "key": "userId",
+                  "value": "",
+                  "description": "用户ID"
+                }
+              ]
+            },
+            "description": "获取指定用户的支付信息"
+          },
+          "response": []
+        }
+      ]
     }
   ],
   "variable": [

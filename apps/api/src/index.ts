@@ -10,6 +10,7 @@ import productRoutes from './routes/products';
 import cartRoutes from './routes/cart';
 import userRoutes from './routes/users';
 import orderRoutes from './routes/orders';
+import paymentRoutes from './routes/payment';
 
 // 加载环境变量
 dotenv.config();
@@ -46,7 +47,7 @@ app.use('/api/products', productRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/orders', orderRoutes);
-
+app.use('/api/payments', paymentRoutes);
 // 数据库连接
 mongoose
   .connect(MONGODB_URI, {
