@@ -1,12 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useUserStore } from '@/lib/stores/user-store';
 
 import { login, register } from '@/lib/api/users';
 
-export default function LoginPage() {
+function LoginContent() {
   // 登录相关
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -158,5 +158,13 @@ export default function LoginPage() {
         Copyright © {new Date().getFullYear()} Your Company. All rights reserved.
       </footer>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <LoginContent />
+    </Suspense>
   );
 }

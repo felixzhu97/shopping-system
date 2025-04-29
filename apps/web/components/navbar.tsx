@@ -22,6 +22,97 @@ const quickLinks = [
   { title: '经典图书', path: '/products?category=books' },
 ];
 
+// 提取购物车下拉面板为独立组件
+function CartDropdown({
+  open,
+  onClose,
+  items,
+  router,
+}: {
+  open: boolean;
+  onClose: () => void;
+  items: any[];
+  router: any;
+}) {
+  return (
+    <PanelDropdown
+      open={open}
+      onClose={onClose}
+      heightClassName="h-auto"
+      containerClassName="!top-12"
+    >
+      <div className="w-full flex justify-center">
+        <div className="w-full max-w-[600px] px-10 py-12">
+          <div className="font-bold text-2xl mb-8">购物袋</div>
+          <div className="mb-8">
+            {items.length === 0 ? (
+              <div className="text-gray-500 text-sm py-8">您的购物袋是空的</div>
+            ) : (
+              <>
+                {items.slice(0, 3).map((item, idx) => (
+                  <div className="flex items-center mb-4 last:mb-0" key={item.product?.id || idx}>
+                    <div className="w-10 h-10 rounded-lg bg-gray-100 mr-4 border overflow-hidden">
+                      <Image
+                        src={item.product?.image || ''}
+                        alt={item.product?.name || ''}
+                        className="w-full h-full object-cover"
+                        width={40}
+                        height={40}
+                      />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="font-semibold text-sm text-gray-900 truncate">
+                        {item.product?.name || ''}
+                      </div>
+                      <div className="text-xs text-gray-500 truncate">
+                        {item.product?.description || ''}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                {items.length > 3 && (
+                  <div className="text-xs text-gray-500 mt-2">
+                    还有 {items.length - 3} 件商品在购物袋中
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+          <div className="mb-10">
+            <Button
+              className="bg-blue-600 text-white rounded-lg px-8 h-11 text-base font-medium hover:bg-blue-700 transition w-full"
+              onClick={() => {
+                router.push('/cart');
+                onClose();
+              }}
+            >
+              查看购物袋
+            </Button>
+          </div>
+          <div className="text-xs text-gray-500 font-semibold mb-2">我的账户</div>
+          <ul className="text-gray-700 text-sm space-y-1">
+            <li>
+              <Link href="/orders" className="hover:underline" onClick={onClose}>
+                我的订单
+              </Link>
+            </li>
+            <li>
+              <Link href="/account" className="hover:underline" onClick={onClose}>
+                账户设置
+              </Link>
+            </li>
+            <li>
+              <Link href="/login" className="hover:underline" onClick={onClose}>
+                登录
+              </Link>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </PanelDropdown>
+  );
+}
+
 // 提取出使用 useSearchParams 的客户端组件
 function NavbarClient() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -271,7 +362,7 @@ function NavbarClient() {
               <span className="sr-only">搜索</span>
             </Button>
 
-            {/* 购物车按钮（下拉弹窗） */}
+            {/* 购物车按钮 */}
             <div className="relative">
               <Button
                 variant="ghost"
@@ -293,73 +384,12 @@ function NavbarClient() {
                 )}
                 <span className="sr-only">购物车</span>
               </Button>
-              <PanelDropdown open={showCart} onClose={() => setShowCart(false)}>
-                <div className="w-full flex justify-center">
-                  <div className="w-full max-w-[600px] px-10 py-12">
-                    <div className="font-bold text-2xl mb-8">Bag</div>
-                    <div className="mb-8">
-                      {items.length === 0 ? (
-                        <div className="text-gray-500 text-sm py-8">Your bag is empty.</div>
-                      ) : (
-                        <>
-                          {items.slice(0, 3).map((item, idx) => (
-                            <div
-                              className="flex items-center mb-4 last:mb-0"
-                              key={item.product?.id || idx}
-                            >
-                              <Image
-                                src={item.product?.image || ''}
-                                alt={item.product?.name || ''}
-                                className="w-10 h-10 rounded-lg object-cover mr-4 border"
-                                loading="lazy"
-                              />
-                              <div className="flex-1 min-w-0">
-                                <div className="font-semibold text-sm text-gray-900 truncate">
-                                  {item.product?.name || ''}
-                                </div>
-                                <div className="text-xs text-gray-500 truncate">
-                                  {item.product?.description || ''}
-                                </div>
-                              </div>
-                            </div>
-                          ))}
-                          {items.length > 3 && (
-                            <div className="text-xs text-gray-500 mt-2">
-                              {items.length - 3} more items in your Bag
-                            </div>
-                          )}
-                        </>
-                      )}
-                    </div>
-                    <div className="mb-10">
-                      <Button
-                        className="bg-blue-600 text-white rounded-lg px-8 h-11 text-base font-medium hover:bg-blue-700 transition"
-                        onClick={() => router.push('/cart')}
-                      >
-                        Review Bag
-                      </Button>
-                    </div>
-                    <div className="text-xs text-gray-500 font-semibold mb-2">My Profile</div>
-                    <ul className="text-gray-700 text-sm space-y-1">
-                      <li>
-                        <Link href="/orders" className="hover:underline">
-                          Orders
-                        </Link>
-                      </li>
-                      <li>
-                        <Link href="/account" className="hover:underline">
-                          Account
-                        </Link>
-                      </li>
-                      <li>
-                        <Link href="/login" className="hover:underline">
-                          Sign in
-                        </Link>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </PanelDropdown>
+              <CartDropdown
+                open={showCart}
+                onClose={() => setShowCart(false)}
+                items={items}
+                router={router}
+              />
             </div>
           </div>
         </div>
