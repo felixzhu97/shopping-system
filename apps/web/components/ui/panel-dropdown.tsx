@@ -9,6 +9,7 @@ interface PanelDropdownProps {
   children: React.ReactNode;
   containerClassName?: string;
   heightClassName?: string;
+  isLoading?: boolean;
 }
 
 /**
@@ -23,6 +24,7 @@ export default function PanelDropdown({
   children,
   containerClassName = '',
   heightClassName = '',
+  isLoading = false,
 }: PanelDropdownProps) {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -38,6 +40,18 @@ export default function PanelDropdown({
     return () => document.removeEventListener('mousedown', handleClick);
   }, [open, onClose]);
 
+  // 键盘事件支持
+  useEffect(() => {
+    if (!open) return;
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    }
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [open, onClose]);
+
   return (
     <div
       className={cn(
@@ -51,6 +65,9 @@ export default function PanelDropdown({
         ref={ref}
         className={cn(
           'bg-[rgba(251,251,253,0.95)] backdrop-blur-md border-b border-gray-200 shadow-sm h-full',
+          'transform transition-transform duration-300',
+          open ? 'translate-y-0' : '-translate-y-2',
+          isLoading ? 'pointer-events-none opacity-70' : '',
           className
         )}
       >

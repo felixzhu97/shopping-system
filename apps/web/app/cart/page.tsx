@@ -15,8 +15,7 @@ import { Footer } from '@/components/footer';
 import { useCartStore } from '@/lib/stores/cart-store';
 
 export default function CartPage() {
-  const { items, addToCart, updateQuantity, removeFromCart, clearCart, isLoading, error } =
-    useCartStore();
+  const { items, updateQuantity, removeFromCart, clearCart, isLoading, error } = useCartStore();
   const { toast } = useToast();
   const router = useRouter();
 

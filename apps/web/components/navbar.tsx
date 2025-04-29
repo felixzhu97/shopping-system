@@ -103,20 +103,6 @@ function NavbarClient() {
     }
   };
 
-  // 按ESC键关闭搜索
-  useEffect(() => {
-    const handleEscKey = (event: KeyboardEvent) => {
-      if (event.key === 'Escape' && showSearch) {
-        setShowSearch(false);
-      }
-    };
-
-    document.addEventListener('keydown', handleEscKey);
-    return () => {
-      document.removeEventListener('keydown', handleEscKey);
-    };
-  }, [showSearch]);
-
   return (
     <div className="relative">
       <header
@@ -307,11 +293,7 @@ function NavbarClient() {
                 )}
                 <span className="sr-only">购物车</span>
               </Button>
-              <PanelDropdown
-                open={showCart}
-                onClose={() => setShowCart(false)}
-                containerClassName="bg-[#fafafc]"
-              >
+              <PanelDropdown open={showCart} onClose={() => setShowCart(false)}>
                 <div className="w-full flex justify-center">
                   <div className="w-full max-w-[600px] px-10 py-12">
                     <div className="font-bold text-2xl mb-8">Bag</div>
@@ -471,23 +453,17 @@ function NavbarFallback() {
   return (
     <header className="sticky top-0 z-50 w-full bg-[rgba(251,251,253,0.8)] backdrop-blur-md">
       <div className="max-w-[1040px] mx-auto h-12 md:h-12 flex items-center justify-between px-4">
-        <div className="w-5 h-5" />
-        <div className="flex items-center mx-auto md:mx-0">
-          <svg height="22" width="14" className="hidden md:block">
-            <rect width="14" height="22" fill="transparent" />
-          </svg>
-        </div>
+        <div className="w-8 h-8 bg-gray-200 rounded" />
         <div className="hidden md:flex justify-center flex-1 h-full">
-          <div className="flex items-center h-full space-x-4">
-            {[...Array(6)].map((_, i) => (
-              <div key={i} className="h-3 w-12 rounded-full bg-gray-200" />
+          <div className="flex items-center h-full space-x-8">
+            {[1, 2, 3, 4].map(i => (
+              <div key={i} className="w-16 h-4 bg-gray-200 rounded" />
             ))}
           </div>
         </div>
-        <div className="flex items-center space-x-2">
-          {[...Array(3)].map((_, i) => (
-            <div key={i} className="h-8 w-8 rounded-full bg-gray-200" />
-          ))}
+        <div className="flex items-center space-x-4">
+          <div className="w-8 h-8 bg-gray-200 rounded" />
+          <div className="w-8 h-8 bg-gray-200 rounded" />
         </div>
       </div>
     </header>
