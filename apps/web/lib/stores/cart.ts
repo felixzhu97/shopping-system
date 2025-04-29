@@ -1,9 +1,9 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+
 import type { CartItem, Product } from '../types';
 
 const CART_STORAGE_KEY = 'shopping-cart';
-const TEMP_USER_ID = '000000000000000000000001';
 
 interface CartStore {
   items: CartItem[];

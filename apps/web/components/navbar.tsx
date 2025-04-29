@@ -1,7 +1,6 @@
 'use client';
 
-import type React from 'react';
-import { Suspense, useEffect, useRef, useState, useMemo, memo, useCallback } from 'react';
+import React, { memo, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import {
   Box,
@@ -23,6 +22,7 @@ import { useCartStore } from '@/lib/stores/cart';
 import PanelDropdown from '@/components/ui/panel-dropdown';
 import Image from '@/components/ui/image';
 import { useUserStore } from '@/lib/stores/user';
+import { getToken } from '@/lib/utils/user';
 
 // 定义快捷链接数据
 const quickLinks = [
@@ -42,6 +42,7 @@ const CartItem = memo(({ item }: { item: any }) => (
         className="w-full h-full object-cover"
         width={40}
         height={40}
+        loading={'lazy'}
       />
     </div>
     <div className="flex-1 min-w-0">
@@ -60,16 +61,20 @@ const CartDropdown = memo(
     onClose,
     items,
     router,
-    username,
     logout,
   }: {
     open: boolean;
     onClose: () => void;
     items: any[];
     router: any;
-    username: string | null;
     logout: () => void;
   }) => {
+    const [token, setToken] = useState<string | null>(null);
+
+    useEffect(() => {
+      setToken(getToken());
+    }, []);
+
     const handleLogout = useCallback(
       (e: React.MouseEvent) => {
         e.preventDefault();
@@ -142,13 +147,13 @@ const CartDropdown = memo(
                 </Link>
               </li>
               <li>
-                {username ? (
+                {token ? (
                   <button
                     onClick={handleLogout}
                     className="hover:underline flex items-center gap-2 text-left w-full"
                   >
                     <CircleUserRound className="w-4 h-4" />
-                    退出登录 {username}
+                    退出登录
                   </button>
                 ) : (
                   <Link
@@ -209,9 +214,6 @@ function NavbarClient() {
   const { items } = useCartStore();
   const getUser = useUserStore(state => state.getUser);
   const logout = useUserStore(state => state.logout);
-
-  // 使用 useMemo 缓存用户名，避免重复解密
-  const username = useMemo(() => getUser()?.username || null, [getUser]);
 
   // 使用 useCallback 优化事件处理函数
   const handleSearch = useCallback(
@@ -463,7 +465,6 @@ function NavbarClient() {
                 onClose={() => setShowCart(false)}
                 items={items}
                 router={router}
-                username={username}
                 logout={logout}
               />
             </div>

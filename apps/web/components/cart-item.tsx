@@ -80,6 +80,7 @@ const ProductImage = React.memo(function ProductImage({
         fallbackAlt={name}
         width={96}
         height={96}
+        loading={'lazy'}
       />
     </Link>
   );

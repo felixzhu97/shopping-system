@@ -65,6 +65,7 @@ export function ProductCard({ product }: ProductCardProps) {
             alt={product.name}
             className="mx-auto h-48 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
             fallbackAlt={product.name}
+            loading={'lazy'}
           />
         </div>
         <div className="flex flex-col space-y-1 text-center">
