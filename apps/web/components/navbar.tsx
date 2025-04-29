@@ -3,7 +3,16 @@
 import type React from 'react';
 import { Suspense, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { ChevronRight, Menu, Search, ShoppingCart, X } from 'lucide-react';
+import {
+  Box,
+  ChevronRight,
+  CircleUserRound,
+  Cog,
+  Menu,
+  Search,
+  ShoppingCart,
+  X,
+} from 'lucide-react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 import { Button } from '@/components/ui/button';
@@ -13,6 +22,7 @@ import { Badge } from '@/components/ui/badge';
 import { useCartStore } from '@/lib/stores/cart';
 import PanelDropdown from '@/components/ui/panel-dropdown';
 import Image from '@/components/ui/image';
+import { useUserStore } from '@/lib/stores/user';
 
 // 定义快捷链接数据
 const quickLinks = [
@@ -28,12 +38,23 @@ function CartDropdown({
   onClose,
   items,
   router,
+  username,
 }: {
   open: boolean;
   onClose: () => void;
   items: any[];
   router: any;
+  username: string | null;
 }) {
+  const logout = useUserStore(state => state.logout);
+
+  const handleLogout = (e: React.MouseEvent) => {
+    e.preventDefault();
+    logout();
+    router.push('/login');
+    onClose();
+  };
+
   return (
     <PanelDropdown
       open={open}
@@ -43,7 +64,10 @@ function CartDropdown({
     >
       <div className="w-full flex justify-center">
         <div className="w-full max-w-[600px] px-10 py-12">
+          {/* 购物袋 */}
           <div className="font-bold text-2xl mb-8">购物袋</div>
+
+          {/* 购物袋内容 */}
           <div className="mb-8">
             {items.length === 0 ? (
               <div className="text-gray-500 text-sm py-8">您的购物袋是空的</div>
@@ -78,6 +102,8 @@ function CartDropdown({
               </>
             )}
           </div>
+
+          {/* 查看购物袋 */}
           <div className="mb-10">
             <Button
               className="bg-blue-600 text-white rounded-lg px-8 h-11 text-base font-medium hover:bg-blue-700 transition w-full"
@@ -89,22 +115,51 @@ function CartDropdown({
               查看购物袋
             </Button>
           </div>
+
+          {/* 我的账户 */}
           <div className="text-xs text-gray-500 font-semibold mb-2">我的账户</div>
+
+          {/* 我的账户内容 */}
           <ul className="text-gray-700 text-sm space-y-1">
             <li>
-              <Link href="/orders" className="hover:underline" onClick={onClose}>
+              <Link
+                href="/orders"
+                className="hover:underline flex items-center gap-2"
+                onClick={onClose}
+              >
+                <Box className="w-4 h-4" />
                 我的订单
               </Link>
             </li>
             <li>
-              <Link href="/account" className="hover:underline" onClick={onClose}>
+              <Link
+                href="/account"
+                className="hover:underline flex items-center gap-2"
+                onClick={onClose}
+              >
+                <Cog className="w-4 h-4" />
                 账户设置
               </Link>
             </li>
             <li>
-              <Link href="/login" className="hover:underline" onClick={onClose}>
-                登录
-              </Link>
+              {username ? (
+                <button
+                  onClick={handleLogout}
+                  className="hover:underline flex items-center gap-2 text-left w-full"
+                >
+                  <CircleUserRound className="w-4 h-4" />
+                  退出登录 {username}
+                </button>
+              ) : (
+                <Link
+                  href="/login"
+                  className="hover:underline flex items-center gap-2"
+                  onClick={onClose}
+                >
+                  <CircleUserRound className="w-4 h-4" />
+                  登录
+                </Link>
+              )}
             </li>
           </ul>
         </div>
@@ -124,9 +179,9 @@ function NavbarClient() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { items } = useCartStore();
+  const { username } = useUserStore();
   const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
   const [showCart, setShowCart] = useState(false);
-
   // 根据路径和查询参数分析当前分类
   const getCurrentCategory = (): string => {
     if (!pathname) return '';
@@ -389,6 +444,7 @@ function NavbarClient() {
                 onClose={() => setShowCart(false)}
                 items={items}
                 router={router}
+                username={username}
               />
             </div>
           </div>

@@ -1,18 +1,27 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 
 interface UserState {
+  username: string | null;
   token: string | null;
-  setToken: (token: string | null) => void;
+  setUser: (username: string, token: string) => void;
+  logout: () => void;
 }
 
-export const useUserStore = create<UserState>(set => ({
-  token: typeof window !== 'undefined' ? localStorage.getItem('token') : null,
-  setToken: token => {
-    if (token) {
-      localStorage.setItem('token', token);
-    } else {
-      localStorage.removeItem('token');
+export const useUserStore = create<UserState>()(
+  persist(
+    set => ({
+      username: null,
+      token: null,
+      setUser: (username: string, token: string) => {
+        set({ username, token });
+      },
+      logout: () => {
+        set({ username: null, token: null });
+      },
+    }),
+    {
+      name: 'user-storage',
     }
-    set({ token });
-  },
-}));
+  )
+);
