@@ -6,7 +6,7 @@ import { Navbar } from '@/components/navbar';
 import { Footer } from '@/components/footer';
 import { useState } from 'react';
 import { updateUserById } from '@/lib/api/users';
-import { useUserStore } from '@/lib/stores/user';
+import { getUserId } from '@/lib/utils/user';
 function EditShippingAddressModal({
   open,
   onClose,
@@ -21,7 +21,6 @@ function EditShippingAddressModal({
   const [form, setForm] = useState(initialData);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const getUserId = useUserStore(state => state.getUserId);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });

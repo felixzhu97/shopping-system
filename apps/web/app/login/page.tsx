@@ -9,8 +9,8 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { login } from '@/lib/api/users';
-import { useUserStore } from '@/lib/stores/user';
 import { useDebounce } from '@/lib/hooks/use-debounce';
+import { saveToken } from '@/lib/utils/user';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -18,7 +18,6 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const router = useRouter();
-  const saveToken = useUserStore(state => state.saveToken);
 
   // 使用防抖处理输入
   const debouncedEmail = useDebounce(email, 300);

@@ -10,12 +10,11 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { getUserOrders } from '@/lib/api/orders';
 import { Order } from '@/lib/types';
-import { useUserStore } from '@/lib/stores/user';
 import Image from '@/components/ui/image';
+import { getUserId } from '@/lib/utils/user';
 export default function OrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const getUserId = useUserStore(state => state.getUserId);
 
   useEffect(() => {
     const fetchOrders = async () => {

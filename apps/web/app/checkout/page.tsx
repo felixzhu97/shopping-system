@@ -26,7 +26,7 @@ import { Image } from '@/components/ui/image';
 import { cn } from '@/lib/utils/utils';
 import { provinces } from '@/components/china-region';
 import { createOrder } from '@/lib/api/orders';
-import { useUserStore } from '@/lib/stores/user';
+import { getCheckoutInfo, saveCheckoutInfo, getUserId } from '@/lib/utils/user';
 
 // 添加表单数据类型
 interface FormData {
@@ -106,9 +106,6 @@ export default function CheckoutPage() {
   const [errors, setErrors] = useState<FormErrors>({});
   const [selectedProvince, setSelectedProvince] = useState(provinces[0].name);
   const [selectedCity, setSelectedCity] = useState(provinces[0].cities[0]);
-  const getUserId = useUserStore(state => state.getUserId);
-  const saveCheckoutInfo = useUserStore(state => state.saveCheckoutInfo);
-  const getCheckoutInfo = useUserStore(state => state.getCheckoutInfo);
 
   // 从本地存储加载结算信息
   useEffect(() => {

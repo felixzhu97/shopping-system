@@ -1,6 +1,5 @@
 import { useState } from 'react';
-import { useUserStore } from '@/lib/stores/user';
-
+import { saveToken } from '@/lib/utils/user';
 import { login, register } from '@/lib/api/users';
 
 // 生成随机邮箱
@@ -36,7 +35,6 @@ export default function LoginModal({ open, onClose }: { open: boolean; onClose: 
   const [password, setPassword] = useState(generateStrongPassword());
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const saveToken = useUserStore(state => state.saveToken);
 
   const handleLogin = async () => {
     setLoading(true);
