@@ -4,9 +4,10 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Navbar } from '@/components/navbar';
 import { Footer } from '@/components/footer';
-import { useState } from 'react';
-import { updateUserById } from '@/lib/api/users';
+import { useState, useEffect } from 'react';
+import { updateUserAddress, getUserById } from '@/lib/api/users';
 import { getUserId } from '@/lib/utils/user';
+
 function EditShippingAddressModal({
   open,
   onClose,
@@ -33,8 +34,7 @@ function EditShippingAddressModal({
     try {
       const userId = getUserId();
       if (!userId) throw new Error('未登录');
-      await updateUserById(userId, { address: form });
-      onSave(form);
+      await onSave(form);
     } catch (err: any) {
       setError(err.message || '保存失败');
     } finally {
@@ -158,16 +158,45 @@ function EditShippingAddressModal({
 export default function AccountPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [shipping, setShipping] = useState({
-    lastName: '朱',
-    firstName: '志强',
+    lastName: '',
+    firstName: '',
     company: '',
-    street: '北京市',
+    street: '',
     apt: '',
     zip: '',
     city: '',
-    country: '中国',
-    phone: '138****8888',
+    country: '',
+    phone: '',
   });
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const userId = getUserId();
+        if (!userId) return;
+        const userData = await getUserById(userId);
+        if (userData.address) {
+          setShipping(userData.address);
+        }
+      } catch (error) {
+        console.error('获取用户信息失败:', error);
+      }
+    };
+
+    fetchUserData();
+  }, []);
+
+  const handleSaveAddress = async (data: any) => {
+    try {
+      const userId = getUserId();
+      if (!userId) throw new Error('未登录');
+      await updateUserAddress(userId, data);
+      setShipping(data);
+      setModalOpen(false);
+    } catch (error) {
+      console.error('保存地址失败:', error);
+    }
+  };
 
   return (
     <div className="flex flex-col min-h-screen bg-[#fafafa]">
@@ -187,6 +216,11 @@ export default function AccountPage() {
                     {shipping.firstName}
                     <br />
                     {shipping.street}
+                    {shipping.apt && `, ${shipping.apt}`}
+                    <br />
+                    {shipping.city}, {shipping.zip}
+                    <br />
+                    {shipping.country}
                   </div>
                   <Button asChild variant="link" className="px-0 h-auto text-blue-600">
                     <span onClick={() => setModalOpen(true)} style={{ cursor: 'pointer' }}>
@@ -266,10 +300,7 @@ export default function AccountPage() {
       <EditShippingAddressModal
         open={modalOpen}
         onClose={() => setModalOpen(false)}
-        onSave={data => {
-          setShipping(data);
-          setModalOpen(false);
-        }}
+        onSave={handleSaveAddress}
         initialData={shipping}
       />
     </div>

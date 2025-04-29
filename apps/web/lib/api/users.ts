@@ -53,3 +53,17 @@ export async function register(user: User): Promise<User> {
 
   return res.data;
 }
+
+// 更新用户地址
+export async function updateUserAddress(id: string, address: any) {
+  const url = `${API_CONFIG.usersUrl}/${id}`;
+  const response = await fetchApi(url, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ address }),
+  });
+  if (!response.success || !response.data) {
+    throw new Error('更新用户地址失败');
+  }
+  return response.data;
+}
