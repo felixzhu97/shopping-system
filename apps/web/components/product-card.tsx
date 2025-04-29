@@ -7,7 +7,7 @@ import { useToast } from '@/components/ui/use-toast';
 
 import { Button } from '@/components/ui/button';
 import type { Product } from '@/lib/types';
-import { useCartStore } from '@/lib/stores/cart-store';
+import { useCartStore } from '@/lib/stores/cart';
 import { Image } from '@/components/ui/image';
 
 interface ProductCardProps {

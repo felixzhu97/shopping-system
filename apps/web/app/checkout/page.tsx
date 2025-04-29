@@ -21,7 +21,7 @@ import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/components/ui/use-toast';
 import { Navbar } from '@/components/navbar';
 import { Footer } from '@/components/footer';
-import { useCartStore } from '@/lib/stores/cart-store';
+import { useCartStore } from '@/lib/stores/cart';
 import { Image } from '@/components/ui/image';
 import { cn } from '@/lib/utils/utils';
 import { getCheckoutInfo, saveCheckoutInfo } from '@/lib/storage';

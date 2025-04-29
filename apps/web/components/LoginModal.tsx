@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useUserStore } from '@/lib/stores/user-store';
+import { useUserStore } from '@/lib/stores/user';
 
 import { login, register } from '@/lib/api/users';
 

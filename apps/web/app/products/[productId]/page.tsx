@@ -12,9 +12,9 @@ import { AppleProductCard } from '@/components/apple-product-card';
 import { Footer } from '@/components/footer';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/components/ui/use-toast';
-import { useCartStore } from '@/lib/stores/cart-store';
+import { useCartStore } from '@/lib/stores/cart';
 import { cn } from '@/lib/utils/utils';
-import { useProductStore } from '@/lib/stores/product-store';
+import { useProductStore } from '@/lib/stores/product';
 import Image from '@/components/ui/image';
 function LoadingSkeleton() {
   return (

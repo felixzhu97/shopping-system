@@ -16,6 +16,75 @@ interface CartItemProps {
   onRemove: (productId: string) => void;
 }
 
+// 数量控制组件
+const QuantityControl = React.memo(function QuantityControl({
+  quantity,
+  isUpdating,
+  onQuantityChange,
+}: {
+  quantity: number;
+  isUpdating: boolean;
+  onQuantityChange: (delta: number) => void;
+}) {
+  return (
+    <div className="inline-flex items-center border border-gray-300 rounded-full overflow-hidden">
+      <Button
+        variant="ghost"
+        size="icon"
+        className={cn(
+          'h-8 w-8 rounded-none text-gray-600',
+          quantity <= 1 ? 'opacity-50' : 'hover:bg-gray-100'
+        )}
+        onClick={() => onQuantityChange(-1)}
+        disabled={isUpdating || quantity <= 1}
+      >
+        <Minus className="h-3 w-3" />
+        <span className="sr-only">减少数量</span>
+      </Button>
+      <span className="w-10 text-center text-sm font-medium">
+        {isUpdating ? <Skeleton className="h-4 w-4 mx-auto" /> : quantity}
+      </span>
+      <Button
+        variant="ghost"
+        size="icon"
+        className="h-8 w-8 rounded-none text-gray-600 hover:bg-gray-100"
+        onClick={() => onQuantityChange(1)}
+        disabled={isUpdating}
+      >
+        <Plus className="h-3 w-3" />
+        <span className="sr-only">增加数量</span>
+      </Button>
+    </div>
+  );
+});
+
+// 商品图片组件
+const ProductImage = React.memo(function ProductImage({
+  productId,
+  image,
+  name,
+}: {
+  productId: string;
+  image: string;
+  name: string;
+}) {
+  return (
+    <Link
+      href={`/products/${productId}`}
+      className="relative h-24 w-24 overflow-hidden rounded-xl bg-[#f5f5f7] p-2 flex-shrink-0 transition-transform hover:scale-105"
+    >
+      <Image
+        src={image}
+        alt={name}
+        className="h-full w-full object-contain"
+        fallbackAlt={name}
+        width={96}
+        height={96}
+      />
+    </Link>
+  );
+});
+
 const CartItem = React.memo(function CartItem({ item, onUpdateQuantity, onRemove }: CartItemProps) {
   const [isUpdating, setIsUpdating] = useState(false);
   const [isRemoving, setIsRemoving] = useState(false);
@@ -64,19 +133,11 @@ const CartItem = React.memo(function CartItem({ item, onUpdateQuantity, onRemove
   return (
     <div className={`py-6 ${isRemoving ? 'opacity-50' : ''} transition-opacity`}>
       <div className="flex items-start gap-6">
-        <Link
-          href={`/products/${item.productId}`}
-          className="relative h-24 w-24 overflow-hidden rounded-xl bg-[#f5f5f7] p-2 flex-shrink-0 transition-transform hover:scale-105"
-        >
-          <Image
-            src={item.product.image}
-            alt={item.product.name}
-            className="h-full w-full object-contain"
-            fallbackAlt={item.product.name}
-            width={96}
-            height={96}
-          />
-        </Link>
+        <ProductImage
+          productId={item.productId}
+          image={item.product.image}
+          name={item.product.name}
+        />
 
         <div className="flex-1 space-y-1">
           <Link
@@ -89,34 +150,11 @@ const CartItem = React.memo(function CartItem({ item, onUpdateQuantity, onRemove
           <div className="text-sm text-gray-500">单价: ¥{item.product.price.toFixed(2)}</div>
 
           <div className="flex flex-wrap items-center justify-between gap-2 pt-3">
-            <div className="inline-flex items-center border border-gray-300 rounded-full overflow-hidden">
-              <Button
-                variant="ghost"
-                size="icon"
-                className={cn(
-                  'h-8 w-8 rounded-none text-gray-600',
-                  quantity <= 1 ? 'opacity-50' : 'hover:bg-gray-100'
-                )}
-                onClick={() => handleQuantityChange(-1)}
-                disabled={isUpdating || quantity <= 1}
-              >
-                <Minus className="h-3 w-3" />
-                <span className="sr-only">减少数量</span>
-              </Button>
-              <span className="w-10 text-center text-sm font-medium">
-                {isUpdating ? <Skeleton className="h-4 w-4 mx-auto" /> : quantity}
-              </span>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8 rounded-none text-gray-600 hover:bg-gray-100"
-                onClick={() => handleQuantityChange(1)}
-                disabled={isUpdating}
-              >
-                <Plus className="h-3 w-3" />
-                <span className="sr-only">增加数量</span>
-              </Button>
-            </div>
+            <QuantityControl
+              quantity={quantity}
+              isUpdating={isUpdating}
+              onQuantityChange={handleQuantityChange}
+            />
 
             <div className="flex items-center gap-4">
               <Button

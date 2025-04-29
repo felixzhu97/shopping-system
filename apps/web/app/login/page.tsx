@@ -2,7 +2,7 @@
 
 import { useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useUserStore } from '@/lib/stores/user-store';
+import { useUserStore } from '@/lib/stores/user';
 
 import { login, register } from '@/lib/api/users';
 

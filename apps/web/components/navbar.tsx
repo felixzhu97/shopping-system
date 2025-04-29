@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Badge } from '@/components/ui/badge';
-import { useCartStore } from '@/lib/stores/cart-store';
+import { useCartStore } from '@/lib/stores/cart';
 import PanelDropdown from '@/components/ui/panel-dropdown';
 import Image from '@/components/ui/image';
 

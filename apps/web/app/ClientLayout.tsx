@@ -1,7 +1,7 @@
 'use client';
 
-import { ReactNode, useEffect } from 'react';
-import { useUserStore } from '@/lib/stores/user-store';
+import { ReactNode, useEffect, Suspense } from 'react';
+import { useUserStore } from '@/lib/stores/user';
 import { Toaster } from '@/components/ui/toaster';
 import { usePathname, useRouter } from 'next/navigation';
 
@@ -16,7 +16,7 @@ function isPublicPath(path: string) {
   return PUBLIC_PATHS.includes(path);
 }
 
-export default function ClientLayout({ children }: { children: ReactNode }) {
+function ProtectedContent({ children }: { children: ReactNode }) {
   const token = useUserStore(state => state.token);
   const pathname = usePathname();
   const router = useRouter();
@@ -27,10 +27,15 @@ export default function ClientLayout({ children }: { children: ReactNode }) {
     }
   }, [token, pathname, router]);
 
+  return children;
+}
+
+export default function ClientLayout({ children }: { children: ReactNode }) {
   return (
     <>
-      {/* 未登录且非公开页面时，不渲染内容 */}
-      {!token && !isPublicPath(pathname) && pathname !== '/login' ? null : children}
+      <Suspense fallback={null}>
+        <ProtectedContent>{children}</ProtectedContent>
+      </Suspense>
       <Toaster />
     </>
   );
