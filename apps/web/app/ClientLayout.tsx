@@ -17,12 +17,13 @@ function isPublicPath(path: string) {
 }
 
 function ProtectedContent({ children }: { children: ReactNode }) {
-  const token = getToken;
+  const token = getToken();
   const pathname = usePathname();
   const router = useRouter();
 
   useEffect(() => {
     if (!token && !isPublicPath(pathname) && pathname !== '/login') {
+      console.log('redirect to login');
       router.replace(`/login?redirect=${encodeURIComponent(pathname)}`);
     }
   }, [token, pathname, router]);

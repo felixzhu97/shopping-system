@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { AlertCircle, ChevronLeft, CreditCard } from 'lucide-react';
@@ -19,14 +19,15 @@ import {
 } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/components/ui/use-toast';
+import { Toaster } from '@/components/ui/toaster';
 import { Navbar } from '@/components/navbar';
 import { Footer } from '@/components/footer';
 import { useCartStore } from '@/lib/stores/cart';
+import { useUserStore } from '@/lib/stores/user';
 import { Image } from '@/components/ui/image';
 import { cn } from '@/lib/utils/utils';
 import { provinces } from '@/components/china-region';
 import { createOrder } from '@/lib/api/orders';
-import { getCheckoutInfo, saveCheckoutInfo, getUserId } from '@/lib/utils/user';
 
 // 添加表单数据类型
 interface FormData {
@@ -85,10 +86,16 @@ const OrderSummaryItem = React.memo(function OrderSummaryItem({ item }: { item: 
 });
 
 export default function CheckoutPage() {
+  // 1. 所有 store hooks
   const { items, clearCart } = useCartStore();
+  const { getUserId, getCheckoutInfo, saveCheckoutInfo } = useUserStore();
   const { toast } = useToast();
   const router = useRouter();
+
+  // 2. 所有 useState hooks
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedProvince, setSelectedProvince] = useState('');
+  const [selectedCity, setSelectedCity] = useState('');
   const [formData, setFormData] = useState<FormData>({
     firstName: '',
     lastName: '',
@@ -96,7 +103,7 @@ export default function CheckoutPage() {
     phone: '',
     address: '',
     city: '',
-    province: 'shanghai',
+    province: '',
     postalCode: '',
     paymentMethod: 'credit-card',
     cardNumber: '',
@@ -104,91 +111,92 @@ export default function CheckoutPage() {
     cvv: '',
   });
   const [errors, setErrors] = useState<FormErrors>({});
-  const [selectedProvince, setSelectedProvince] = useState(provinces[0].name);
-  const [selectedCity, setSelectedCity] = useState(provinces[0].cities[0]);
 
-  // 从本地存储加载结算信息
-  useEffect(() => {
-    const loadCheckoutInfo = async () => {
-      const savedInfo = getCheckoutInfo();
-      if (savedInfo) {
-        setFormData(prev => ({
-          ...prev,
-          ...savedInfo,
-          // 不保存敏感信息
-          cardNumber: '',
-          expiration: '',
-          cvv: '',
-        }));
-      }
-    };
-    loadCheckoutInfo();
-  }, []);
+  // 3. 所有 useMemo hooks
+  const { subtotal, shipping, tax, total } = useMemo(() => {
+    const subtotal = items.reduce((total, item) => {
+      if (!item.product) return total;
+      return total + item.product.price * item.quantity;
+    }, 0);
+    const shipping = subtotal > 200 ? 0 : 15;
+    const tax = subtotal * 0.06;
+    const total = subtotal + shipping + tax;
 
-  // 如果购物车为空，重定向到购物车页面
-  useEffect(() => {
-    if (items.length === 0) {
-      router.push('/cart');
-    }
-  }, [items.length, router]);
+    return { subtotal, shipping, tax, total };
+  }, [items]);
 
-  if (items.length === 0) {
-    return null;
-  }
-
-  const subtotal = items.reduce((total, item) => {
-    if (!item.product) return total;
-    return total + item.product.price * item.quantity;
-  }, 0);
-  const shipping = subtotal > 200 ? 0 : 15;
-  const tax = subtotal * 0.06;
-  const total = subtotal + shipping + tax;
-
-  // 处理输入变化
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // 4. 所有 useCallback hooks
+  const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
       [name]: value,
     }));
 
-    // 清除该字段的错误
-    if (errors[name as keyof FormErrors]) {
-      setErrors(prev => ({
-        ...prev,
-        [name]: undefined,
-      }));
-    }
-  };
+    setErrors(prev => ({
+      ...prev,
+      [name]: undefined,
+    }));
+  }, []);
 
-  // 处理选择变化
-  const handleSelectChange = (name: string, value: string) => {
+  const handleSelectChange = useCallback((name: string, value: string) => {
     setFormData(prev => ({
       ...prev,
       [name]: value,
     }));
-  };
+  }, []);
 
-  // 省份变化时，自动切换城市
-  const handleProvinceChange = (value: string) => {
+  const handleProvinceChange = useCallback((value: string) => {
     setSelectedProvince(value);
     const province = provinces.find(p => p.name === value);
-    setSelectedCity(province?.cities[0] || '');
-    setFormData(prev => ({ ...prev, province: value, city: province?.cities[0] || '' }));
-  };
 
-  // 城市变化
-  const handleCityChange = (value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      province: value,
+      city: '',
+    }));
+
+    // 清除省份和城市的错误
+    setErrors(prev => ({
+      ...prev,
+      province: undefined,
+      city: undefined,
+    }));
+
+    // 重置城市选择
+    setSelectedCity('');
+  }, []);
+
+  const handleCityChange = useCallback((value: string) => {
     setSelectedCity(value);
-    setFormData(prev => ({ ...prev, city: value }));
-  };
+    setFormData(prev => ({
+      ...prev,
+      city: value,
+    }));
 
-  // 验证表单
-  const validateForm = (): boolean => {
+    // 清除城市错误
+    setErrors(prev => ({
+      ...prev,
+      city: undefined,
+    }));
+  }, []);
+
+  const validateForm = useCallback((): boolean => {
     const newErrors: FormErrors = {};
     let isValid = true;
 
-    // 验证基础信息
+    // 验证省份
+    if (!selectedProvince) {
+      newErrors.province = '请选择省份';
+      isValid = false;
+    }
+
+    // 验证城市
+    if (!selectedCity) {
+      newErrors.city = '请选择城市';
+      isValid = false;
+    }
+
     if (!formData.firstName.trim()) {
       newErrors.firstName = '请输入姓氏';
       isValid = false;
@@ -220,11 +228,6 @@ export default function CheckoutPage() {
       isValid = false;
     }
 
-    if (!formData.city.trim()) {
-      newErrors.city = '请输入城市';
-      isValid = false;
-    }
-
     if (!formData.postalCode.trim()) {
       newErrors.postalCode = '请输入邮政编码';
       isValid = false;
@@ -233,7 +236,6 @@ export default function CheckoutPage() {
       isValid = false;
     }
 
-    // 验证信用卡信息（如果选择了信用卡支付）
     if (formData.paymentMethod === 'credit-card') {
       if (!formData.cardNumber?.trim()) {
         newErrors.cardNumber = '请输入卡号';
@@ -262,94 +264,145 @@ export default function CheckoutPage() {
 
     setErrors(newErrors);
     return isValid;
-  };
+  }, [formData, selectedProvince, selectedCity]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault();
 
-    // 验证表单
-    if (!validateForm()) {
-      console.log('validateForm', formData, validateForm());
-      toast({
-        title: '表单验证失败',
-        description: '请检查并修正表单中的错误',
-        variant: 'destructive',
-        duration: 5000,
-      });
-      return;
-    }
-
-    setIsSubmitting(true);
-
-    try {
-      console.log(formData);
-      // 保存结算信息到本地存储（不包含敏感信息）
-      const infoToSave = {
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        email: formData.email,
-        phone: formData.phone,
-        address: formData.address,
-        city: formData.city,
-        province: formData.province,
-        postalCode: formData.postalCode,
-        paymentMethod: formData.paymentMethod,
-      };
-      saveCheckoutInfo(infoToSave);
-
-      // 组装订单数据
-      const userId = getUserId();
-      if (!userId) {
+      if (!validateForm()) {
         toast({
-          title: '未登录',
-          description: '请先登录后再提交订单',
+          title: '表单验证失败',
+          description: '请检查并修正表单中的错误',
           variant: 'destructive',
-          duration: 5000,
+          duration: 3000,
         });
-        setIsSubmitting(false);
         return;
       }
-      const orderData = {
-        shippingAddress: {
+
+      setIsSubmitting(true);
+
+      try {
+        const userId = getUserId();
+        if (!userId) {
+          toast({
+            title: '未登录',
+            description: '请先登录后再提交订单',
+            variant: 'destructive',
+            duration: 3000,
+          });
+          setIsSubmitting(false);
+          router.push('/login');
+          return;
+        }
+
+        const infoToSave = {
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          email: formData.email,
+          phone: formData.phone,
           address: formData.address,
           city: formData.city,
+          province: formData.province,
           postalCode: formData.postalCode,
-          country: formData.province,
-        },
-        paymentMethod: formData.paymentMethod,
-        items: items.map(item => ({
-          productId: item.product?.id || item.productId,
-          quantity: item.quantity,
-        })),
-        totalAmount: total,
-      };
-      // 调用API保存订单
-      const order = await createOrder(userId, orderData);
+          paymentMethod: formData.paymentMethod,
+        };
+        saveCheckoutInfo(infoToSave);
 
-      // 清空购物车
-      await clearCart();
+        const orderData = {
+          shippingAddress: {
+            address: formData.address,
+            city: formData.city,
+            postalCode: formData.postalCode,
+            country: formData.province,
+          },
+          paymentMethod: formData.paymentMethod,
+          items: items.map(item => ({
+            productId: item.product?.id || item.productId,
+            quantity: item.quantity,
+          })),
+          totalAmount: total,
+        };
 
-      // 显示成功提示
-      toast({
-        title: '订单已提交',
-        description: '感谢您的购买！我们将尽快处理您的订单。',
-        duration: 5000,
-      });
+        const order = await createOrder(userId, orderData);
+        await clearCart();
 
-      // 跳转到订单成功页面，并传递订单ID
-      router.push(`/checkout/success?orderId=${order.id}`);
-    } catch (error) {
-      console.error('提交订单失败:', error);
-      toast({
-        title: '提交订单失败',
-        description: '无法处理您的订单，请稍后再试。',
-        variant: 'destructive',
-        duration: 5000,
-      });
-    } finally {
-      setIsSubmitting(false);
+        // 预加载成功页面
+        router.prefetch(`/checkout/success?orderId=${order.id}`);
+
+        toast({
+          title: '订单提交成功',
+          description: '感谢您的购买！我们将尽快处理您的订单。',
+          duration: 3000,
+        });
+
+        // 使用 replace 而不是 push，这样用户不能返回到结算页面
+        router.replace(`/checkout/success?orderId=${order.id}`);
+      } catch (error) {
+        console.error('提交订单失败:', error);
+        toast({
+          title: '提交订单失败',
+          description: '无法处理您的订单，请稍后再试。',
+          variant: 'destructive',
+          duration: 3000,
+        });
+      } finally {
+        setIsSubmitting(false);
+      }
+    },
+    [validateForm, formData, items, total, getUserId, saveCheckoutInfo, clearCart, router, toast]
+  );
+
+  // 5. 所有 useEffect hooks
+  useEffect(() => {
+    const savedInfo = getCheckoutInfo();
+    if (savedInfo) {
+      // 先设置省份
+      if (savedInfo.province) {
+        const province = provinces.find(p => p.name === savedInfo.province);
+        if (province) {
+          setSelectedProvince(savedInfo.province);
+          // 只有当城市存在于该省份的城市列表中时才设置
+          if (savedInfo.city && province.cities.includes(savedInfo.city)) {
+            setSelectedCity(savedInfo.city);
+          } else {
+            setSelectedCity('');
+          }
+        }
+      }
+
+      // 然后设置表单数据
+      setFormData(prev => ({
+        ...prev,
+        ...savedInfo,
+        // 清除支付相关信息
+        cardNumber: '',
+        expiration: '',
+        cvv: '',
+        // 确保城市与选择器状态同步
+        city:
+          savedInfo.city &&
+          provinces.find(p => p.name === savedInfo.province)?.cities.includes(savedInfo.city)
+            ? savedInfo.city
+            : '',
+      }));
     }
-  };
+  }, [getCheckoutInfo]);
+
+  useEffect(() => {
+    if (items.length === 0) {
+      router.push('/cart');
+    }
+  }, [items.length, router]);
+
+  // 在组件加载时预加载成功页面
+  useEffect(() => {
+    router.prefetch('/checkout/success');
+  }, [router]);
+
+  if (items.length === 0) {
+    return null;
+  }
 
   return (
     <div className="flex flex-col min-h-screen bg-[#f5f5f7]">
@@ -535,7 +588,15 @@ export default function CheckoutPage() {
                             省份
                           </Label>
                           <Select value={selectedProvince} onValueChange={handleProvinceChange}>
-                            <SelectTrigger id="province" className="h-12 rounded-xl">
+                            <SelectTrigger
+                              id="province"
+                              className={cn(
+                                'h-12 rounded-xl transition-colors',
+                                errors.province
+                                  ? 'border-red-500 focus:ring-red-500'
+                                  : 'focus:ring-blue-500'
+                              )}
+                            >
                               <SelectValue placeholder="选择省份" />
                             </SelectTrigger>
                             <SelectContent className="rounded-xl max-h-72 overflow-y-auto">
@@ -546,14 +607,34 @@ export default function CheckoutPage() {
                               ))}
                             </SelectContent>
                           </Select>
+                          {errors.province && (
+                            <p className="text-sm text-red-500 flex items-center mt-1">
+                              <AlertCircle className="h-3 w-3 mr-1" />
+                              {errors.province}
+                            </p>
+                          )}
                         </div>
                         <div className="space-y-2">
                           <Label htmlFor="city" className="text-sm font-medium text-gray-700">
                             城市
                           </Label>
-                          <Select value={selectedCity} onValueChange={handleCityChange}>
-                            <SelectTrigger id="city" className="h-12 rounded-xl">
-                              <SelectValue placeholder="选择城市" />
+                          <Select
+                            value={selectedCity}
+                            onValueChange={handleCityChange}
+                            disabled={!selectedProvince}
+                          >
+                            <SelectTrigger
+                              id="city"
+                              className={cn(
+                                'h-12 rounded-xl transition-colors',
+                                errors.city
+                                  ? 'border-red-500 focus:ring-red-500'
+                                  : 'focus:ring-blue-500'
+                              )}
+                            >
+                              <SelectValue
+                                placeholder={selectedProvince ? '选择城市' : '请先选择省份'}
+                              />
                             </SelectTrigger>
                             <SelectContent className="rounded-xl max-h-72 overflow-y-auto">
                               {(provinces.find(p => p.name === selectedProvince)?.cities || []).map(
@@ -565,6 +646,12 @@ export default function CheckoutPage() {
                               )}
                             </SelectContent>
                           </Select>
+                          {errors.city && (
+                            <p className="text-sm text-red-500 flex items-center mt-1">
+                              <AlertCircle className="h-3 w-3 mr-1" />
+                              {errors.city}
+                            </p>
+                          )}
                         </div>
                         <div className="space-y-2">
                           <Label htmlFor="postalCode" className="text-sm font-medium text-gray-700">
@@ -798,6 +885,7 @@ export default function CheckoutPage() {
         </div>
       </main>
       <Footer />
+      <Toaster />
     </div>
   );
 }

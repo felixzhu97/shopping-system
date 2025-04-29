@@ -23,7 +23,7 @@ module.exports = {
     ecmaVersion: 2021,
     sourceType: 'module',
   },
-  plugins: ['@typescript-eslint', 'react', 'import'],
+  plugins: ['@typescript-eslint', 'react', 'react-hooks', 'import'],
   settings: {
     react: {
       version: 'detect',
@@ -47,6 +47,21 @@ module.exports = {
         alphabetize: { order: 'asc', caseInsensitive: true },
       },
     ],
+    'react-hooks/rules-of-hooks': 'error',
+    'react-hooks/exhaustive-deps': 'warn',
+    'react-hooks/order': [
+      'error',
+      {
+        groups: [
+          ['useContext', 'useStore', 'useSelector', 'useDispatch'],
+          ['useState', 'useReducer'],
+          ['useRef', 'useImperativeHandle'],
+          ['useEffect', 'useLayoutEffect', 'useInsertionEffect'],
+          ['useMemo', 'useCallback'],
+          ['useDebugValue', 'useDeferredValue', 'useTransition'],
+        ],
+      },
+    ],
   },
   ignorePatterns: ['node_modules', 'dist', '.turbo', 'build', 'coverage'],
-}; 
+};
