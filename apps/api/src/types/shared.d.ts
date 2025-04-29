@@ -51,5 +51,13 @@ declare module 'shared' {
     lastName: string;
     email: string;
     phone: string;
+    address: string;
+    city: string;
+    province: string;
+    postalCode: string;
+    paymentMethod: 'alipay' | 'wechat' | 'credit-card';
+    cardNumber: string;
+    expiration: string;
+    cvv: string;
   }
 }

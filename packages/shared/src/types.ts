@@ -43,6 +43,17 @@ export interface User {
   firstName: string;
   lastName: string;
   phone: string;
+  address?: {
+    firstName: string;
+    lastName: string;
+    company: string;
+    street: string;
+    apt: string;
+    zip: string;
+    city: string;
+    country: string;
+    phone: string;
+  };
 }
 
 // -----------Order-----------
