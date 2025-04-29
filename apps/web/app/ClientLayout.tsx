@@ -8,6 +8,13 @@ import { getToken } from '@/lib/utils/user';
 const PUBLIC_PATHS = [
   '/', // 首页
   '/products', // 商品列表
+  '/login', // 登录页
+  '/register', // 注册页
+  '/cart', // 购物车页
+  // '/checkout', // 结算页
+  // '/checkout/success', // 结算成功页
+  // '/checkout/failure', // 结算失败页
+  // '/checkout/cancel', // 结算取消页
 ];
 
 function isPublicPath(path: string) {

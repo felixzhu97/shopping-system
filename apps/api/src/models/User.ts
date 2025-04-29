@@ -3,10 +3,13 @@ import bcrypt from 'bcryptjs';
 
 export interface UserType {
   id?: string;
-  username: string;
+  fullName: string;
   email: string;
   password?: string;
   role: 'user' | 'admin';
+  firstName: string;
+  lastName: string;
+  phone: string;
 }
 
 export interface UserDocument extends Document, Omit<UserType, 'id'> {
@@ -16,10 +19,12 @@ export interface UserDocument extends Document, Omit<UserType, 'id'> {
 
 const UserSchema: Schema = new Schema(
   {
-    username: { type: String, required: true, unique: true },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     role: { type: String, enum: ['user', 'admin'], default: 'user' },
+    firstName: { type: String, required: true },
+    lastName: { type: String, required: true },
+    phone: { type: String, required: true },
     address: {
       firstName: { type: String, default: '' },
       lastName: { type: String, default: '' },

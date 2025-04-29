@@ -804,10 +804,9 @@
       },
       "UserRegistration": {
         "type": "object",
-        "required": ["username", "email", "password"],
+        "required": ["email", "password", "firstName", "lastName", "phone"],
         "properties": {
-          "username": {
-            "type": "string",
+          "email": {
             "description": "用户名"
           },
           "email": {
@@ -819,6 +818,18 @@
             "type": "string",
             "description": "密码",
             "format": "password"
+          },
+          "firstName": {
+            "type": "string",
+            "description": "姓氏"
+          },
+          "lastName": {
+            "type": "string",
+            "description": "名字"
+          },
+          "phone": {
+            "type": "string",
+            "description": "手机号码"
           }
         }
       },

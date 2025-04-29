@@ -28,6 +28,7 @@ import { Image } from '@/components/ui/image';
 import { cn } from '@/lib/utils/utils';
 import { provinces } from '@/components/china-region';
 import { createOrder } from '@/lib/api/orders';
+import { Payment } from 'shared';
 
 // 添加表单数据类型
 interface FormData {
@@ -96,7 +97,7 @@ export default function CheckoutPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedProvince, setSelectedProvince] = useState('');
   const [selectedCity, setSelectedCity] = useState('');
-  const [formData, setFormData] = useState<FormData>({
+  const [formData, setFormData] = useState<Payment>({
     firstName: '',
     lastName: '',
     email: '',

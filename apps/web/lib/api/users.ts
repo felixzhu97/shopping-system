@@ -40,13 +40,12 @@ export async function login(email: string, password: string): Promise<User> {
 }
 
 // 新增注册API
-export async function register(email: string, password: string): Promise<User> {
+export async function register(user: User): Promise<User> {
   const url = `${API_CONFIG.usersUrl}/register`;
-  const username = email.split('@')[0];
   const res = await fetchApi<User>(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, username, password }),
+    body: JSON.stringify(user),
   });
   if (!res.success || !res.data) {
     throw new Error(res.error || '注册失败');
