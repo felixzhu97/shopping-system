@@ -22,7 +22,7 @@ import { Badge } from '@/components/ui/badge';
 import { useCartStore } from '@/lib/stores/cart';
 import PanelDropdown from '@/components/ui/panel-dropdown';
 import Image from '@/components/ui/image';
-import { useUserStore } from '@/lib/stores/user';
+import { logout, getUser } from '@/lib/utils/users';
 
 // 定义快捷链接数据
 const quickLinks = [
@@ -46,8 +46,6 @@ function CartDropdown({
   router: any;
   username: string | null;
 }) {
-  const logout = useUserStore(state => state.logout);
-
   const handleLogout = (e: React.MouseEvent) => {
     e.preventDefault();
     logout();
@@ -171,6 +169,7 @@ function CartDropdown({
 // 提取出使用 useSearchParams 的客户端组件
 function NavbarClient() {
   const [searchQuery, setSearchQuery] = useState('');
+  const [username, setUsername] = useState<string | null>(null);
   const [isScrolled, setIsScrolled] = useState(false);
   const [cartBadgeAnimate, setCartBadgeAnimate] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
@@ -179,9 +178,9 @@ function NavbarClient() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { items } = useCartStore();
-  const { username } = useUserStore();
   const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
   const [showCart, setShowCart] = useState(false);
+
   // 根据路径和查询参数分析当前分类
   const getCurrentCategory = (): string => {
     if (!pathname) return '';
@@ -248,6 +247,10 @@ function NavbarClient() {
       }, 200);
     }
   };
+
+  useEffect(() => {
+    setUsername(getUser()?.username || null);
+  }, []);
 
   return (
     <div className="relative">

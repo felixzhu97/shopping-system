@@ -4,6 +4,7 @@ import { ReactNode, useEffect, Suspense } from 'react';
 import { useUserStore } from '@/lib/stores/user';
 import { Toaster } from '@/components/ui/toaster';
 import { usePathname, useRouter } from 'next/navigation';
+import { getToken } from '@/lib/utils/users';
 
 const PUBLIC_PATHS = [
   '/', // 首页
@@ -17,7 +18,7 @@ function isPublicPath(path: string) {
 }
 
 function ProtectedContent({ children }: { children: ReactNode }) {
-  const token = useUserStore(state => state.token);
+  const token = getToken();
   const pathname = usePathname();
   const router = useRouter();
 

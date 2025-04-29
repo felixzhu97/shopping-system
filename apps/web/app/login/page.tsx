@@ -8,14 +8,15 @@ import { Footer } from '@/components/footer';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import { useUserStore } from '@/lib/stores/user';
+import { login } from '@/lib/api/users';
+import { saveToken } from '@/lib/utils/users';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const router = useRouter();
-  const setUser = useUserStore(state => state.setUser);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,14 +29,10 @@ export default function LoginPage() {
     setError('');
 
     try {
-      // 这里是模拟登录，实际项目中需要调用真实的登录 API
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const user = await login(email, password);
 
-      // 模拟成功登录
-      const mockUsername = email.split('@')[0];
-      const mockToken = 'mock-token-' + Date.now();
+      saveToken(user);
 
-      setUser(mockUsername, mockToken);
       router.push('/'); // 登录成功后跳转到首页
     } catch (err) {
       setError('登录失败，请稍后重试');
@@ -62,6 +59,17 @@ export default function LoginPage() {
                   placeholder="邮箱或手机号码"
                   value={email}
                   onChange={e => setEmail(e.target.value)}
+                  className="h-12 px-4 text-base"
+                  disabled={loading}
+                />
+              </div>
+
+              <div className="relative">
+                <Input
+                  type="password"
+                  placeholder="密码"
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
                   className="h-12 px-4 text-base"
                   disabled={loading}
                 />

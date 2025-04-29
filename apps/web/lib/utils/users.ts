@@ -8,11 +8,16 @@ export const saveToken = (user: User): string => {
 };
 
 export const getToken = (): string | null => {
-  const token = localStorage.getItem('token');
-  if (!token) {
+  try {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      return null;
+    }
+    return token;
+  } catch (error) {
+    console.error('获取token失败:', error);
     return null;
   }
-  return token;
 };
 
 export const getUser = (): User | null => {
@@ -30,4 +35,8 @@ export const getUserId = (): string | null => {
     return null;
   }
   return user.id;
+};
+
+export const logout = () => {
+  localStorage.removeItem('token');
 };
