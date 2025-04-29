@@ -22,7 +22,7 @@ import { Badge } from '@/components/ui/badge';
 import { useCartStore } from '@/lib/stores/cart';
 import PanelDropdown from '@/components/ui/panel-dropdown';
 import Image from '@/components/ui/image';
-import { logout, getUser } from '@/lib/utils/users';
+import { useUserStore } from '@/lib/stores/user';
 
 // 定义快捷链接数据
 const quickLinks = [
@@ -39,12 +39,14 @@ function CartDropdown({
   items,
   router,
   username,
+  logout,
 }: {
   open: boolean;
   onClose: () => void;
   items: any[];
   router: any;
   username: string | null;
+  logout: () => void;
 }) {
   const handleLogout = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -180,6 +182,7 @@ function NavbarClient() {
   const { items } = useCartStore();
   const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
   const [showCart, setShowCart] = useState(false);
+  const { getUser, logout } = useUserStore();
 
   // 根据路径和查询参数分析当前分类
   const getCurrentCategory = (): string => {
@@ -250,7 +253,7 @@ function NavbarClient() {
 
   useEffect(() => {
     setUsername(getUser()?.username || null);
-  }, []);
+  }, [getUser]);
 
   return (
     <div className="relative">
@@ -448,6 +451,7 @@ function NavbarClient() {
                 items={items}
                 router={router}
                 username={username}
+                logout={logout}
               />
             </div>
           </div>

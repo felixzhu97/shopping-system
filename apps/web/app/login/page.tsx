@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { login } from '@/lib/api/users';
-import { saveToken } from '@/lib/utils/users';
+import { useUserStore } from '@/lib/stores/user';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -17,6 +17,7 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const router = useRouter();
+  const { saveToken } = useUserStore();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

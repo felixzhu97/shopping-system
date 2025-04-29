@@ -24,10 +24,9 @@ import { Footer } from '@/components/footer';
 import { useCartStore } from '@/lib/stores/cart';
 import { Image } from '@/components/ui/image';
 import { cn } from '@/lib/utils/utils';
-import { getCheckoutInfo, saveCheckoutInfo } from '@/lib/storage';
 import { provinces } from '@/components/china-region';
 import { createOrder } from '@/lib/api/orders';
-import { getUserId } from '@/lib/utils/users';
+import { useUserStore } from '@/lib/stores/user';
 
 // 添加表单数据类型
 interface FormData {
@@ -107,20 +106,24 @@ export default function CheckoutPage() {
   const [errors, setErrors] = useState<FormErrors>({});
   const [selectedProvince, setSelectedProvince] = useState(provinces[0].name);
   const [selectedCity, setSelectedCity] = useState(provinces[0].cities[0]);
+  const { getUserId, saveCheckoutInfo, getCheckoutInfo } = useUserStore();
 
   // 从本地存储加载结算信息
   useEffect(() => {
-    const savedInfo = getCheckoutInfo();
-    if (savedInfo) {
-      setFormData(prev => ({
-        ...prev,
-        ...savedInfo,
-        // 不保存敏感信息
-        cardNumber: '',
-        expiration: '',
-        cvv: '',
-      }));
-    }
+    const loadCheckoutInfo = async () => {
+      const savedInfo = getCheckoutInfo();
+      if (savedInfo) {
+        setFormData(prev => ({
+          ...prev,
+          ...savedInfo,
+          // 不保存敏感信息
+          cardNumber: '',
+          expiration: '',
+          cvv: '',
+        }));
+      }
+    };
+    loadCheckoutInfo();
   }, []);
 
   // 如果购物车为空，重定向到购物车页面
@@ -267,6 +270,7 @@ export default function CheckoutPage() {
 
     // 验证表单
     if (!validateForm()) {
+      console.log('validateForm', formData, validateForm());
       toast({
         title: '表单验证失败',
         description: '请检查并修正表单中的错误',
@@ -279,6 +283,7 @@ export default function CheckoutPage() {
     setIsSubmitting(true);
 
     try {
+      console.log(formData);
       // 保存结算信息到本地存储（不包含敏感信息）
       const infoToSave = {
         firstName: formData.firstName,
