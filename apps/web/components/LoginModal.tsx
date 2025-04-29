@@ -36,7 +36,7 @@ export default function LoginModal({ open, onClose }: { open: boolean; onClose: 
   const [password, setPassword] = useState(generateStrongPassword());
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const setToken = useUserStore(state => state.setToken);
+  const saveToken = useUserStore(state => state.saveToken);
 
   const handleLogin = async () => {
     setLoading(true);
@@ -44,7 +44,7 @@ export default function LoginModal({ open, onClose }: { open: boolean; onClose: 
     try {
       // 先尝试登录
       const user = await login(email, password);
-      setToken(user);
+      saveToken(user);
       onClose();
     } catch (e: any) {
       // 如果是用户不存在或用户名/邮箱错误，则自动注册再登录

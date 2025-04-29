@@ -17,7 +17,7 @@ function isPublicPath(path: string) {
 }
 
 function ProtectedContent({ children }: { children: ReactNode }) {
-  const { getToken } = useUserStore();
+  const getToken = useUserStore(state => state.getToken);
   const token = getToken();
   const pathname = usePathname();
   const router = useRouter();

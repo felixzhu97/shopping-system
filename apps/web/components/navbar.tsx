@@ -1,7 +1,7 @@
 'use client';
 
 import type React from 'react';
-import { Suspense, useEffect, useRef, useState } from 'react';
+import { Suspense, useEffect, useRef, useState, useMemo, memo, useCallback } from 'react';
 import Link from 'next/link';
 import {
   Box,
@@ -32,163 +32,208 @@ const quickLinks = [
   { title: '经典图书', path: '/products?category=books' },
 ];
 
-// 提取购物车下拉面板为独立组件
-function CartDropdown({
-  open,
-  onClose,
-  items,
-  router,
-  username,
-  logout,
-}: {
-  open: boolean;
-  onClose: () => void;
-  items: any[];
-  router: any;
-  username: string | null;
-  logout: () => void;
-}) {
-  const handleLogout = (e: React.MouseEvent) => {
-    e.preventDefault();
-    logout();
-    router.push('/login');
-    onClose();
-  };
+// 将购物车项组件提取出来并使用 memo 包装
+const CartItem = memo(({ item }: { item: any }) => (
+  <div className="flex items-center mb-4 last:mb-0">
+    <div className="w-10 h-10 rounded-lg bg-gray-100 mr-4 border overflow-hidden">
+      <Image
+        src={item.product?.image || ''}
+        alt={item.product?.name || ''}
+        className="w-full h-full object-cover"
+        width={40}
+        height={40}
+      />
+    </div>
+    <div className="flex-1 min-w-0">
+      <div className="font-semibold text-sm text-gray-900 truncate">{item.product?.name || ''}</div>
+      <div className="text-xs text-gray-500 truncate">{item.product?.description || ''}</div>
+    </div>
+  </div>
+));
 
-  return (
-    <PanelDropdown
-      open={open}
-      onClose={onClose}
-      heightClassName="h-auto"
-      containerClassName="!top-12"
-    >
-      <div className="w-full flex justify-center">
-        <div className="w-full max-w-[600px] px-10 py-12">
-          {/* 购物袋 */}
-          <div className="font-bold text-2xl mb-8">购物袋</div>
+CartItem.displayName = 'CartItem';
 
-          {/* 购物袋内容 */}
-          <div className="mb-8">
-            {items.length === 0 ? (
-              <div className="text-gray-500 text-sm py-8">您的购物袋是空的</div>
-            ) : (
-              <>
-                {items.slice(0, 3).map((item, idx) => (
-                  <div className="flex items-center mb-4 last:mb-0" key={item.product?.id || idx}>
-                    <div className="w-10 h-10 rounded-lg bg-gray-100 mr-4 border overflow-hidden">
-                      <Image
-                        src={item.product?.image || ''}
-                        alt={item.product?.name || ''}
-                        className="w-full h-full object-cover"
-                        width={40}
-                        height={40}
-                      />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="font-semibold text-sm text-gray-900 truncate">
-                        {item.product?.name || ''}
-                      </div>
-                      <div className="text-xs text-gray-500 truncate">
-                        {item.product?.description || ''}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-                {items.length > 3 && (
-                  <div className="text-xs text-gray-500 mt-2">
-                    还有 {items.length - 3} 件商品在购物袋中
-                  </div>
-                )}
-              </>
-            )}
-          </div>
+// 将购物车下拉菜单组件提取出来并使用 memo 包装
+const CartDropdown = memo(
+  ({
+    open,
+    onClose,
+    items,
+    router,
+    username,
+    logout,
+  }: {
+    open: boolean;
+    onClose: () => void;
+    items: any[];
+    router: any;
+    username: string | null;
+    logout: () => void;
+  }) => {
+    const handleLogout = useCallback(
+      (e: React.MouseEvent) => {
+        e.preventDefault();
+        logout();
+        router.push('/login');
+        onClose();
+      },
+      [logout, router, onClose]
+    );
 
-          {/* 查看购物袋 */}
-          <div className="mb-10">
-            <Button
-              className="bg-blue-600 text-white rounded-lg px-8 h-11 text-base font-medium hover:bg-blue-700 transition w-full"
-              onClick={() => {
-                router.push('/cart');
-                onClose();
-              }}
-            >
-              查看购物袋
-            </Button>
-          </div>
+    const handleCartClick = useCallback(() => {
+      router.push('/cart');
+      onClose();
+    }, [router, onClose]);
 
-          {/* 我的账户 */}
-          <div className="text-xs text-gray-500 font-semibold mb-2">我的账户</div>
-
-          {/* 我的账户内容 */}
-          <ul className="text-gray-700 text-sm space-y-1">
-            <li>
-              <Link
-                href="/orders"
-                className="hover:underline flex items-center gap-2"
-                onClick={onClose}
-              >
-                <Box className="w-4 h-4" />
-                我的订单
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/account"
-                className="hover:underline flex items-center gap-2"
-                onClick={onClose}
-              >
-                <Cog className="w-4 h-4" />
-                账户设置
-              </Link>
-            </li>
-            <li>
-              {username ? (
-                <button
-                  onClick={handleLogout}
-                  className="hover:underline flex items-center gap-2 text-left w-full"
-                >
-                  <CircleUserRound className="w-4 h-4" />
-                  退出登录 {username}
-                </button>
+    return (
+      <PanelDropdown
+        open={open}
+        onClose={onClose}
+        heightClassName="h-auto"
+        containerClassName="!top-12"
+      >
+        <div className="w-full flex justify-center">
+          <div className="w-full max-w-[600px] px-10 py-12">
+            <div className="font-bold text-2xl mb-8">购物袋</div>
+            <div className="mb-8">
+              {items.length === 0 ? (
+                <div className="text-gray-500 text-sm py-8">您的购物袋是空的</div>
               ) : (
+                <>
+                  {items.slice(0, 3).map((item, idx) => (
+                    <CartItem key={item.product?.id || idx} item={item} />
+                  ))}
+                  {items.length > 3 && (
+                    <div className="text-xs text-gray-500 mt-2">
+                      还有 {items.length - 3} 件商品在购物袋中
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+            <div className="mb-10">
+              <Button
+                className="bg-blue-600 text-white rounded-lg px-8 h-11 text-base font-medium hover:bg-blue-700 transition w-full"
+                onClick={handleCartClick}
+              >
+                查看购物袋
+              </Button>
+            </div>
+            <div className="text-xs text-gray-500 font-semibold mb-2">我的账户</div>
+            <ul className="text-gray-700 text-sm space-y-1">
+              <li>
                 <Link
-                  href="/login"
+                  href="/orders"
                   className="hover:underline flex items-center gap-2"
                   onClick={onClose}
                 >
-                  <CircleUserRound className="w-4 h-4" />
-                  登录
+                  <Box className="w-4 h-4" />
+                  我的订单
                 </Link>
-              )}
-            </li>
-          </ul>
+              </li>
+              <li>
+                <Link
+                  href="/account"
+                  className="hover:underline flex items-center gap-2"
+                  onClick={onClose}
+                >
+                  <Cog className="w-4 h-4" />
+                  账户设置
+                </Link>
+              </li>
+              <li>
+                {username ? (
+                  <button
+                    onClick={handleLogout}
+                    className="hover:underline flex items-center gap-2 text-left w-full"
+                  >
+                    <CircleUserRound className="w-4 h-4" />
+                    退出登录 {username}
+                  </button>
+                ) : (
+                  <Link
+                    href="/login"
+                    className="hover:underline flex items-center gap-2"
+                    onClick={onClose}
+                  >
+                    <CircleUserRound className="w-4 h-4" />
+                    登录
+                  </Link>
+                )}
+              </li>
+            </ul>
+          </div>
         </div>
-      </div>
-    </PanelDropdown>
-  );
-}
+      </PanelDropdown>
+    );
+  }
+);
+
+CartDropdown.displayName = 'CartDropdown';
+
+// 将导航链接组件提取出来并使用 memo 包装
+const NavLink = memo(
+  ({
+    href,
+    isActive,
+    children,
+  }: {
+    href: string;
+    isActive: boolean;
+    children: React.ReactNode;
+  }) => (
+    <Link
+      href={href}
+      className={`text-[12px] h-full flex items-center font-normal px-2 mx-1 transition-colors ${
+        isActive ? 'text-blue-500' : 'text-gray-600 hover:text-gray-900'
+      }`}
+    >
+      {children}
+    </Link>
+  )
+);
+
+NavLink.displayName = 'NavLink';
 
 // 提取出使用 useSearchParams 的客户端组件
 function NavbarClient() {
   const [searchQuery, setSearchQuery] = useState('');
-  const [username, setUsername] = useState<string | null>(null);
   const [isScrolled, setIsScrolled] = useState(false);
   const [cartBadgeAnimate, setCartBadgeAnimate] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
+  const [showCart, setShowCart] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const router = useRouter();
   const { items } = useCartStore();
-  const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
-  const [showCart, setShowCart] = useState(false);
-  const { getUser, logout } = useUserStore();
+  const getUser = useUserStore(state => state.getUser);
+  const logout = useUserStore(state => state.logout);
 
-  // 根据路径和查询参数分析当前分类
-  const getCurrentCategory = (): string => {
+  // 使用 useMemo 缓存用户名，避免重复解密
+  const username = useMemo(() => getUser()?.username || null, [getUser]);
+
+  // 使用 useCallback 优化事件处理函数
+  const handleSearch = useCallback(
+    (e: React.FormEvent) => {
+      e.preventDefault();
+      if (!searchQuery.trim()) return;
+      const searchUrl = `/products?q=${encodeURIComponent(searchQuery)}`;
+      router.push(searchUrl);
+      setShowSearch(false);
+    },
+    [searchQuery, router]
+  );
+
+  const toggleSearch = useCallback(() => {
+    setShowSearch(prev => !prev);
+  }, []);
+
+  // 使用 useMemo 缓存计算值
+  const itemCount = useMemo(() => items.reduce((sum, item) => sum + item.quantity, 0), [items]);
+
+  const currentCategory = useMemo(() => {
     if (!pathname) return '';
-
-    // 如果是产品页面，则从URL参数中获取类别
     if (pathname.includes('/products')) {
       const category = searchParams.get('category');
       if (category) {
@@ -196,10 +241,7 @@ function NavbarClient() {
       }
     }
     return '';
-  };
-
-  // 当前分类
-  const currentCategory = getCurrentCategory();
+  }, [pathname, searchParams]);
 
   // 监听滚动位置改变导航栏样式，并在滚动时隐藏搜索框
   useEffect(() => {
@@ -225,35 +267,6 @@ function NavbarClient() {
       return () => clearTimeout(timer);
     }
   }, [itemCount]);
-
-  // 处理搜索
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!searchQuery.trim()) return;
-
-    // 构建搜索URL，重置其他参数
-    const searchUrl = `/products?q=${encodeURIComponent(searchQuery)}`;
-    router.push(searchUrl);
-    setShowSearch(false);
-  };
-
-  // 切换搜索框显示
-  const toggleSearch = () => {
-    const newShowSearch = !showSearch;
-    setShowSearch(newShowSearch);
-
-    // 打开搜索时防止页面滚动
-    if (newShowSearch) {
-      // 当打开搜索框时聚焦
-      setTimeout(() => {
-        searchInputRef.current?.focus();
-      }, 200);
-    }
-  };
-
-  useEffect(() => {
-    setUsername(getUser()?.username || null);
-  }, [getUser]);
 
   return (
     <div className="relative">

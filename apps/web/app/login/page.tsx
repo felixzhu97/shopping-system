@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Navbar } from '@/components/navbar';
@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { login } from '@/lib/api/users';
 import { useUserStore } from '@/lib/stores/user';
+import { useDebounce } from '@/lib/hooks/use-debounce';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -17,30 +18,67 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const router = useRouter();
-  const { saveToken } = useUserStore();
+  const saveToken = useUserStore(state => state.saveToken);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email) {
-      setError('请输入邮箱或手机号码');
-      return;
+  // 使用防抖处理输入
+  const debouncedEmail = useDebounce(email, 300);
+  const debouncedPassword = useDebounce(password, 300);
+
+  // 表单验证
+  const validateForm = useCallback(() => {
+    if (!debouncedEmail) {
+      setError('请输入邮箱');
+      return false;
     }
+    if (!debouncedEmail.includes('@')) {
+      setError('请输入有效的邮箱地址');
+      return false;
+    }
+    if (!debouncedPassword) {
+      setError('请输入密码');
+      return false;
+    }
+    if (debouncedPassword.length < 6) {
+      setError('密码长度不能小于6位');
+      return false;
+    }
+    return true;
+  }, [debouncedEmail, debouncedPassword]);
 
-    setLoading(true);
+  const handleSubmit = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault();
+
+      if (!validateForm()) {
+        return;
+      }
+
+      setLoading(true);
+      setError('');
+
+      try {
+        const user = await login(debouncedEmail, debouncedPassword);
+
+        // 先更新路由，再保存用户信息
+        router.replace('/');
+        saveToken(user);
+      } catch (err: any) {
+        setError(err.message || '登录失败，请稍后重试');
+        setLoading(false);
+      }
+    },
+    [debouncedEmail, debouncedPassword, validateForm, router, saveToken]
+  );
+
+  const handleEmailChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     setError('');
+    setEmail(e.target.value);
+  }, []);
 
-    try {
-      const user = await login(email, password);
-
-      saveToken(user);
-
-      router.push('/'); // 登录成功后跳转到首页
-    } catch (err) {
-      setError('登录失败，请稍后重试');
-    } finally {
-      setLoading(false);
-    }
-  };
+  const handlePasswordChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setError('');
+    setPassword(e.target.value);
+  }, []);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -59,9 +97,10 @@ export default function LoginPage() {
                   type="email"
                   placeholder="邮箱或手机号码"
                   value={email}
-                  onChange={e => setEmail(e.target.value)}
+                  onChange={handleEmailChange}
                   className="h-12 px-4 text-base"
                   disabled={loading}
+                  autoComplete="email"
                 />
               </div>
 
@@ -70,9 +109,10 @@ export default function LoginPage() {
                   type="password"
                   placeholder="密码"
                   value={password}
-                  onChange={e => setPassword(e.target.value)}
+                  onChange={handlePasswordChange}
                   className="h-12 px-4 text-base"
                   disabled={loading}
+                  autoComplete="current-password"
                 />
                 <Button
                   type="submit"

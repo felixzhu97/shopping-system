@@ -106,7 +106,9 @@ export default function CheckoutPage() {
   const [errors, setErrors] = useState<FormErrors>({});
   const [selectedProvince, setSelectedProvince] = useState(provinces[0].name);
   const [selectedCity, setSelectedCity] = useState(provinces[0].cities[0]);
-  const { getUserId, saveCheckoutInfo, getCheckoutInfo } = useUserStore();
+  const getUserId = useUserStore(state => state.getUserId);
+  const saveCheckoutInfo = useUserStore(state => state.saveCheckoutInfo);
+  const getCheckoutInfo = useUserStore(state => state.getCheckoutInfo);
 
   // 从本地存储加载结算信息
   useEffect(() => {

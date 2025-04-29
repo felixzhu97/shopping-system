@@ -21,7 +21,7 @@ function EditShippingAddressModal({
   const [form, setForm] = useState(initialData);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { getUserId } = useUserStore();
+  const getUserId = useUserStore(state => state.getUserId);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });

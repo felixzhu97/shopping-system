@@ -15,7 +15,7 @@ import Image from '@/components/ui/image';
 export default function OrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const { getUserId } = useUserStore();
+  const getUserId = useUserStore(state => state.getUserId);
 
   useEffect(() => {
     const fetchOrders = async () => {
