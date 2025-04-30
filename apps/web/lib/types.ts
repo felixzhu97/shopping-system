@@ -11,6 +11,7 @@ export interface Order {
     phone: string;
     address: string;
     city: string;
+    province: string;
     postalCode: string;
   };
   paymentMethod: 'credit-card' | 'alipay' | 'wechat';

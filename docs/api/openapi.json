@@ -982,6 +982,10 @@
             "type": "string",
             "description": "城市"
           },
+          "province": {
+            "type": "string",
+            "description": "省份"
+          },
           "postalCode": {
             "type": "string",
             "description": "邮政编码"

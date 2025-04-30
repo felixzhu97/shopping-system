@@ -6,7 +6,7 @@ import { Navbar } from '@/components/navbar';
 import { Footer } from '@/components/footer';
 import { useState, useEffect } from 'react';
 import { updateUserAddress, getUserById } from '@/lib/api/users';
-import { getUserId } from '@/lib/store/userStore';
+import { getUserId, useUserStore } from '@/lib/store/userStore';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
@@ -19,8 +19,8 @@ import {
 import { provinces } from '@/components/china-region';
 import { AlertCircle } from 'lucide-react';
 import { cn } from '@/lib/utils/utils';
-import { useAccountStore } from '@/lib/store/accountStore';
-
+import { useCheckoutStore } from '@/lib/store/checkoutStore';
+import { CheckoutFormData } from '@/lib/store/checkoutStore';
 // 基础弹出层组件
 interface BaseModalProps {
   open: boolean;
@@ -173,18 +173,7 @@ function EditAddressModal({
   open: boolean;
   onClose: () => void;
   onSave: (data: any) => void;
-  initialData: {
-    firstName: string;
-    lastName: string;
-    company: string;
-    street: string;
-    apt: string;
-    zip: string;
-    city: string;
-    province: string;
-    country: string;
-    phone: string;
-  };
+  initialData: CheckoutFormData;
 }) {
   const [form, setForm] = useState(initialData);
   const [loading, setLoading] = useState(false);
@@ -286,24 +275,14 @@ function EditAddressModal({
       error={error}
     >
       <div>
-        <Label htmlFor="street">街道地址</Label>
+        <Label htmlFor="address">详细地址</Label>
         <Input
-          id="street"
-          name="street"
-          value={form.street || ''}
+          id="address"
+          name="address"
+          value={form.address || ''}
           onChange={handleChange}
           className="mt-1"
           required
-        />
-      </div>
-      <div>
-        <Label htmlFor="apt">门牌号/单元（可选）</Label>
-        <Input
-          id="apt"
-          name="apt"
-          value={form.apt || ''}
-          onChange={handleChange}
-          className="mt-1"
         />
       </div>
       <div className="grid grid-cols-2 gap-4">
@@ -349,11 +328,11 @@ function EditAddressModal({
         </div>
       </div>
       <div>
-        <Label htmlFor="zip">邮政编码</Label>
+        <Label htmlFor="postalCode">邮政编码</Label>
         <Input
-          id="zip"
-          name="zip"
-          value={form.zip || ''}
+          id="postalCode"
+          name="postalCode"
+          value={form.postalCode || ''}
           onChange={handleChange}
           className="mt-1"
           required
@@ -366,42 +345,33 @@ function EditAddressModal({
 export default function AccountPage() {
   const [personalInfoModalOpen, setPersonalInfoModalOpen] = useState(false);
   const [addressModalOpen, setAddressModalOpen] = useState(false);
-  const { formData, setFormData } = useAccountStore();
-  const [userData, setUserData] = useState(formData);
+  const { formData, setFormData } = useCheckoutStore();
+  const { getCheckoutInfo } = useUserStore();
 
   useEffect(() => {
     const fetchUserData = async () => {
-      try {
-        const userId = getUserId();
-        if (!userId) return;
-        const data = await getUserById(userId);
-        setUserData(data);
-        setFormData(data);
-      } catch (error) {
-        console.error('获取用户信息失败:', error);
-      }
+      const checkoutInfo = await getCheckoutInfo();
+      setFormData(checkoutInfo);
     };
-
     fetchUserData();
-  }, [getUserId, setFormData]);
+  }, [getCheckoutInfo, setFormData]);
 
   const handleSavePersonalInfo = async (data: any) => {
     try {
       const userId = getUserId();
       if (!userId) throw new Error('未登录');
       await updateUserAddress(userId, {
-        ...userData.address,
+        ...data,
         firstName: data.firstName,
         lastName: data.lastName,
         phone: data.phone,
       });
       const newData = {
-        ...userData,
+        ...formData,
         firstName: data.firstName,
         lastName: data.lastName,
         phone: data.phone,
       };
-      setUserData(newData);
       setFormData(newData);
     } catch (error) {
       throw error;
@@ -413,17 +383,13 @@ export default function AccountPage() {
       const userId = getUserId();
       if (!userId) throw new Error('未登录');
       await updateUserAddress(userId, {
-        ...userData.address,
+        ...formData,
         ...data,
       });
       const newData = {
-        ...userData,
-        address: {
-          ...userData.address,
-          ...data,
-        },
+        ...formData,
+        ...data,
       };
-      setUserData(newData);
       setFormData(newData);
     } catch (error) {
       throw error;
@@ -446,7 +412,7 @@ export default function AccountPage() {
                   <div>
                     <div className="text-sm text-gray-500">姓名</div>
                     <div className="font-medium">
-                      {userData.lastName} {userData.firstName}
+                      {formData.lastName} {formData.firstName}
                     </div>
                   </div>
                   <Button variant="ghost" onClick={() => setPersonalInfoModalOpen(true)}>
@@ -456,7 +422,7 @@ export default function AccountPage() {
                 <div className="flex items-center justify-between">
                   <div>
                     <div className="text-sm text-gray-500">手机号码</div>
-                    <div className="font-medium">{userData.phone}</div>
+                    <div className="font-medium">{formData.phone}</div>
                   </div>
                   <Button variant="ghost" onClick={() => setPersonalInfoModalOpen(true)}>
                     编辑
@@ -475,14 +441,12 @@ export default function AccountPage() {
                   <div>
                     <div className="text-sm text-gray-500">默认地址</div>
                     <div className="font-medium">
-                      {userData.address.street}
-                      {userData.address.apt && `, ${userData.address.apt}`}
+                      {formData.address}
                       <br />
-                      {userData.address.city && `${userData.address.city}, `}
-                      {userData.address.province && `${userData.address.province}, `}
-                      {userData.address.zip}
+                      {formData.city && `${formData.city}, `}
+                      {formData.province && `${formData.province}, `}
+                      {formData.postalCode}
                       <br />
-                      {userData.address.country}
                     </div>
                   </div>
                   <Button variant="ghost" onClick={() => setAddressModalOpen(true)}>
@@ -534,16 +498,16 @@ export default function AccountPage() {
         onClose={() => setPersonalInfoModalOpen(false)}
         onSave={handleSavePersonalInfo}
         initialData={{
-          firstName: userData.firstName,
-          lastName: userData.lastName,
-          phone: userData.phone,
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          phone: formData.phone,
         }}
       />
       <EditAddressModal
         open={addressModalOpen}
         onClose={() => setAddressModalOpen(false)}
         onSave={handleSaveAddress}
-        initialData={userData.address}
+        initialData={formData}
       />
     </div>
   );

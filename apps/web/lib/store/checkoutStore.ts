@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { User } from 'shared';
 
-interface FormData {
+export interface CheckoutFormData {
   firstName: string;
   lastName: string;
   email: string;
@@ -15,24 +15,25 @@ interface FormData {
   cardNumber?: string;
   expiration?: string;
   cvv?: string;
-  [key: string]: any; // 允许动态添加属性
 }
 
 interface CheckoutState {
-  formData: FormData;
-  errors: Partial<FormData>;
+  formData: CheckoutFormData;
+  errors: Partial<CheckoutFormData>;
   selectedProvince: string;
   selectedCity: string;
   isSubmitting: boolean;
-  setFormData: (data: Partial<FormData> | ((prev: FormData) => FormData)) => void;
-  setErrors: (errors: Partial<FormData>) => void;
+  setFormData: (
+    data: Partial<CheckoutFormData> | ((prev: CheckoutFormData) => CheckoutFormData)
+  ) => void;
+  setErrors: (errors: Partial<CheckoutFormData>) => void;
   setSelectedProvince: (province: string) => void;
   setSelectedCity: (city: string) => void;
   setIsSubmitting: (isSubmitting: boolean) => void;
   resetForm: () => void;
 }
 
-const initialState: FormData = {
+const initialState: CheckoutFormData = {
   firstName: '',
   lastName: '',
   email: '',

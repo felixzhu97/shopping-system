@@ -8,12 +8,12 @@ import { ArrowLeft, ArrowRight, CreditCard, Package, ShoppingBag } from 'lucide-
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useToast } from '@/components/ui/use-toast';
+
 import { CartItem } from '@/components/cart-item';
 import { Navbar } from '@/components/navbar';
 import { Footer } from '@/components/footer';
 import { useCartStore } from '@/lib/store/cartStore';
-
+import { useToast } from '@/components/ui/use-toast';
 // 加载状态的骨架屏组件
 const LoadingSkeleton = memo(() => (
   <div className="space-y-8">

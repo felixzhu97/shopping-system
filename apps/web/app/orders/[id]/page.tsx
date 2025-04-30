@@ -316,7 +316,7 @@ export default function OrderDetailPage({ params }: { params: Usable<{ id: strin
                     <div className="text-sm text-gray-500">收货地址</div>
                     <div className="font-medium">
                       {order.shippingAddress.address}, {order.shippingAddress.city}{' '}
-                      {order.shippingAddress.postalCode}
+                      {order.shippingAddress.province}, {order.shippingAddress.postalCode}
                     </div>
                   </div>
                 </div>

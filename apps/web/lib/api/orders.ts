@@ -28,6 +28,7 @@ interface CreateOrderRequest {
     phone: string;
     address: string;
     city: string;
+    province: string;
     postalCode: string;
   };
   orderItems: {

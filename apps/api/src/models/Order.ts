@@ -70,6 +70,10 @@ const OrderSchema: Schema = new Schema(
         type: String,
         required: true,
       },
+      province: {
+        type: String,
+        required: true,
+      },
       postalCode: {
         type: String,
         required: true,

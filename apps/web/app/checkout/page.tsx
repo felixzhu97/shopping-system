@@ -24,12 +24,11 @@ import { Footer } from '@/components/footer';
 import { useCartStore } from '@/lib/store/cartStore';
 import { useUserStore } from '@/lib/store/userStore';
 import { useCheckoutStore } from '@/lib/store/checkoutStore';
-import { useAccountStore } from '@/lib/store/accountStore';
+// import { useAccountStore } from '@/lib/store/accountStore';
 import { Image } from '@/components/ui/image';
 import { cn } from '@/lib/utils/utils';
 import { provinces } from '@/components/china-region';
 import { createOrder } from '@/lib/api/orders';
-import { getUserById } from '@/lib/api/users';
 
 // 订单摘要商品项组件
 const OrderSummaryItem = React.memo(function OrderSummaryItem({ item }: { item: any }) {
@@ -60,7 +59,6 @@ export default function CheckoutPage() {
   // 1. 所有 store hooks
   const { items, clearCart } = useCartStore();
   const { getUserId, getCheckoutInfo, saveCheckoutInfo } = useUserStore();
-  const { formData: accountData } = useAccountStore();
   const {
     formData,
     errors,
@@ -101,21 +99,18 @@ export default function CheckoutPage() {
   };
 
   const handleProvinceChange = (value: string) => {
-    setSelectedProvince(value);
-    setSelectedCity(''); // 清空城市选择
-    setFormData(prev => ({
-      ...prev,
-      province: value,
-      city: '', // 清空城市值
-    }));
+    const province = provinces.find(p => p.name === value);
+    if (province) {
+      setSelectedProvince(value);
+      setSelectedCity('');
+    }
   };
 
   const handleCityChange = (value: string) => {
-    setSelectedCity(value);
-    setFormData(prev => ({
-      ...prev,
-      city: value,
-    }));
+    const city = provinces.find(p => p.cities.includes(value));
+    if (city) {
+      setSelectedCity(value);
+    }
   };
 
   const validateForm = (): boolean => {
@@ -234,7 +229,8 @@ export default function CheckoutPage() {
           fullName: `${formData.firstName} ${formData.lastName}`,
           phone: formData.phone,
           address: formData.address,
-          city: formData.city,
+          city: selectedCity,
+          province: selectedProvince,
           postalCode: formData.postalCode,
         },
         paymentMethod: formData.paymentMethod,
@@ -248,8 +244,8 @@ export default function CheckoutPage() {
         email: formData.email,
         phone: formData.phone,
         address: formData.address,
-        city: formData.city,
-        province: formData.province,
+        city: selectedCity,
+        province: selectedProvince,
         postalCode: formData.postalCode,
         paymentMethod: formData.paymentMethod,
       });
@@ -276,59 +272,16 @@ export default function CheckoutPage() {
 
   // 4. 加载用户信息
   useEffect(() => {
-    const loadUserData = async () => {
-      try {
-        const userId = getUserId();
-        if (!userId) return;
+    try {
+      const checkoutInfo = getCheckoutInfo();
+      setFormData(checkoutInfo);
 
-        // 首先尝试从本地存储获取结账信息
-        const checkoutInfo = getCheckoutInfo();
-        if (checkoutInfo) {
-          // 验证省份和城市的有效性
-          const province = provinces.find(p => p.name === checkoutInfo.province);
-          if (province) {
-            setFormData({
-              ...checkoutInfo,
-              province: checkoutInfo.province,
-              city: province.cities.includes(checkoutInfo.city) ? checkoutInfo.city : '',
-            });
-            setSelectedProvince(checkoutInfo.province);
-            if (province.cities.includes(checkoutInfo.city)) {
-              setSelectedCity(checkoutInfo.city);
-            }
-          }
-          return;
-        }
-
-        // 如果没有本地存储的结账信息，则从账号设置中获取
-        if (accountData.address) {
-          const province = provinces.find(p => p.name === accountData.address.province);
-          const addressData = {
-            firstName: accountData.firstName,
-            lastName: accountData.lastName,
-            phone: accountData.phone,
-            address: accountData.address.street,
-            postalCode: accountData.address.zip,
-            province: accountData.address.province || '',
-            city: accountData.address.city || '',
-          };
-
-          if (province) {
-            setSelectedProvince(accountData.address.province);
-            if (province.cities.includes(accountData.address.city)) {
-              setSelectedCity(accountData.address.city);
-            }
-          }
-
-          setFormData(addressData);
-        }
-      } catch (error) {
-        console.error('加载用户信息失败:', error);
-      }
-    };
-
-    loadUserData();
-  }, [getUserId, getCheckoutInfo, setFormData, setSelectedProvince, setSelectedCity, accountData]);
+      setSelectedProvince(checkoutInfo.province);
+      setSelectedCity(checkoutInfo.city);
+    } catch (error) {
+      console.error('加载用户信息失败:', error);
+    }
+  }, [getCheckoutInfo, setFormData, setSelectedProvince, setSelectedCity]);
 
   // 获取当前省份的城市列表
   const currentCities = useMemo(() => {
