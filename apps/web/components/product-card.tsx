@@ -6,9 +6,8 @@ import { useState } from 'react';
 import { useToast } from '@/components/ui/use-toast';
 
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import type { Product } from '@/lib/types';
-import { useCart } from '@/lib/cart-context';
+import { useCartStore } from '@/lib/store/cartStore';
 import { Image } from '@/components/ui/image';
 
 interface ProductCardProps {
@@ -16,7 +15,7 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product }: ProductCardProps) {
-  const { addToCart } = useCart();
+  const { addToCart } = useCartStore();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -66,6 +65,7 @@ export function ProductCard({ product }: ProductCardProps) {
             alt={product.name}
             className="mx-auto h-48 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
             fallbackAlt={product.name}
+            loading={'lazy'}
           />
         </div>
         <div className="flex flex-col space-y-1 text-center">

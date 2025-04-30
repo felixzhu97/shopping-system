@@ -1,0 +1,15 @@
+import CryptoJS from 'crypto-js';
+
+// 加密密钥，实际项目中应该从环境变量中获取
+const SECRET_KEY = process.env.SECRET_KEY || '8d4e3e3f-aa23-4f52-8d1f-609c68cdf7a6';
+
+// 加密函数
+export function encrypt(data: string): string {
+  return CryptoJS.AES.encrypt(data, SECRET_KEY).toString();
+}
+
+// 解密函数
+export function decrypt(encryptedData: string): string {
+  const bytes = CryptoJS.AES.decrypt(encryptedData, SECRET_KEY);
+  return bytes.toString(CryptoJS.enc.Utf8);
+}

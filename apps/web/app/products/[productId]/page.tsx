@@ -1,22 +1,21 @@
 'use client';
 
 import Link from 'next/link';
-import { ChevronRight, Minus, Plus, ShoppingCart, Star, Truck, Check, Search } from 'lucide-react';
-import { useState, useEffect, useRef } from 'react';
+import { Check, Minus, Plus, Search, ShoppingCart, Star, Truck } from 'lucide-react';
+import type { Usable } from 'react';
+import { use, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { use } from 'react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Navbar } from '@/components/navbar';
 import { AppleProductCard } from '@/components/apple-product-card';
 import { Footer } from '@/components/footer';
-import { Product } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/components/ui/use-toast';
-import { useCart } from '@/lib/cart-context';
-import * as api from '@/lib/api';
-import { cn } from '@/lib/utils';
-import type { Usable } from 'react';
+import { useCartStore } from '@/lib/store/cartStore';
+import { cn } from '@/lib/utils/utils';
+import { useProductStore } from '@/lib/store/productStore';
+import Image from '@/components/ui/image';
 
 function LoadingSkeleton() {
   return (
@@ -40,44 +39,29 @@ function LoadingSkeleton() {
 
 // Apple风格的产品详情组件
 function ProductDetail({ productId }: { productId: string }) {
-  const [product, setProduct] = useState<Product | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isActionLoading, setIsActionLoading] = useState(false);
+  const { product, relatedProducts, isLoading, error, fetchProduct, fetchRelatedProducts } =
+    useProductStore();
+  const [isAddToCartLoading, setIsAddToCartLoading] = useState(false);
+  const [isBuyNowLoading, setIsBuyNowLoading] = useState(false);
   const [addedToCart, setAddedToCart] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [quantity, setQuantity] = useState(1);
-  const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [fullscreenImage, setFullscreenImage] = useState(false);
   const imageContainerRef = useRef<HTMLDivElement>(null);
-  const { addToCart } = useCart();
+  const { addToCart } = useCartStore();
   const { toast } = useToast();
   const router = useRouter();
 
   useEffect(() => {
-    const fetchProduct = async () => {
-      try {
-        setIsLoading(true);
-        const productData = await api.getProduct(productId);
-        setProduct(productData);
-        setSelectedImage(productData.image);
+    fetchProduct(productId);
+  }, [productId, fetchProduct]);
 
-        // 获取相关产品
-        const allProducts = await api.getProducts(productData.category);
-        const related = allProducts.filter((p: Product) => p.id !== productId).slice(0, 4);
-        setRelatedProducts(related);
-
-        setError(null);
-      } catch (err) {
-        console.error('获取产品数据失败:', err);
-        setError('获取产品数据失败，请稍后再试');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchProduct();
-  }, [productId]);
+  useEffect(() => {
+    if (product) {
+      setSelectedImage(product.image);
+      fetchRelatedProducts(product.category, product.id);
+    }
+  }, [product, fetchRelatedProducts]);
 
   const handleQuantityChange = (delta: number) => {
     setQuantity(prev => Math.max(1, prev + delta));
@@ -85,21 +69,11 @@ function ProductDetail({ productId }: { productId: string }) {
 
   const handleAddToCart = async () => {
     if (!product) return;
-
     try {
-      setIsActionLoading(true);
-
-      await addToCart({
-        id: product.id,
-        name: product.name,
-        price: product.price,
-        quantity: quantity,
-        image: product.image,
-      });
-
+      setIsAddToCartLoading(true);
+      await addToCart(product, quantity);
       setAddedToCart(true);
       setTimeout(() => setAddedToCart(false), 2000);
-
       toast({
         title: '已添加到购物车',
         description: `${product.name} × ${quantity} 已成功添加到购物车`,
@@ -113,24 +87,15 @@ function ProductDetail({ productId }: { productId: string }) {
         duration: 3000,
       });
     } finally {
-      setIsActionLoading(false);
+      setIsAddToCartLoading(false);
     }
   };
 
   const handleBuyNow = async () => {
     if (!product) return;
-
     try {
-      setIsActionLoading(true);
-
-      await addToCart({
-        id: product.id,
-        name: product.name,
-        price: product.price,
-        quantity: quantity,
-        image: product.image,
-      });
-
+      setIsBuyNowLoading(true);
+      await addToCart(product, quantity);
       router.push('/checkout');
     } catch (err) {
       toast({
@@ -139,7 +104,8 @@ function ProductDetail({ productId }: { productId: string }) {
         variant: 'destructive',
         duration: 3000,
       });
-      setIsActionLoading(false);
+    } finally {
+      setIsBuyNowLoading(false);
     }
   };
 
@@ -204,10 +170,11 @@ function ProductDetail({ productId }: { productId: string }) {
                 <line x1="6" y1="6" x2="18" y2="18"></line>
               </svg>
             </button>
-            <img
+            <Image
               src={selectedImage || product.image}
               alt={product.name}
               className="w-full h-auto rounded-lg"
+              loading="lazy"
             />
           </div>
         </div>
@@ -222,10 +189,11 @@ function ProductDetail({ productId }: { productId: string }) {
             onClick={handleImageClick}
             ref={imageContainerRef}
           >
-            <img
+            <Image
               src={selectedImage || product.image}
               alt={product.name}
               className="max-h-full max-w-full object-contain transition-all duration-300"
+              loading="lazy"
             />
 
             {/* 点击查看大图提示 */}
@@ -246,10 +214,11 @@ function ProductDetail({ productId }: { productId: string }) {
                 )}
                 onClick={() => setSelectedImage(img)}
               >
-                <img
+                <Image
                   src={img}
                   alt={`${product.name} 视图 ${index + 1}`}
                   className="w-full h-full object-contain p-2"
+                  loading="lazy"
                 />
               </button>
             ))}
@@ -370,9 +339,9 @@ function ProductDetail({ productId }: { productId: string }) {
                 addedToCart ? 'bg-green-600 hover:bg-green-700' : 'bg-blue-600 hover:bg-blue-700'
               )}
               onClick={handleAddToCart}
-              disabled={isActionLoading || !product.inStock}
+              disabled={isAddToCartLoading || !product.inStock}
             >
-              {isActionLoading ? (
+              {isAddToCartLoading ? (
                 <>加载中...</>
               ) : addedToCart ? (
                 <>
@@ -392,9 +361,9 @@ function ProductDetail({ productId }: { productId: string }) {
               variant="outline"
               className="rounded-full h-14 text-base border-2"
               onClick={handleBuyNow}
-              disabled={isActionLoading || !product.inStock}
+              disabled={isBuyNowLoading || !product.inStock}
             >
-              {isActionLoading ? '加载中...' : '立即购买'}
+              {isBuyNowLoading ? '加载中...' : '立即购买'}
             </Button>
 
             {!product.inStock && (

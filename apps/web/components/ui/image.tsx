@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/utils/utils';
 import NextImage from 'next/image';
 
 export interface ImageProps extends React.ComponentPropsWithoutRef<'img'> {
@@ -56,6 +56,7 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(
             alt={fallbackAlt || alt}
             ref={ref}
             {...props}
+            loading="lazy"
           />
         ) : (
           <img
@@ -65,6 +66,7 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(
             onError={handleError}
             ref={ref}
             {...props}
+            loading="lazy"
           />
         )}
       </div>

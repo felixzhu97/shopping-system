@@ -1,16 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import {
-  CreditCard,
-  ChevronLeft,
-  Package,
-  CreditCardIcon,
-  AlertCircle,
-  CheckCircle2,
-} from 'lucide-react';
+import { AlertCircle, ChevronLeft, CreditCard } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -25,124 +18,129 @@ import {
 } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/components/ui/use-toast';
+import { Toaster } from '@/components/ui/toaster';
 import { Navbar } from '@/components/navbar';
 import { Footer } from '@/components/footer';
-import { useCart } from '@/lib/cart-context';
+import { useCartStore } from '@/lib/store/cartStore';
+import { useUserStore } from '@/lib/store/userStore';
+import { useCheckoutStore } from '@/lib/store/checkoutStore';
+// import { useAccountStore } from '@/lib/store/accountStore';
 import { Image } from '@/components/ui/image';
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/utils/utils';
+import { provinces } from '@/components/china-region';
+import { createOrder } from '@/lib/api/orders';
 
-// 添加表单数据类型
-interface FormData {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  address: string;
-  city: string;
-  province: string;
-  postalCode: string;
-  paymentMethod: string;
-  cardNumber?: string;
-  expiration?: string;
-  cvv?: string;
-}
-
-// 添加表单错误类型
-interface FormErrors {
-  firstName?: string;
-  lastName?: string;
-  email?: string;
-  phone?: string;
-  address?: string;
-  city?: string;
-  province?: string;
-  postalCode?: string;
-  cardNumber?: string;
-  expiration?: string;
-  cvv?: string;
-}
+// 订单摘要商品项组件
+const OrderSummaryItem = React.memo(function OrderSummaryItem({ item }: { item: any }) {
+  if (!item.product) return null;
+  return (
+    <div key={item.productId} className="flex items-center space-x-4">
+      <div className="relative w-16 h-16">
+        <Image
+          src={item.product.image}
+          alt={item.product.name}
+          className="object-cover rounded-lg"
+          wrapperClassName="w-16 h-16"
+          width={64}
+          height={64}
+          loading="lazy"
+        />
+      </div>
+      <div className="flex-1">
+        <h3 className="font-medium">{item.product.name}</h3>
+        <p className="text-sm text-gray-500">数量: {item.quantity}</p>
+      </div>
+      <p className="font-medium">¥{item.product.price * item.quantity}</p>
+    </div>
+  );
+});
 
 export default function CheckoutPage() {
-  const { cartItems, clearCart } = useCart();
+  // 1. 所有 store hooks
+  const { items, clearCart } = useCartStore();
+  const { getUserId, getCheckoutInfo, saveCheckoutInfo } = useUserStore();
+  const {
+    formData,
+    errors,
+    selectedProvince,
+    selectedCity,
+    isSubmitting,
+    setFormData,
+    setErrors,
+    setSelectedProvince,
+    setSelectedCity,
+    setIsSubmitting,
+    resetForm,
+  } = useCheckoutStore();
   const { toast } = useToast();
   const router = useRouter();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  // 添加表单状态
-  const [formData, setFormData] = useState<FormData>({
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: '',
-    address: '',
-    city: '',
-    province: 'shanghai',
-    postalCode: '',
-    paymentMethod: 'credit-card',
-    cardNumber: '',
-    expiration: '',
-    cvv: '',
-  });
-  // 添加错误状态
-  const [errors, setErrors] = useState<FormErrors>({});
 
-  // 如果购物车为空，重定向到购物车页面
-  useEffect(() => {
-    if (cartItems.length === 0) {
-      router.push('/cart');
-    }
-  }, [cartItems.length, router]);
+  // 2. 所有 useMemo hooks
+  const { subtotal, shipping, tax, total } = useMemo(() => {
+    const subtotal = items.reduce((total, item) => {
+      if (!item.product) return total;
+      return total + item.product.price * item.quantity;
+    }, 0);
+    const shipping = subtotal > 200 ? 0 : 15;
+    const tax = subtotal * 0.06;
+    const total = subtotal + shipping + tax;
 
-  if (cartItems.length === 0) {
-    return null;
-  }
+    return { subtotal, shipping, tax, total };
+  }, [items]);
 
-  const subtotal = cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
-  const shipping = subtotal > 200 ? 0 : 15;
-  const tax = subtotal * 0.06;
-  const total = subtotal + shipping + tax;
-
-  // 处理输入变化
+  // 3. 表单处理函数
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value,
-    }));
+    setFormData({ [name]: value });
+  };
 
-    // 清除该字段的错误
-    if (errors[name as keyof FormErrors]) {
-      setErrors(prev => ({
-        ...prev,
-        [name]: undefined,
-      }));
+  const handleSelectChange = (name: string, value: string) => {
+    setFormData({ [name]: value });
+  };
+
+  const handleProvinceChange = (value: string) => {
+    const province = provinces.find(p => p.name === value);
+    if (province) {
+      setSelectedProvince(value);
+      setSelectedCity('');
     }
   };
 
-  // 处理选择变化
-  const handleSelectChange = (name: string, value: string) => {
-    setFormData(prev => ({
-      ...prev,
-      [name]: value,
-    }));
+  const handleCityChange = (value: string) => {
+    const city = provinces.find(p => p.cities.includes(value));
+    if (city) {
+      setSelectedCity(value);
+    }
   };
 
-  // 验证表单
   const validateForm = (): boolean => {
-    const newErrors: FormErrors = {};
+    const newErrors: typeof errors = {};
     let isValid = true;
 
-    // 验证基础信息
-    if (!formData.firstName.trim()) {
-      newErrors.firstName = '请输入姓氏';
+    // 验证省份
+    if (!selectedProvince) {
+      newErrors.province = '请选择省份';
       isValid = false;
     }
 
-    if (!formData.lastName.trim()) {
-      newErrors.lastName = '请输入名字';
+    // 验证城市
+    if (!selectedCity) {
+      newErrors.city = '请选择城市';
       isValid = false;
     }
 
-    if (!formData.email.trim()) {
+    // 验证其他字段
+    if (!formData.firstName) {
+      newErrors.firstName = '请输入名字';
+      isValid = false;
+    }
+
+    if (!formData.lastName) {
+      newErrors.lastName = '请输入姓氏';
+      isValid = false;
+    }
+
+    if (!formData.email) {
       newErrors.email = '请输入邮箱';
       isValid = false;
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
@@ -150,55 +148,49 @@ export default function CheckoutPage() {
       isValid = false;
     }
 
-    if (!formData.phone.trim()) {
-      newErrors.phone = '请输入手机号码';
+    if (!formData.phone) {
+      newErrors.phone = '请输入手机号';
       isValid = false;
-    } else if (!/^\d{11}$/.test(formData.phone.replace(/\s/g, ''))) {
-      newErrors.phone = '请输入有效的11位手机号码';
+    } else if (!/^1[3-9]\d{9}$/.test(formData.phone)) {
+      newErrors.phone = '请输入有效的手机号';
       isValid = false;
     }
 
-    if (!formData.address.trim()) {
+    if (!formData.address) {
       newErrors.address = '请输入详细地址';
       isValid = false;
     }
 
-    if (!formData.city.trim()) {
-      newErrors.city = '请输入城市';
-      isValid = false;
-    }
-
-    if (!formData.postalCode.trim()) {
+    if (!formData.postalCode) {
       newErrors.postalCode = '请输入邮政编码';
       isValid = false;
     } else if (!/^\d{6}$/.test(formData.postalCode)) {
-      newErrors.postalCode = '请输入有效的6位邮政编码';
+      newErrors.postalCode = '请输入有效的邮政编码';
       isValid = false;
     }
 
-    // 验证信用卡信息（如果选择了信用卡支付）
     if (formData.paymentMethod === 'credit-card') {
-      if (!formData.cardNumber?.trim()) {
+      if (!formData.cardNumber) {
         newErrors.cardNumber = '请输入卡号';
         isValid = false;
-      } else if (!/^\d{16}$/.test(formData.cardNumber.replace(/\s/g, ''))) {
-        newErrors.cardNumber = '请输入有效的16位卡号';
+      } else if (!/^\d{16}$/.test(formData.cardNumber)) {
+        newErrors.cardNumber = '请输入有效的卡号';
         isValid = false;
       }
 
-      if (!formData.expiration?.trim()) {
-        newErrors.expiration = '请输入到期日';
+      if (!formData.expiration) {
+        newErrors.expiration = '请输入有效期';
         isValid = false;
       } else if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(formData.expiration)) {
-        newErrors.expiration = '请使用MM/YY格式';
+        newErrors.expiration = '请输入有效的有效期（MM/YY）';
         isValid = false;
       }
 
-      if (!formData.cvv?.trim()) {
-        newErrors.cvv = '请输入CVV码';
+      if (!formData.cvv) {
+        newErrors.cvv = '请输入CVV';
         isValid = false;
       } else if (!/^\d{3,4}$/.test(formData.cvv)) {
-        newErrors.cvv = '请输入有效的CVV码';
+        newErrors.cvv = '请输入有效的CVV';
         isValid = false;
       }
     }
@@ -210,13 +202,11 @@ export default function CheckoutPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // 验证表单
     if (!validateForm()) {
       toast({
         title: '表单验证失败',
         description: '请检查并修正表单中的错误',
         variant: 'destructive',
-        duration: 5000,
       });
       return;
     }
@@ -224,40 +214,114 @@ export default function CheckoutPage() {
     setIsSubmitting(true);
 
     try {
-      // 这里应该有真实的API调用来创建订单
-      // 模拟API调用的等待时间
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      const userId = getUserId();
+      if (!userId) {
+        throw new Error('用户未登录');
+      }
 
-      // 清空购物车
-      await clearCart();
+      const orderItems = items.map(item => ({
+        productId: item.productId,
+        quantity: item.quantity,
+      }));
 
-      // 显示成功提示
-      toast({
-        title: '订单已提交',
-        description: '感谢您的购买！我们将尽快处理您的订单。',
-        duration: 5000,
+      const order = await createOrder(userId, {
+        shippingAddress: {
+          fullName: `${formData.firstName} ${formData.lastName}`,
+          phone: formData.phone,
+          address: formData.address,
+          city: selectedCity,
+          province: selectedProvince,
+          postalCode: formData.postalCode,
+        },
+        paymentMethod: formData.paymentMethod,
+        orderItems,
       });
 
-      // 跳转到订单成功页面
-      router.push('/checkout/success');
+      // 保存结算信息
+      saveCheckoutInfo({
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        phone: formData.phone,
+        address: formData.address,
+        city: selectedCity,
+        province: selectedProvince,
+        postalCode: formData.postalCode,
+        paymentMethod: formData.paymentMethod,
+      });
+
+      // 清空购物车
+      clearCart();
+
+      // 重置表单
+      resetForm();
+
+      // 跳转到订单确认页面
+      router.push(`/orders/${order.id}`);
     } catch (error) {
-      console.error('提交订单失败:', error);
+      console.error('创建订单失败:', error);
       toast({
-        title: '提交订单失败',
-        description: '无法处理您的订单，请稍后再试。',
+        title: '创建订单失败',
+        description: error instanceof Error ? error.message : '请稍后重试',
         variant: 'destructive',
-        duration: 5000,
       });
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  // 4. 加载用户信息
+  useEffect(() => {
+    try {
+      const checkoutInfo = getCheckoutInfo();
+      setFormData(checkoutInfo);
+
+      setSelectedProvince(checkoutInfo.province);
+      setSelectedCity(checkoutInfo.city);
+    } catch (error) {
+      console.error('加载用户信息失败:', error);
+    }
+  }, [getCheckoutInfo, setFormData, setSelectedProvince, setSelectedCity]);
+
+  // 获取当前省份的城市列表
+  const currentCities = useMemo(() => {
+    return provinces.find(p => p.name === selectedProvince)?.cities || [];
+  }, [selectedProvince]);
+
+  // 5. 渲染页面
   return (
     <div className="flex flex-col min-h-screen bg-[#f5f5f7]">
       <Navbar />
       <main className="flex-1 container mx-auto px-4 py-12">
         <div className="max-w-6xl mx-auto">
+          {/* 全屏Loading遮罩 */}
+          {isSubmitting && (
+            <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
+              <div className="bg-white rounded-xl p-8 flex flex-col items-center shadow-xl">
+                <svg
+                  className="animate-spin h-8 w-8 text-blue-600 mb-4"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
+                </svg>
+                <div className="text-lg font-medium text-gray-700">订单提交中，请稍候...</div>
+              </div>
+            </div>
+          )}
           <div className="mb-8">
             <Link
               href="/cart"
@@ -270,8 +334,9 @@ export default function CheckoutPage() {
 
           <h1 className="text-3xl font-semibold text-gray-900 mb-8">结算</h1>
 
-          <div className="grid lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-2">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* 左侧表单 */}
+            <div className="space-y-6">
               <form onSubmit={handleSubmit}>
                 <div className="space-y-8">
                   {/* 配送信息 */}
@@ -404,48 +469,74 @@ export default function CheckoutPage() {
                       </div>
                       <div className="grid sm:grid-cols-3 gap-6">
                         <div className="space-y-2">
+                          <Label htmlFor="province" className="text-sm font-medium text-gray-700">
+                            省份
+                          </Label>
+                          <Select value={selectedProvince} onValueChange={handleProvinceChange}>
+                            <SelectTrigger
+                              id="province"
+                              className={cn(
+                                'h-12 rounded-xl transition-colors',
+                                errors.province
+                                  ? 'border-red-500 focus:ring-red-500'
+                                  : 'focus:ring-blue-500',
+                                !selectedProvince && 'text-muted-foreground'
+                              )}
+                            >
+                              <SelectValue placeholder="选择省份" />
+                            </SelectTrigger>
+                            <SelectContent className="max-h-[300px]">
+                              {provinces.map(prov => (
+                                <SelectItem key={prov.name} value={prov.name}>
+                                  {prov.name}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          {errors.province && (
+                            <p className="text-sm text-red-500 flex items-center mt-1">
+                              <AlertCircle className="h-3 w-3 mr-1" />
+                              {errors.province}
+                            </p>
+                          )}
+                        </div>
+                        <div className="space-y-2">
                           <Label htmlFor="city" className="text-sm font-medium text-gray-700">
                             城市
                           </Label>
-                          <Input
-                            id="city"
-                            name="city"
-                            value={formData.city}
-                            onChange={handleInputChange}
-                            required
-                            className={cn(
-                              'h-12 rounded-xl transition-colors',
-                              errors.city
-                                ? 'border-red-500 focus:ring-red-500'
-                                : 'focus:ring-blue-500'
-                            )}
-                          />
+                          <Select
+                            value={selectedCity}
+                            onValueChange={handleCityChange}
+                            disabled={!selectedProvince}
+                          >
+                            <SelectTrigger
+                              id="city"
+                              className={cn(
+                                'h-12 rounded-xl transition-colors',
+                                errors.city
+                                  ? 'border-red-500 focus:ring-red-500'
+                                  : 'focus:ring-blue-500',
+                                !selectedCity && 'text-muted-foreground'
+                              )}
+                            >
+                              <SelectValue
+                                placeholder={selectedProvince ? '选择城市' : '请先选择省份'}
+                              />
+                            </SelectTrigger>
+                            <SelectContent className="max-h-[300px]">
+                              {currentCities.map(city => (
+                                <SelectItem key={city} value={city}>
+                                  {city}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
                           {errors.city && (
                             <p className="text-sm text-red-500 flex items-center mt-1">
                               <AlertCircle className="h-3 w-3 mr-1" />
                               {errors.city}
                             </p>
                           )}
-                        </div>
-                        <div className="space-y-2">
-                          <Label htmlFor="province" className="text-sm font-medium text-gray-700">
-                            省份
-                          </Label>
-                          <Select
-                            defaultValue={formData.province}
-                            onValueChange={value => handleSelectChange('province', value)}
-                          >
-                            <SelectTrigger id="province" className="h-12 rounded-xl">
-                              <SelectValue placeholder="选择省份" />
-                            </SelectTrigger>
-                            <SelectContent className="rounded-xl">
-                              <SelectItem value="beijing">北京市</SelectItem>
-                              <SelectItem value="shanghai">上海市</SelectItem>
-                              <SelectItem value="guangdong">广东省</SelectItem>
-                              <SelectItem value="jiangsu">江苏省</SelectItem>
-                              <SelectItem value="zhejiang">浙江省</SelectItem>
-                            </SelectContent>
-                          </Select>
                         </div>
                         <div className="space-y-2">
                           <Label htmlFor="postalCode" className="text-sm font-medium text-gray-700">
@@ -644,79 +735,33 @@ export default function CheckoutPage() {
               </form>
             </div>
 
-            {/* 订单摘要 */}
-            <div>
-              <div className="bg-white rounded-2xl shadow-sm p-6 md:p-8 sticky top-24">
-                <h2 className="text-xl font-semibold mb-6">订单摘要</h2>
-                <div className="space-y-5">
-                  <div className="max-h-80 overflow-auto pr-2 space-y-4">
-                    {cartItems.map(item => (
-                      <div key={item.id} className="flex items-center gap-4">
-                        <div className="relative h-16 w-16 overflow-hidden rounded-xl bg-[#f5f5f7] p-2 flex-shrink-0">
-                          <Image
-                            src={item.image}
-                            alt={item.name}
-                            className="h-full w-full object-contain"
-                            fallbackAlt={item.name}
-                          />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <h4 className="font-medium text-sm text-gray-900 truncate">
-                            {item.name}
-                          </h4>
-                          <div className="text-sm text-gray-500">
-                            ¥{item.price.toFixed(2)} × {item.quantity}
-                          </div>
-                        </div>
-                        <div className="font-medium text-sm">
-                          ¥{(item.price * item.quantity).toFixed(2)}
-                        </div>
-                      </div>
-                    ))}
+            {/* 右侧订单摘要 */}
+            <div className="space-y-6">
+              <div className="bg-white rounded-lg shadow-sm p-6">
+                <h2 className="text-lg font-semibold mb-4">订单摘要</h2>
+                <div className="space-y-4">
+                  {items.map(item => (
+                    <OrderSummaryItem key={item.productId} item={item} />
+                  ))}
+                </div>
+                <Separator className="my-4" />
+                <div className="space-y-2">
+                  <div className="flex justify-between">
+                    <span>小计</span>
+                    <span>¥{subtotal}</span>
                   </div>
-
-                  <Separator className="my-4" />
-
-                  <div className="space-y-3">
-                    <div className="flex justify-between text-sm text-gray-600">
-                      <span>小计</span>
-                      <span>¥{subtotal.toFixed(2)}</span>
-                    </div>
-                    <div className="flex justify-between text-sm text-gray-600">
-                      <span>运费</span>
-                      <span className={shipping === 0 ? 'text-green-600' : ''}>
-                        {shipping === 0 ? '免费' : `¥${shipping.toFixed(2)}`}
-                      </span>
-                    </div>
-                    {shipping === 0 && (
-                      <div className="text-xs text-green-600 -mt-2 flex items-center">
-                        <CheckCircle2 className="h-3 w-3 mr-1" />
-                        您已获得免费配送
-                      </div>
-                    )}
-                    <div className="flex justify-between text-sm text-gray-600">
-                      <span>税费</span>
-                      <span>¥{tax.toFixed(2)}</span>
-                    </div>
+                  <div className="flex justify-between">
+                    <span>运费</span>
+                    <span>{shipping === 0 ? '免费' : `¥${shipping}`}</span>
                   </div>
-
-                  <Separator className="my-4" />
-
-                  <div className="flex justify-between font-medium text-lg">
+                  <div className="flex justify-between">
+                    <span>税费</span>
+                    <span>¥{tax.toFixed(2)}</span>
+                  </div>
+                  <Separator className="my-2" />
+                  <div className="flex justify-between font-semibold">
                     <span>总计</span>
                     <span>¥{total.toFixed(2)}</span>
-                  </div>
-
-                  <div className="bg-gray-50 p-4 rounded-xl text-sm mt-6">
-                    <div className="flex items-start">
-                      <Package className="h-5 w-5 text-gray-700 mr-2 mt-0.5 flex-shrink-0" />
-                      <div>
-                        <p className="font-medium text-gray-900">配送说明</p>
-                        <p className="text-gray-600 mt-1">
-                          标准配送时间为1-3个工作日，订单满¥200享受免费配送服务。
-                        </p>
-                      </div>
-                    </div>
                   </div>
                 </div>
               </div>
@@ -725,6 +770,7 @@ export default function CheckoutPage() {
         </div>
       </main>
       <Footer />
+      <Toaster />
     </div>
   );
 }

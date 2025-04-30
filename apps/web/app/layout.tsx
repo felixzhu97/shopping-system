@@ -1,9 +1,7 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
-import { CartProvider } from '@/lib/cart-context';
-import { Toaster } from '@/components/ui/toaster';
-import { PageTransition } from '@/components/page-transition';
+import ClientLayout from './ClientLayout';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -16,10 +14,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="zh-CN">
       <body className={inter.className} suppressHydrationWarning>
-        <CartProvider>
-          <PageTransition>{children}</PageTransition>
-          <Toaster />
-        </CartProvider>
+        <ClientLayout>{children}</ClientLayout>
       </body>
     </html>
   );
