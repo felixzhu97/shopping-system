@@ -884,6 +884,154 @@ PUT /users/me/password
 }
 ```
 
+## 支付API
+
+### 保存支付信息
+
+保存用户的支付信息。
+
+**请求**
+
+```http
+POST /api/payments
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "userId": "507f1f77bcf86cd799439011",
+  "paymentMethod": "credit-card",
+  "cardNumber": "4111111111111111",
+  "expiration": "12/25",
+  "cvv": "123"
+}
+```
+
+**响应**
+
+```json
+{
+  "success": true,
+  "data": {
+    "payment": {
+      "id": "507f1f77bcf86cd799439011",
+      "userId": "507f1f77bcf86cd799439011",
+      "paymentMethod": "credit-card",
+      "cardNumber": "4111111111111111",
+      "expiration": "12/25",
+      "cvv": "123",
+      "createdAt": "2024-03-20T10:00:00.000Z",
+      "updatedAt": "2024-03-20T10:00:00.000Z"
+    }
+  }
+}
+```
+
+### 获取支付信息
+
+获取指定用户的支付信息，同时返回关联的用户信息和地址信息。
+
+**请求**
+
+```http
+GET /api/payments/:userId
+Authorization: Bearer <token>
+```
+
+**响应**
+
+```json
+{
+  "success": true,
+  "data": {
+    "payment": {
+      "id": "507f1f77bcf86cd799439011",
+      "userId": "507f1f77bcf86cd799439011",
+      "paymentMethod": "credit-card",
+      "cardNumber": "4111111111111111",
+      "expiration": "12/25",
+      "cvv": "123",
+      "createdAt": "2024-03-20T10:00:00.000Z",
+      "updatedAt": "2024-03-20T10:00:00.000Z"
+    },
+    "user": {
+      "id": "507f1f77bcf86cd799439011",
+      "firstName": "张",
+      "lastName": "三",
+      "email": "zhangsan@example.com",
+      "phone": "13800138000"
+    },
+    "address": {
+      "id": "507f1f77bcf86cd799439012",
+      "address": "北京市朝阳区",
+      "city": "北京",
+      "province": "北京",
+      "postalCode": "100000"
+    }
+  }
+}
+```
+
+### 错误响应
+
+**400 Bad Request**
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "缺少必要字段",
+    "status": 400,
+    "details": {
+      "field": "paymentMethod"
+    }
+  }
+}
+```
+
+**401 Unauthorized**
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "AUTHENTICATION_FAILED",
+    "message": "未授权",
+    "status": 401
+  }
+}
+```
+
+**404 Not Found**
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "RESOURCE_NOT_FOUND",
+    "message": "未找到支付信息",
+    "status": 404,
+    "details": {
+      "resource": "Payment",
+      "userId": "507f1f77bcf86cd799439011"
+    }
+  }
+}
+```
+
+**500 Internal Server Error**
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "INTERNAL_SERVER_ERROR",
+    "message": "保存支付信息失败",
+    "status": 500
+  }
+}
+```
+
 ## 错误处理
 
 所有API错误响应都使用统一的格式:

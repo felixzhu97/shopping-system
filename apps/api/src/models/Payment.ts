@@ -1,42 +1,52 @@
 import mongoose, { Schema, Document } from 'mongoose';
-import { Payment } from 'shared';
 
-export interface PaymentType extends Payment {
-  userId: string;
+export interface IPayment extends Document {
+  userId: mongoose.Types.ObjectId;
+  paymentMethod: 'credit-card' | 'alipay' | 'wechat';
+  cardNumber?: string;
+  expiration?: string;
+  cvv?: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
-
-export interface PaymentDocument extends Document, PaymentType {}
 
 const PaymentSchema: Schema = new Schema(
   {
-    // ------User------
-    userId: { type: String, required: true },
-    firstName: { type: String, required: true },
-    lastName: { type: String, required: true },
-    email: { type: String, required: true },
-    phone: { type: String, required: true },
-    // ------Address------
-    address: { type: String, required: true },
-    city: { type: String, required: true },
-    province: { type: String, required: true },
-    postalCode: { type: String, required: true },
-    // ------Payment------
-    paymentMethod: { type: String, required: true },
-    cardNumber: { type: String, required: true },
-    expiration: { type: String, required: true },
-    cvv: { type: String, required: true },
+    userId: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+    },
+    paymentMethod: {
+      type: String,
+      required: true,
+      enum: ['credit-card', 'alipay', 'wechat'],
+    },
+    cardNumber: {
+      type: String,
+      required: function (this: IPayment) {
+        return this.paymentMethod === 'credit-card';
+      },
+    },
+    expiration: {
+      type: String,
+      required: function (this: IPayment) {
+        return this.paymentMethod === 'credit-card';
+      },
+    },
+    cvv: {
+      type: String,
+      required: function (this: IPayment) {
+        return this.paymentMethod === 'credit-card';
+      },
+    },
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+  }
 );
 
-// 转换 _id 为 id
-PaymentSchema.set('toJSON', {
-  virtuals: true,
-  versionKey: false,
-  transform: function (doc: any, ret: any) {
-    ret.id = ret._id;
-    delete ret._id;
-  },
-});
+// 添加索引
+PaymentSchema.index({ userId: 1 });
 
-export default mongoose.model<PaymentDocument>('Payment', PaymentSchema);
+export default mongoose.model<IPayment>('Payment', PaymentSchema);

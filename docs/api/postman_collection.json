@@ -350,6 +350,102 @@
             "description": "更新指定用户的信息"
           },
           "response": []
+        },
+        {
+          "name": "添加地址",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{BASE_URL}}/api/users/:userId/addresses",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "users", ":userId", "addresses"],
+              "variable": [
+                {
+                  "key": "userId",
+                  "value": "",
+                  "description": "用户ID"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"address\": \"北京市朝阳区\",\n  \"city\": \"北京\",\n  \"province\": \"北京\",\n  \"postalCode\": \"100000\",\n  \"isDefault\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "为用户添加新的地址"
+          },
+          "response": [
+            {
+              "name": "成功响应",
+              "originalRequest": {
+                "method": "POST",
+                "url": {
+                  "raw": "{{BASE_URL}}/api/users/:userId/addresses"
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"addresses\": [\n      {\n        \"id\": \"507f1f77bcf86cd799439012\",\n        \"address\": \"北京市朝阳区\",\n        \"city\": \"北京\",\n        \"province\": \"北京\",\n        \"postalCode\": \"100000\",\n        \"isDefault\": true\n      }\n    ]\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "添加支付方式",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{BASE_URL}}/api/users/:userId/payment-methods",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "users", ":userId", "payment-methods"],
+              "variable": [
+                {
+                  "key": "userId",
+                  "value": "",
+                  "description": "用户ID"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"credit-card\",\n  \"cardNumber\": \"4111111111111111\",\n  \"expiration\": \"12/25\",\n  \"cvv\": \"123\",\n  \"isDefault\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "为用户添加新的支付方式"
+          },
+          "response": [
+            {
+              "name": "成功响应",
+              "originalRequest": {
+                "method": "POST",
+                "url": {
+                  "raw": "{{BASE_URL}}/api/users/:userId/payment-methods"
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"paymentMethods\": [\n      {\n        \"id\": \"507f1f77bcf86cd799439013\",\n        \"type\": \"credit-card\",\n        \"isDefault\": true\n      }\n    ]\n  }\n}"
+            }
+          ]
         }
       ]
     },
@@ -361,81 +457,92 @@
           "request": {
             "method": "POST",
             "url": {
-              "raw": "{{BASE_URL}}/api/orders/:userId",
+              "raw": "{{BASE_URL}}/api/orders",
               "host": ["{{BASE_URL}}"],
-              "path": ["api", "orders", ":userId"],
-              "variable": [
-                {
-                  "key": "userId",
-                  "value": "",
-                  "description": "用户ID"
-                }
-              ]
+              "path": ["api", "orders"]
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"shippingAddress\": {\n    \"address\": \"收货地址\",\n    \"city\": \"城市\",\n    \"postalCode\": \"邮编\",\n    \"country\": \"国家\"\n  },\n  \"paymentMethod\": \"支付方式\",\n  \"orderItems\": [\n    {\n      \"productId\": \"产品ID\",\n      \"quantity\": 2\n    }\n  ]\n}",
+              "raw": "{\n  \"userId\": \"507f1f77bcf86cd799439011\",\n  \"orderItems\": [\n    {\n      \"productId\": \"507f1f77bcf86cd799439012\",\n      \"name\": \"智能手机\",\n      \"price\": 2999,\n      \"quantity\": 1,\n      \"image\": \"https://example.com/phone.jpg\"\n    }\n  ],\n  \"shippingAddressId\": \"507f1f77bcf86cd799439014\",\n  \"paymentMethodId\": \"507f1f77bcf86cd799439013\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
                 }
               }
             },
-            "description": "为指定用户创建新订单"
+            "description": "创建新订单，使用用户已保存的地址和支付方式"
           },
-          "response": []
-        },
-        {
-          "name": "获取用户订单列表",
-          "request": {
-            "method": "GET",
-            "url": {
-              "raw": "{{BASE_URL}}/api/orders/user/:userId",
-              "host": ["{{BASE_URL}}"],
-              "path": ["api", "orders", "user", ":userId"],
-              "variable": [
-                {
-                  "key": "userId",
-                  "value": "",
-                  "description": "用户ID"
+          "response": [
+            {
+              "name": "成功响应",
+              "originalRequest": {
+                "method": "POST",
+                "url": {
+                  "raw": "{{BASE_URL}}/api/orders"
                 }
-              ]
-            },
-            "description": "获取指定用户的所有订单"
-          },
-          "response": []
+              },
+              "status": "Created",
+              "code": 201,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"order\": {\n      \"id\": \"507f1f77bcf86cd799439015\",\n      \"userId\": \"507f1f77bcf86cd799439011\",\n      \"orderItems\": [\n        {\n          \"productId\": \"507f1f77bcf86cd799439012\",\n          \"name\": \"智能手机\",\n          \"price\": 2999,\n          \"quantity\": 1,\n          \"image\": \"https://example.com/phone.jpg\"\n        }\n      ],\n      \"shippingAddress\": {\n        \"address\": \"北京市朝阳区\",\n        \"city\": \"北京\",\n        \"province\": \"北京\",\n        \"postalCode\": \"100000\"\n      },\n      \"paymentDetails\": {\n        \"method\": {\n          \"type\": \"credit-card\"\n        },\n        \"status\": \"pending\"\n      },\n      \"totalAmount\": 2999,\n      \"status\": \"pending\",\n      \"createdAt\": \"2024-03-20T10:00:00.000Z\",\n      \"updatedAt\": \"2024-03-20T10:00:00.000Z\"\n    }\n  }\n}"
+            }
+          ]
         },
         {
           "name": "获取订单详情",
           "request": {
             "method": "GET",
             "url": {
-              "raw": "{{BASE_URL}}/api/orders/:id",
+              "raw": "{{BASE_URL}}/api/orders/:orderId",
               "host": ["{{BASE_URL}}"],
-              "path": ["api", "orders", ":id"],
+              "path": ["api", "orders", ":orderId"],
               "variable": [
                 {
-                  "key": "id",
+                  "key": "orderId",
                   "value": "",
                   "description": "订单ID"
                 }
               ]
             },
-            "description": "获取指定订单的详细信息"
+            "description": "获取订单详细信息，包括支付信息"
           },
-          "response": []
+          "response": [
+            {
+              "name": "成功响应",
+              "originalRequest": {
+                "method": "GET",
+                "url": {
+                  "raw": "{{BASE_URL}}/api/orders/:orderId"
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"order\": {\n      \"id\": \"507f1f77bcf86cd799439013\",\n      \"userId\": {\n        \"id\": \"507f1f77bcf86cd799439011\",\n        \"firstName\": \"张\",\n        \"lastName\": \"三\",\n        \"email\": \"zhangsan@example.com\",\n        \"phone\": \"13800138000\"\n      },\n      \"orderItems\": [\n        {\n          \"productId\": {\n            \"id\": \"507f1f77bcf86cd799439012\",\n            \"name\": \"智能手机\",\n            \"description\": \"最新款智能手机\",\n            \"price\": 2999,\n            \"image\": \"https://example.com/phone.jpg\"\n          },\n          \"quantity\": 1,\n          \"price\": 2999\n        }\n      ],\n      \"shippingAddress\": {\n        \"address\": \"北京市朝阳区\",\n        \"city\": \"北京\",\n        \"province\": \"北京\",\n        \"postalCode\": \"100000\"\n      },\n      \"paymentDetails\": {\n        \"paymentMethod\": \"credit-card\",\n        \"paymentStatus\": \"pending\"\n      },\n      \"totalAmount\": 2999,\n      \"status\": \"pending\",\n      \"createdAt\": \"2024-03-20T10:00:00.000Z\",\n      \"updatedAt\": \"2024-03-20T10:00:00.000Z\"\n    }\n  }\n}"
+            }
+          ]
         },
         {
           "name": "更新订单状态",
           "request": {
-            "method": "PUT",
+            "method": "PATCH",
             "url": {
-              "raw": "{{BASE_URL}}/api/orders/:id/status",
+              "raw": "{{BASE_URL}}/api/orders/:orderId/status",
               "host": ["{{BASE_URL}}"],
-              "path": ["api", "orders", ":id", "status"],
+              "path": ["api", "orders", ":orderId", "status"],
               "variable": [
                 {
-                  "key": "id",
+                  "key": "orderId",
                   "value": "",
                   "description": "订单ID"
                 }
@@ -443,16 +550,36 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"status\": \"已付款\"\n}",
+              "raw": "{\n  \"status\": \"processing\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
                 }
               }
             },
-            "description": "更新指定订单的状态"
+            "description": "更新订单状态，如果更新为processing则同时更新支付状态"
           },
-          "response": []
+          "response": [
+            {
+              "name": "成功响应",
+              "originalRequest": {
+                "method": "PATCH",
+                "url": {
+                  "raw": "{{BASE_URL}}/api/orders/:orderId/status"
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"order\": {\n      \"id\": \"507f1f77bcf86cd799439013\",\n      \"userId\": \"507f1f77bcf86cd799439011\",\n      \"orderItems\": [\n        {\n          \"productId\": \"507f1f77bcf86cd799439012\",\n          \"name\": \"智能手机\",\n          \"price\": 2999,\n          \"quantity\": 1,\n          \"image\": \"https://example.com/phone.jpg\"\n        }\n      ],\n      \"shippingAddress\": {\n        \"address\": \"北京市朝阳区\",\n        \"city\": \"北京\",\n        \"province\": \"北京\",\n        \"postalCode\": \"100000\"\n      },\n      \"paymentDetails\": {\n        \"paymentMethod\": \"credit-card\",\n        \"paymentStatus\": \"completed\",
+        \"paidAt\": \"2024-03-20T10:30:00.000Z\"\n      },\n      \"totalAmount\": 2999,\n      \"status\": \"processing\",\n      \"createdAt\": \"2024-03-20T10:00:00.000Z\",\n      \"updatedAt\": \"2024-03-20T10:30:00.000Z\"\n    }\n  }\n}"
+            }
+          ]
         }
       ]
     },
@@ -460,7 +587,7 @@
       "name": "支付管理",
       "item": [
         {
-          "name": "创建支付信息",
+          "name": "保存支付信息",
           "request": {
             "method": "POST",
             "url": {
@@ -470,48 +597,38 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"userId\": \"用户ID\",\n  \"paymentMethod\": \"支付方式\",\n  \"amount\": 100.00\n}",
+              "raw": "{\n  \"userId\": \"507f1f77bcf86cd799439011\",\n  \"paymentMethod\": \"credit-card\",\n  \"cardNumber\": \"4111111111111111\",\n  \"expiration\": \"12/25\",\n  \"cvv\": \"123\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
                 }
               }
             },
-            "description": "创建新的支付信息"
+            "description": "保存用户的支付信息"
           },
-          "response": []
-        },
-        {
-          "name": "更新支付信息",
-          "request": {
-            "method": "PUT",
-            "url": {
-              "raw": "{{BASE_URL}}/api/payments/:userId",
-              "host": ["{{BASE_URL}}"],
-              "path": ["api", "payments", ":userId"],
-              "variable": [
+          "response": [
+            {
+              "name": "成功响应",
+              "originalRequest": {
+                "method": "POST",
+                "url": {
+                  "raw": "{{BASE_URL}}/api/payments"
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "header": [
                 {
-                  "key": "userId",
-                  "value": "",
-                  "description": "用户ID"
+                  "key": "Content-Type",
+                  "value": "application/json"
                 }
-              ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"paymentMethod\": \"新支付方式\",\n  \"cardNumber\": \"1234567890123456\",\n  \"expiration\": \"2025-01-01\",\n  \"cvv\": \"123\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "description": "更新指定用户的支付信息"
-          },
-          "response": []
+              ],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"payment\": {\n      \"id\": \"507f1f77bcf86cd799439011\",\n      \"userId\": \"507f1f77bcf86cd799439011\",\n      \"paymentMethod\": \"credit-card\",\n      \"cardNumber\": \"4111111111111111\",\n      \"expiration\": \"12/25\",\n      \"cvv\": \"123\",\n      \"createdAt\": \"2024-03-20T10:00:00.000Z\",\n      \"updatedAt\": \"2024-03-20T10:00:00.000Z\"\n    }\n  }\n}"
+            }
+          ]
         },
         {
-          "name": "获取用户支付信息",
+          "name": "获取支付信息",
           "request": {
             "method": "GET",
             "url": {
@@ -528,7 +645,26 @@
             },
             "description": "获取指定用户的支付信息"
           },
-          "response": []
+          "response": [
+            {
+              "name": "成功响应",
+              "originalRequest": {
+                "method": "GET",
+                "url": {
+                  "raw": "{{BASE_URL}}/api/payments/:userId"
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"payment\": {\n      \"id\": \"507f1f77bcf86cd799439011\",\n      \"userId\": \"507f1f77bcf86cd799439011\",\n      \"paymentMethod\": \"credit-card\",\n      \"cardNumber\": \"4111111111111111\",\n      \"expiration\": \"12/25\",\n      \"cvv\": \"123\",\n      \"createdAt\": \"2024-03-20T10:00:00.000Z\",\n      \"updatedAt\": \"2024-03-20T10:00:00.000Z\"\n    }\n  }\n}"
+            }
+          ]
         }
       ]
     }

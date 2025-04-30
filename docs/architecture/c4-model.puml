@@ -60,6 +60,7 @@ Container_Boundary(web_app, "Web应用") {
     Component(account_page, "账户页", "Next.js Page", "用户信息管理")
     Component(login_page, "登录页", "Next.js Page", "用户登录")
     Component(register_page, "注册页", "Next.js Page", "用户注册")
+    Component(payment_page, "支付页", "Next.js Page", "管理支付信息")
 }
 
 ' 组件图 - API服务
@@ -80,6 +81,7 @@ Container_Boundary(api, "API服务") {
     Component(product_model, "商品模型", "Mongoose", "商品数据模型")
     Component(order_model, "订单模型", "Mongoose", "订单数据模型")
     Component(cart_model, "购物车模型", "Mongoose", "购物车数据模型")
+    Component(payment_model, "支付模型", "Mongoose", "支付数据模型")
 }
 
 ' 代码图 - 支付流程
@@ -97,7 +99,9 @@ Rel(payment_controller, payment_gateway, "调用", "HTTPS")
 ' 数据库模型图
 Container_Boundary(database, "数据库模型") {
     Component(user, "User", "Mongoose Schema", "用户信息") {
-        Component(user_fields, "字段", "Schema", "email, password, role, firstName, lastName, phone, address, city, province, postalCode, country, paymentMethod, cardNumber, expiration, cvv")
+        Component(user_fields, "字段", "Schema", "email, password, role, firstName, lastName, phone")
+        Component(user_addresses, "Addresses", "Schema", "address, city, province, postalCode, isDefault")
+        Component(user_payments, "PaymentMethods", "Schema", "type, cardNumber, expiration, cvv, isDefault")
     }
 
     Component(product, "Product", "Mongoose Schema", "商品信息") {
@@ -105,25 +109,36 @@ Container_Boundary(database, "数据库模型") {
     }
 
     Component(order, "Order", "Mongoose Schema", "订单信息") {
-        Component(order_fields, "字段", "Schema", "userId, items[], totalAmount, status")
-        Component(order_item, "OrderItem", "Schema", "productId, name, image, price, quantity, description")
+        Component(order_fields, "字段", "Schema", "userId, orderItems[], totalAmount, status")
+        Component(order_item, "OrderItem", "Schema", "productId, name, price, quantity, image")
+        Component(order_shipping, "ShippingAddress", "Schema", "从用户地址复制")
+        Component(order_payment, "PaymentDetails", "Schema", "从用户支付方式复制, status, paidAt")
     }
 
     Component(cart, "Cart", "Mongoose Schema", "购物车信息") {
         Component(cart_fields, "字段", "Schema", "userId, items[]")
         Component(cart_item, "CartItem", "Schema", "productId, quantity")
     }
-
-    Component(payment, "Payment", "Mongoose Schema", "支付信息") {
-        Component(payment_fields, "字段", "Schema", "userId, firstName, lastName, email, phone, address, city, province, postalCode, paymentMethod, cardNumber, expiration, cvv")
-    }
 }
 
-Rel(user, product, "1:N", "创建/管理")
+' 组件关系
 Rel(user, order, "1:N", "创建/查看")
 Rel(user, cart, "1:1", "拥有")
-Rel(user, payment, "1:N", "创建/查看")
 Rel(product, order, "1:N", "被订购")
 Rel(product, cart, "1:N", "被添加")
+
+' API服务组件图
+Container_Boundary(api_boundary, "API服务") {
+    Component(user_controller, "UserController", "TypeScript", "处理用户、地址和支付方式")
+    Component(order_controller, "OrderController", "TypeScript", "处理订单业务逻辑")
+    Component(api_error, "ApiError", "TypeScript", "统一错误处理")
+}
+
+' 组件交互
+Rel(user_controller, user, "管理", "CRUD")
+Rel(order_controller, order, "管理", "CRUD")
+Rel(order_controller, user_controller, "使用", "获取用户信息")
+Rel(user_controller, api_error, "使用", "错误处理")
+Rel(order_controller, api_error, "使用", "错误处理")
 
 @enduml

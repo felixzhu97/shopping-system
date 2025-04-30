@@ -30,6 +30,10 @@
     {
       "name": "orders",
       "description": "订单管理"
+    },
+    {
+      "name": "payments",
+      "description": "支付管理"
     }
   ],
   "paths": {
@@ -676,6 +680,91 @@
           }
         }
       }
+    },
+    "/api/payments": {
+      "post": {
+        "tags": ["payments"],
+        "summary": "保存支付信息",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Payment"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "支付信息保存成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "description": "操作是否成功"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "payment": {
+                          "$ref": "#/components/schemas/Payment"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/payments/{userId}": {
+      "get": {
+        "tags": ["payments"],
+        "summary": "获取用户支付信息",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "userId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "用户ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功获取支付信息",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "description": "操作是否成功"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "payment": {
+                          "$ref": "#/components/schemas/Payment"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -1018,6 +1107,33 @@
             "type": "string",
             "format": "date-time",
             "description": "更新时间"
+          }
+        }
+      },
+      "Payment": {
+        "type": "object",
+        "required": ["userId", "paymentMethod"],
+        "properties": {
+          "userId": {
+            "type": "string",
+            "description": "用户ID"
+          },
+          "paymentMethod": {
+            "type": "string",
+            "description": "支付方式",
+            "enum": ["credit-card", "alipay", "wechat"]
+          },
+          "cardNumber": {
+            "type": "string",
+            "description": "卡号"
+          },
+          "expiration": {
+            "type": "string",
+            "description": "到期日"
+          },
+          "cvv": {
+            "type": "string",
+            "description": "CVV码"
           }
         }
       }
