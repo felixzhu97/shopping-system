@@ -1,5 +1,6 @@
 import { Order } from '@/lib/types';
 import { API_CONFIG, fetchApi } from './config';
+import { ApiResponse } from 'shared';
 
 // 获取订单列表
 export async function getOrders(): Promise<Order[]> {
@@ -57,6 +58,22 @@ export async function getUserOrders(userId: string): Promise<Order[]> {
 
   if (!response.success || !response.data) {
     throw new Error('获取订单列表失败');
+  }
+  return response.data;
+}
+
+// 取消订单
+export async function cancelOrder(orderId: string): Promise<Order> {
+  const response = await fetchApi<Order>(`${API_CONFIG.orderUrl}/${orderId}/cancel`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({}), // 发送空对象作为请求体
+  });
+
+  if (!response.success || !response.data) {
+    throw new Error(response.error || '取消订单失败');
   }
   return response.data;
 }

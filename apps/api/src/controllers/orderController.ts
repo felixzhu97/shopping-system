@@ -150,3 +150,62 @@ export const getAllOrders = async (req: any, res: any) => {
     res.status(500 as number).json({ message: '获取所有订单失败' });
   }
 };
+
+// 取消订单
+export const cancelOrder = async (req: any, res: any) => {
+  try {
+    const { id } = req.params;
+
+    const order = await Order.findById(id);
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: '订单不存在',
+      });
+    }
+
+    // 只有待处理的订单可以取消
+    if (order.status !== 'pending') {
+      return res.status(400).json({
+        success: false,
+        message: '只有待处理的订单可以取消',
+      });
+    }
+
+    try {
+      // 更新订单状态为已取消
+      order.status = 'cancelled';
+      const updatedOrder = await order.save();
+
+      // 恢复商品库存
+      await Promise.all(
+        order.items.map(async item => {
+          const product = await Product.findById(item.productId);
+          if (product) {
+            product.stock += item.quantity;
+            await product.save();
+          }
+        })
+      );
+
+      res.status(200).json({
+        success: true,
+        data: updatedOrder,
+      });
+    } catch (saveError) {
+      console.error('保存订单状态失败:', saveError);
+      res.status(500).json({
+        success: false,
+        message: '取消订单失败',
+        error: '保存订单状态时出错',
+      });
+    }
+  } catch (error) {
+    console.error('取消订单失败:', error);
+    res.status(500).json({
+      success: false,
+      message: '取消订单失败',
+      error: error instanceof Error ? error.message : '未知错误',
+    });
+  }
+};
