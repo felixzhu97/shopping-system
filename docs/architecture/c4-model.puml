@@ -1,1 +1,129 @@
- 
+@startuml
+!include ./c4-plantuml/C4_Context.puml
+!include ./c4-plantuml//C4_Container.puml
+!include ./c4-plantuml//C4_Component.puml
+
+LAYOUT_WITH_LEGEND()
+
+' 系统上下文图
+System_Boundary(system, "购物系统") {
+    Person(customer, "顾客", "使用系统进行购物的用户")
+    Person(admin, "管理员", "管理商品和订单的管理员")
+
+    System(web_app, "Web应用", "基于Next.js的前端应用")
+    System(api, "API服务", "基于Express.js的后端API服务")
+    SystemDb(db, "MongoDB数据库", "存储系统数据")
+    System_Ext(payment_gateway, "支付网关", "处理支付交易")
+}
+
+Rel(customer, web_app, "使用", "HTTPS")
+Rel(admin, web_app, "管理", "HTTPS")
+Rel(web_app, api, "调用", "HTTPS")
+Rel(api, db, "读写", "MongoDB")
+Rel(api, payment_gateway, "处理支付", "HTTPS")
+
+' 容器图
+System_Boundary(web_app_boundary, "Web应用") {
+    Container(web_app, "Web应用", "Next.js", "提供用户界面")
+    Container(components, "组件库", "React", "可复用的UI组件")
+    Container(api_client, "API客户端", "Axios", "与后端通信")
+}
+
+System_Boundary(api_boundary, "API服务") {
+    Container(api, "API服务", "Express.js", "处理业务逻辑")
+    Container(routes, "路由层", "Express Router", "处理HTTP请求")
+    Container(controllers, "控制器", "TypeScript", "处理业务逻辑")
+    Container(models, "数据模型", "Mongoose", "数据持久化")
+}
+
+System_Boundary(external_boundary, "外部服务") {
+    ContainerDb(db, "MongoDB", "数据库", "存储系统数据")
+    System_Ext(payment_gateway, "支付网关", "处理支付")
+}
+
+Rel(web_app, components, "使用", "TypeScript")
+Rel(web_app, api_client, "使用", "TypeScript")
+Rel(api_client, api, "调用", "HTTPS")
+Rel(api, routes, "路由", "TypeScript")
+Rel(routes, controllers, "调用", "TypeScript")
+Rel(controllers, models, "调用", "TypeScript")
+Rel(models, db, "读写", "MongoDB")
+Rel(controllers, payment_gateway, "调用", "HTTPS")
+
+' 组件图 - Web应用
+Container_Boundary(web_app, "Web应用") {
+    Component(home_page, "首页", "Next.js Page", "展示商品列表")
+    Component(products_page, "商品页", "Next.js Page", "商品列表和详情")
+    Component(cart_page, "购物车页", "Next.js Page", "管理购物车")
+    Component(checkout_page, "结算页", "Next.js Page", "处理订单结算")
+    Component(orders_page, "订单页", "Next.js Page", "查看订单")
+    Component(account_page, "账户页", "Next.js Page", "用户信息管理")
+    Component(login_page, "登录页", "Next.js Page", "用户登录")
+    Component(register_page, "注册页", "Next.js Page", "用户注册")
+}
+
+' 组件图 - API服务
+Container_Boundary(api, "API服务") {
+    Component(users_route, "用户路由", "Express Router", "处理用户相关请求")
+    Component(products_route, "商品路由", "Express Router", "处理商品相关请求")
+    Component(orders_route, "订单路由", "Express Router", "处理订单相关请求")
+    Component(cart_route, "购物车路由", "Express Router", "处理购物车相关请求")
+    Component(payment_route, "支付路由", "Express Router", "处理支付相关请求")
+
+    Component(user_controller, "用户控制器", "TypeScript", "处理用户认证和授权")
+    Component(product_controller, "商品控制器", "TypeScript", "处理商品业务逻辑")
+    Component(order_controller, "订单控制器", "TypeScript", "处理订单业务逻辑")
+    Component(cart_controller, "购物车控制器", "TypeScript", "处理购物车业务逻辑")
+    Component(payment_controller, "支付控制器", "TypeScript", "处理支付业务逻辑")
+
+    Component(user_model, "用户模型", "Mongoose", "用户数据模型")
+    Component(product_model, "商品模型", "Mongoose", "商品数据模型")
+    Component(order_model, "订单模型", "Mongoose", "订单数据模型")
+    Component(cart_model, "购物车模型", "Mongoose", "购物车数据模型")
+}
+
+' 代码图 - 支付流程
+Container_Boundary(payment_flow, "支付流程") {
+    Component(payment_route, "PaymentRoute", "Express Router", "处理支付请求")
+    Component(payment_controller, "PaymentController", "TypeScript", "处理支付逻辑")
+    Component(payment_model, "PaymentModel", "Mongoose", "支付数据模型")
+    Component(payment_gateway, "PaymentGateway", "TypeScript", "与支付网关通信")
+}
+
+Rel(payment_route, payment_controller, "调用", "TypeScript")
+Rel(payment_controller, payment_model, "调用", "TypeScript")
+Rel(payment_controller, payment_gateway, "调用", "HTTPS")
+
+' 数据库模型图
+Container_Boundary(database, "数据库模型") {
+    Component(user, "User", "Mongoose Schema", "用户信息") {
+        Component(user_fields, "字段", "Schema", "email, password, role, firstName, lastName, phone, address, city, province, postalCode, country, paymentMethod, cardNumber, expiration, cvv")
+    }
+
+    Component(product, "Product", "Mongoose Schema", "商品信息") {
+        Component(product_fields, "字段", "Schema", "name, description, price, image, category, stock, rating, reviewCount, originalPrice, inStock")
+    }
+
+    Component(order, "Order", "Mongoose Schema", "订单信息") {
+        Component(order_fields, "字段", "Schema", "userId, items[], totalAmount, status")
+        Component(order_item, "OrderItem", "Schema", "productId, name, image, price, quantity, description")
+    }
+
+    Component(cart, "Cart", "Mongoose Schema", "购物车信息") {
+        Component(cart_fields, "字段", "Schema", "userId, items[]")
+        Component(cart_item, "CartItem", "Schema", "productId, quantity")
+    }
+
+    Component(payment, "Payment", "Mongoose Schema", "支付信息") {
+        Component(payment_fields, "字段", "Schema", "userId, firstName, lastName, email, phone, address, city, province, postalCode, paymentMethod, cardNumber, expiration, cvv")
+    }
+}
+
+Rel(user, product, "1:N", "创建/管理")
+Rel(user, order, "1:N", "创建/查看")
+Rel(user, cart, "1:1", "拥有")
+Rel(user, payment, "1:N", "创建/查看")
+Rel(product, order, "1:N", "被订购")
+Rel(product, cart, "1:N", "被添加")
+
+@enduml
