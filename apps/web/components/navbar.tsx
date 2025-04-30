@@ -212,7 +212,6 @@ function NavbarClient() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { items } = useCartStore();
-  const getUser = useUserStore(state => state.getUser);
   const logout = useUserStore(state => state.logout);
 
   // 使用 useCallback 优化事件处理函数

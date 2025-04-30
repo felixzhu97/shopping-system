@@ -21,18 +21,45 @@ export async function getOrderById(id: string): Promise<Order> {
   return response.data;
 }
 
-// 创建订单
-export async function createOrder(userId: string, orderData: any) {
-  const url = `${API_CONFIG.orderUrl}/${userId}`;
-  const response = await fetchApi<Order>(url, {
+interface CreateOrderRequest {
+  userId: string;
+  orderItems: {
+    productId: string;
+    quantity: number;
+    price: number;
+  }[];
+  shippingAddress: {
+    address: string;
+    city: string;
+    province: string;
+    postalCode: string;
+  };
+  paymentDetails: {
+    method: {
+      type: 'credit-card' | 'alipay' | 'wechat';
+      cardNumber?: string;
+      expiration?: string;
+    };
+    status: 'pending' | 'completed' | 'failed';
+  };
+  totalAmount: number;
+  status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+}
+
+export async function createOrder(data: CreateOrderRequest): Promise<Order> {
+  const response = await fetch('/api/orders', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(orderData),
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
   });
-  if (!response.success || !response.data) {
+
+  if (!response.ok) {
     throw new Error('创建订单失败');
   }
-  return response.data;
+
+  return response.json();
 }
 
 // 获取用户订单列表

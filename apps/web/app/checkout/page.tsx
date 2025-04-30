@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback, useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { AlertCircle, ChevronLeft, CreditCard } from 'lucide-react';
@@ -24,42 +24,11 @@ import { Navbar } from '@/components/navbar';
 import { Footer } from '@/components/footer';
 import { useCartStore } from '@/lib/stores/cart';
 import { useUserStore } from '@/lib/stores/user';
+import { useCheckoutStore } from '@/lib/stores/checkout';
 import { Image } from '@/components/ui/image';
 import { cn } from '@/lib/utils/utils';
 import { provinces } from '@/components/china-region';
 import { createOrder } from '@/lib/api/orders';
-import { Payment } from 'shared';
-
-// 添加表单数据类型
-interface FormData {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  address: string;
-  city: string;
-  province: string;
-  postalCode: string;
-  paymentMethod: string;
-  cardNumber?: string;
-  expiration?: string;
-  cvv?: string;
-}
-
-// 添加表单错误类型
-interface FormErrors {
-  firstName?: string;
-  lastName?: string;
-  email?: string;
-  phone?: string;
-  address?: string;
-  city?: string;
-  province?: string;
-  postalCode?: string;
-  cardNumber?: string;
-  expiration?: string;
-  cvv?: string;
-}
 
 // 订单摘要商品项组件
 const OrderSummaryItem = React.memo(function OrderSummaryItem({ item }: { item: any }) {
@@ -90,30 +59,23 @@ export default function CheckoutPage() {
   // 1. 所有 store hooks
   const { items, clearCart } = useCartStore();
   const { getUserId, getCheckoutInfo, saveCheckoutInfo } = useUserStore();
+  const {
+    formData,
+    errors,
+    selectedProvince,
+    selectedCity,
+    isSubmitting,
+    setFormData,
+    setErrors,
+    setSelectedProvince,
+    setSelectedCity,
+    setIsSubmitting,
+    resetForm,
+  } = useCheckoutStore();
   const { toast } = useToast();
   const router = useRouter();
 
-  // 2. 所有 useState hooks
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [selectedProvince, setSelectedProvince] = useState('');
-  const [selectedCity, setSelectedCity] = useState('');
-  const [formData, setFormData] = useState<Payment>({
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: '',
-    address: '',
-    city: '',
-    province: '',
-    postalCode: '',
-    paymentMethod: 'credit-card',
-    cardNumber: '',
-    expiration: '',
-    cvv: '',
-  });
-  const [errors, setErrors] = useState<FormErrors>({});
-
-  // 3. 所有 useMemo hooks
+  // 2. 所有 useMemo hooks
   const { subtotal, shipping, tax, total } = useMemo(() => {
     const subtotal = items.reduce((total, item) => {
       if (!item.product) return total;
@@ -126,64 +88,26 @@ export default function CheckoutPage() {
     return { subtotal, shipping, tax, total };
   }, [items]);
 
-  // 4. 所有 useCallback hooks
-  const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+  // 3. 表单处理函数
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value,
-    }));
+    setFormData({ [name]: value });
+  };
 
-    setErrors(prev => ({
-      ...prev,
-      [name]: undefined,
-    }));
-  }, []);
+  const handleSelectChange = (name: string, value: string) => {
+    setFormData({ [name]: value });
+  };
 
-  const handleSelectChange = useCallback((name: string, value: string) => {
-    setFormData(prev => ({
-      ...prev,
-      [name]: value,
-    }));
-  }, []);
-
-  const handleProvinceChange = useCallback((value: string) => {
+  const handleProvinceChange = (value: string) => {
     setSelectedProvince(value);
-    const province = provinces.find(p => p.name === value);
+  };
 
-    setFormData(prev => ({
-      ...prev,
-      province: value,
-      city: '',
-    }));
-
-    // 清除省份和城市的错误
-    setErrors(prev => ({
-      ...prev,
-      province: undefined,
-      city: undefined,
-    }));
-
-    // 重置城市选择
-    setSelectedCity('');
-  }, []);
-
-  const handleCityChange = useCallback((value: string) => {
+  const handleCityChange = (value: string) => {
     setSelectedCity(value);
-    setFormData(prev => ({
-      ...prev,
-      city: value,
-    }));
+  };
 
-    // 清除城市错误
-    setErrors(prev => ({
-      ...prev,
-      city: undefined,
-    }));
-  }, []);
-
-  const validateForm = useCallback((): boolean => {
-    const newErrors: FormErrors = {};
+  const validateForm = (): boolean => {
+    const newErrors: typeof errors = {};
     let isValid = true;
 
     // 验证省份
@@ -198,17 +122,18 @@ export default function CheckoutPage() {
       isValid = false;
     }
 
-    if (!formData.firstName.trim()) {
-      newErrors.firstName = '请输入姓氏';
+    // 验证其他字段
+    if (!formData.firstName) {
+      newErrors.firstName = '请输入名字';
       isValid = false;
     }
 
-    if (!formData.lastName.trim()) {
-      newErrors.lastName = '请输入名字';
+    if (!formData.lastName) {
+      newErrors.lastName = '请输入姓氏';
       isValid = false;
     }
 
-    if (!formData.email.trim()) {
+    if (!formData.email) {
       newErrors.email = '请输入邮箱';
       isValid = false;
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
@@ -216,195 +141,148 @@ export default function CheckoutPage() {
       isValid = false;
     }
 
-    if (!formData.phone.trim()) {
-      newErrors.phone = '请输入手机号码';
+    if (!formData.phone) {
+      newErrors.phone = '请输入手机号';
       isValid = false;
-    } else if (!/^\d{11}$/.test(formData.phone.replace(/\s/g, ''))) {
-      newErrors.phone = '请输入有效的11位手机号码';
+    } else if (!/^1[3-9]\d{9}$/.test(formData.phone)) {
+      newErrors.phone = '请输入有效的手机号';
       isValid = false;
     }
 
-    if (!formData.address.trim()) {
+    if (!formData.address) {
       newErrors.address = '请输入详细地址';
       isValid = false;
     }
 
-    if (!formData.postalCode.trim()) {
+    if (!formData.postalCode) {
       newErrors.postalCode = '请输入邮政编码';
       isValid = false;
     } else if (!/^\d{6}$/.test(formData.postalCode)) {
-      newErrors.postalCode = '请输入有效的6位邮政编码';
+      newErrors.postalCode = '请输入有效的邮政编码';
       isValid = false;
     }
 
     if (formData.paymentMethod === 'credit-card') {
-      if (!formData.cardNumber?.trim()) {
+      if (!formData.cardNumber) {
         newErrors.cardNumber = '请输入卡号';
         isValid = false;
-      } else if (!/^\d{16}$/.test(formData.cardNumber.replace(/\s/g, ''))) {
-        newErrors.cardNumber = '请输入有效的16位卡号';
+      } else if (!/^\d{16}$/.test(formData.cardNumber)) {
+        newErrors.cardNumber = '请输入有效的卡号';
         isValid = false;
       }
 
-      if (!formData.expiration?.trim()) {
-        newErrors.expiration = '请输入到期日';
+      if (!formData.expiration) {
+        newErrors.expiration = '请输入有效期';
         isValid = false;
       } else if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(formData.expiration)) {
-        newErrors.expiration = '请使用MM/YY格式';
+        newErrors.expiration = '请输入有效的有效期（MM/YY）';
         isValid = false;
       }
 
-      if (!formData.cvv?.trim()) {
-        newErrors.cvv = '请输入CVV码';
+      if (!formData.cvv) {
+        newErrors.cvv = '请输入CVV';
         isValid = false;
       } else if (!/^\d{3,4}$/.test(formData.cvv)) {
-        newErrors.cvv = '请输入有效的CVV码';
+        newErrors.cvv = '请输入有效的CVV';
         isValid = false;
       }
     }
 
     setErrors(newErrors);
     return isValid;
-  }, [formData, selectedProvince, selectedCity]);
+  };
 
-  const handleSubmit = useCallback(
-    async (e: React.FormEvent) => {
-      e.preventDefault();
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-      if (!validateForm()) {
-        toast({
-          title: '表单验证失败',
-          description: '请检查并修正表单中的错误',
-          variant: 'destructive',
-          duration: 3000,
-        });
-        return;
+    if (!validateForm()) {
+      toast({
+        title: '表单验证失败',
+        description: '请检查并修正表单中的错误',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const userId = getUserId();
+      if (!userId) {
+        throw new Error('用户未登录');
       }
 
-      setIsSubmitting(true);
+      const orderItems = items.map(item => ({
+        productId: item.productId,
+        quantity: item.quantity,
+        price: item.product?.price || 0,
+      }));
 
-      try {
-        const userId = getUserId();
-        if (!userId) {
-          toast({
-            title: '未登录',
-            description: '请先登录后再提交订单',
-            variant: 'destructive',
-            duration: 3000,
-          });
-          setIsSubmitting(false);
-          router.push('/login');
-          return;
-        }
-
-        const infoToSave = {
-          firstName: formData.firstName,
-          lastName: formData.lastName,
-          email: formData.email,
-          phone: formData.phone,
+      const order = await createOrder({
+        userId,
+        orderItems,
+        shippingAddress: {
           address: formData.address,
           city: formData.city,
           province: formData.province,
           postalCode: formData.postalCode,
-          paymentMethod: formData.paymentMethod,
-        };
-        saveCheckoutInfo(infoToSave);
-
-        const orderData = {
-          shippingAddress: {
-            address: formData.address,
-            city: formData.city,
-            postalCode: formData.postalCode,
-            country: formData.province,
+        },
+        paymentDetails: {
+          method: {
+            type: formData.paymentMethod as 'credit-card' | 'alipay' | 'wechat',
+            cardNumber: formData.paymentMethod === 'credit-card' ? formData.cardNumber : undefined,
+            expiration: formData.paymentMethod === 'credit-card' ? formData.expiration : undefined,
           },
-          paymentMethod: formData.paymentMethod,
-          items: items.map(item => ({
-            productId: item.product?.id || item.productId,
-            quantity: item.quantity,
-          })),
-          totalAmount: total,
-        };
+          status: 'pending',
+        },
+        totalAmount: total,
+        status: 'pending',
+      });
 
-        const order = await createOrder(userId, orderData);
-        await clearCart();
+      // 保存结算信息
+      saveCheckoutInfo({
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        phone: formData.phone,
+        address: formData.address,
+        city: formData.city,
+        province: formData.province,
+        postalCode: formData.postalCode,
+        paymentMethod: formData.paymentMethod,
+      });
 
-        // 预加载成功页面
-        router.prefetch(`/checkout/success?orderId=${order.id}`);
+      // 清空购物车
+      clearCart();
 
-        toast({
-          title: '订单提交成功',
-          description: '感谢您的购买！我们将尽快处理您的订单。',
-          duration: 3000,
-        });
+      // 重置表单
+      resetForm();
 
-        // 使用 replace 而不是 push，这样用户不能返回到结算页面
-        router.replace(`/checkout/success?orderId=${order.id}`);
-      } catch (error) {
-        console.error('提交订单失败:', error);
-        toast({
-          title: '提交订单失败',
-          description: '无法处理您的订单，请稍后再试。',
-          variant: 'destructive',
-          duration: 3000,
-        });
-      } finally {
-        setIsSubmitting(false);
-      }
-    },
-    [validateForm, formData, items, total, getUserId, saveCheckoutInfo, clearCart, router, toast]
-  );
-
-  // 5. 所有 useEffect hooks
-  useEffect(() => {
-    const savedInfo = getCheckoutInfo();
-    if (savedInfo) {
-      // 先设置省份
-      if (savedInfo.province) {
-        const province = provinces.find(p => p.name === savedInfo.province);
-        if (province) {
-          setSelectedProvince(savedInfo.province);
-          // 只有当城市存在于该省份的城市列表中时才设置
-          if (savedInfo.city && province.cities.includes(savedInfo.city)) {
-            setSelectedCity(savedInfo.city);
-          } else {
-            setSelectedCity('');
-          }
-        }
-      }
-
-      // 然后设置表单数据
-      setFormData(prev => ({
-        ...prev,
-        ...savedInfo,
-        // 清除支付相关信息
-        cardNumber: '',
-        expiration: '',
-        cvv: '',
-        // 确保城市与选择器状态同步
-        city:
-          savedInfo.city &&
-          provinces.find(p => p.name === savedInfo.province)?.cities.includes(savedInfo.city)
-            ? savedInfo.city
-            : '',
-      }));
+      // 跳转到订单确认页面
+      router.push(`/orders/${order.id}`);
+    } catch (error) {
+      console.error('创建订单失败:', error);
+      toast({
+        title: '创建订单失败',
+        description: error instanceof Error ? error.message : '请稍后重试',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsSubmitting(false);
     }
-  }, [getCheckoutInfo]);
+  };
 
+  // 4. 加载用户信息
   useEffect(() => {
-    if (items.length === 0) {
-      router.push('/cart');
+    const checkoutInfo = getCheckoutInfo();
+    if (checkoutInfo) {
+      setFormData(checkoutInfo);
+      setSelectedProvince(checkoutInfo.province);
+      setSelectedCity(checkoutInfo.city);
     }
-  }, [items.length, router]);
+  }, [getCheckoutInfo, setFormData, setSelectedProvince, setSelectedCity]);
 
-  // 在组件加载时预加载成功页面
-  useEffect(() => {
-    router.prefetch('/checkout/success');
-  }, [router]);
-
-  if (items.length === 0) {
-    return null;
-  }
-
+  // 5. 渲染页面
   return (
     <div className="flex flex-col min-h-screen bg-[#f5f5f7]">
       <Navbar />

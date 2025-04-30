@@ -36,24 +36,23 @@ export type UserRole = 'user' | 'admin';
 
 export interface User {
   id?: string;
-  username: string;
-  email: string;
   password?: string;
-  role: UserRole;
+  // -------用户信息-------
   firstName: string;
   lastName: string;
   phone: string;
-  address?: {
-    firstName: string;
-    lastName: string;
-    company: string;
-    street: string;
-    apt: string;
-    zip: string;
-    city: string;
-    country: string;
-    phone: string;
-  };
+  email: string;
+  role: UserRole;
+  // -------地址-------
+  address: string;
+  city: string;
+  province: string;
+  postalCode: string;
+  // -------支付方式-------
+  paymentMethod: string;
+  cardNumber?: string;
+  expiration?: string;
+  cvv?: string;
 }
 
 // -----------Order-----------
