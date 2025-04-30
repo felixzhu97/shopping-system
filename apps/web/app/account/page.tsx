@@ -199,97 +199,93 @@ export default function AccountPage() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#fafafa]">
+    <div className="flex flex-col min-h-screen bg-[#f5f5f7]">
       <Navbar />
-      <main className="flex-1 container mx-auto px-4 py-12">
+      <main className="flex-1 container mx-auto px-4 py-8">
         <div className="max-w-3xl mx-auto">
-          <h1 className="text-3xl font-semibold mb-10 text-center">账号设置</h1>
-          <div className="space-y-10">
-            {/* 收货信息 */}
-            <div className="flex flex-col md:flex-row md:items-start md:gap-8">
-              <div className="w-32 font-semibold text-gray-800 mb-2 md:mb-0">收货信息</div>
-              <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <div className="text-gray-500 text-sm mb-1">收货地址</div>
-                  <div className="mb-1">
-                    {shipping.lastName}
-                    {shipping.firstName}
-                    <br />
-                    {shipping.street}
-                    {shipping.apt && `, ${shipping.apt}`}
-                    <br />
-                    {shipping.city}, {shipping.zip}
-                    <br />
-                    {shipping.country}
+          <h1 className="text-2xl font-semibold mb-6">账号设置</h1>
+
+          {/* 个人信息 */}
+          <div className="bg-white rounded-xl shadow-sm mb-6">
+            <div className="p-6">
+              <h2 className="text-lg font-semibold mb-4">个人信息</h2>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="text-sm text-gray-500">姓名</div>
+                    <div className="font-medium">
+                      {shipping.firstName} {shipping.lastName}
+                    </div>
                   </div>
-                  <Button asChild variant="link" className="px-0 h-auto text-blue-600">
-                    <span onClick={() => setModalOpen(true)} style={{ cursor: 'pointer' }}>
-                      编辑
-                    </span>
+                  <Button variant="ghost" onClick={() => setModalOpen(true)}>
+                    编辑
                   </Button>
                 </div>
-                <div>
-                  <div className="text-gray-500 text-sm mb-1">联系方式</div>
-                  <div className="mb-1">{shipping.phone}</div>
-                  <Button asChild variant="link" className="px-0 h-auto text-blue-600">
-                    <span onClick={() => setModalOpen(true)} style={{ cursor: 'pointer' }}>
-                      编辑
-                    </span>
-                  </Button>
-                </div>
-              </div>
-            </div>
-            {/* 支付信息 */}
-            <div className="flex flex-col md:flex-row md:items-start md:gap-8">
-              <div className="w-32 font-semibold text-gray-800 mb-2 md:mb-0">支付信息</div>
-              <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div>
-                  <div className="text-gray-500 text-sm mb-1">账单联系人</div>
-                  <Button asChild variant="link" className="px-0 h-auto text-blue-600">
-                    <Link href="#">编辑</Link>
-                  </Button>
-                </div>
-                <div>
-                  <div className="text-gray-500 text-sm mb-1">账单地址</div>
-                  <Button asChild variant="link" className="px-0 h-auto text-blue-600">
-                    <Link href="#">编辑</Link>
-                  </Button>
-                </div>
-                <div>
-                  <div className="text-gray-500 text-sm mb-1">支付方式</div>
-                  <Button asChild variant="link" className="px-0 h-auto text-blue-600">
-                    <Link href="#">编辑</Link>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="text-sm text-gray-500">手机号码</div>
+                    <div className="font-medium">{shipping.phone}</div>
+                  </div>
+                  <Button variant="ghost" onClick={() => setModalOpen(true)}>
+                    编辑
                   </Button>
                 </div>
               </div>
             </div>
-            {/* 隐私 */}
-            <div className="flex flex-col md:flex-row md:items-start md:gap-8">
-              <div className="w-32 font-semibold text-gray-800 mb-2 md:mb-0">隐私</div>
-              <div className="flex-1">
-                <div className="text-gray-500 text-sm mb-1">个人信息</div>
-                <div className="mb-1 text-sm text-gray-700">
-                  您可以随时管理或删除您的个人信息，平台致力于保护您的隐私。
+          </div>
+
+          {/* 收货地址 */}
+          <div className="bg-white rounded-xl shadow-sm mb-6">
+            <div className="p-6">
+              <h2 className="text-lg font-semibold mb-4">收货地址</h2>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="text-sm text-gray-500">默认地址</div>
+                    <div className="font-medium">
+                      {shipping.street}
+                      {shipping.apt && `, ${shipping.apt}`}
+                      <br />
+                      {shipping.city}, {shipping.zip}
+                      <br />
+                      {shipping.country}
+                    </div>
+                  </div>
+                  <Button variant="ghost" onClick={() => setModalOpen(true)}>
+                    编辑
+                  </Button>
                 </div>
-                <Button asChild variant="link" className="px-0 h-auto text-blue-600">
-                  <Link href="#">管理个人信息</Link>
-                </Button>
               </div>
             </div>
-            {/* 账号信息 */}
-            <div className="flex flex-col md:flex-row md:items-start md:gap-8">
-              <div className="w-32 font-semibold text-gray-800 mb-2 md:mb-0">账号信息</div>
-              <div className="flex-1">
-                <div className="mb-1">zhuzhiqiang@example.com</div>
-                <Button asChild variant="link" className="px-0 h-auto text-blue-600">
-                  <Link href="#">管理账号</Link>
-                </Button>
-                <div className="mt-4 text-xs text-gray-500">您的账号用于登录和访问平台服务。</div>
-                <div className="flex gap-2 mt-3">
-                  {/* 可替换为平台相关icon */}
-                  <span className="inline-block w-6 h-6 bg-gray-200 rounded-full" />
-                  <span className="inline-block w-6 h-6 bg-gray-200 rounded-full" />
-                  <span className="inline-block w-6 h-6 bg-gray-200 rounded-full" />
+          </div>
+
+          {/* 支付方式 */}
+          <div className="bg-white rounded-xl shadow-sm mb-6">
+            <div className="p-6">
+              <h2 className="text-lg font-semibold mb-4">支付方式</h2>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="text-sm text-gray-500">默认支付方式</div>
+                    <div className="font-medium">未设置</div>
+                  </div>
+                  <Button variant="ghost">添加</Button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* 隐私设置 */}
+          <div className="bg-white rounded-xl shadow-sm">
+            <div className="p-6">
+              <h2 className="text-lg font-semibold mb-4">隐私设置</h2>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="text-sm text-gray-500">数据收集</div>
+                    <div className="font-medium">管理您的数据收集偏好</div>
+                  </div>
+                  <Button variant="ghost">管理</Button>
                 </div>
               </div>
             </div>

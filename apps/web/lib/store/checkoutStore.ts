@@ -2,32 +2,16 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { User } from 'shared';
 
-interface FormData
-  extends Pick<
-    User,
-    | 'firstName'
-    | 'lastName'
-    | 'email'
-    | 'phone'
-    | 'address'
-    | 'city'
-    | 'province'
-    | 'postalCode'
-    | 'paymentMethod'
-    | 'cardNumber'
-    | 'expiration'
-    | 'cvv'
-  > {}
-
-interface FormErrors {
-  firstName?: string;
-  lastName?: string;
-  email?: string;
-  phone?: string;
-  address?: string;
-  city?: string;
-  province?: string;
-  postalCode?: string;
+interface FormData {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  address: string;
+  city: string;
+  province: string;
+  postalCode: string;
+  paymentMethod: string;
   cardNumber?: string;
   expiration?: string;
   cvv?: string;
@@ -35,81 +19,66 @@ interface FormErrors {
 
 interface CheckoutState {
   formData: FormData;
-  errors: FormErrors;
+  errors: Partial<FormData>;
   selectedProvince: string;
   selectedCity: string;
   isSubmitting: boolean;
   setFormData: (data: Partial<FormData>) => void;
-  setErrors: (errors: Partial<FormErrors>) => void;
+  setErrors: (errors: Partial<FormData>) => void;
   setSelectedProvince: (province: string) => void;
   setSelectedCity: (city: string) => void;
   setIsSubmitting: (isSubmitting: boolean) => void;
   resetForm: () => void;
 }
 
-const initialState: Omit<
-  CheckoutState,
-  | 'setFormData'
-  | 'setErrors'
-  | 'setSelectedProvince'
-  | 'setSelectedCity'
-  | 'setIsSubmitting'
-  | 'resetForm'
-> = {
-  formData: {
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: '',
-    address: '',
-    city: '',
-    province: '',
-    postalCode: '',
-    paymentMethod: 'credit-card',
-    cardNumber: '',
-    expiration: '',
-    cvv: '',
-  },
-  errors: {},
-  selectedProvince: '',
-  selectedCity: '',
-  isSubmitting: false,
+const initialState: FormData = {
+  firstName: '',
+  lastName: '',
+  email: '',
+  phone: '',
+  address: '',
+  city: '',
+  province: '',
+  postalCode: '',
+  paymentMethod: '',
 };
 
 export const useCheckoutStore = create<CheckoutState>()(
   persist(
     set => ({
-      ...initialState,
+      formData: initialState,
+      errors: {},
+      selectedProvince: '',
+      selectedCity: '',
+      isSubmitting: false,
       setFormData: data =>
         set(state => ({
           formData: { ...state.formData, ...data },
-          errors: {
-            ...state.errors,
-            ...Object.keys(data).reduce((acc, key) => ({ ...acc, [key]: undefined }), {}),
-          },
         })),
       setErrors: errors =>
-        set(state => ({
-          errors: { ...state.errors, ...errors },
+        set(() => ({
+          errors,
         })),
       setSelectedProvince: province =>
-        set(state => ({
+        set(() => ({
           selectedProvince: province,
-          formData: { ...state.formData, province, city: '' },
-          errors: { ...state.errors, province: undefined, city: undefined },
-          selectedCity: '',
         })),
       setSelectedCity: city =>
-        set(state => ({
+        set(() => ({
           selectedCity: city,
-          formData: { ...state.formData, city },
-          errors: { ...state.errors, city: undefined },
         })),
       setIsSubmitting: isSubmitting =>
         set(() => ({
           isSubmitting,
         })),
-      resetForm: () => set(initialState),
+      resetForm: () =>
+        set(() => ({
+          formData: initialState,
+          errors: {},
+          selectedProvince: '',
+          selectedCity: '',
+          isSubmitting: false,
+        })),
     }),
     {
       name: 'checkout-storage',

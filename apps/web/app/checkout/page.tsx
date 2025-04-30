@@ -28,6 +28,7 @@ import { Image } from '@/components/ui/image';
 import { cn } from '@/lib/utils/utils';
 import { provinces } from '@/components/china-region';
 import { createOrder } from '@/lib/api/orders';
+import { getUserById } from '@/lib/api/users';
 
 // 订单摘要商品项组件
 const OrderSummaryItem = React.memo(function OrderSummaryItem({ item }: { item: any }) {
@@ -57,7 +58,6 @@ const OrderSummaryItem = React.memo(function OrderSummaryItem({ item }: { item: 
 export default function CheckoutPage() {
   // 1. 所有 store hooks
   const { items, clearCart } = useCartStore();
-
   const { getUserId, getCheckoutInfo, saveCheckoutInfo } = useUserStore();
   const {
     formData,
@@ -100,10 +100,12 @@ export default function CheckoutPage() {
 
   const handleProvinceChange = (value: string) => {
     setSelectedProvince(value);
+    setFormData({ province: value });
   };
 
   const handleCityChange = (value: string) => {
     setSelectedCity(value);
+    setFormData({ city: value });
   };
 
   const validateForm = (): boolean => {
@@ -264,13 +266,43 @@ export default function CheckoutPage() {
 
   // 4. 加载用户信息
   useEffect(() => {
-    const checkoutInfo = getCheckoutInfo();
-    if (checkoutInfo) {
-      setFormData(checkoutInfo);
-      setSelectedProvince(checkoutInfo.province);
-      setSelectedCity(checkoutInfo.city);
-    }
-  }, [getCheckoutInfo, setFormData, setSelectedProvince, setSelectedCity]);
+    const loadUserData = async () => {
+      try {
+        const userId = getUserId();
+        if (!userId) return;
+
+        // 首先尝试从本地存储获取结账信息
+        const checkoutInfo = getCheckoutInfo();
+        if (checkoutInfo) {
+          setFormData(checkoutInfo);
+          setSelectedProvince(checkoutInfo.province);
+          setSelectedCity(checkoutInfo.city);
+          return;
+        }
+
+        // 如果没有本地存储的结账信息，则从用户信息中获取
+        const userData = await getUserById(userId);
+        if (userData.address) {
+          const addressData = {
+            firstName: userData.address.firstName,
+            lastName: userData.address.lastName,
+            phone: userData.address.phone,
+            address: userData.address.street,
+            city: userData.address.city,
+            province: userData.address.province || '',
+            postalCode: userData.address.zip,
+          };
+          setFormData(addressData);
+          setSelectedProvince(userData.address.province || '');
+          setSelectedCity(userData.address.city);
+        }
+      } catch (error) {
+        console.error('加载用户信息失败:', error);
+      }
+    };
+
+    loadUserData();
+  }, [getUserId, getCheckoutInfo, setFormData, setSelectedProvince, setSelectedCity]);
 
   // 5. 渲染页面
   return (

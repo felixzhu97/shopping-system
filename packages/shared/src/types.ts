@@ -44,10 +44,18 @@ export interface User {
   email: string;
   role: UserRole;
   // -------地址-------
-  address: string;
-  city: string;
-  province: string;
-  postalCode: string;
+  address: {
+    firstName: string;
+    lastName: string;
+    company: string;
+    street: string;
+    apt: string;
+    zip: string;
+    city: string;
+    province: string;
+    country: string;
+    phone: string;
+  };
   // -------支付方式-------
   paymentMethod: string;
   cardNumber?: string;
