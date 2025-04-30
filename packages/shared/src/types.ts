@@ -35,25 +35,27 @@ export interface Cart {
 export type UserRole = 'user' | 'admin';
 
 export interface User {
-  id?: string;
-  username: string;
+  id: string;
+  fullName: string;
   email: string;
-  password?: string;
-  role: UserRole;
+  role: 'user' | 'admin';
   firstName: string;
   lastName: string;
   phone: string;
-  address?: {
-    firstName: string;
-    lastName: string;
-    company: string;
-    street: string;
-    apt: string;
-    zip: string;
-    city: string;
-    country: string;
-    phone: string;
-  };
+  // ------Address------
+  address: string;
+  city: string;
+  province: string;
+  postalCode: string;
+  country: string;
+  // ------Payment------
+  paymentMethod: 'alipay' | 'wechat' | 'credit-card';
+  cardNumber: string;
+  expiration: string;
+  cvv: string;
+  // ------RegisteredAt------
+  registeredAt: Date;
+  lastLoginAt: Date;
 }
 
 // -----------Order-----------
@@ -67,24 +69,6 @@ export interface Order {
   status: OrderStatus;
   createdAt: Date;
   updatedAt: Date;
-}
-
-// -----------Payment-----------
-export type PaymentMethod = 'alipay' | 'wechat' | 'credit-card';
-
-export interface Payment {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  address: string;
-  city: string;
-  province: string;
-  postalCode: string;
-  paymentMethod: PaymentMethod;
-  cardNumber: string;
-  expiration: string;
-  cvv: string;
 }
 
 // -----------ApiResponse-----------

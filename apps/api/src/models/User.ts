@@ -1,17 +1,8 @@
 import mongoose, { Schema, Document } from 'mongoose';
 import bcrypt from 'bcryptjs';
+import { User } from 'shared';
 
-export interface UserType {
-  id?: string;
-  email: string;
-  password?: string;
-  role: 'user' | 'admin';
-  firstName: string;
-  lastName: string;
-  phone: string;
-}
-
-export interface UserDocument extends Document, Omit<UserType, 'id'> {
+export interface UserDocument extends Document, Omit<User, 'id'> {
   password: string;
   comparePassword(candidatePassword: string): Promise<boolean>;
 }
@@ -24,17 +15,17 @@ const UserSchema: Schema = new Schema(
     firstName: { type: String, required: true },
     lastName: { type: String, required: true },
     phone: { type: String, required: true },
-    address: {
-      firstName: { type: String, default: '' },
-      lastName: { type: String, default: '' },
-      company: { type: String, default: '' },
-      street: { type: String, default: '' },
-      apt: { type: String, default: '' },
-      zip: { type: String, default: '' },
-      city: { type: String, default: '' },
-      country: { type: String, default: '' },
-      phone: { type: String, default: '' },
-    },
+    address: { type: String, required: true },
+    city: { type: String, required: true },
+    province: { type: String, required: true },
+    postalCode: { type: String, required: true },
+    country: { type: String, required: true },
+    paymentMethod: { type: String, required: true },
+    cardNumber: { type: String, required: true },
+    expiration: { type: String, required: true },
+    cvv: { type: String, required: true },
+    registeredAt: { type: Date, default: Date.now },
+    lastLoginAt: { type: Date, default: Date.now },
   },
   { timestamps: true }
 );

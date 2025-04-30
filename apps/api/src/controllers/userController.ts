@@ -93,18 +93,21 @@ export const getUserById = async (req: any, res: any) => {
     let userObj: any = user.toObject();
     if (!userObj.address) {
       userObj.address = {
-        firstName: '',
-        lastName: '',
-        company: '',
         street: '',
-        apt: '',
-        zip: '',
         city: '',
         country: '',
-        phone: '',
+        postalCode: '',
+        province: '',
       };
     }
 
+    if (!userObj.payment) {
+      userObj.payment = {
+        cardNumber: '',
+        expiration: '',
+        cvv: '',
+      };
+    }
     res.status(200 as number).json(userObj);
   } catch (error) {
     console.error('获取用户信息失败:', error);
@@ -116,7 +119,7 @@ export const getUserById = async (req: any, res: any) => {
 export const updateUser = async (req: any, res: any) => {
   try {
     const { id } = req.params;
-    const { email, phone, address } = req.body;
+    const { email, phone, address, payment } = req.body;
 
     // 检查用户是否存在
     const user = await User.findById(id);
@@ -145,6 +148,7 @@ export const updateUser = async (req: any, res: any) => {
     if (email) updateData.email = email;
     if (phone) updateData.phone = phone;
     if (address) updateData.address = address;
+    if (payment) updateData.payment = payment;
 
     const updatedUser = await User.findByIdAndUpdate(id, updateData, { new: true }).select(
       '-password'
