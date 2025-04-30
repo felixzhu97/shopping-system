@@ -1,66 +1,40 @@
 import { User } from 'shared';
-import { encrypt, decrypt } from './crypto';
+import { useUserStore } from '../store/userStore';
 
-const TOKEN_KEY = 't';
-const CHECKOUT_INFO_KEY = 'c';
+// 导出 store 的 hooks
+export const useUser = () => useUserStore(state => state.user);
+export const useToken = () => useUserStore(state => state.token);
 
-// ---------USER_INFO---------
+// 导出操作方法
 export const saveToken = (user: User): string => {
-  try {
-    const token = encrypt(JSON.stringify(user));
-    localStorage.setItem(TOKEN_KEY, token);
-    return token;
-  } catch (error) {
-    console.error('保存用户信息失败:', error);
-    return '';
-  }
+  const store = useUserStore.getState();
+  store.setUser(user);
+  return store.getToken() || '';
 };
 
 export const getToken = (): string | null => {
-  try {
-    const token = localStorage.getItem(TOKEN_KEY);
-    return token ? token : null;
-  } catch (error) {
-    console.error('获取用户信息失败:', error);
-    return null;
-  }
+  const store = useUserStore.getState();
+  return store.getToken();
 };
 
 export const getUser = (): User | null => {
-  try {
-    const token = localStorage.getItem(TOKEN_KEY);
-    if (!token) {
-      return null;
-    }
-
-    // 解密并缓存用户信息
-    const user = JSON.parse(decrypt(token));
-    return user;
-  } catch (error) {
-    console.error('获取用户信息失败:', error);
-    return null;
-  }
+  const store = useUserStore.getState();
+  return store.getUser();
 };
 
 export const getUserId = (): string => {
-  try {
-    const user = getUser();
-    return user?.id || '';
-  } catch (error) {
-    console.error('获取用户ID失败:', error);
-    return '';
-  }
+  const store = useUserStore.getState();
+  return store.getUser()?.id || '';
 };
 
 export const logout = () => {
-  try {
-    localStorage.removeItem(TOKEN_KEY);
-  } catch (error) {
-    console.error('退出登录失败:', error);
-  }
+  const store = useUserStore.getState();
+  store.clearUser();
 };
 
 // ---------CHECKOUT_INFO---------
+const CHECKOUT_INFO_KEY = 'c';
+
 export const saveCheckoutInfo = (data: any) => {
   try {
     localStorage.setItem(CHECKOUT_INFO_KEY, JSON.stringify(data));
@@ -79,6 +53,7 @@ export const getCheckoutInfo = () => {
     return null;
   }
 };
+
 export const clearCheckoutInfo = () => {
   try {
     localStorage.removeItem(CHECKOUT_INFO_KEY);
