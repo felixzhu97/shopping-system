@@ -18,11 +18,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Badge } from '@/components/ui/badge';
-import { useCartStore } from '@/lib/stores/cartStore';
+import { useCartStore } from '@/lib/store/cartStore';
 import PanelDropdown from '@/components/ui/panel-dropdown';
 import Image from '@/components/ui/image';
-import { useUserStore } from '@/lib/stores/userStore';
-import { getToken } from '@/lib/utils/user';
+import { useUserStore } from '@/lib/store/userStore';
+import { getToken } from '@/lib/store/userStore';
 
 // 定义快捷链接数据
 const quickLinks = [

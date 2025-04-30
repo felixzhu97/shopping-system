@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, memo } from 'react';
+import { memo, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, ArrowRight, CreditCard, Package, ShoppingBag } from 'lucide-react';
@@ -12,7 +12,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { CartItem } from '@/components/cart-item';
 import { Navbar } from '@/components/navbar';
 import { Footer } from '@/components/footer';
-import { useCartStore } from '@/lib/stores/cartStore';
+import { useCartStore } from '@/lib/store/cartStore';
 
 // 加载状态的骨架屏组件
 const LoadingSkeleton = memo(() => (

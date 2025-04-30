@@ -12,10 +12,11 @@ import { AppleProductCard } from '@/components/apple-product-card';
 import { Footer } from '@/components/footer';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/components/ui/use-toast';
-import { useCartStore } from '@/lib/stores/cartStore';
+import { useCartStore } from '@/lib/store/cartStore';
 import { cn } from '@/lib/utils/utils';
-import { useProductStore } from '@/lib/stores/productStore';
+import { useProductStore } from '@/lib/store/productStore';
 import Image from '@/components/ui/image';
+
 function LoadingSkeleton() {
   return (
     <div className="grid md:grid-cols-2 gap-8 lg:gap-16">

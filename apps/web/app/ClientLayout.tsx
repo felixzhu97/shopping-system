@@ -3,7 +3,7 @@
 import { ReactNode, useEffect, Suspense } from 'react';
 import { Toaster } from '@/components/ui/toaster';
 import { usePathname, useRouter } from 'next/navigation';
-import { getToken } from '@/lib/utils/user';
+import { getToken } from '@/lib/store/userStore';
 
 const PUBLIC_PATHS = [
   '/', // 首页

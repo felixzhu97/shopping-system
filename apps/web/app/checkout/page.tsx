@@ -1,10 +1,9 @@
 'use client';
 
-import { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { AlertCircle, ChevronLeft, CreditCard } from 'lucide-react';
-import React from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -22,9 +21,9 @@ import { useToast } from '@/components/ui/use-toast';
 import { Toaster } from '@/components/ui/toaster';
 import { Navbar } from '@/components/navbar';
 import { Footer } from '@/components/footer';
-import { useCartStore } from '@/lib/stores/cartStore';
-import { useUserStore } from '@/lib/stores/userStore';
-import { useCheckoutStore } from '@/lib/stores/checkoutStore';
+import { useCartStore } from '@/lib/store/cartStore';
+import { useUserStore } from '@/lib/store/userStore';
+import { useCheckoutStore } from '@/lib/store/checkoutStore';
 import { Image } from '@/components/ui/image';
 import { cn } from '@/lib/utils/utils';
 import { provinces } from '@/components/china-region';
@@ -58,6 +57,7 @@ const OrderSummaryItem = React.memo(function OrderSummaryItem({ item }: { item: 
 export default function CheckoutPage() {
   // 1. 所有 store hooks
   const { items, clearCart } = useCartStore();
+
   const { getUserId, getCheckoutInfo, saveCheckoutInfo } = useUserStore();
   const {
     formData,
