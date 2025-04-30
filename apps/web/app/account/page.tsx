@@ -7,41 +7,31 @@ import { Footer } from '@/components/footer';
 import { useState, useEffect } from 'react';
 import { updateUserAddress, getUserById } from '@/lib/api/users';
 import { getUserId } from '@/lib/store/userStore';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { provinces } from '@/components/china-region';
+import { AlertCircle } from 'lucide-react';
+import { cn } from '@/lib/utils/utils';
 
-function EditShippingAddressModal({
-  open,
-  onClose,
-  onSave,
-  initialData,
-}: {
+// 基础弹出层组件
+interface BaseModalProps {
   open: boolean;
   onClose: () => void;
-  onSave: (data: any) => void;
-  initialData: any;
-}) {
-  const [form, setForm] = useState(initialData);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  title: string;
+  children: React.ReactNode;
+  onSubmit: (e: React.FormEvent) => void;
+  loading?: boolean;
+  error?: string | null;
+}
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
-    try {
-      const userId = getUserId();
-      if (!userId) throw new Error('未登录');
-      await onSave(form);
-    } catch (err: any) {
-      setError(err.message || '保存失败');
-    } finally {
-      setLoading(false);
-    }
-  };
-
+function BaseModal({ open, onClose, title, children, onSubmit, loading, error }: BaseModalProps) {
   if (!open) return null;
 
   return (
@@ -54,84 +44,15 @@ function EditShippingAddressModal({
         >
           ×
         </button>
-        <h2 className="text-2xl font-semibold text-center mb-8">编辑收货地址</h2>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="flex gap-3">
-            <input
-              className="flex-1 border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="姓"
-              name="lastName"
-              value={form.lastName}
-              onChange={handleChange}
-              required
-            />
-            <input
-              className="flex-1 border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="名"
-              name="firstName"
-              value={form.firstName}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <input
-            className="w-full border rounded-lg px-3 py-2"
-            placeholder="公司名称（可选）"
-            name="company"
-            value={form.company}
-            onChange={handleChange}
-          />
-          <input
-            className="w-full border rounded-lg px-3 py-2"
-            placeholder="街道地址"
-            name="street"
-            value={form.street}
-            onChange={handleChange}
-            required
-          />
-          <input
-            className="w-full border rounded-lg px-3 py-2"
-            placeholder="门牌/单元（可选）"
-            name="apt"
-            value={form.apt}
-            onChange={handleChange}
-          />
-          <div className="flex gap-3">
-            <input
-              className="flex-1 border rounded-lg px-3 py-2"
-              placeholder="邮编"
-              name="zip"
-              value={form.zip}
-              onChange={handleChange}
-              required
-            />
-            <input
-              className="flex-1 border rounded-lg px-3 py-2"
-              placeholder="城市/省份"
-              name="city"
-              value={form.city}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <input
-            className="w-full border rounded-lg px-3 py-2"
-            placeholder="国家/地区"
-            name="country"
-            value={form.country}
-            onChange={handleChange}
-            required
-          />
-          <input
-            className="w-full border rounded-lg px-3 py-2"
-            placeholder="手机号"
-            name="phone"
-            value={form.phone}
-            onChange={handleChange}
-            required
-          />
-          <div className="text-xs text-gray-500 mt-1">手机号提交后不可更改，请确保填写正确。</div>
-          <div className="text-xs text-red-500">{error}</div>
+        <h2 className="text-2xl font-semibold text-center mb-8">{title}</h2>
+        <form onSubmit={onSubmit} className="space-y-4">
+          {children}
+          {error && (
+            <div className="text-sm text-red-500 flex items-center">
+              <AlertCircle className="h-4 w-4 mr-1" />
+              {error}
+            </div>
+          )}
           <div className="flex gap-4 mt-6">
             <button
               type="submit"
@@ -155,18 +76,239 @@ function EditShippingAddressModal({
   );
 }
 
+// 个人信息编辑弹出层
+function EditPersonalInfoModal({
+  open,
+  onClose,
+  onSave,
+  initialData,
+}: {
+  open: boolean;
+  onClose: () => void;
+  onSave: (data: any) => void;
+  initialData: any;
+}) {
+  const [form, setForm] = useState(initialData);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    setForm(initialData);
+  }, [initialData]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+    try {
+      await onSave(form);
+      onClose();
+    } catch (err: any) {
+      setError(err.message || '保存失败');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <BaseModal
+      open={open}
+      onClose={onClose}
+      title="编辑个人信息"
+      onSubmit={handleSubmit}
+      loading={loading}
+      error={error}
+    >
+      <div className="flex gap-3">
+        <div className="flex-1">
+          <Label htmlFor="lastName">姓</Label>
+          <Input
+            id="lastName"
+            name="lastName"
+            value={form.lastName}
+            onChange={handleChange}
+            className="mt-1"
+            required
+          />
+        </div>
+        <div className="flex-1">
+          <Label htmlFor="firstName">名</Label>
+          <Input
+            id="firstName"
+            name="firstName"
+            value={form.firstName}
+            onChange={handleChange}
+            className="mt-1"
+            required
+          />
+        </div>
+      </div>
+      <div>
+        <Label htmlFor="phone">手机号码</Label>
+        <Input
+          id="phone"
+          name="phone"
+          value={form.phone}
+          onChange={handleChange}
+          className="mt-1"
+          required
+        />
+      </div>
+    </BaseModal>
+  );
+}
+
+// 地址编辑弹出层
+function EditAddressModal({
+  open,
+  onClose,
+  onSave,
+  initialData,
+}: {
+  open: boolean;
+  onClose: () => void;
+  onSave: (data: any) => void;
+  initialData: any;
+}) {
+  const [form, setForm] = useState(initialData);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [selectedProvince, setSelectedProvince] = useState(initialData.province || '');
+  const [selectedCity, setSelectedCity] = useState(initialData.city || '');
+
+  useEffect(() => {
+    setForm(initialData);
+    setSelectedProvince(initialData.province || '');
+    setSelectedCity(initialData.city || '');
+  }, [initialData]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleProvinceChange = (value: string) => {
+    setSelectedProvince(value);
+    setSelectedCity('');
+    setForm({ ...form, province: value, city: '' });
+  };
+
+  const handleCityChange = (value: string) => {
+    setSelectedCity(value);
+    setForm({ ...form, city: value });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+    try {
+      await onSave(form);
+      onClose();
+    } catch (err: any) {
+      setError(err.message || '保存失败');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <BaseModal
+      open={open}
+      onClose={onClose}
+      title="编辑收货地址"
+      onSubmit={handleSubmit}
+      loading={loading}
+      error={error}
+    >
+      <div>
+        <Label htmlFor="street">街道地址</Label>
+        <Input
+          id="street"
+          name="street"
+          value={form.street}
+          onChange={handleChange}
+          className="mt-1"
+          required
+        />
+      </div>
+      <div>
+        <Label htmlFor="apt">门牌号/单元（可选）</Label>
+        <Input id="apt" name="apt" value={form.apt} onChange={handleChange} className="mt-1" />
+      </div>
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <Label htmlFor="province">省份</Label>
+          <Select value={selectedProvince} onValueChange={handleProvinceChange}>
+            <SelectTrigger id="province" className="mt-1">
+              <SelectValue placeholder="选择省份" />
+            </SelectTrigger>
+            <SelectContent>
+              {provinces.map(prov => (
+                <SelectItem key={prov.name} value={prov.name}>
+                  {prov.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div>
+          <Label htmlFor="city">城市</Label>
+          <Select
+            value={selectedCity}
+            onValueChange={handleCityChange}
+            disabled={!selectedProvince}
+          >
+            <SelectTrigger id="city" className="mt-1">
+              <SelectValue placeholder={selectedProvince ? '选择城市' : '请先选择省份'} />
+            </SelectTrigger>
+            <SelectContent>
+              {(provinces.find(p => p.name === selectedProvince)?.cities || []).map(city => (
+                <SelectItem key={city} value={city}>
+                  {city}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+      <div>
+        <Label htmlFor="zip">邮政编码</Label>
+        <Input
+          id="zip"
+          name="zip"
+          value={form.zip}
+          onChange={handleChange}
+          className="mt-1"
+          required
+        />
+      </div>
+    </BaseModal>
+  );
+}
+
 export default function AccountPage() {
-  const [modalOpen, setModalOpen] = useState(false);
-  const [shipping, setShipping] = useState({
-    lastName: '',
+  const [personalInfoModalOpen, setPersonalInfoModalOpen] = useState(false);
+  const [addressModalOpen, setAddressModalOpen] = useState(false);
+  const [userData, setUserData] = useState({
     firstName: '',
-    company: '',
-    street: '',
-    apt: '',
-    zip: '',
-    city: '',
-    country: '',
+    lastName: '',
     phone: '',
+    address: {
+      street: '',
+      apt: '',
+      city: '',
+      province: '',
+      zip: '',
+      country: '中国',
+      firstName: '',
+      lastName: '',
+      company: '',
+      phone: '',
+    },
   });
 
   useEffect(() => {
@@ -174,10 +316,8 @@ export default function AccountPage() {
       try {
         const userId = getUserId();
         if (!userId) return;
-        const userData = await getUserById(userId);
-        if (userData.address) {
-          setShipping(userData.address);
-        }
+        const data = await getUserById(userId);
+        setUserData(data);
       } catch (error) {
         console.error('获取用户信息失败:', error);
       }
@@ -186,15 +326,44 @@ export default function AccountPage() {
     fetchUserData();
   }, []);
 
+  const handleSavePersonalInfo = async (data: any) => {
+    try {
+      const userId = getUserId();
+      if (!userId) throw new Error('未登录');
+      await updateUserAddress(userId, {
+        ...userData.address,
+        firstName: data.firstName,
+        lastName: data.lastName,
+        phone: data.phone,
+      });
+      setUserData(prev => ({
+        ...prev,
+        firstName: data.firstName,
+        lastName: data.lastName,
+        phone: data.phone,
+      }));
+    } catch (error) {
+      throw error;
+    }
+  };
+
   const handleSaveAddress = async (data: any) => {
     try {
       const userId = getUserId();
       if (!userId) throw new Error('未登录');
-      await updateUserAddress(userId, data);
-      setShipping(data);
-      setModalOpen(false);
+      await updateUserAddress(userId, {
+        ...userData.address,
+        ...data,
+      });
+      setUserData(prev => ({
+        ...prev,
+        address: {
+          ...prev.address,
+          ...data,
+        },
+      }));
     } catch (error) {
-      console.error('保存地址失败:', error);
+      throw error;
     }
   };
 
@@ -214,19 +383,19 @@ export default function AccountPage() {
                   <div>
                     <div className="text-sm text-gray-500">姓名</div>
                     <div className="font-medium">
-                      {shipping.firstName} {shipping.lastName}
+                      {userData.lastName} {userData.firstName}
                     </div>
                   </div>
-                  <Button variant="ghost" onClick={() => setModalOpen(true)}>
+                  <Button variant="ghost" onClick={() => setPersonalInfoModalOpen(true)}>
                     编辑
                   </Button>
                 </div>
                 <div className="flex items-center justify-between">
                   <div>
                     <div className="text-sm text-gray-500">手机号码</div>
-                    <div className="font-medium">{shipping.phone}</div>
+                    <div className="font-medium">{userData.phone}</div>
                   </div>
-                  <Button variant="ghost" onClick={() => setModalOpen(true)}>
+                  <Button variant="ghost" onClick={() => setPersonalInfoModalOpen(true)}>
                     编辑
                   </Button>
                 </div>
@@ -243,15 +412,17 @@ export default function AccountPage() {
                   <div>
                     <div className="text-sm text-gray-500">默认地址</div>
                     <div className="font-medium">
-                      {shipping.street}
-                      {shipping.apt && `, ${shipping.apt}`}
+                      {userData.address.street}
+                      {userData.address.apt && `, ${userData.address.apt}`}
                       <br />
-                      {shipping.city}, {shipping.zip}
+                      {userData.address.city && `${userData.address.city}, `}
+                      {userData.address.province && `${userData.address.province}, `}
+                      {userData.address.zip}
                       <br />
-                      {shipping.country}
+                      {userData.address.country}
                     </div>
                   </div>
-                  <Button variant="ghost" onClick={() => setModalOpen(true)}>
+                  <Button variant="ghost" onClick={() => setAddressModalOpen(true)}>
                     编辑
                   </Button>
                 </div>
@@ -293,11 +464,23 @@ export default function AccountPage() {
         </div>
       </main>
       <Footer />
-      <EditShippingAddressModal
-        open={modalOpen}
-        onClose={() => setModalOpen(false)}
+
+      {/* 弹出层 */}
+      <EditPersonalInfoModal
+        open={personalInfoModalOpen}
+        onClose={() => setPersonalInfoModalOpen(false)}
+        onSave={handleSavePersonalInfo}
+        initialData={{
+          firstName: userData.firstName,
+          lastName: userData.lastName,
+          phone: userData.phone,
+        }}
+      />
+      <EditAddressModal
+        open={addressModalOpen}
+        onClose={() => setAddressModalOpen(false)}
         onSave={handleSaveAddress}
-        initialData={shipping}
+        initialData={userData.address}
       />
     </div>
   );
