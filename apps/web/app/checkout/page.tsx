@@ -217,7 +217,7 @@ export default function CheckoutPage() {
         quantity: item.quantity,
       }));
 
-      const order = await createOrder({
+      const order = await createOrder(userId, {
         shippingAddress: {
           fullName: `${formData.firstName} ${formData.lastName}`,
           phone: formData.phone,

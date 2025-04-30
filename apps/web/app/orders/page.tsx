@@ -11,7 +11,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { getUserOrders } from '@/lib/api/orders';
 import { Order } from '@/lib/types';
 import Image from '@/components/ui/image';
-import { getUserId } from '@/lib/utils/user';
+import { getUserId } from '@/lib/store/userStore';
 export default function OrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [isLoading, setIsLoading] = useState(true);

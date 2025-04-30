@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { saveToken } from '@/lib/utils/user';
+import { saveToken } from '@/lib/store/userStore';
 import { login, register } from '@/lib/api/users';
 
 // 生成随机邮箱

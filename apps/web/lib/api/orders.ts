@@ -36,20 +36,18 @@ interface CreateOrderRequest {
   paymentMethod: string;
 }
 
-export async function createOrder(data: CreateOrderRequest): Promise<Order> {
-  const response = await fetch('/api/orders', {
+export async function createOrder(userId: string, data: CreateOrderRequest): Promise<Order> {
+  const url = `${API_CONFIG.orderUrl}/${userId}`;
+  const response = await fetchApi<Order>(url, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
     body: JSON.stringify(data),
   });
 
-  if (!response.ok) {
-    throw new Error('创建订单失败');
+  if (!response.success || !response.data) {
+    throw new Error(response.error || '创建订单失败');
   }
 
-  return response.json();
+  return response.data;
 }
 
 // 获取用户订单列表

@@ -6,7 +6,7 @@ import { Navbar } from '@/components/navbar';
 import { Footer } from '@/components/footer';
 import { useState, useEffect } from 'react';
 import { updateUserAddress, getUserById } from '@/lib/api/users';
-import { getUserId } from '@/lib/utils/user';
+import { getUserId } from '@/lib/store/userStore';
 
 function EditShippingAddressModal({
   open,
