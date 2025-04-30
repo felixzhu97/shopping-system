@@ -27,31 +27,13 @@ declare module 'shared' {
   }
 
   export interface User {
-    // ------Id------
     id: string;
-    // ------UserInfo------
     fullName: string;
     email: string;
     role: 'user' | 'admin';
     firstName: string;
     lastName: string;
     phone: string;
-    address: {
-      street: string;
-      city: string;
-      province: string;
-      postalCode: string;
-      country: string;
-    };
-    payment: {
-      paymentMethod: 'alipay' | 'wechat' | 'credit-card';
-      cardNumber?: string;
-      expiration?: string;
-      cvv?: string;
-    };
-    // ------RegisteredAt------
-    registeredAt: Date;
-    lastLoginAt: Date;
   }
 
   export interface Order {
@@ -65,17 +47,14 @@ declare module 'shared' {
   }
 
   export interface Payment {
-    // ------User------
     firstName: string;
     lastName: string;
     email: string;
     phone: string;
-    // ------Address------
     address: string;
     city: string;
     province: string;
     postalCode: string;
-    // ------Payment------
     paymentMethod: 'alipay' | 'wechat' | 'credit-card';
     cardNumber: string;
     expiration: string;

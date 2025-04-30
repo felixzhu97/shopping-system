@@ -1,30 +1,40 @@
 import mongoose, { Schema, Document } from 'mongoose';
-import { IAddress, IPaymentMethod } from './User';
+import { Order as OrderType } from 'shared';
 
-export interface IOrderItem {
-  productId: mongoose.Types.ObjectId;
-  name: string;
-  price: number;
+export interface CartItemType {
+  productId: string;
   quantity: number;
-  image: string;
 }
 
-export interface IPaymentDetails {
-  method: IPaymentMethod;
-  status: 'pending' | 'completed' | 'failed';
-  paidAt?: Date;
-}
+export interface OrderDocument extends Document, Omit<OrderType, 'id'> {}
 
-export interface IOrder extends Document {
-  userId: mongoose.Types.ObjectId;
-  orderItems: IOrderItem[];
-  shippingAddress: IAddress;
-  paymentDetails: IPaymentDetails;
-  totalAmount: number;
-  status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
-  createdAt: Date;
-  updatedAt: Date;
-}
+const OrderItemSchema: Schema = new Schema({
+  productId: {
+    type: Schema.Types.ObjectId,
+    ref: 'Product',
+    required: true,
+  },
+  name: {
+    type: String,
+    required: true,
+  },
+  image: {
+    type: String,
+    required: true,
+  },
+  price: {
+    type: Number,
+    required: true,
+  },
+  quantity: {
+    type: Number,
+    required: true,
+    min: 1,
+  },
+  description: {
+    type: String,
+  },
+});
 
 const OrderSchema: Schema = new Schema(
   {
@@ -33,94 +43,28 @@ const OrderSchema: Schema = new Schema(
       ref: 'User',
       required: true,
     },
-    orderItems: [
-      {
-        productId: {
-          type: Schema.Types.ObjectId,
-          ref: 'Product',
-          required: true,
-        },
-        name: {
-          type: String,
-          required: true,
-        },
-        price: {
-          type: Number,
-          required: true,
-        },
-        quantity: {
-          type: Number,
-          required: true,
-        },
-        image: {
-          type: String,
-          required: true,
-        },
-      },
-    ],
-    shippingAddress: {
-      address: {
-        type: String,
-        required: true,
-      },
-      city: {
-        type: String,
-        required: true,
-      },
-      province: {
-        type: String,
-        required: true,
-      },
-      postalCode: {
-        type: String,
-        required: true,
-      },
-    },
-    paymentDetails: {
-      method: {
-        type: {
-          type: String,
-          required: true,
-          enum: ['credit-card', 'alipay', 'wechat'],
-        },
-        cardNumber: {
-          type: String,
-          select: false,
-        },
-        expiration: {
-          type: String,
-          select: false,
-        },
-      },
-      status: {
-        type: String,
-        required: true,
-        enum: ['pending', 'completed', 'failed'],
-        default: 'pending',
-      },
-      paidAt: {
-        type: Date,
-      },
-    },
+    items: [OrderItemSchema],
     totalAmount: {
       type: Number,
       required: true,
     },
     status: {
       type: String,
-      required: true,
       enum: ['pending', 'processing', 'shipped', 'delivered', 'cancelled'],
       default: 'pending',
     },
   },
-  {
-    timestamps: true,
-  }
+  { timestamps: true }
 );
 
-// 添加索引
-OrderSchema.index({ userId: 1 });
-OrderSchema.index({ status: 1 });
-OrderSchema.index({ createdAt: -1 });
+// 转换 _id 为 id
+OrderSchema.set('toJSON', {
+  virtuals: true,
+  versionKey: false,
+  transform: function (doc: any, ret: any) {
+    ret.id = ret._id;
+    delete ret._id;
+  },
+});
 
-export default mongoose.model<IOrder>('Order', OrderSchema);
+export default mongoose.model<OrderDocument>('Order', OrderSchema);

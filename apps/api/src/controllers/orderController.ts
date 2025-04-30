@@ -1,74 +1,54 @@
-import { Request, Response } from 'express';
-import Order, { IPaymentDetails } from '../models/Order';
+import Order from '../models/Order';
 import Cart from '../models/Cart';
 import Product from '../models/Product';
 import User from '../models/User';
-import Payment from '../models/Payment';
-import { ApiError } from '../utils/ApiError';
 
 // 创建订单
-export const createOrder = async (req: Request, res: Response) => {
+export const createOrder = async (req: any, res: any) => {
   try {
-    const { userId, orderItems, shippingAddress, paymentMethod } = req.body;
+    const { userId } = req.params;
+    const { items, totalAmount, shippingAddress, paymentMethod } = req.body;
 
-    // 获取用户的支付信息
-    const paymentInfo = await Payment.findOne({ userId });
-    if (!paymentInfo) {
-      throw new ApiError(404, '未找到支付信息', 'PAYMENT_NOT_FOUND');
+    // 确保用户存在
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: '用户不存在' });
     }
 
-    // 构建支付详情
-    const paymentDetails: IPaymentDetails = {
-      paymentMethod: paymentInfo.paymentMethod,
-      paymentStatus: 'pending',
-    };
-
-    // 如果是信用卡支付，添加卡信息
-    if (paymentInfo.paymentMethod === 'credit-card') {
-      Object.assign(paymentDetails, {
-        cardNumber: paymentInfo.cardNumber,
-        expiration: paymentInfo.expiration,
-      });
-    }
-
-    // 计算总金额
-    const totalAmount = orderItems.reduce((total, item) => total + item.price * item.quantity, 0);
+    // 查询所有商品详细信息
+    const detailedItems = await Promise.all(
+      items.map(async (item: any) => {
+        const product = await Product.findById(item.productId);
+        return {
+          productId: item.productId,
+          quantity: item.quantity,
+          name: product?.name || '',
+          image: product?.image || '',
+          price: product?.price || 0,
+          description: product?.description || '',
+        };
+      })
+    );
 
     // 创建订单
-    const order = await Order.create({
+    const order = new Order({
       userId,
-      orderItems,
-      shippingAddress,
-      paymentDetails,
+      items: detailedItems,
       totalAmount,
       status: 'pending',
+      shippingAddress,
+      paymentMethod,
     });
 
-    res.status(201).json({
-      success: true,
-      data: { order },
-    });
+    await order.save();
+
+    // 清空购物车 (可选)
+    await Cart.findOneAndUpdate({ userId }, { $set: { items: [] } });
+
+    res.status(201).json(order);
   } catch (error) {
-    if (error instanceof ApiError) {
-      res.status(error.statusCode).json({
-        success: false,
-        error: {
-          code: error.code,
-          message: error.message,
-          status: error.statusCode,
-        },
-      });
-    } else {
-      console.error('创建订单失败:', error);
-      res.status(500).json({
-        success: false,
-        error: {
-          code: 'INTERNAL_SERVER_ERROR',
-          message: '创建订单失败',
-          status: 500,
-        },
-      });
-    }
+    console.error('创建订单失败:', error);
+    res.status(500).json({ message: '创建订单失败' });
   }
 };
 
@@ -87,92 +67,56 @@ export const getUserOrders = async (req: any, res: any) => {
 };
 
 // 获取订单详情
-export const getOrder = async (req: Request, res: Response) => {
+export const getOrderById = async (req: any, res: any) => {
   try {
-    const { orderId } = req.params;
+    const { id } = req.params;
 
-    const order = await Order.findById(orderId)
-      .populate('userId', 'firstName lastName email phone')
-      .populate('orderItems.productId');
+    const order = await Order.findById(id);
 
     if (!order) {
-      throw new ApiError(404, '未找到订单', 'ORDER_NOT_FOUND');
+      return res.status(404 as number).json({ message: '订单不存在' });
     }
 
-    res.status(200).json({
-      success: true,
-      data: { order },
-    });
+    res.status(200 as number).json(order);
   } catch (error) {
-    if (error instanceof ApiError) {
-      res.status(error.statusCode).json({
-        success: false,
-        error: {
-          code: error.code,
-          message: error.message,
-          status: error.statusCode,
-        },
-      });
-    } else {
-      console.error('获取订单失败:', error);
-      res.status(500).json({
-        success: false,
-        error: {
-          code: 'INTERNAL_SERVER_ERROR',
-          message: '获取订单失败',
-          status: 500,
-        },
-      });
-    }
+    console.error('获取订单详情失败:', error);
+    res.status(500 as number).json({ message: '获取订单详情失败' });
   }
 };
 
 // 更新订单状态
-export const updateOrderStatus = async (req: Request, res: Response) => {
+export const updateOrderStatus = async (req: any, res: any) => {
   try {
-    const { orderId } = req.params;
+    const { id } = req.params;
     const { status } = req.body;
 
-    const order = await Order.findById(orderId);
+    // 验证状态值
+    const validStatuses = ['pending', 'processing', 'shipped', 'delivered', 'cancelled'];
+    if (!validStatuses.includes(status)) {
+      return res.status(400 as number).json({ message: '无效的订单状态' });
+    }
+
+    const order = await Order.findById(id);
     if (!order) {
-      throw new ApiError(404, '未找到订单', 'ORDER_NOT_FOUND');
+      return res.status(404 as number).json({ message: '订单不存在' });
+    }
+
+    // 如果订单被取消，恢复库存
+    if (status === 'cancelled' && order.status !== 'cancelled') {
+      for (const item of order.items) {
+        await Product.findByIdAndUpdate(item.productId, {
+          $inc: { stock: item.quantity },
+        });
+      }
     }
 
     order.status = status;
+    const updatedOrder = await order.save();
 
-    // 如果订单状态更新为已支付，更新支付状态和时间
-    if (status === 'processing') {
-      order.paymentDetails.paymentStatus = 'completed';
-      order.paymentDetails.paidAt = new Date();
-    }
-
-    await order.save();
-
-    res.status(200).json({
-      success: true,
-      data: { order },
-    });
+    res.status(200 as number).json(updatedOrder);
   } catch (error) {
-    if (error instanceof ApiError) {
-      res.status(error.statusCode).json({
-        success: false,
-        error: {
-          code: error.code,
-          message: error.message,
-          status: error.statusCode,
-        },
-      });
-    } else {
-      console.error('更新订单状态失败:', error);
-      res.status(500).json({
-        success: false,
-        error: {
-          code: 'INTERNAL_SERVER_ERROR',
-          message: '更新订单状态失败',
-          status: 500,
-        },
-      });
-    }
+    console.error('更新订单状态失败:', error);
+    res.status(500 as number).json({ message: '更新订单状态失败' });
   }
 };
 
