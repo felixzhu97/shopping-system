@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 import { Navbar } from '../components/navbar';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useRouter } from 'next/navigation';
-import { useCartStore } from '@/lib/stores/cart';
+import { useCartStore } from '@/lib/stores/cartStore';
 
 // 模拟 next/navigation
 vi.mock('next/navigation', () => ({

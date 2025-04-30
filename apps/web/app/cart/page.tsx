@@ -12,7 +12,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { CartItem } from '@/components/cart-item';
 import { Navbar } from '@/components/navbar';
 import { Footer } from '@/components/footer';
-import { useCartStore } from '@/lib/stores/cart';
+import { useCartStore } from '@/lib/stores/cartStore';
 
 // 加载状态的骨架屏组件
 const LoadingSkeleton = memo(() => (

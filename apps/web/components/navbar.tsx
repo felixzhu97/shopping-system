@@ -18,10 +18,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Badge } from '@/components/ui/badge';
-import { useCartStore } from '@/lib/stores/cart';
+import { useCartStore } from '@/lib/stores/cartStore';
 import PanelDropdown from '@/components/ui/panel-dropdown';
 import Image from '@/components/ui/image';
-import { useUserStore } from '@/lib/stores/user';
+import { useUserStore } from '@/lib/stores/userStore';
 import { getToken } from '@/lib/utils/user';
 
 // 定义快捷链接数据
