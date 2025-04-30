@@ -22,28 +22,18 @@ export async function getOrderById(id: string): Promise<Order> {
 }
 
 interface CreateOrderRequest {
-  userId: string;
+  shippingAddress: {
+    fullName: string;
+    phone: string;
+    address: string;
+    city: string;
+    postalCode: string;
+  };
   orderItems: {
     productId: string;
     quantity: number;
-    price: number;
   }[];
-  shippingAddress: {
-    address: string;
-    city: string;
-    province: string;
-    postalCode: string;
-  };
-  paymentDetails: {
-    method: {
-      type: 'credit-card' | 'alipay' | 'wechat';
-      cardNumber?: string;
-      expiration?: string;
-    };
-    status: 'pending' | 'completed' | 'failed';
-  };
-  totalAmount: number;
-  status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+  paymentMethod: string;
 }
 
 export async function createOrder(data: CreateOrderRequest): Promise<Order> {

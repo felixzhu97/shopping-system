@@ -7,7 +7,7 @@ import User from '../models/User';
 export const createOrder = async (req: any, res: any) => {
   try {
     const { userId } = req.params;
-    const { items, totalAmount, shippingAddress, paymentMethod } = req.body;
+    const { orderItems, shippingAddress, paymentMethod } = req.body;
 
     // 确保用户存在
     const user = await User.findById(userId);
@@ -15,17 +15,25 @@ export const createOrder = async (req: any, res: any) => {
       return res.status(404).json({ message: '用户不存在' });
     }
 
-    // 查询所有商品详细信息
+    // 查询所有商品详细信息并计算总金额
+    let totalAmount = 0;
     const detailedItems = await Promise.all(
-      items.map(async (item: any) => {
+      orderItems.map(async (item: any) => {
         const product = await Product.findById(item.productId);
+        if (!product) {
+          throw new Error(`商品不存在: ${item.productId}`);
+        }
+
+        const subtotal = product.price * item.quantity;
+        totalAmount += subtotal;
+
         return {
           productId: item.productId,
           quantity: item.quantity,
-          name: product?.name || '',
-          image: product?.image || '',
-          price: product?.price || 0,
-          description: product?.description || '',
+          name: product.name,
+          image: product.image,
+          price: product.price,
+          description: product.description,
         };
       })
     );
@@ -48,7 +56,10 @@ export const createOrder = async (req: any, res: any) => {
     res.status(201).json(order);
   } catch (error) {
     console.error('创建订单失败:', error);
-    res.status(500).json({ message: '创建订单失败' });
+    res.status(500).json({
+      message: '创建订单失败',
+      error: error instanceof Error ? error.message : '未知错误',
+    });
   }
 };
 

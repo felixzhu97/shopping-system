@@ -53,6 +53,33 @@ const OrderSchema: Schema = new Schema(
       enum: ['pending', 'processing', 'shipped', 'delivered', 'cancelled'],
       default: 'pending',
     },
+    shippingAddress: {
+      fullName: {
+        type: String,
+        required: true,
+      },
+      phone: {
+        type: String,
+        required: true,
+      },
+      address: {
+        type: String,
+        required: true,
+      },
+      city: {
+        type: String,
+        required: true,
+      },
+      postalCode: {
+        type: String,
+        required: true,
+      },
+    },
+    paymentMethod: {
+      type: String,
+      required: true,
+      enum: ['alipay', 'wechat', 'credit-card'],
+    },
   },
   { timestamps: true }
 );

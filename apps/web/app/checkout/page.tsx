@@ -215,28 +215,18 @@ export default function CheckoutPage() {
       const orderItems = items.map(item => ({
         productId: item.productId,
         quantity: item.quantity,
-        price: item.product?.price || 0,
       }));
 
       const order = await createOrder({
-        userId,
-        orderItems,
         shippingAddress: {
+          fullName: `${formData.firstName} ${formData.lastName}`,
+          phone: formData.phone,
           address: formData.address,
           city: formData.city,
-          province: formData.province,
           postalCode: formData.postalCode,
         },
-        paymentDetails: {
-          method: {
-            type: formData.paymentMethod as 'credit-card' | 'alipay' | 'wechat',
-            cardNumber: formData.paymentMethod === 'credit-card' ? formData.cardNumber : undefined,
-            expiration: formData.paymentMethod === 'credit-card' ? formData.expiration : undefined,
-          },
-          status: 'pending',
-        },
-        totalAmount: total,
-        status: 'pending',
+        paymentMethod: formData.paymentMethod,
+        orderItems,
       });
 
       // 保存结算信息
