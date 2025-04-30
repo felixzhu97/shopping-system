@@ -24,6 +24,7 @@ import { Footer } from '@/components/footer';
 import { useCartStore } from '@/lib/store/cartStore';
 import { useUserStore } from '@/lib/store/userStore';
 import { useCheckoutStore } from '@/lib/store/checkoutStore';
+import { useAccountStore } from '@/lib/store/accountStore';
 import { Image } from '@/components/ui/image';
 import { cn } from '@/lib/utils/utils';
 import { provinces } from '@/components/china-region';
@@ -59,6 +60,7 @@ export default function CheckoutPage() {
   // 1. 所有 store hooks
   const { items, clearCart } = useCartStore();
   const { getUserId, getCheckoutInfo, saveCheckoutInfo } = useUserStore();
+  const { formData: accountData } = useAccountStore();
   const {
     formData,
     errors,
@@ -100,12 +102,20 @@ export default function CheckoutPage() {
 
   const handleProvinceChange = (value: string) => {
     setSelectedProvince(value);
-    setFormData({ province: value });
+    setSelectedCity(''); // 清空城市选择
+    setFormData(prev => ({
+      ...prev,
+      province: value,
+      city: '', // 清空城市值
+    }));
   };
 
   const handleCityChange = (value: string) => {
     setSelectedCity(value);
-    setFormData({ city: value });
+    setFormData(prev => ({
+      ...prev,
+      city: value,
+    }));
   };
 
   const validateForm = (): boolean => {
@@ -274,27 +284,43 @@ export default function CheckoutPage() {
         // 首先尝试从本地存储获取结账信息
         const checkoutInfo = getCheckoutInfo();
         if (checkoutInfo) {
-          setFormData(checkoutInfo);
-          setSelectedProvince(checkoutInfo.province);
-          setSelectedCity(checkoutInfo.city);
+          // 验证省份和城市的有效性
+          const province = provinces.find(p => p.name === checkoutInfo.province);
+          if (province) {
+            setFormData({
+              ...checkoutInfo,
+              province: checkoutInfo.province,
+              city: province.cities.includes(checkoutInfo.city) ? checkoutInfo.city : '',
+            });
+            setSelectedProvince(checkoutInfo.province);
+            if (province.cities.includes(checkoutInfo.city)) {
+              setSelectedCity(checkoutInfo.city);
+            }
+          }
           return;
         }
 
-        // 如果没有本地存储的结账信息，则从用户信息中获取
-        const userData = await getUserById(userId);
-        if (userData.address) {
+        // 如果没有本地存储的结账信息，则从账号设置中获取
+        if (accountData.address) {
+          const province = provinces.find(p => p.name === accountData.address.province);
           const addressData = {
-            firstName: userData.address.firstName,
-            lastName: userData.address.lastName,
-            phone: userData.address.phone,
-            address: userData.address.street,
-            city: userData.address.city,
-            province: userData.address.province || '',
-            postalCode: userData.address.zip,
+            firstName: accountData.firstName,
+            lastName: accountData.lastName,
+            phone: accountData.phone,
+            address: accountData.address.street,
+            postalCode: accountData.address.zip,
+            province: accountData.address.province || '',
+            city: accountData.address.city || '',
           };
+
+          if (province) {
+            setSelectedProvince(accountData.address.province);
+            if (province.cities.includes(accountData.address.city)) {
+              setSelectedCity(accountData.address.city);
+            }
+          }
+
           setFormData(addressData);
-          setSelectedProvince(userData.address.province || '');
-          setSelectedCity(userData.address.city);
         }
       } catch (error) {
         console.error('加载用户信息失败:', error);
@@ -302,7 +328,12 @@ export default function CheckoutPage() {
     };
 
     loadUserData();
-  }, [getUserId, getCheckoutInfo, setFormData, setSelectedProvince, setSelectedCity]);
+  }, [getUserId, getCheckoutInfo, setFormData, setSelectedProvince, setSelectedCity, accountData]);
+
+  // 获取当前省份的城市列表
+  const currentCities = useMemo(() => {
+    return provinces.find(p => p.name === selectedProvince)?.cities || [];
+  }, [selectedProvince]);
 
   // 5. 渲染页面
   return (
@@ -495,12 +526,13 @@ export default function CheckoutPage() {
                                 'h-12 rounded-xl transition-colors',
                                 errors.province
                                   ? 'border-red-500 focus:ring-red-500'
-                                  : 'focus:ring-blue-500'
+                                  : 'focus:ring-blue-500',
+                                !selectedProvince && 'text-muted-foreground'
                               )}
                             >
                               <SelectValue placeholder="选择省份" />
                             </SelectTrigger>
-                            <SelectContent className="rounded-xl max-h-72 overflow-y-auto">
+                            <SelectContent className="max-h-[300px]">
                               {provinces.map(prov => (
                                 <SelectItem key={prov.name} value={prov.name}>
                                   {prov.name}
@@ -530,21 +562,20 @@ export default function CheckoutPage() {
                                 'h-12 rounded-xl transition-colors',
                                 errors.city
                                   ? 'border-red-500 focus:ring-red-500'
-                                  : 'focus:ring-blue-500'
+                                  : 'focus:ring-blue-500',
+                                !selectedCity && 'text-muted-foreground'
                               )}
                             >
                               <SelectValue
                                 placeholder={selectedProvince ? '选择城市' : '请先选择省份'}
                               />
                             </SelectTrigger>
-                            <SelectContent className="rounded-xl max-h-72 overflow-y-auto">
-                              {(provinces.find(p => p.name === selectedProvince)?.cities || []).map(
-                                city => (
-                                  <SelectItem key={city} value={city}>
-                                    {city}
-                                  </SelectItem>
-                                )
-                              )}
+                            <SelectContent className="max-h-[300px]">
+                              {currentCities.map(city => (
+                                <SelectItem key={city} value={city}>
+                                  {city}
+                                </SelectItem>
+                              ))}
                             </SelectContent>
                           </Select>
                           {errors.city && (

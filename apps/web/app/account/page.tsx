@@ -19,6 +19,7 @@ import {
 import { provinces } from '@/components/china-region';
 import { AlertCircle } from 'lucide-react';
 import { cn } from '@/lib/utils/utils';
+import { useAccountStore } from '@/lib/store/accountStore';
 
 // 基础弹出层组件
 interface BaseModalProps {
@@ -172,41 +173,98 @@ function EditAddressModal({
   open: boolean;
   onClose: () => void;
   onSave: (data: any) => void;
-  initialData: any;
+  initialData: {
+    firstName: string;
+    lastName: string;
+    company: string;
+    street: string;
+    apt: string;
+    zip: string;
+    city: string;
+    province: string;
+    country: string;
+    phone: string;
+  };
 }) {
   const [form, setForm] = useState(initialData);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [selectedProvince, setSelectedProvince] = useState(initialData.province || '');
-  const [selectedCity, setSelectedCity] = useState(initialData.city || '');
+  const [selectedProvince, setSelectedProvince] = useState('');
+  const [selectedCity, setSelectedCity] = useState('');
 
+  // 初始化和更新表单数据
   useEffect(() => {
-    setForm(initialData);
-    setSelectedProvince(initialData.province || '');
-    setSelectedCity(initialData.city || '');
+    if (initialData) {
+      setForm(initialData);
+      // 确保省份存在于省份列表中
+      const province = provinces.find(p => p.name === initialData.province);
+      if (province) {
+        setSelectedProvince(province.name);
+        // 确保城市存在于该省份的城市列表中
+        if (province.cities.includes(initialData.city)) {
+          setSelectedCity(initialData.city);
+        } else {
+          setSelectedCity('');
+        }
+      } else {
+        setSelectedProvince('');
+        setSelectedCity('');
+      }
+    }
   }, [initialData]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setForm(prev => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
   const handleProvinceChange = (value: string) => {
     setSelectedProvince(value);
-    setSelectedCity('');
-    setForm({ ...form, province: value, city: '' });
+    setSelectedCity(''); // 清空城市选择
+    setForm(prev => ({
+      ...prev,
+      province: value,
+      city: '', // 清空城市值
+    }));
   };
 
   const handleCityChange = (value: string) => {
     setSelectedCity(value);
-    setForm({ ...form, city: value });
+    setForm(prev => ({
+      ...prev,
+      city: value,
+    }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // 表单验证
+    if (!selectedProvince || !selectedCity) {
+      setError('请选择省份和城市');
+      return;
+    }
+
+    // 验证城市是否属于选中的省份
+    const province = provinces.find(p => p.name === selectedProvince);
+    if (!province || !province.cities.includes(selectedCity)) {
+      setError('请选择有效的城市');
+      return;
+    }
+
     setLoading(true);
     setError(null);
+
     try {
-      await onSave(form);
+      const submitData = {
+        ...form,
+        province: selectedProvince,
+        city: selectedCity,
+      };
+      await onSave(submitData);
       onClose();
     } catch (err: any) {
       setError(err.message || '保存失败');
@@ -214,6 +272,9 @@ function EditAddressModal({
       setLoading(false);
     }
   };
+
+  // 获取当前省份的城市列表
+  const currentCities = provinces.find(p => p.name === selectedProvince)?.cities || [];
 
   return (
     <BaseModal
@@ -229,7 +290,7 @@ function EditAddressModal({
         <Input
           id="street"
           name="street"
-          value={form.street}
+          value={form.street || ''}
           onChange={handleChange}
           className="mt-1"
           required
@@ -237,13 +298,22 @@ function EditAddressModal({
       </div>
       <div>
         <Label htmlFor="apt">门牌号/单元（可选）</Label>
-        <Input id="apt" name="apt" value={form.apt} onChange={handleChange} className="mt-1" />
+        <Input
+          id="apt"
+          name="apt"
+          value={form.apt || ''}
+          onChange={handleChange}
+          className="mt-1"
+        />
       </div>
       <div className="grid grid-cols-2 gap-4">
         <div>
           <Label htmlFor="province">省份</Label>
           <Select value={selectedProvince} onValueChange={handleProvinceChange}>
-            <SelectTrigger id="province" className="mt-1">
+            <SelectTrigger
+              id="province"
+              className={cn('mt-1', !selectedProvince && 'text-muted-foreground')}
+            >
               <SelectValue placeholder="选择省份" />
             </SelectTrigger>
             <SelectContent>
@@ -262,11 +332,14 @@ function EditAddressModal({
             onValueChange={handleCityChange}
             disabled={!selectedProvince}
           >
-            <SelectTrigger id="city" className="mt-1">
+            <SelectTrigger
+              id="city"
+              className={cn('mt-1', !selectedCity && 'text-muted-foreground')}
+            >
               <SelectValue placeholder={selectedProvince ? '选择城市' : '请先选择省份'} />
             </SelectTrigger>
             <SelectContent>
-              {(provinces.find(p => p.name === selectedProvince)?.cities || []).map(city => (
+              {currentCities.map(city => (
                 <SelectItem key={city} value={city}>
                   {city}
                 </SelectItem>
@@ -280,7 +353,7 @@ function EditAddressModal({
         <Input
           id="zip"
           name="zip"
-          value={form.zip}
+          value={form.zip || ''}
           onChange={handleChange}
           className="mt-1"
           required
@@ -293,23 +366,8 @@ function EditAddressModal({
 export default function AccountPage() {
   const [personalInfoModalOpen, setPersonalInfoModalOpen] = useState(false);
   const [addressModalOpen, setAddressModalOpen] = useState(false);
-  const [userData, setUserData] = useState({
-    firstName: '',
-    lastName: '',
-    phone: '',
-    address: {
-      street: '',
-      apt: '',
-      city: '',
-      province: '',
-      zip: '',
-      country: '中国',
-      firstName: '',
-      lastName: '',
-      company: '',
-      phone: '',
-    },
-  });
+  const { formData, setFormData } = useAccountStore();
+  const [userData, setUserData] = useState(formData);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -318,13 +376,14 @@ export default function AccountPage() {
         if (!userId) return;
         const data = await getUserById(userId);
         setUserData(data);
+        setFormData(data);
       } catch (error) {
         console.error('获取用户信息失败:', error);
       }
     };
 
     fetchUserData();
-  }, []);
+  }, [getUserId, setFormData]);
 
   const handleSavePersonalInfo = async (data: any) => {
     try {
@@ -336,12 +395,14 @@ export default function AccountPage() {
         lastName: data.lastName,
         phone: data.phone,
       });
-      setUserData(prev => ({
-        ...prev,
+      const newData = {
+        ...userData,
         firstName: data.firstName,
         lastName: data.lastName,
         phone: data.phone,
-      }));
+      };
+      setUserData(newData);
+      setFormData(newData);
     } catch (error) {
       throw error;
     }
@@ -355,13 +416,15 @@ export default function AccountPage() {
         ...userData.address,
         ...data,
       });
-      setUserData(prev => ({
-        ...prev,
+      const newData = {
+        ...userData,
         address: {
-          ...prev.address,
+          ...userData.address,
           ...data,
         },
-      }));
+      };
+      setUserData(newData);
+      setFormData(newData);
     } catch (error) {
       throw error;
     }

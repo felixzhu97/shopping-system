@@ -15,6 +15,7 @@ interface FormData {
   cardNumber?: string;
   expiration?: string;
   cvv?: string;
+  [key: string]: any; // 允许动态添加属性
 }
 
 interface CheckoutState {
@@ -23,7 +24,7 @@ interface CheckoutState {
   selectedProvince: string;
   selectedCity: string;
   isSubmitting: boolean;
-  setFormData: (data: Partial<FormData>) => void;
+  setFormData: (data: Partial<FormData> | ((prev: FormData) => FormData)) => void;
   setErrors: (errors: Partial<FormData>) => void;
   setSelectedProvince: (province: string) => void;
   setSelectedCity: (city: string) => void;
@@ -53,7 +54,8 @@ export const useCheckoutStore = create<CheckoutState>()(
       isSubmitting: false,
       setFormData: data =>
         set(state => ({
-          formData: { ...state.formData, ...data },
+          formData:
+            typeof data === 'function' ? data(state.formData) : { ...state.formData, ...data },
         })),
       setErrors: errors =>
         set(() => ({
