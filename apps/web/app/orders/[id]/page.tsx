@@ -111,7 +111,7 @@ export default function OrderDetailPage({ params }: { params: Usable<{ id: strin
     <div className="flex flex-col min-h-screen bg-[#f5f5f7]">
       <Navbar />
       <main className="flex-1 container mx-auto px-4 py-12">
-        <div className="max-w-3xl mx-auto">
+        <div className="max-w-4xl mx-auto">
           <div className="mb-8">
             <Button asChild variant="ghost" className="mb-4">
               <Link href="/orders" className="flex items-center">
@@ -119,60 +119,192 @@ export default function OrderDetailPage({ params }: { params: Usable<{ id: strin
                 返回订单列表
               </Link>
             </Button>
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-3">
-                {getStatusIcon(order.status)}
-                <span className="font-semibold text-lg text-gray-900">订单 #{order.id}</span>
-                <span className="text-xs text-yellow-600 font-medium ml-2">
-                  {getStatusText(order.status)}
-                </span>
+
+            {/* 订单状态卡片 */}
+            <div className="bg-white rounded-2xl shadow-sm p-6 mb-6">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  {getStatusIcon(order.status)}
+                  <div>
+                    <h1 className="font-semibold text-xl text-gray-900">订单 #{order.id}</h1>
+                    <span className="text-sm text-gray-500">
+                      下单时间：{new Date(order.createdAt).toLocaleString()}
+                    </span>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <div className="font-bold text-2xl text-gray-900">
+                    ¥{order.totalAmount.toFixed(2)}
+                  </div>
+                  <div className="text-sm font-medium text-blue-600">
+                    {getStatusText(order.status)}
+                  </div>
+                </div>
               </div>
-              <div className="text-right min-w-[90px]">
-                <div className="font-bold text-xl text-gray-900">¥{order.totalAmount}</div>
-                <div className="text-xs text-gray-400 mt-1">
-                  {new Date(order.createdAt).toLocaleDateString()}
+
+              {/* 订单进度条 */}
+              <div className="relative mt-8">
+                <div className="absolute left-0 top-[14px] w-full h-1 bg-gray-200 rounded"></div>
+                <div className="relative flex justify-between">
+                  <div className="flex flex-col items-center">
+                    <div
+                      className={`w-7 h-7 rounded-full flex items-center justify-center mb-2 ${
+                        ['pending', 'processing', 'shipped', 'delivered'].includes(order.status)
+                          ? 'bg-blue-600 text-white'
+                          : 'bg-gray-200 text-gray-400'
+                      }`}
+                    >
+                      <Clock className="h-4 w-4" />
+                    </div>
+                    <span className="text-xs text-gray-500">待处理</span>
+                  </div>
+                  <div className="flex flex-col items-center">
+                    <div
+                      className={`w-7 h-7 rounded-full flex items-center justify-center mb-2 ${
+                        ['processing', 'shipped', 'delivered'].includes(order.status)
+                          ? 'bg-blue-600 text-white'
+                          : 'bg-gray-200 text-gray-400'
+                      }`}
+                    >
+                      <Package className="h-4 w-4" />
+                    </div>
+                    <span className="text-xs text-gray-500">处理中</span>
+                  </div>
+                  <div className="flex flex-col items-center">
+                    <div
+                      className={`w-7 h-7 rounded-full flex items-center justify-center mb-2 ${
+                        ['shipped', 'delivered'].includes(order.status)
+                          ? 'bg-blue-600 text-white'
+                          : 'bg-gray-200 text-gray-400'
+                      }`}
+                    >
+                      <Truck className="h-4 w-4" />
+                    </div>
+                    <span className="text-xs text-gray-500">已发货</span>
+                  </div>
+                  <div className="flex flex-col items-center">
+                    <div
+                      className={`w-7 h-7 rounded-full flex items-center justify-center mb-2 ${
+                        order.status === 'delivered'
+                          ? 'bg-blue-600 text-white'
+                          : 'bg-gray-200 text-gray-400'
+                      }`}
+                    >
+                      <CheckCircle className="h-4 w-4" />
+                    </div>
+                    <span className="text-xs text-gray-500">已送达</span>
+                  </div>
                 </div>
               </div>
             </div>
 
-            <div className="bg-white rounded-2xl shadow-md p-0 overflow-hidden">
-              {/* 商品列表 */}
+            {/* 订单详情卡片 */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {/* 收货信息 */}
+              <div className="bg-white rounded-2xl shadow-sm p-6">
+                <h2 className="text-lg font-semibold mb-4">收货信息</h2>
+                <div className="space-y-3">
+                  <div>
+                    <div className="text-sm text-gray-500">收货人</div>
+                    <div className="font-medium">{order.shippingAddress.fullName}</div>
+                  </div>
+                  <div>
+                    <div className="text-sm text-gray-500">联系电话</div>
+                    <div className="font-medium">{order.shippingAddress.phone}</div>
+                  </div>
+                  <div>
+                    <div className="text-sm text-gray-500">收货地址</div>
+                    <div className="font-medium">
+                      {order.shippingAddress.address}, {order.shippingAddress.city}{' '}
+                      {order.shippingAddress.postalCode}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* 支付信息 */}
+              <div className="bg-white rounded-2xl shadow-sm p-6">
+                <h2 className="text-lg font-semibold mb-4">支付信息</h2>
+                <div className="space-y-3">
+                  <div>
+                    <div className="text-sm text-gray-500">支付方式</div>
+                    <div className="font-medium">
+                      {order.paymentMethod === 'credit-card' && '信用卡'}
+                      {order.paymentMethod === 'alipay' && '支付宝'}
+                      {order.paymentMethod === 'wechat' && '微信支付'}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-sm text-gray-500">支付状态</div>
+                    <div className="font-medium text-green-600">已支付</div>
+                  </div>
+                  <div>
+                    <div className="text-sm text-gray-500">支付时间</div>
+                    <div className="font-medium">{new Date(order.createdAt).toLocaleString()}</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* 订单金额 */}
+              <div className="bg-white rounded-2xl shadow-sm p-6">
+                <h2 className="text-lg font-semibold mb-4">订单金额</h2>
+                <div className="space-y-3">
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">商品总额</span>
+                    <span className="font-medium">¥{order.totalAmount.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">运费</span>
+                    <span className="font-medium">¥0.00</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">优惠金额</span>
+                    <span className="font-medium text-red-500">-¥0.00</span>
+                  </div>
+                  <div className="pt-3 border-t">
+                    <div className="flex justify-between">
+                      <span className="font-medium">实付金额</span>
+                      <span className="font-bold text-xl text-blue-600">
+                        ¥{order.totalAmount.toFixed(2)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* 商品清单 */}
+            <div className="bg-white rounded-2xl shadow-sm mt-6 overflow-hidden">
+              <h2 className="text-lg font-semibold p-6 border-b">商品清单</h2>
               <div className="divide-y divide-gray-100">
                 {order.items.map(item => (
-                  <div key={item.productId} className="flex items-center gap-4 px-6 py-4">
-                    <img
-                      src={item.image || item.product?.image}
-                      alt={item.name || item.product?.name}
-                      className="w-16 h-16 object-cover rounded-xl bg-gray-100 border"
-                    />
+                  <div key={item.productId} className="flex items-center gap-4 p-6">
+                    <div className="relative w-20 h-20 flex-shrink-0">
+                      <Image
+                        src={item.image || item.product?.image}
+                        alt={item.name || item.product?.name}
+                        className="object-cover rounded-xl"
+                        wrapperClassName="w-20 h-20"
+                        width={80}
+                        height={80}
+                      />
+                    </div>
                     <div className="flex-1 min-w-0">
-                      <div className="font-medium text-gray-900 truncate">
+                      <div className="font-medium text-gray-900">
                         {item.name || item.product?.name}
                       </div>
-                      <div className="text-gray-500 text-xs mt-0.5">数量: {item.quantity}</div>
+                      <div className="text-sm text-gray-500 mt-1">
+                        单价: ¥{(item.price ?? item.product?.price ?? 0).toFixed(2)}
+                      </div>
+                      <div className="text-sm text-gray-500">数量: {item.quantity}</div>
                     </div>
-                    <div className="font-semibold text-right text-gray-800 min-w-[60px]">
-                      ¥{(item.price ?? item.product?.price ?? 0) * item.quantity}
+                    <div className="text-right">
+                      <div className="font-semibold text-gray-900">
+                        ¥{((item.price ?? item.product?.price ?? 0) * item.quantity).toFixed(2)}
+                      </div>
                     </div>
                   </div>
                 ))}
-              </div>
-              {/* 订单信息分区 */}
-              <div className="border-t px-6 py-4 grid grid-cols-2 gap-4 bg-gray-50">
-                <div>
-                  <div className="text-xs text-gray-500 mb-1">订单编号</div>
-                  <div className="text-sm text-gray-900">#{order.id}</div>
-                </div>
-                <div>
-                  <div className="text-xs text-gray-500 mb-1">下单时间</div>
-                  <div className="text-sm text-gray-900">
-                    {new Date(order.createdAt).toLocaleString()}
-                  </div>
-                </div>
-                <div>
-                  <div className="text-xs text-gray-500 mb-1">订单总额</div>
-                  <div className="text-base font-bold text-gray-900">¥{order.totalAmount}</div>
-                </div>
               </div>
             </div>
           </div>
