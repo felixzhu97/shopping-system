@@ -99,42 +99,46 @@ function CategoryHeader({ category }: { category: string }) {
     electronics: {
       title: '电子产品',
       description: '探索最新科技产品，体验科技带来的便利与乐趣',
-      color: 'text-blue-600',
-      bgColor: 'bg-blue-50',
+      color: 'text-[#1d1d1f]',
+      bgColor: 'bg-white',
     },
     clothing: {
       title: '服装',
       description: '时尚穿搭，展现个性，彰显您的独特魅力',
-      color: 'text-purple-600',
-      bgColor: 'bg-purple-50',
+      color: 'text-[#1d1d1f]',
+      bgColor: 'bg-white',
     },
     'home-kitchen': {
       title: '家居厨房',
       description: '打造舒适生活空间，让家更有温度',
-      color: 'text-amber-600',
-      bgColor: 'bg-amber-50',
+      color: 'text-[#1d1d1f]',
+      bgColor: 'bg-white',
     },
     books: {
       title: '图书',
       description: '知识的海洋，尽在掌握，开启智慧之门',
-      color: 'text-green-600',
-      bgColor: 'bg-green-50',
+      color: 'text-[#1d1d1f]',
+      bgColor: 'bg-white',
     },
     default: {
       title: '全部商品',
-      description: '浏览我们的所有精选商品',
-      color: 'text-gray-900',
-      bgColor: 'bg-gray-50',
+      description: '以最好的方式购买您喜爱的产品',
+      color: 'text-[#1d1d1f]',
+      bgColor: 'bg-white',
     },
   };
 
   const info = categoryInfo[category as keyof typeof categoryInfo] || categoryInfo.default;
 
   return (
-    <div className={cn('py-8 mb-10', info.bgColor)}>
+    <div className={cn('py-20')}>
       <div className="container mx-auto px-4 text-center">
-        <h1 className={cn('text-4xl font-semibold mb-4', info.color)}>{info.title}</h1>
-        <p className="text-xl text-gray-600 max-w-2xl mx-auto">{info.description}</p>
+        <h1 className={cn('text-[48px] font-semibold mb-4 tracking-tight', info.color)}>
+          {info.title}
+        </h1>
+        <p className="text-[21px] text-[#1d1d1f] opacity-80 max-w-2xl mx-auto">
+          {info.description}
+        </p>
       </div>
     </div>
   );

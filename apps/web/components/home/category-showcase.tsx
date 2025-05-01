@@ -2,6 +2,7 @@ import Link from 'next/link';
 import Image from '@/components/ui/image';
 import { Product } from '@/lib/types';
 import * as api from '@/lib/api';
+import { Button } from '@/components/ui/button';
 
 // 大型展示卡片组件
 const HeroCard = ({
@@ -19,12 +20,22 @@ const HeroCard = ({
         <h2 className={`text-[40px] font-medium ${textColor} mb-1`}>{product.name}</h2>
         <p className={`text-[21px] ${textColor}/90 mb-3`}>{product.description}</p>
         <div className="flex justify-center gap-4 text-[17px]">
-          <Link href={`/products/${product.id}`} className="text-blue-500 hover:underline">
-            了解更多 <span className="ml-1">→</span>
-          </Link>
-          <Link href={`/products/${product.id}`} className="text-blue-500 hover:underline">
-            购买 <span className="ml-1">→</span>
-          </Link>
+          <Button
+            asChild
+            variant="default"
+            size="lg"
+            className="rounded-full px-8 py-6 bg-white text-black hover:bg-white/90 text-base"
+          >
+            <Link href={`/products/${product.id}`}>了解更多</Link>
+          </Button>
+          <Button
+            asChild
+            variant="outline"
+            size="lg"
+            className="rounded-full px-8 py-6 bg-black text-white hover: text-base"
+          >
+            <Link href={`/products/${product.id}`}>购买</Link>
+          </Button>
         </div>
       </div>
       <div className="mt-8 flex justify-center">
@@ -49,9 +60,6 @@ const DualCard = ({ product, color = 'bg-white' }: { product: Product; color?: s
         <div className="flex justify-center gap-4 text-[14px]">
           <Link href={`/products/${product.id}`} className="text-blue-500 hover:underline">
             了解更多 <span className="ml-1">→</span>
-          </Link>
-          <Link href={`/products/${product.id}`} className="text-blue-500 hover:underline">
-            购买 <span className="ml-1">→</span>
           </Link>
         </div>
       </div>

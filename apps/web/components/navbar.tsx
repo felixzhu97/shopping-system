@@ -272,7 +272,7 @@ function NavbarClient() {
   return (
     <div className="relative">
       <header
-        className={`sticky top-0 z-50 w-full bg-[rgba(251,251,253,0.8)] backdrop-blur-md transition-all duration-300 ${
+        className={`fixed top-0 left-0 right-0 z-50 w-full bg-[rgba(251,251,253,0.8)] backdrop-blur-md transition-all duration-300 ${
           isScrolled ? 'shadow-sm' : ''
         }`}
       >
@@ -489,6 +489,7 @@ function NavbarClient() {
           </form>
         </div>
       </header>
+      <div className="h-12 md:h-12"></div>
 
       {/* 搜索栏 - 类似Apple官网的悬浮展开效果 */}
       <PanelDropdown
