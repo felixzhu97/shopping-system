@@ -123,6 +123,7 @@ jobs:
           echo "NODE_ENV=production" > .env.prod
           echo "MONGODB_URI=${{ secrets.MONGODB_URI }}" >> .env.prod
           echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env.prod
+          echo "CORS_ORIGINS=${{ secrets.CORS_ORIGINS }}" >> .env.prod
           echo "已创建部署环境变量文件："
           cat .env.prod
 
@@ -139,6 +140,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           MONGODB_URI: ${{ secrets.MONGODB_URI }}
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          CORS_ORIGINS: ${{ secrets.CORS_ORIGINS }}
 
       - name: 部署完成通知
         run: |
