@@ -3,148 +3,148 @@ import Image from '@/components/ui/image';
 import { Product } from '@/lib/types';
 import * as api from '@/lib/api';
 
-// 商品卡片组件
-const ProductCard = ({ item }: { item: Product }) => (
-  <div className="rounded-2xl overflow-hidden bg-white shadow-sm hover:shadow-md transition-shadow">
-    <Link href={`/products/${item.id}`} className="block h-full">
-      <div className="p-4">
-        <div className="h-36 w-full overflow-hidden rounded-xl mb-3">
-          <Image
-            src={item.image}
-            alt={item.name}
-            className="h-full w-full object-cover transition-transform hover:scale-105"
-            loading="lazy"
-            width={144}
-            height={144}
-          />
+// 大型展示卡片组件
+const HeroCard = ({
+  product,
+  color = 'bg-black',
+  textColor = 'text-white',
+}: {
+  product: Product;
+  color?: string;
+  textColor?: string;
+}) => (
+  <div className={`${color} rounded-[28px] overflow-hidden`}>
+    <Link href={`/products/${product.id}`} className="block relative">
+      <div className="pt-12 px-8 text-center">
+        <h2 className={`text-[40px] font-medium ${textColor} mb-1`}>{product.name}</h2>
+        <p className={`text-[21px] ${textColor}/90 mb-3`}>{product.description}</p>
+        <div className="flex justify-center gap-4 text-[17px]">
+          <Link href={`/products/${product.id}`} className="text-blue-500 hover:underline">
+            了解更多 <span className="ml-1">→</span>
+          </Link>
+          <Link href={`/products/${product.id}`} className="text-blue-500 hover:underline">
+            购买 <span className="ml-1">→</span>
+          </Link>
         </div>
-        <h4 className="text-sm font-medium line-clamp-1">{item.name}</h4>
-        <p className="text-sm text-gray-600 mt-1">¥{item.price.toFixed(2)}</p>
+      </div>
+      <div className="mt-8 flex justify-center">
+        <Image
+          src={product.image}
+          alt={product.name}
+          className="w-full h-auto object-cover"
+          loading="lazy"
+        />
       </div>
     </Link>
   </div>
 );
 
-// 类别展示卡片组件
-const CategoryCard = ({ category }: { category: any }) => (
-  <div
-    className={`rounded-2xl overflow-hidden ${category.color} hover:shadow-md transition-shadow`}
-  >
-    <Link href={`/products?category=${category.id}`} className="block h-full">
-      <div className="p-6 flex flex-col h-full">
-        <h4 className="text-2xl font-semibold mb-3">{category.name}</h4>
-        <p className="text-sm text-gray-600 mb-6">{category.description}</p>
-        <div className="mt-auto">
-          <div className="h-40 w-full overflow-hidden rounded-xl mb-4">
-            <Image
-              src={category.image}
-              alt={category.name}
-              className="h-full w-full object-cover"
-              loading="lazy"
-              width={160}
-              height={160}
-            />
-          </div>
-          <div
-            className={`${category.titleColor.replace('text-', 'text-')} hover:underline text-sm font-medium`}
-          >
-            了解更多 &gt;
-          </div>
+// 双列展示卡片组件
+const DualCard = ({ product, color = 'bg-white' }: { product: Product; color?: string }) => (
+  <div className={`${color} rounded-[28px] overflow-hidden`}>
+    <Link href={`/products/${product.id}`} className="block relative">
+      <div className="pt-8 px-6 text-center">
+        <h2 className="text-[32px] font-medium text-[#1d1d1f] mb-1">{product.name}</h2>
+        <p className="text-[17px] text-[#1d1d1f]/90 mb-3">{product.description}</p>
+        <div className="flex justify-center gap-4 text-[14px]">
+          <Link href={`/products/${product.id}`} className="text-blue-500 hover:underline">
+            了解更多 <span className="ml-1">→</span>
+          </Link>
+          <Link href={`/products/${product.id}`} className="text-blue-500 hover:underline">
+            购买 <span className="ml-1">→</span>
+          </Link>
         </div>
+      </div>
+      <div className="mt-6 flex justify-center">
+        <Image
+          src={product.image}
+          alt={product.name}
+          className="w-full h-auto object-cover"
+          loading="lazy"
+        />
       </div>
     </Link>
   </div>
 );
 
-// 查看更多卡片组件
-const ViewMoreCard = ({ category }: { category: any }) => (
-  <div className="rounded-2xl overflow-hidden bg-gradient-to-br from-white to-gray-100 shadow-sm hover:shadow-md transition-shadow">
-    <Link href={`/products?category=${category.id}`} className="block h-full">
-      <div className="p-6 flex flex-col items-center justify-center h-full text-center">
-        <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center mb-4">
-          <span className={`text-xl ${category.titleColor}`}>&gt;</span>
+// 促销卡片组件
+const PromoCard = ({
+  title,
+  description,
+  image,
+  link,
+  color = 'bg-white',
+}: {
+  title: string;
+  description: string;
+  image: string;
+  link: string;
+  color?: string;
+}) => (
+  <div className={`${color} rounded-[28px] overflow-hidden`}>
+    <Link href={link} className="block relative">
+      <div className="pt-8 px-6 text-center">
+        <h2 className="text-[32px] font-medium text-[#1d1d1f] mb-1">{title}</h2>
+        <p className="text-[17px] text-[#1d1d1f]/90 mb-3">{description}</p>
+        <div className="flex justify-center gap-4 text-[14px]">
+          <Link href={link} className="text-blue-500 hover:underline">
+            立即选购 <span className="ml-1">→</span>
+          </Link>
         </div>
-        <h4 className="text-lg font-medium mb-2">查看所有</h4>
-        <p className="text-sm text-gray-600">{category.name}</p>
+      </div>
+      <div className="mt-6 flex justify-center">
+        <Image src={image} alt={title} className="w-full h-auto object-cover" loading="lazy" />
       </div>
     </Link>
   </div>
 );
 
-// 类别展示区组件
+// 主页展示组件
 async function CategoryShowcase() {
   try {
-    // 并行获取所有类别数据
-    const [electronics, clothing, homeKitchen, books] = await Promise.all([
-      api.getProducts('electronics'),
-      api.getProducts('clothing'),
-      api.getProducts('home-kitchen'),
-      api.getProducts('books'),
-    ]);
+    // 获取产品数据
+    const [electronics] = await Promise.all([api.getProducts('electronics')]);
 
-    const categories = [
-      {
-        id: 'electronics',
-        name: '电子产品',
-        description: '探索最新科技产品，体验科技带来的便利与乐趣',
-        items: electronics.slice(0, 8),
-        image: '/electronics.jpg',
-        color: 'bg-blue-50',
-        titleColor: 'text-blue-600',
-      },
-      {
-        id: 'clothing',
-        name: '服装',
-        description: '时尚穿搭，展现个性，彰显您的独特魅力',
-        items: clothing.slice(0, 8),
-        image: '/clothing.jpg',
-        color: 'bg-purple-50',
-        titleColor: 'text-purple-600',
-      },
-      {
-        id: 'home-kitchen',
-        name: '家居厨房',
-        description: '打造舒适生活空间，让家更有温度',
-        items: homeKitchen.slice(0, 8),
-        image: '/home-kitchen.jpg',
-        color: 'bg-amber-50',
-        titleColor: 'text-amber-600',
-      },
-      {
-        id: 'books',
-        name: '图书',
-        description: '知识的海洋，尽在掌握，开启智慧之门',
-        items: books.slice(0, 8),
-        image: '/books.jpg',
-        color: 'bg-green-50',
-        titleColor: 'text-green-600',
-      },
-    ];
+    // 选择展示产品
+    const featuredProducts = electronics.slice(0, 3);
 
     return (
-      <div className="space-y-24">
-        {categories.map(category => (
-          <div key={category.id} className="mb-16">
-            <div className="container max-w-[1040px] mx-auto">
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                <CategoryCard category={category} />
+      <div className="space-y-4 px-6">
+        {/* 主要产品展示 */}
+        <div className="container max-w-[1040px] mx-auto">
+          <HeroCard product={featuredProducts[0]} color="bg-black" textColor="text-white" />
+        </div>
 
-                {category.items.slice(0, 6).map((item: Product) => (
-                  <ProductCard key={item.id} item={item} />
-                ))}
+        {/* 双列产品展示 */}
+        <div className="container max-w-[1040px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-4">
+          <DualCard product={featuredProducts[1]} color="bg-[#fafafa]" />
+          <DualCard product={featuredProducts[2]} color="bg-[#fafafa]" />
+        </div>
 
-                <ViewMoreCard category={category} />
-              </div>
-            </div>
-          </div>
-        ))}
+        {/* 促销活动展示 */}
+        <div className="container max-w-[1040px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-4">
+          <PromoCard
+            title="母亲节献礼"
+            description="为妈妈挑选完美礼物"
+            image="/mothers-day.png"
+            link="/products?category=gifts"
+            color="bg-[#fafafa]"
+          />
+          <PromoCard
+            title="以旧换新"
+            description="换购新机最高可享95折优惠"
+            image="/trade-in.jpg"
+            link="/trade-in"
+            color="bg-[#fafafa]"
+          />
+        </div>
       </div>
     );
   } catch (error) {
-    console.error('获取类别产品数据时出错:', error);
+    console.error('获取产品数据时出错:', error);
     return (
       <div className="text-center py-8">
-        <h3 className="text-lg font-medium mb-2">无法加载类别数据</h3>
+        <h3 className="text-lg font-medium mb-2">无法加载数据</h3>
         <p className="text-gray-500">请稍后再试</p>
       </div>
     );
