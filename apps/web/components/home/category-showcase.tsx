@@ -14,7 +14,7 @@ const HeroCard = ({
   textColor?: string;
 }) => (
   <div className={`${color} rounded-[28px] overflow-hidden`}>
-    <Link href={`/products/${product.id}`} className="block relative">
+    <div className="block relative">
       <div className="pt-12 px-8 text-center">
         <h2 className={`text-[40px] font-medium ${textColor} mb-1`}>{product.name}</h2>
         <p className={`text-[21px] ${textColor}/90 mb-3`}>{product.description}</p>
@@ -35,14 +35,14 @@ const HeroCard = ({
           loading="lazy"
         />
       </div>
-    </Link>
+    </div>
   </div>
 );
 
 // 双列展示卡片组件
 const DualCard = ({ product, color = 'bg-white' }: { product: Product; color?: string }) => (
   <div className={`${color} rounded-[28px] overflow-hidden`}>
-    <Link href={`/products/${product.id}`} className="block relative">
+    <div className="block relative">
       <div className="pt-8 px-6 text-center">
         <h2 className="text-[32px] font-medium text-[#1d1d1f] mb-1">{product.name}</h2>
         <p className="text-[17px] text-[#1d1d1f]/90 mb-3">{product.description}</p>
@@ -63,7 +63,7 @@ const DualCard = ({ product, color = 'bg-white' }: { product: Product; color?: s
           loading="lazy"
         />
       </div>
-    </Link>
+    </div>
   </div>
 );
 
@@ -82,7 +82,7 @@ const PromoCard = ({
   color?: string;
 }) => (
   <div className={`${color} rounded-[28px] overflow-hidden`}>
-    <Link href={link} className="block relative">
+    <div className="block relative">
       <div className="pt-8 px-6 text-center">
         <h2 className="text-[32px] font-medium text-[#1d1d1f] mb-1">{title}</h2>
         <p className="text-[17px] text-[#1d1d1f]/90 mb-3">{description}</p>
@@ -95,7 +95,7 @@ const PromoCard = ({
       <div className="mt-6 flex justify-center">
         <Image src={image} alt={title} className="w-full h-auto object-cover" loading="lazy" />
       </div>
-    </Link>
+    </div>
   </div>
 );
 
