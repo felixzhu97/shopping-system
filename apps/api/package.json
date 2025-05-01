@@ -12,7 +12,13 @@
     "test:watch": "vitest",
     "seed:products200": "ts-node src/scripts/seedProducts200.ts",
     "deploy:lambda": "npm run build && serverless deploy",
-    "remove:lambda": "serverless remove"
+    "deploy:lambda:dev": "npm run build && serverless deploy --stage dev",
+    "deploy:lambda:test": "npm run build && serverless deploy --stage test",
+    "deploy:lambda:prod": "npm run build && serverless deploy --stage prod",
+    "remove:lambda": "serverless remove",
+    "remove:lambda:dev": "serverless remove --stage dev",
+    "remove:lambda:test": "serverless remove --stage test",
+    "remove:lambda:prod": "serverless remove --stage prod"
   },
   "dependencies": {
     "bcryptjs": "3.0.2",
