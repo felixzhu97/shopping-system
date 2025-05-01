@@ -118,6 +118,9 @@ importers:
       '@types/swagger-ui-express':
         specifier: ^4.1.6
         version: 4.1.8
+      dotenv-cli:
+        specifier: 8.0.0
+        version: 8.0.0
       esbuild:
         specifier: ^0.20.2
         version: 0.20.2
@@ -290,8 +293,8 @@ importers:
         specifier: 2.15.0
         version: 2.15.0(react-dom@19.1.0)(react@19.1.0)
       shared:
-        specifier: file:../../packages/shared
-        version: file:packages/shared
+        specifier: workspace:*
+        version: link:../../packages/shared
       sonner:
         specifier: ^1.7.1
         version: 1.7.4(react-dom@19.1.0)(react@19.1.0)
@@ -9981,6 +9984,16 @@ packages:
       tslib: 2.8.1
     dev: true
 
+  /dotenv-cli@8.0.0:
+    resolution: {integrity: sha512-aLqYbK7xKOiTMIRf1lDPbI+Y+Ip/wo5k3eyp6ePysVaSqbyxjyK3dK35BTxG+rmd7djf5q2UPs4noPNH+cj0Qw==}
+    hasBin: true
+    dependencies:
+      cross-spawn: 7.0.6
+      dotenv: 16.5.0
+      dotenv-expand: 10.0.0
+      minimist: 1.2.8
+    dev: true
+
   /dotenv-expand@10.0.0:
     resolution: {integrity: sha512-GopVGCpVS1UKH75VKHGuQFqS1Gusej0z4FyQkPdwjil2gNIv+LNsqBlboOzpJFZKVT95GkCyWJbBSdFEFUWI2A==}
     engines: {node: '>=12'}
@@ -17074,7 +17087,7 @@ packages:
       debug: 4.4.0(supports-color@8.1.1)
       pathe: 1.1.2
       picocolors: 1.1.1
-      vite: 5.4.18(@types/node@20.17.30)
+      vite: 5.4.18(@types/node@22.14.1)
     transitivePeerDependencies:
       - '@types/node'
       - less
@@ -17302,7 +17315,7 @@ packages:
       strip-literal: 2.1.1
       tinybench: 2.9.0
       tinypool: 0.8.4
-      vite: 5.4.18(@types/node@20.17.30)
+      vite: 5.4.18(@types/node@22.14.1)
       vite-node: 1.6.1
       why-is-node-running: 2.3.0
     transitivePeerDependencies:
@@ -17871,13 +17884,6 @@ packages:
     dependencies:
       '@types/react': 19.1.2
       react: 19.1.0
-    dev: false
-
-  file:packages/shared:
-    resolution: {directory: packages/shared, type: directory}
-    name: shared
-    dependencies:
-      typescript: 5.8.3
     dev: false
 
   file:packages/ui:

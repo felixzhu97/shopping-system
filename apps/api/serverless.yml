@@ -4,12 +4,14 @@ provider:
   name: aws
   runtime: nodejs18.x
   region: ap-east-1 # 香港区域
+  stage: ${opt:stage, 'dev'} # 默认为dev环境
   memorySize: 512 # Lambda函数内存大小
   timeout: 30 # 函数超时时间(秒)
   environment:
-    NODE_ENV: production
-    MONGODB_URI: ${env:MONGODB_URI}
-    # 其他环境变量
+    NODE_ENV: ${self:provider.stage}
+    MONGODB_URI: ${env:MONGODB_URI_${self:provider.stage}, env:MONGODB_URI}
+    JWT_SECRET: ${env:JWT_SECRET_${self:provider.stage}, env:JWT_SECRET}
+    CORS_ORIGINS: ${env:CORS_ORIGINS_${self:provider.stage}, env:CORS_ORIGINS}
   iam:
     role:
       statements:
@@ -25,8 +27,15 @@ provider:
 functions:
   api:
     handler: dist/lambda.handler # Lambda处理函数
+    name: shopping-api-${self:provider.stage} # 根据环境生成函数名
     events:
       - http:
           path: /{proxy+} # 捕获所有路径
           method: ANY # 处理所有HTTP方法
           cors: true
+
+custom:
+  stages:
+    - dev
+    - test
+    - prod

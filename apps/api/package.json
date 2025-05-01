@@ -10,9 +10,17 @@
     "lint": "eslint src/**/*.ts",
     "test": "vitest run",
     "test:watch": "vitest",
-    "seed:products200": "ts-node src/scripts/seedProducts200.ts",
+    "seed:products200:dev": "dotenv -e .env.local -- ts-node src/scripts/seedProducts200.ts",
+    "seed:products200:test": "dotenv -e .env.test -- ts-node src/scripts/seedProducts200.ts",
+    "seed:products200:prod": "dotenv -e .env.prod -- ts-node src/scripts/seedProducts200.ts",
     "deploy:lambda": "npm run build && serverless deploy",
-    "remove:lambda": "serverless remove"
+    "deploy:lambda:dev": "npm run build && serverless deploy --stage dev",
+    "deploy:lambda:test": "npm run build && serverless deploy --stage test",
+    "deploy:lambda:prod": "npm run build && serverless deploy --stage prod",
+    "remove:lambda": "serverless remove",
+    "remove:lambda:dev": "serverless remove --stage dev",
+    "remove:lambda:test": "serverless remove --stage test",
+    "remove:lambda:prod": "serverless remove --stage prod"
   },
   "dependencies": {
     "bcryptjs": "3.0.2",
@@ -33,6 +41,7 @@
     "@types/supertest": "^6.0.2",
     "@types/swagger-jsdoc": "^6.0.4",
     "@types/swagger-ui-express": "^4.1.6",
+    "dotenv-cli": "8.0.0",
     "esbuild": "^0.20.2",
     "eslint": "^8.48.0",
     "mongodb-memory-server": "10.1.4",
