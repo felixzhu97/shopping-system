@@ -135,14 +135,14 @@ async function CategoryShowcase() {
             title="母亲节献礼"
             description="为妈妈挑选完美礼物"
             image="/mothers-day.png"
-            link="/products?category=gifts"
+            link="/products"
             color="bg-[#fafafa]"
           />
           <PromoCard
             title="以旧换新"
             description="换购新机最高可享95折优惠"
             image="/trade-in.jpg"
-            link="/trade-in"
+            link="/products"
             color="bg-[#fafafa]"
           />
         </div>
