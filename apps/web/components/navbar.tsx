@@ -1,19 +1,28 @@
 'use client';
 
-import type React from 'react';
-
-import { useState, useEffect, useRef, Suspense } from 'react';
+import React, { memo, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
-import { Search, ShoppingCart, Menu, User, X, ChevronRight } from 'lucide-react';
-import { usePathname, useSearchParams, useRouter } from 'next/navigation';
+import {
+  Box,
+  ChevronRight,
+  CircleUserRound,
+  Cog,
+  Menu,
+  Search,
+  ShoppingCart,
+  X,
+} from 'lucide-react';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Badge } from '@/components/ui/badge';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { useCart } from '@/lib/cart-context';
-import { cn } from '@/lib/utils';
+import { useCartStore } from '@/lib/store/cartStore';
+import PanelDropdown from '@/components/ui/panel-dropdown';
+import Image from '@/components/ui/image';
+import { useUserStore } from '@/lib/store/userStore';
+import { getToken } from '@/lib/store/userStore';
 
 // 定义快捷链接数据
 const quickLinks = [
@@ -23,23 +32,209 @@ const quickLinks = [
   { title: '经典图书', path: '/products?category=books' },
 ];
 
+// 将购物车项组件提取出来并使用 memo 包装
+const CartItem = memo(({ item }: { item: any }) => (
+  <div className="flex items-center mb-4 last:mb-0">
+    <div className="w-10 h-10 rounded-lg bg-gray-100 mr-4 border overflow-hidden">
+      <Image
+        src={item.product?.image || ''}
+        alt={item.product?.name || ''}
+        className="w-full h-full object-cover"
+        width={40}
+        height={40}
+        loading={'lazy'}
+      />
+    </div>
+    <div className="flex-1 min-w-0">
+      <div className="font-semibold text-sm text-gray-900 truncate">{item.product?.name || ''}</div>
+      <div className="text-xs text-gray-500 truncate">{item.product?.description || ''}</div>
+    </div>
+  </div>
+));
+
+CartItem.displayName = 'CartItem';
+
+// 将购物车下拉菜单组件提取出来并使用 memo 包装
+const CartDropdown = memo(
+  ({
+    open,
+    onClose,
+    items,
+    router,
+    logout,
+  }: {
+    open: boolean;
+    onClose: () => void;
+    items: any[];
+    router: any;
+    logout: () => void;
+  }) => {
+    const [token, setToken] = useState<string | null>(null);
+
+    useEffect(() => {
+      setToken(getToken());
+    }, []);
+
+    const handleLogout = useCallback(
+      (e: React.MouseEvent) => {
+        e.preventDefault();
+        logout();
+        router.push('/login');
+        onClose();
+      },
+      [logout, router, onClose]
+    );
+
+    const handleCartClick = useCallback(() => {
+      router.push('/cart');
+      onClose();
+    }, [router, onClose]);
+
+    return (
+      <PanelDropdown
+        open={open}
+        onClose={onClose}
+        heightClassName="h-auto"
+        containerClassName="!top-12"
+      >
+        <div className="w-full flex justify-center">
+          <div className="w-full max-w-[600px] px-10 py-12">
+            <div className="font-bold text-2xl mb-8">购物袋</div>
+            <div className="mb-8">
+              {items.length === 0 ? (
+                <div className="text-gray-500 text-sm py-8">您的购物袋是空的</div>
+              ) : (
+                <>
+                  {items.slice(0, 3).map((item, idx) => (
+                    <CartItem key={item.product?.id || idx} item={item} />
+                  ))}
+                  {items.length > 3 && (
+                    <div className="text-xs text-gray-500 mt-2">
+                      还有 {items.length - 3} 件商品在购物袋中
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+            <div className="mb-10">
+              <Button
+                className="bg-blue-600 text-white rounded-lg px-8 h-11 text-base font-medium hover:bg-blue-700 transition w-full"
+                onClick={handleCartClick}
+              >
+                查看购物袋
+              </Button>
+            </div>
+            <div className="text-xs text-gray-500 font-semibold mb-2">我的账户</div>
+            <ul className="text-gray-700 text-sm space-y-1">
+              <li>
+                <Link
+                  href="/orders"
+                  className="hover:underline flex items-center gap-2"
+                  onClick={onClose}
+                >
+                  <Box className="w-4 h-4" />
+                  我的订单
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/account"
+                  className="hover:underline flex items-center gap-2"
+                  onClick={onClose}
+                >
+                  <Cog className="w-4 h-4" />
+                  账户设置
+                </Link>
+              </li>
+              <li>
+                {token ? (
+                  <button
+                    onClick={handleLogout}
+                    className="hover:underline flex items-center gap-2 text-left w-full"
+                  >
+                    <CircleUserRound className="w-4 h-4" />
+                    退出登录
+                  </button>
+                ) : (
+                  <Link
+                    href="/login"
+                    className="hover:underline flex items-center gap-2"
+                    onClick={onClose}
+                  >
+                    <CircleUserRound className="w-4 h-4" />
+                    登录
+                  </Link>
+                )}
+              </li>
+            </ul>
+          </div>
+        </div>
+      </PanelDropdown>
+    );
+  }
+);
+
+CartDropdown.displayName = 'CartDropdown';
+
+// 将导航链接组件提取出来并使用 memo 包装
+const NavLink = memo(
+  ({
+    href,
+    isActive,
+    children,
+  }: {
+    href: string;
+    isActive: boolean;
+    children: React.ReactNode;
+  }) => (
+    <Link
+      href={href}
+      className={`text-[12px] h-full flex items-center font-normal px-2 mx-1 transition-colors ${
+        isActive ? 'text-blue-500' : 'text-gray-600 hover:text-gray-900'
+      }`}
+    >
+      {children}
+    </Link>
+  )
+);
+
+NavLink.displayName = 'NavLink';
+
 // 提取出使用 useSearchParams 的客户端组件
 function NavbarClient() {
   const [searchQuery, setSearchQuery] = useState('');
   const [isScrolled, setIsScrolled] = useState(false);
   const [cartBadgeAnimate, setCartBadgeAnimate] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
+  const [showCart, setShowCart] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const router = useRouter();
-  const { cartItems, itemCount, subtotal } = useCart();
+  const { items } = useCartStore();
+  const logout = useUserStore(state => state.logout);
 
-  // 根据路径和查询参数分析当前分类
-  const getCurrentCategory = (): string => {
+  // 使用 useCallback 优化事件处理函数
+  const handleSearch = useCallback(
+    (e: React.FormEvent) => {
+      e.preventDefault();
+      if (!searchQuery.trim()) return;
+      const searchUrl = `/products?q=${encodeURIComponent(searchQuery)}`;
+      router.push(searchUrl);
+      setShowSearch(false);
+    },
+    [searchQuery, router]
+  );
+
+  const toggleSearch = useCallback(() => {
+    setShowSearch(prev => !prev);
+  }, []);
+
+  // 使用 useMemo 缓存计算值
+  const itemCount = useMemo(() => items.reduce((sum, item) => sum + item.quantity, 0), [items]);
+
+  const currentCategory = useMemo(() => {
     if (!pathname) return '';
-
-    // 如果是产品页面，则从URL参数中获取类别
     if (pathname.includes('/products')) {
       const category = searchParams.get('category');
       if (category) {
@@ -47,10 +242,7 @@ function NavbarClient() {
       }
     }
     return '';
-  };
-
-  // 当前分类
-  const currentCategory = getCurrentCategory();
+  }, [pathname, searchParams]);
 
   // 监听滚动位置改变导航栏样式，并在滚动时隐藏搜索框
   useEffect(() => {
@@ -76,45 +268,6 @@ function NavbarClient() {
       return () => clearTimeout(timer);
     }
   }, [itemCount]);
-
-  // 处理搜索
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!searchQuery.trim()) return;
-
-    // 构建搜索URL，重置其他参数
-    const searchUrl = `/products?q=${encodeURIComponent(searchQuery)}`;
-    router.push(searchUrl);
-    setShowSearch(false);
-  };
-
-  // 切换搜索框显示
-  const toggleSearch = () => {
-    const newShowSearch = !showSearch;
-    setShowSearch(newShowSearch);
-
-    // 打开搜索时防止页面滚动
-    if (newShowSearch) {
-      // 当打开搜索框时聚焦
-      setTimeout(() => {
-        searchInputRef.current?.focus();
-      }, 200);
-    }
-  };
-
-  // 按ESC键关闭搜索
-  useEffect(() => {
-    const handleEscKey = (event: KeyboardEvent) => {
-      if (event.key === 'Escape' && showSearch) {
-        setShowSearch(false);
-      }
-    };
-
-    document.addEventListener('keydown', handleEscKey);
-    return () => {
-      document.removeEventListener('keydown', handleEscKey);
-    };
-  }, [showSearch]);
 
   return (
     <div className="relative">
@@ -284,55 +437,36 @@ function NavbarClient() {
               <span className="sr-only">搜索</span>
             </Button>
 
-            {/* 用户按钮 */}
-            <Link href="/account">
+            {/* 购物车按钮 */}
+            <div className="relative">
               <Button
                 variant="ghost"
                 size="icon"
-                className="text-gray-800 p-1 mr-1 hover:bg-transparent"
+                className="relative text-gray-800 p-1 hover:bg-transparent"
+                onClick={() => setShowCart(v => !v)}
+                aria-label="购物车"
               >
-                <User className="h-[17px] w-[17px]" />
-                <span className="sr-only">账户</span>
-              </Button>
-            </Link>
-
-            {/* 购物车按钮 */}
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Link href="/cart">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="relative text-gray-800 p-1 hover:bg-transparent"
-                    >
-                      <ShoppingCart className="h-[17px] w-[17px]" />
-                      {itemCount > 0 && (
-                        <Badge
-                          variant="destructive"
-                          className={`absolute -top-1 -right-1 h-[14px] w-[14px] p-0 flex items-center justify-center rounded-full text-[10px] ${
-                            cartBadgeAnimate ? 'animate-bounce' : ''
-                          }`}
-                        >
-                          {itemCount}
-                        </Badge>
-                      )}
-                      <span className="sr-only">购物车</span>
-                    </Button>
-                  </Link>
-                </TooltipTrigger>
+                <ShoppingCart className="h-[17px] w-[17px]" />
                 {itemCount > 0 && (
-                  <TooltipContent side="bottom">
-                    <div className="text-xs">
-                      <p className="font-semibold">
-                        {itemCount}件商品 - ¥{subtotal.toFixed(2)}
-                      </p>
-                      <p className="text-muted-foreground">点击查看购物车</p>
-                    </div>
-                  </TooltipContent>
+                  <Badge
+                    variant="destructive"
+                    className={`absolute -top-1 -right-1 h-[14px] w-[14px] p-0 flex items-center justify-center rounded-full text-[10px] ${
+                      cartBadgeAnimate ? 'animate-bounce' : ''
+                    }`}
+                  >
+                    {itemCount}
+                  </Badge>
                 )}
-              </Tooltip>
-            </TooltipProvider>
+                <span className="sr-only">购物车</span>
+              </Button>
+              <CartDropdown
+                open={showCart}
+                onClose={() => setShowCart(false)}
+                items={items}
+                router={router}
+                logout={logout}
+              />
+            </div>
           </div>
         </div>
 
@@ -357,11 +491,10 @@ function NavbarClient() {
       </header>
 
       {/* 搜索栏 - 类似Apple官网的悬浮展开效果 */}
-      <div
-        className={cn(
-          'fixed inset-x-0 top-12 z-40 overflow-hidden transition-all duration-300 ease-in-out bg-[rgba(251,251,253,0.95)] backdrop-blur-md border-b border-gray-200 shadow-sm',
-          showSearch ? 'h-[204px] opacity-100' : 'h-0 opacity-0'
-        )}
+      <PanelDropdown
+        open={showSearch}
+        onClose={() => setShowSearch(false)}
+        heightClassName="h-[204px]"
       >
         <div className="container max-w-[1040px] mx-auto h-full">
           <div className="pt-5 px-4 h-full flex flex-col">
@@ -387,7 +520,6 @@ function NavbarClient() {
                 )}
               </div>
             </form>
-
             {/* 快捷链接 */}
             <div className="mt-4 flex-1 overflow-hidden">
               <div className="text-xs uppercase text-gray-500 font-medium mb-2">快捷链接</div>
@@ -408,7 +540,7 @@ function NavbarClient() {
             </div>
           </div>
         </div>
-      </div>
+      </PanelDropdown>
     </div>
   );
 }
@@ -427,23 +559,17 @@ function NavbarFallback() {
   return (
     <header className="sticky top-0 z-50 w-full bg-[rgba(251,251,253,0.8)] backdrop-blur-md">
       <div className="max-w-[1040px] mx-auto h-12 md:h-12 flex items-center justify-between px-4">
-        <div className="w-5 h-5" />
-        <div className="flex items-center mx-auto md:mx-0">
-          <svg height="22" width="14" className="hidden md:block">
-            <rect width="14" height="22" fill="transparent" />
-          </svg>
-        </div>
+        <div className="w-8 h-8 bg-gray-200 rounded" />
         <div className="hidden md:flex justify-center flex-1 h-full">
-          <div className="flex items-center h-full space-x-4">
-            {[...Array(6)].map((_, i) => (
-              <div key={i} className="h-3 w-12 rounded-full bg-gray-200" />
+          <div className="flex items-center h-full space-x-8">
+            {[1, 2, 3, 4].map(i => (
+              <div key={i} className="w-16 h-4 bg-gray-200 rounded" />
             ))}
           </div>
         </div>
-        <div className="flex items-center space-x-2">
-          {[...Array(3)].map((_, i) => (
-            <div key={i} className="h-8 w-8 rounded-full bg-gray-200" />
-          ))}
+        <div className="flex items-center space-x-4">
+          <div className="w-8 h-8 bg-gray-200 rounded" />
+          <div className="w-8 h-8 bg-gray-200 rounded" />
         </div>
       </div>
     </header>

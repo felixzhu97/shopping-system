@@ -30,6 +30,25 @@ shopping-system/
 - [Storybook](https://storybook.js.org/) - UI 组件开发环境
 - [Vercel](https://vercel.com/) - 部署平台
 - [Vercel Speed Insights](https://vercel.com/docs/speed-insights) - 性能监控和分析
+- [Vitest](https://vitest.dev/) - 测试框架
+- [Testing Library](https://testing-library.com/) - React 组件测试工具
+
+## 主要功能
+
+### 前端功能
+- 响应式导航栏，支持移动端和桌面端
+- 商品分类浏览和搜索
+- 购物车管理
+- 用户账户管理
+- 商品详情页
+- 订单管理
+
+### 后端功能
+- RESTful API 接口
+- 用户认证和授权
+- 商品管理
+- 订单处理
+- 数据验证和错误处理
 
 ## 配置说明
 
@@ -98,63 +117,20 @@ shopping-system/
 ```json
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "framework": "nextjs",
-  "buildCommand": "cd ../.. && pnpm turbo build --filter=web...",
-  "outputDirectory": ".next",
-  "installCommand": "cd ../.. && pnpm install"
+  "buildCommand": "pnpm build",
+  "devCommand": "pnpm dev",
+  "installCommand": "pnpm install",
+  "framework": "nextjs"
 }
 ```
 
-配置说明：
-
-- `framework`: 指定使用 Next.js 框架
-- `buildCommand`: 使用 Turborepo 构建 web 应用及其依赖
-- `outputDirectory`: Next.js 构建输出目录
-- `installCommand`: 安装 monorepo 所有依赖
-
-### 工作空间配置
-
-使用 PNPM 工作空间管理多包项目，配置在 `pnpm-workspace.yaml`：
-
-```yaml
-packages:
-  - 'packages/*'
-  - 'apps/*'
-```
-
-### TypeScript 配置
-
-根目录 `tsconfig.json` 为基础配置，各包通过 `extends` 继承这些配置并添加自己的特定配置。
-
-## 环境配置
-
-项目使用环境变量进行配置管理。在开始开发之前，请参考 [环境变量配置指南](./docs/ENVIRONMENT.md) 设置必要的环境变量。
-
 ## 开发指南
 
-### 前置要求
+### 环境要求
 
-- Node.js 18+
-- PNPM 8+
-- MongoDB 6+
-
-### 环境准备
-
-1. 克隆项目
-
-```bash
-git clone https://github.com/your-username/shopping-system.git
-cd shopping-system
-```
-
-2. 安装依赖
-
-```bash
-pnpm install
-```
-
-3. 配置环境变量
-   按照 [环境变量配置指南](./docs/ENVIRONMENT.md) 设置必要的环境变量。
+- Node.js >= 18.0.0
+- PNPM >= 8.0.0
+- MongoDB >= 6.0
 
 ### 安装依赖
 
@@ -162,20 +138,10 @@ pnpm install
 pnpm install
 ```
 
-### 启动开发环境
+### 开发模式
 
 ```bash
-# 启动所有服务
 pnpm dev
-
-# 只启动前端
-pnpm --filter web dev
-
-# 只启动后端
-pnpm --filter api dev
-
-# 启动 Storybook
-pnpm --filter web storybook
 ```
 
 ### 构建项目
@@ -184,123 +150,39 @@ pnpm --filter web storybook
 pnpm build
 ```
 
-### 启动应用
-
-```bash
-pnpm start
-```
-
 ### 运行测试
 
 ```bash
 pnpm test
 ```
 
-### 添加依赖
-
-添加到工作空间:
+### 代码规范检查
 
 ```bash
-pnpm add -w <package>
+pnpm lint
 ```
 
-添加到特定包:
+## 测试说明
 
-```bash
-pnpm --filter <package-name> add <dependency>
-```
+项目使用 Vitest 和 Testing Library 进行测试：
 
-例如:
+- 组件测试：使用 Testing Library 进行 React 组件测试
+- API 测试：使用 Vitest 进行后端 API 测试
+- 集成测试：使用 Vitest 进行端到端测试
 
-```bash
-pnpm --filter web add lodash
-pnpm --filter ui add -D typescript
-```
+测试文件位于各包的 `tests` 目录下，遵循以下命名规范：
+- 组件测试：`*.test.tsx`
+- API 测试：`*.test.ts`
+- 集成测试：`*.integration.test.ts`
 
-### Turborepo 高级使用
+## 贡献指南
 
-过滤特定包执行命令：
+1. Fork 项目
+2. 创建特性分支 (`git checkout -b feature/AmazingFeature`)
+3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
+4. 推送到分支 (`git push origin feature/AmazingFeature`)
+5. 创建 Pull Request
 
-```bash
-# 只构建web应用
-pnpm turbo build --filter=web
+## 许可证
 
-# 只运行shared包的lint
-pnpm turbo lint --filter=shared
-```
-
-并行执行多个任务：
-
-```bash
-pnpm turbo build lint
-```
-
-### Storybook 开发
-
-Storybook 用于 UI 组件开发和文档化。启动方式：
-
-```bash
-cd apps/web
-pnpm storybook
-```
-
-默认运行在 http://localhost:6006
-
-## 部署指南
-
-### Vercel 部署
-
-1. 在 [Vercel](https://vercel.com) 创建新项目
-2. 导入 GitHub 仓库
-3. 配置构建设置：
-   - 根目录：`apps/web`
-   - 构建命令：`npm run build`
-   - 输出目录：`.next`
-   - 安装命令：`npm install`
-4. 配置环境变量：
-   - `TURBO_TOKEN`: Vercel 访问令牌
-   - `TURBO_TEAM`: Vercel 团队 ID
-   - `NODE_ENV`: `production`
-   - `SPEED_INSIGHTS_ENABLED`: `true` （用于启用 Speed Insights）
-5. 点击 "Deploy" 开始部署
-
-### 部署故障排除
-
-如果遇到依赖安装问题：
-
-1. 确保项目根目录包含 `.npmrc` 文件，内容如下：
-
-```
-registry=https://registry.npmjs.org/
-legacy-peer-deps=true
-node-linker=hoisted
-strict-peer-dependencies=false
-auto-install-peers=true
-```
-
-2. 如果使用 PNPM 遇到问题，可以尝试：
-
-   - 删除 `pnpm-lock.yaml`
-   - 使用 `npm install` 重新安装依赖
-   - 重新部署项目
-
-3. 检查 package.json 中的脚本命令是否正确：
-
-```json
-{
-  "scripts": {
-    "build": "next build",
-    "start": "next start",
-    "dev": "next dev"
-  }
-}
-```
-
-### 自动部署
-
-项目配置了 GitHub Actions，当推送到 `main` 分支或创建 Pull Request 时会自动：
-
-1. 运行测试
-2. 构建项目
-3. 如果在 main 分支，触发 Vercel 生产环境部署
-4. 如果是 PR，创建预览部署
+MIT License

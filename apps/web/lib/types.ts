@@ -1,22 +1,29 @@
-// 定义完整的产品类型
-export interface Product {
+export type { Product, CartItem } from 'shared';
+
+export interface Order {
   id: string;
-  name: string;
-  description: string;
-  price: number;
-  originalPrice?: number;
-  image: string;
-  category: string;
-  stock: number;
-  rating?: number;
-  reviewCount?: number;
-  inStock?: boolean;
+  userId: string;
+  items: OrderItem[];
+  totalAmount: number;
+  status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+  shippingAddress: {
+    fullName: string;
+    phone: string;
+    address: string;
+    city: string;
+    province: string;
+    postalCode: string;
+  };
+  paymentMethod: 'credit-card' | 'alipay' | 'wechat';
+  createdAt: string;
+  updatedAt: string;
 }
 
-export interface CartItem {
-  id: string;
-  name: string;
-  price: number;
-  quantity: number;
+export interface OrderItem {
+  productId: string;
+  name?: string;
   image?: string;
+  price?: number;
+  quantity: number;
+  product?: import('shared').Product;
 }

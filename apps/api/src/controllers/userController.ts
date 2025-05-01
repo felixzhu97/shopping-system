@@ -5,10 +5,10 @@ import mongoose from 'mongoose';
 // 注册新用户
 export const register = async (req: any, res: any) => {
   try {
-    const { username, email, password } = req.body;
+    const { email, password, firstName, lastName, phone } = req.body;
 
-    // 检查用户名或邮箱是否已存在
-    const existingUser = await User.findOne({ $or: [{ username }, { email }] });
+    // 检查邮箱或手机号是否已存在
+    const existingUser = await User.findOne({ $or: [{ email }, { phone }] });
 
     if (existingUser) {
       return res.status(400 as number).json({ message: '用户名或邮箱已被使用' });
@@ -16,10 +16,13 @@ export const register = async (req: any, res: any) => {
 
     // 创建新用户
     const user = new User({
-      username,
       email,
       password, // 密码会在model中间件中自动加密
       role: 'user', // 默认角色
+      fullName: `${firstName} ${lastName}`,
+      firstName,
+      lastName,
+      phone,
     });
 
     await user.save();
@@ -27,9 +30,12 @@ export const register = async (req: any, res: any) => {
     // 不返回密码信息
     const userResponse = {
       id: user._id,
-      username: user.username,
       email: user.email,
       role: user.role,
+      fullName: user.fullName,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      phone: user.phone,
     };
 
     res.status(201 as number).json(userResponse);
@@ -42,10 +48,14 @@ export const register = async (req: any, res: any) => {
 // 用户登录
 export const login = async (req: any, res: any) => {
   try {
-    const { username, password } = req.body;
+    const { username, email, password } = req.body;
 
-    // 查找用户
-    const user = await User.findOne({ username });
+    // 构造$or条件，避免null，指定any类型
+    const orConditions: any[] = [];
+    if (username) orConditions.push({ username });
+    if (email) orConditions.push({ email });
+
+    const user = await User.findOne(orConditions.length > 0 ? { $or: orConditions } : {});
 
     if (!user) {
       return res.status(401 as number).json({ message: '用户名或密码错误' });
@@ -61,9 +71,11 @@ export const login = async (req: any, res: any) => {
     // 不返回密码信息
     const userResponse = {
       id: user._id,
-      username: user.username,
       email: user.email,
       role: user.role,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      phone: user.phone,
     };
 
     res.status(200 as number).json(userResponse);
@@ -84,7 +96,23 @@ export const getUserById = async (req: any, res: any) => {
       return res.status(404 as number).json({ message: '用户不存在' });
     }
 
-    res.status(200 as number).json(user);
+    // 明确返回 address 字段
+    let userObj: any = user.toObject();
+    if (!userObj.address) {
+      userObj.address = {
+        firstName: '',
+        lastName: '',
+        company: '',
+        street: '',
+        apt: '',
+        zip: '',
+        city: '',
+        country: '',
+        phone: '',
+      };
+    }
+
+    res.status(200 as number).json(userObj);
   } catch (error) {
     console.error('获取用户信息失败:', error);
     res.status(500 as number).json({ message: '获取用户信息失败' });
@@ -95,7 +123,7 @@ export const getUserById = async (req: any, res: any) => {
 export const updateUser = async (req: any, res: any) => {
   try {
     const { id } = req.params;
-    const { username, email } = req.body;
+    const { email, phone, address } = req.body;
 
     // 检查用户是否存在
     const user = await User.findById(id);
@@ -104,11 +132,11 @@ export const updateUser = async (req: any, res: any) => {
       return res.status(404 as number).json({ message: '用户不存在' });
     }
 
-    // 检查用户名和邮箱是否被其他用户使用
-    if (username && username !== user.username) {
-      const existingUsername = await User.findOne({ username });
-      if (existingUsername) {
-        return res.status(400 as number).json({ message: '用户名已被使用' });
+    // 检查邮箱和手机号是否被其他用户使用
+    if (phone && phone !== user.phone) {
+      const existingPhone = await User.findOne({ phone });
+      if (existingPhone) {
+        return res.status(400 as number).json({ message: '手机号已被使用' });
       }
     }
 
@@ -119,8 +147,13 @@ export const updateUser = async (req: any, res: any) => {
       }
     }
 
-    // 更新用户信息
-    const updatedUser = await User.findByIdAndUpdate(id, { username, email }, { new: true }).select(
+    // 更新用户信息和地址
+    const updateData: any = {};
+    if (email) updateData.email = email;
+    if (phone) updateData.phone = phone;
+    if (address) updateData.address = address;
+
+    const updatedUser = await User.findByIdAndUpdate(id, updateData, { new: true }).select(
       '-password'
     );
 

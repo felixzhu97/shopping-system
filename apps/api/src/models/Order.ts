@@ -1,24 +1,29 @@
-import mongoose, { Schema, Document } from "mongoose";
+import mongoose, { Schema, Document } from 'mongoose';
+import { Order as OrderType } from 'shared';
 
 export interface CartItemType {
   productId: string;
   quantity: number;
 }
 
-export interface OrderType {
-  id?: string;
-  userId: string;
-  items: CartItemType[];
-  totalAmount: number;
-  status: "pending" | "processing" | "shipped" | "delivered" | "cancelled";
-}
+export interface OrderDocument extends Document, Omit<OrderType, 'id'> {}
 
-export interface OrderDocument extends Document, Omit<OrderType, "id"> {}
-
-const CartItemSchema: Schema = new Schema({
+const OrderItemSchema: Schema = new Schema({
   productId: {
     type: Schema.Types.ObjectId,
-    ref: "Product",
+    ref: 'Product',
+    required: true,
+  },
+  name: {
+    type: String,
+    required: true,
+  },
+  image: {
+    type: String,
+    required: true,
+  },
+  price: {
+    type: Number,
     required: true,
   },
   quantity: {
@@ -26,31 +31,65 @@ const CartItemSchema: Schema = new Schema({
     required: true,
     min: 1,
   },
+  description: {
+    type: String,
+  },
 });
 
 const OrderSchema: Schema = new Schema(
   {
     userId: {
       type: Schema.Types.ObjectId,
-      ref: "User",
+      ref: 'User',
       required: true,
     },
-    items: [CartItemSchema],
+    items: [OrderItemSchema],
     totalAmount: {
       type: Number,
       required: true,
     },
     status: {
       type: String,
-      enum: ["pending", "processing", "shipped", "delivered", "cancelled"],
-      default: "pending",
+      enum: ['pending', 'processing', 'shipped', 'delivered', 'cancelled'],
+      default: 'pending',
+    },
+    shippingAddress: {
+      fullName: {
+        type: String,
+        required: true,
+      },
+      phone: {
+        type: String,
+        required: true,
+      },
+      address: {
+        type: String,
+        required: true,
+      },
+      city: {
+        type: String,
+        required: true,
+      },
+      province: {
+        type: String,
+        required: true,
+      },
+      postalCode: {
+        type: String,
+        required: true,
+      },
+    },
+    paymentMethod: {
+      type: String,
+      required: true,
+      enum: ['alipay', 'wechat', 'credit-card'],
     },
   },
   { timestamps: true }
 );
 
 // 转换 _id 为 id
-OrderSchema.set("toJSON", {
+OrderSchema.set('toJSON', {
   virtuals: true,
   versionKey: false,
   transform: function (doc: any, ret: any) {
@@ -59,4 +98,4 @@ OrderSchema.set("toJSON", {
   },
 });
 
-export default mongoose.model<OrderDocument>("Order", OrderSchema);
+export default mongoose.model<OrderDocument>('Order', OrderSchema);

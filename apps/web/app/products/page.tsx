@@ -1,12 +1,10 @@
 'use client';
 
-import { Suspense, useState, useEffect, useCallback, useTransition } from 'react';
+import { Suspense, useCallback, useEffect, useState, useTransition } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useInView } from 'react-intersection-observer';
-import Link from 'next/link';
 
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import {
   Select,
   SelectContent,
@@ -19,8 +17,9 @@ import { AppleProductCard } from '@/components/apple-product-card';
 import { Navbar } from '@/components/navbar';
 import { Footer } from '@/components/footer';
 import { Product } from '@/lib/types';
-import * as api from '@/lib/api';
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/utils/utils';
+import { useProductStore } from '@/lib/store/productStore';
+import { ProductCardSkeleton } from '@/components/product-card-skeleton';
 
 // 分类名称映射表，将URL参数映射为友好的中文名称
 const getCategoryLabel = (categorySlug: string): string => {
@@ -41,6 +40,7 @@ const getCategoryLabel = (categorySlug: string): string => {
 function AppleStyleProductGrid({ products }: { products: Product[] }) {
   const [visibleProducts, setVisibleProducts] = useState<Product[]>([]);
   const [hasMore, setHasMore] = useState(true);
+  const [isBatchLoading, setIsBatchLoading] = useState(false);
   const PAGE_SIZE = 12; // 每批加载的产品数量，增加到12个以适应网格
 
   const { ref, inView } = useInView({
@@ -56,20 +56,19 @@ function AppleStyleProductGrid({ products }: { products: Product[] }) {
 
   // 当滚动到底部时加载更多产品
   useEffect(() => {
-    if (inView && hasMore) {
-      const nextBatch = products.slice(visibleProducts.length, visibleProducts.length + PAGE_SIZE);
-
-      if (nextBatch.length > 0) {
-        // 使用 setTimeout 避免阻塞主线程
-        setTimeout(() => {
-          setVisibleProducts(prev => [...prev, ...nextBatch]);
-          setHasMore(visibleProducts.length + nextBatch.length < products.length);
-        }, 100);
-      } else {
-        setHasMore(false);
-      }
+    if (inView && hasMore && !isBatchLoading) {
+      setIsBatchLoading(true);
+      setTimeout(() => {
+        const nextBatch = products.slice(
+          visibleProducts.length,
+          visibleProducts.length + PAGE_SIZE
+        );
+        setVisibleProducts(prev => [...prev, ...nextBatch]);
+        setHasMore(visibleProducts.length + nextBatch.length < products.length);
+        setIsBatchLoading(false);
+      }, 500); // 模拟加载延迟
     }
-  }, [inView, hasMore, products, visibleProducts]);
+  }, [inView, hasMore, products, visibleProducts, isBatchLoading]);
 
   return (
     <>
@@ -78,15 +77,16 @@ function AppleStyleProductGrid({ products }: { products: Product[] }) {
           <AppleProductCard key={`${product.id}-${index}`} product={product} />
         ))}
       </div>
-
-      {/* 加载指示器 */}
+      {/* 只在加载更多时显示 loading */}
       {hasMore && (
         <div ref={ref} className="py-8 mt-4 flex justify-center">
-          <div className="flex space-x-4">
-            {[...Array(4)].map((_, i) => (
-              <Skeleton key={i} className="h-8 w-8 rounded-full" />
-            ))}
-          </div>
+          {isBatchLoading ? (
+            <div className="flex space-x-4">
+              {[...Array(4)].map((_, i) => (
+                <Skeleton key={i} className="h-8 w-8 rounded-full" />
+              ))}
+            </div>
+          ) : null}
         </div>
       )}
     </>
@@ -143,46 +143,26 @@ function CategoryHeader({ category }: { category: string }) {
 // 将使用useSearchParams的逻辑移到专门的Client组件中
 function ClientProductsList() {
   const searchParams = useSearchParams();
-  const [products, setProducts] = useState<Product[]>([]);
+  const { productsByCategory, productsLoadedByCategory, isLoading, error, fetchProducts } =
+    useProductStore();
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   // 获取所有查询参数
-  const category = searchParams.get('category') || '';
+  const category = searchParams.get('category') || 'all';
   const sort = searchParams.get('sort') || 'featured';
   const query = searchParams.get('q') || '';
 
-  // 获取产品数据
   useEffect(() => {
-    const fetchProducts = async () => {
-      setIsLoading(true);
-      try {
-        const data = await api.getProducts(category || undefined);
-        setProducts(data);
-        setError(null);
-      } catch (err) {
-        console.error('获取产品数据失败:', err);
-        setError('获取产品数据失败，请稍后再试');
-        setProducts([]);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchProducts();
-  }, [category]);
+    fetchProducts(category);
+  }, [category, fetchProducts]);
 
   // 过滤和排序产品
   useEffect(() => {
+    const products = productsByCategory[category] || [];
     let result = [...products];
-
-    // 过滤查询
     if (query) {
       result = result.filter(product => product.name.toLowerCase().includes(query.toLowerCase()));
     }
-
-    // 排序产品
     switch (sort) {
       case 'price-asc':
         result.sort((a, b) => a.price - b.price);
@@ -193,14 +173,22 @@ function ClientProductsList() {
       case 'rating':
         result.sort((a, b) => (b.rating || 0) - (a.rating || 0));
         break;
-      // 默认是"featured"，无需排序
     }
-
     setFilteredProducts(result);
-  }, [products, query, sort]);
+  }, [productsByCategory, category, query, sort]);
 
-  if (isLoading) {
+  // 优先显示骨架屏
+  if (isLoading || !productsLoadedByCategory[category]) {
     return <ProductsGridSkeleton />;
+  }
+
+  if (!isLoading && productsLoadedByCategory[category] && filteredProducts.length === 0) {
+    return (
+      <div className="col-span-full py-12 text-center">
+        <h3 className="text-lg font-medium mb-2">未找到产品</h3>
+        <p className="text-muted-foreground">请尝试调整您的搜索或筛选条件</p>
+      </div>
+    );
   }
 
   if (error) {
@@ -209,15 +197,6 @@ function ClientProductsList() {
         <div className="text-xl font-medium text-red-500 mb-2">加载出错</div>
         <p className="text-gray-500 mb-6">{error}</p>
         <Button onClick={() => window.location.reload()}>重试</Button>
-      </div>
-    );
-  }
-
-  if (filteredProducts.length === 0) {
-    return (
-      <div className="col-span-full py-12 text-center">
-        <h3 className="text-lg font-medium mb-2">未找到产品</h3>
-        <p className="text-muted-foreground">请尝试调整您的搜索或筛选条件</p>
       </div>
     );
   }
@@ -250,30 +229,6 @@ function ClientProductsPage() {
   useEffect(() => {
     setCurrentSort(sort);
   }, [sort]);
-
-  // 预加载相关分类数据
-  useEffect(() => {
-    const preloadCategories = async () => {
-      const categories = ['electronics', 'clothing', 'home-kitchen', 'books'];
-
-      // 预加载当前类别之外的其他类别
-      for (const cat of categories) {
-        if (cat !== category) {
-          try {
-            // 使用低优先级获取数据
-            setTimeout(() => {
-              api.getProducts(cat);
-            }, 1000);
-          } catch (err) {
-            // 忽略预加载错误
-            console.log('预加载数据失败:', err);
-          }
-        }
-      }
-    };
-
-    preloadCategories();
-  }, [category]);
 
   // 处理分类变更
   const handleCategoryChange = useCallback(
@@ -407,16 +362,7 @@ function ProductsGridSkeleton() {
       {Array(8)
         .fill(0)
         .map((_, i) => (
-          <div key={i} className="flex flex-col">
-            <div className="bg-gray-100 rounded-2xl p-4 mb-3 aspect-square flex items-center justify-center overflow-hidden">
-              <Skeleton className="h-3/4 w-3/4" />
-            </div>
-            <div className="flex flex-col items-center">
-              <Skeleton className="h-5 w-3/4 mb-2" />
-              <Skeleton className="h-4 w-1/2 mb-2" />
-              <Skeleton className="h-6 w-1/3" />
-            </div>
-          </div>
+          <ProductCardSkeleton key={i} />
         ))}
     </div>
   );

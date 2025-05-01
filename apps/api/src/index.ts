@@ -21,13 +21,7 @@ const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/shoppi
 // 中间件
 app.use(
   cors({
-    origin: process.env.CORS_ORIGINS
-      ? process.env.CORS_ORIGINS.split(',')
-      : [
-          'https://shopping-system-web.vercel.app',
-          'https://shopping-system-admin.vercel.app',
-          'http://localhost:3000',
-        ],
+    origin: process.env.CORS_ORIGINS ? process.env.CORS_ORIGINS.split(',') : ['*'],
     credentials: true,
   })
 );

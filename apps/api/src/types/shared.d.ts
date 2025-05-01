@@ -28,9 +28,12 @@ declare module 'shared' {
 
   export interface User {
     id: string;
-    username: string;
+    fullName: string;
     email: string;
     role: 'user' | 'admin';
+    firstName: string;
+    lastName: string;
+    phone: string;
   }
 
   export interface Order {
@@ -41,5 +44,20 @@ declare module 'shared' {
     status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
     createdAt: Date;
     updatedAt: Date;
+  }
+
+  export interface Payment {
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone: string;
+    address: string;
+    city: string;
+    province: string;
+    postalCode: string;
+    paymentMethod: 'alipay' | 'wechat' | 'credit-card';
+    cardNumber: string;
+    expiration: string;
+    cvv: string;
   }
 }

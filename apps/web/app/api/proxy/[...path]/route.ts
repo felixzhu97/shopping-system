@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const API_BASE = 'https://guczejbq56.execute-api.ap-east-1.amazonaws.com/dev/api';
+const API_BASE = process.env.NEXT_PUBLIC_API_URL + '/api';
 
 // 设置CORS头部
 function setCorsHeaders(response: NextResponse) {
@@ -19,7 +19,8 @@ export async function OPTIONS() {
 
 export async function GET(request: NextRequest, { params }: { params: { path: string[] } }) {
   // 确保路径正确处理，尤其是购物车路径
-  const path = params.path ? params.path.join('/') : '';
+  const { path } = await params;
+  const requestPath = path ? path.join('/') : '';
   const { searchParams } = new URL(request.url);
 
   // 构建查询字符串
@@ -27,7 +28,7 @@ export async function GET(request: NextRequest, { params }: { params: { path: st
     .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
     .join('&');
 
-  const apiUrl = `${API_BASE}/${path}${queryString ? `?${queryString}` : ''}`;
+  const apiUrl = `${API_BASE}/${requestPath}${queryString ? `?${queryString}` : ''}`;
 
   console.log('代理转发请求到:', apiUrl);
 
@@ -36,7 +37,7 @@ export async function GET(request: NextRequest, { params }: { params: { path: st
     const response = await fetch(apiUrl, {
       headers: {
         Accept: 'application/json',
-        Origin: 'https://shopping-system-git-release-felixzhu97s-projects.vercel.app',
+        Origin: '*',
       },
       // 增加请求超时
       signal: AbortSignal.timeout(10000), // 10秒超时
@@ -72,7 +73,10 @@ export async function GET(request: NextRequest, { params }: { params: { path: st
   }
 }
 
-export async function POST(request: NextRequest, { params }: { params: { path: string[] } }) {
+export async function POST(
+  request: NextRequest,
+  { params }: { params: { path: string[] } }
+): Promise<NextResponse> {
   const path = params.path ? params.path.join('/') : '';
 
   try {
@@ -101,14 +105,29 @@ export async function POST(request: NextRequest, { params }: { params: { path: s
       method: 'POST',
       headers: {
         'Content-Type': contentType,
-        Origin: 'https://shopping-system-git-release-felixzhu97s-projects.vercel.app',
+        Origin: '*',
       },
       body: typeof body === 'string' ? body : JSON.stringify(body),
       signal: AbortSignal.timeout(10000), // 10秒超时
     });
 
     if (!response.ok) {
-      throw new Error(`API 请求失败: ${response.status}`);
+      // 兼容后端返回非JSON（如HTML错误页）
+      let errorText = '';
+      let errorJson: any = null;
+      const contentType = response.headers.get('Content-Type') || '';
+      if (contentType.includes('application/json')) {
+        try {
+          errorJson = await response.json();
+        } catch {
+          errorJson = null;
+        }
+      } else {
+        errorText = await response.text();
+      }
+      throw new Error(errorJson?.message || errorText || '请求失败', {
+        cause: { status: response.status },
+      });
     }
 
     try {
@@ -128,8 +147,10 @@ export async function POST(request: NextRequest, { params }: { params: { path: s
   } catch (error: any) {
     console.error('代理POST请求失败:', error);
     const errorResponse = NextResponse.json(
-      { error: '请求失败', details: error.message },
-      { status: 500 }
+      {
+        details: error.message,
+      },
+      error.cause ? { status: error.cause.status } : { status: 500 }
     );
     return setCorsHeaders(errorResponse);
   }
@@ -156,7 +177,7 @@ export async function PUT(request: NextRequest, { params }: { params: { path: st
       method: 'PUT',
       headers: {
         'Content-Type': contentType,
-        Origin: 'https://shopping-system-git-release-felixzhu97s-projects.vercel.app',
+        Origin: '*',
       },
       body: typeof body === 'string' ? body : JSON.stringify(body),
       signal: AbortSignal.timeout(10000), // 10秒超时
@@ -201,7 +222,7 @@ export async function DELETE(request: NextRequest, { params }: { params: { path:
       method: 'DELETE',
       headers: {
         Accept: 'application/json',
-        Origin: 'https://shopping-system-git-release-felixzhu97s-projects.vercel.app',
+        Origin: '*',
       },
       signal: AbortSignal.timeout(10000), // 10秒超时
     });
