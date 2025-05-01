@@ -3,44 +3,35 @@
 import Link from 'next/link';
 import { Product } from '@/lib/types';
 import Image from '@/components/ui/image';
+
 interface AppleProductCardProps {
   product: Product;
   showDescription?: boolean;
 }
 
-export function AppleProductCard({ product, showDescription = true }: AppleProductCardProps) {
+export function AppleProductCard({ product }: AppleProductCardProps) {
   // 确保产品ID是字符串
   const productId = String(product.id);
 
   return (
-    <div className="flex flex-col">
-      <Link href={`/products/${productId}`} className="group relative">
+    <div className="flex flex-col bg-white rounded-[28px] p-8 hover:scale-[1.02] transition-transform duration-300 shadow-sm">
+      <Link href={`/products/${productId}`} className="group">
         {/* 商品图片区域 */}
-        <div className="aspect-square bg-[#fafafa] rounded-2xl p-4 mb-3 flex items-center justify-center overflow-hidden relative">
+        <div className="aspect-square flex items-center justify-center overflow-hidden relative mb-6">
           <Image
             src={product.image}
             alt={product.name}
-            className="max-h-full max-w-full object-contain transition-transform group-hover:scale-105"
+            className="max-h-full max-w-full object-contain"
             loading="lazy"
           />
         </div>
 
         {/* 商品信息 */}
         <div className="text-center">
-          <h3 className="text-sm font-medium text-gray-900 mb-1">{product.name}</h3>
-          {showDescription && product.description && (
-            <p className="text-sm text-gray-600 mb-1 line-clamp-2">
-              {product.description.substring(0, 60)}...
-            </p>
-          )}
-          <div className="flex items-center justify-center gap-2">
-            <p className="text-lg font-medium text-gray-900">¥{product.price.toFixed(2)}</p>
-            {product.originalPrice && (
-              <p className="text-sm text-gray-500 line-through">
-                ¥{product.originalPrice.toFixed(2)}
-              </p>
-            )}
-          </div>
+          <h3 className="text-[21px] font-normal text-[#1d1d1f] mb-2 text-left">{product.name}</h3>
+          <p className="text-[14px] font-normal text-sm text-gray-500 text-left">
+            ¥{product.price.toFixed(2)}
+          </p>
         </div>
       </Link>
     </div>

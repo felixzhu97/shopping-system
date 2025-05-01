@@ -72,7 +72,7 @@ function AppleStyleProductGrid({ products }: { products: Product[] }) {
 
   return (
     <>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 px-6">
         {visibleProducts.map((product, index) => (
           <AppleProductCard key={`${product.id}-${index}`} product={product} />
         ))}
@@ -294,9 +294,9 @@ function ClientProductsPage() {
       {/* Apple风格分类标题 */}
       <CategoryHeader category={category} />
 
-      <main className="flex-1 container mx-auto px-4 pb-16">
+      <main className="flex-1 container mx-auto pb-16">
         {/* 搜索和筛选工具栏 */}
-        <div className="flex justify-end mb-8">
+        <div className="flex justify-end mb-8 px-6">
           <div className="flex gap-2 items-center">
             <span className="text-sm text-gray-500">排序方式:</span>
             <Select value={currentSort} onValueChange={handleSortChange} disabled={isPending}>
