@@ -35,8 +35,10 @@ function AppleStyleProductGrid({ products }: { products: Product[] }) {
 
   // 初始加载第一批产品
   useEffect(() => {
-    setVisibleProducts(products.slice(0, PAGE_SIZE));
-    setHasMore(products.length > PAGE_SIZE);
+    if (products.length > 0) {
+      setVisibleProducts(products.slice(0, PAGE_SIZE));
+      setHasMore(products.length > PAGE_SIZE);
+    }
   }, [products]);
 
   // 当滚动到底部时加载更多产品
