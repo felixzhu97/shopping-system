@@ -112,7 +112,10 @@ export default function ResetPasswordPage() {
 
       setLoading(true);
       try {
-        await resetPassword(formData.emailOrPhone, formData.password);
+        await resetPassword({
+          emailOrPhone: formData.emailOrPhone,
+          newPassword: formData.password,
+        });
         toast({
           title: '密码重置成功',
           description: '请登录',

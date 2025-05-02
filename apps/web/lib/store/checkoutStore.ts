@@ -1,5 +1,4 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
 import { User } from 'shared';
 
 export interface CheckoutFormData extends User {}
@@ -37,46 +36,38 @@ const initialState: CheckoutFormData = {
   cvv: '',
 };
 
-export const useCheckoutStore = create<CheckoutState>()(
-  persist(
-    set => ({
+export const useCheckoutStore = create<CheckoutState>()(set => ({
+  formData: initialState,
+  errors: {},
+  selectedProvince: '',
+  selectedCity: '',
+  isSubmitting: false,
+  setFormData: data =>
+    set(state => ({
+      formData: typeof data === 'function' ? data(state.formData) : { ...state.formData, ...data },
+    })),
+  setErrors: errors =>
+    set(() => ({
+      errors,
+    })),
+  setSelectedProvince: province =>
+    set(() => ({
+      selectedProvince: province,
+    })),
+  setSelectedCity: city =>
+    set(() => ({
+      selectedCity: city,
+    })),
+  setIsSubmitting: isSubmitting =>
+    set(() => ({
+      isSubmitting,
+    })),
+  resetForm: () =>
+    set(() => ({
       formData: initialState,
       errors: {},
       selectedProvince: '',
       selectedCity: '',
       isSubmitting: false,
-      setFormData: data =>
-        set(state => ({
-          formData:
-            typeof data === 'function' ? data(state.formData) : { ...state.formData, ...data },
-        })),
-      setErrors: errors =>
-        set(() => ({
-          errors,
-        })),
-      setSelectedProvince: province =>
-        set(() => ({
-          selectedProvince: province,
-        })),
-      setSelectedCity: city =>
-        set(() => ({
-          selectedCity: city,
-        })),
-      setIsSubmitting: isSubmitting =>
-        set(() => ({
-          isSubmitting,
-        })),
-      resetForm: () =>
-        set(() => ({
-          formData: initialState,
-          errors: {},
-          selectedProvince: '',
-          selectedCity: '',
-          isSubmitting: false,
-        })),
-    }),
-    {
-      name: 'checkout-storage',
-    }
-  )
-);
+    })),
+}));

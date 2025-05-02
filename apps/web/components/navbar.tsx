@@ -18,11 +18,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Badge } from '@/components/ui/badge';
-import { useCartStore } from '@/lib/store/cartStore';
+
 import PanelDropdown from '@/components/ui/panel-dropdown';
 import Image from '@/components/ui/image';
 import { useToken, useUserStore } from '@/lib/store/userStore';
-
+import { useCartItems } from '@/lib/store/cartStore';
 // 定义快捷链接数据
 const quickLinks = [
   { title: '智能设备', path: '/products?category=electronics' },
@@ -211,7 +211,7 @@ function NavbarClient() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const router = useRouter();
-  const { items } = useCartStore();
+  const items = useCartItems();
   const logout = useUserStore(state => state.logout);
 
   // 使用 useCallback 优化事件处理函数

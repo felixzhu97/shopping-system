@@ -15,10 +15,9 @@ import { useUserId } from '@/lib/store/userStore';
 export default function OrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const userId = useUserId();
 
   useEffect(() => {
-    const userId = useUserId();
-
     const fetchOrders = async () => {
       try {
         if (!userId) throw new Error('未登录');

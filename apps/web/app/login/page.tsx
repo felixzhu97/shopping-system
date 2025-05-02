@@ -189,16 +189,16 @@ export default function LoginPage() {
       setError('');
 
       try {
-        const user = await login(debouncedEmailOrPhone, debouncedPassword);
+        const user = await login({
+          emailOrPhone: debouncedEmailOrPhone,
+          password: debouncedPassword,
+        });
 
         toast({
           title: '登录成功',
           description: '欢迎回来！',
           duration: 3000,
         });
-
-        // 预加载首页
-        router.prefetch('/');
 
         // 先保存用户信息，再跳转
         saveToken(user);

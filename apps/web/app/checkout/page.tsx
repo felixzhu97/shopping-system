@@ -21,7 +21,6 @@ import { useToast } from '@/components/ui/use-toast';
 import { Toaster } from '@/components/ui/toaster';
 import { Navbar } from '@/components/navbar';
 import { Footer } from '@/components/footer';
-import { useCartStore } from '@/lib/store/cartStore';
 
 import { useCheckoutStore } from '@/lib/store/checkoutStore';
 // import { useAccountStore } from '@/lib/store/accountStore';
@@ -32,6 +31,7 @@ import { createOrder } from '@/lib/api/orders';
 import { useUserId } from '@/lib/store/userStore';
 import { getUserById, updateUser } from '@/lib/api/users';
 import { paymentMethods } from '@/components/payment-method';
+import { useCartClearCart, useCartItems } from '@/lib/store/cartStore';
 
 // 订单摘要商品项组件
 const OrderSummaryItem = React.memo(function OrderSummaryItem({ item }: { item: any }) {
@@ -60,7 +60,6 @@ const OrderSummaryItem = React.memo(function OrderSummaryItem({ item }: { item: 
 
 export default function CheckoutPage() {
   // 1. 所有 store hooks
-  const { items, clearCart } = useCartStore();
   const {
     formData,
     errors,
@@ -77,6 +76,8 @@ export default function CheckoutPage() {
   const { toast } = useToast();
   const router = useRouter();
   const userId = useUserId();
+  const items = useCartItems();
+  const clearCart = useCartClearCart();
 
   // 2. 所有 useMemo hooks
   const { subtotal, shipping, tax, total } = useMemo(() => {
@@ -89,7 +90,7 @@ export default function CheckoutPage() {
     const total = subtotal + shipping + tax;
 
     return { subtotal, shipping, tax, total };
-  }, [items]);
+  }, [items.length]);
 
   // 3. 表单处理函数
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -274,8 +275,8 @@ export default function CheckoutPage() {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
+        if (!userId) return;
         const user = await getUserById(userId);
-        console.log('user', user);
         setFormData(user);
 
         setSelectedProvince(user.province);

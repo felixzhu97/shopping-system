@@ -394,8 +394,7 @@ export default function OrderDetailPage({ params }: { params: Usable<{ id: strin
                         alt={item.name || item.product?.name}
                         className="object-cover rounded-xl"
                         wrapperClassName="w-20 h-20"
-                        width={80}
-                        height={80}
+                        loading="lazy"
                       />
                     </div>
                     <div className="flex-1 min-w-0">

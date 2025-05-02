@@ -464,6 +464,7 @@ export default function AccountPage() {
 
   useEffect(() => {
     const fetchUserData = async () => {
+      if (!userId) return;
       const user = await getUserById(userId);
       setFormData({
         firstName: user.firstName,
@@ -480,7 +481,7 @@ export default function AccountPage() {
       });
     };
     fetchUserData();
-  }, [setFormData]);
+  }, [userId, setFormData]);
 
   const handleSavePersonalInfo = async (data: any) => {
     try {

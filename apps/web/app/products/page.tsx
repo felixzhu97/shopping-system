@@ -21,21 +21,6 @@ import { cn } from '@/lib/utils/utils';
 import { useProductStore } from '@/lib/store/productStore';
 import { ProductCardSkeleton } from '@/components/product-card-skeleton';
 
-// 分类名称映射表，将URL参数映射为友好的中文名称
-const getCategoryLabel = (categorySlug: string): string => {
-  const categoryMap: Record<string, string> = {
-    electronics: '电子产品',
-    clothing: '服装',
-    'home-kitchen': '家居厨房',
-    books: '图书',
-  };
-
-  return (
-    categoryMap[categorySlug] ||
-    categorySlug.charAt(0).toUpperCase() + categorySlug.slice(1).replace('-', ' & ')
-  );
-};
-
 // 改造后的产品网格，以Apple Store风格展示
 function AppleStyleProductGrid({ products }: { products: Product[] }) {
   const [visibleProducts, setVisibleProducts] = useState<Product[]>([]);
@@ -234,24 +219,6 @@ function ClientProductsPage() {
     setCurrentSort(sort);
   }, [sort]);
 
-  // 处理分类变更
-  const handleCategoryChange = useCallback(
-    (newCategory: string) => {
-      startTransition(() => {
-        // 清除所有参数，只保留类别
-        const params = new URLSearchParams();
-        if (newCategory !== 'all') {
-          params.set('category', newCategory);
-        }
-        // 切换类别时重置搜索和排序，使用默认值
-        router.push(`/products?${params.toString()}`);
-        // 同步更新UI状态
-        setCurrentSort('featured');
-      });
-    },
-    [router]
-  );
-
   // 处理排序变更
   const handleSortChange = useCallback(
     (newSort: string) => {
@@ -264,32 +231,6 @@ function ClientProductsPage() {
     },
     [router, searchParams]
   );
-
-  // 处理价格筛选
-  const handlePriceFilter = useCallback(
-    (minPrice: string, maxPrice: string) => {
-      startTransition(() => {
-        const params = new URLSearchParams(searchParams);
-        if (minPrice) params.set('minPrice', minPrice);
-        else params.delete('minPrice');
-
-        if (maxPrice) params.set('maxPrice', maxPrice);
-        else params.delete('maxPrice');
-
-        router.push(`/products?${params.toString()}`);
-      });
-    },
-    [router, searchParams]
-  );
-
-  // Apple风格的分类导航菜单
-  const categories = [
-    { id: 'all', name: '全部' },
-    { id: 'electronics', name: '电子产品' },
-    { id: 'clothing', name: '服装' },
-    { id: 'home-kitchen', name: '家居厨房' },
-    { id: 'books', name: '图书' },
-  ];
 
   return (
     <div className="flex flex-col min-h-screen bg-[#f5f5f7]">
