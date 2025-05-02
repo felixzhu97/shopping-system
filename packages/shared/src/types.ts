@@ -44,7 +44,7 @@ export interface User {
   email: string;
   role: UserRole;
   // -------地址-------
-  address: {
+  address?: {
     firstName: string;
     lastName: string;
     company: string;
@@ -57,7 +57,7 @@ export interface User {
     phone: string;
   };
   // -------支付方式-------
-  paymentMethod: string;
+  paymentMethod?: string;
   cardNumber?: string;
   expiration?: string;
   cvv?: string;
@@ -99,4 +99,9 @@ export interface ApiResponse<T> {
   data?: T;
   error?: string;
   success: boolean;
+}
+
+export interface ErrorResponse {
+  message: string;
+  fields?: string[];
 }

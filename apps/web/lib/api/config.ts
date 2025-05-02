@@ -1,4 +1,4 @@
-import { ApiResponse } from 'shared';
+import { ApiResponse, ErrorResponse } from 'shared';
 
 export const API_CONFIG = {
   baseUrl: process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000',
@@ -26,12 +26,15 @@ export async function fetchApi<T>(url: string, options: RequestInit = {}): Promi
         ...options.headers,
       },
     });
-    const data = await response.json();
 
     if (!response.ok) {
+      const data = (await response.json()) as ErrorResponse;
       console.error(`url: ${url} status: ${response.status}`, data);
+
       throw new Error(data.message || '请求失败');
     }
+
+    const data = await response.json();
 
     return { data, success: true };
   } catch (error) {

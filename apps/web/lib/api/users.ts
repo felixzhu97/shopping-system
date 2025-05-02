@@ -65,3 +65,17 @@ export async function updateUserAddress(id: string, address: User['address']): P
   }
   return response.data;
 }
+
+// 重置密码
+export async function resetPassword(emailOrPhone: string, newPassword: string): Promise<User> {
+  const url = `${API_CONFIG.usersUrl}/reset-password`;
+  const response = await fetchApi<ApiResponse<User>>(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ emailOrPhone, newPassword }),
+  });
+  if (!response.success || !response.data) {
+    throw new Error(response.error || '重置密码失败');
+  }
+  return response.data;
+}

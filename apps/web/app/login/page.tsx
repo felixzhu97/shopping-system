@@ -106,7 +106,7 @@ const LoginForm = ({
         </div>
 
         <div className="space-y-2 text-sm text-blue-600">
-          <Link href="/forgot-password" className="block hover:underline">
+          <Link href="/reset-password" className="block hover:underline">
             忘记密码？
           </Link>
           <Link href="/register" prefetch className="block hover:underline">

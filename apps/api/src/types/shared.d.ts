@@ -61,3 +61,8 @@ declare module 'shared' {
     cvv: string;
   }
 }
+
+export interface ErrorResponse {
+  message: string;
+  field?: string;
+}

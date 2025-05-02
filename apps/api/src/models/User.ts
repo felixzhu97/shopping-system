@@ -3,7 +3,6 @@ import bcrypt from 'bcryptjs';
 
 export interface UserType {
   id?: string;
-  fullName: string;
   email: string;
   password?: string;
   role: 'user' | 'admin';

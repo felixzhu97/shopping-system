@@ -10,9 +10,10 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { register } from '@/lib/api/users';
 import { useDebounce } from '@/lib/hooks/use-debounce';
-import { getCheckoutInfo, saveToken } from '@/lib/store/userStore';
-import { useToast } from '@/components/ui/use-toast';
-import { Toaster } from '@/components/ui/toaster';
+import { z } from 'zod';
+import { useUserStore } from '@/lib/store/userStore';
+import PasswordTips from '@/components/password-tips';
+import { EyeIcon } from 'lucide-react';
 
 interface FormData {
   username: string;
@@ -47,8 +48,9 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
   const router = useRouter();
-  const { toast } = useToast();
-
+  const { getCheckoutInfo, saveToken } = useUserStore();
+  const [showPasswordTips, setShowPasswordTips] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   // 使用防抖处理输入
   const debouncedFormData = useDebounce(formData, 300);
 
@@ -71,6 +73,21 @@ export default function RegisterPage() {
     }
   }, []);
 
+  useEffect(() => {
+    if (formData.email || formData.phone) {
+      setFormData(prev => ({
+        ...prev,
+        password: '',
+        confirmPassword: '',
+      }));
+      setErrors(prev => ({
+        ...prev,
+        email: '',
+        phone: '',
+      }));
+    }
+  }, [formData.email, formData.phone]);
+
   // 表单验证
   const validateForm = useCallback(() => {
     const newErrors: FormErrors = {};
@@ -89,21 +106,21 @@ export default function RegisterPage() {
     }
 
     // 验证邮箱
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const emailRegex = z.string().email();
     if (!formData.email.trim()) {
       newErrors.email = '请输入邮箱';
       isValid = false;
-    } else if (!emailRegex.test(formData.email)) {
+    } else if (!emailRegex.safeParse(formData.email).success) {
       newErrors.email = '请输入有效的邮箱地址';
       isValid = false;
     }
 
     // 验证手机号
-    const phoneRegex = /^1[3-9]\d{9}$/;
+    const phoneRegex = z.string().regex(/^1[3-9]\d{9}$/);
     if (!formData.phone.trim()) {
       newErrors.phone = '请输入手机号';
       isValid = false;
-    } else if (!phoneRegex.test(formData.phone)) {
+    } else if (!phoneRegex.safeParse(formData.phone).success) {
       newErrors.phone = '请输入有效的手机号';
       isValid = false;
     }
@@ -161,29 +178,36 @@ export default function RegisterPage() {
           firstName: debouncedFormData.firstName,
           lastName: debouncedFormData.lastName,
           phone: debouncedFormData.phone,
-        });
-
-        toast({
-          title: '注册成功',
-          description: '欢迎加入购物系统！',
-          duration: 3000,
+          address: {
+            firstName: debouncedFormData.firstName,
+            lastName: debouncedFormData.lastName,
+            company: '',
+            street: '',
+            apt: '',
+            zip: '',
+            city: '',
+            province: '',
+            country: '',
+            phone: debouncedFormData.phone,
+          },
+          role: 'user',
+          paymentMethod: '',
         });
 
         // 保存用户信息并跳转
         saveToken(user);
         router.replace('/');
       } catch (err: any) {
-        toast({
-          title: '注册失败',
-          description: err.message || '注册失败，请稍后重试',
-          variant: 'destructive',
-          duration: 3000,
-        });
+        setErrors((prev: FormErrors) => ({
+          ...prev,
+          email: err.message || '注册失败，请稍后重试',
+          phone: err.message || '注册失败，请稍后重试',
+        }));
       } finally {
         setLoading(false);
       }
     },
-    [debouncedFormData, validateForm, router, toast]
+    [debouncedFormData, validateForm, router]
   );
 
   return (
@@ -208,7 +232,7 @@ export default function RegisterPage() {
                     autoComplete="given-name"
                   />
                   {errors.firstName && (
-                    <div className="text-red-500 text-sm">{errors.firstName}</div>
+                    <div className="text-red-500 text-xs">{errors.firstName}</div>
                   )}
                 </div>
                 <div className="space-y-2">
@@ -221,7 +245,7 @@ export default function RegisterPage() {
                     disabled={loading}
                     autoComplete="family-name"
                   />
-                  {errors.lastName && <div className="text-red-500 text-sm">{errors.lastName}</div>}
+                  {errors.lastName && <div className="text-red-500 text-xs">{errors.lastName}</div>}
                 </div>
               </div>
 
@@ -236,7 +260,7 @@ export default function RegisterPage() {
                   disabled={loading}
                   autoComplete="email"
                 />
-                {errors.email && <div className="text-red-500 text-sm">{errors.email}</div>}
+                {errors.email && <div className="text-red-500 text-xs">{errors.email}</div>}
               </div>
 
               <div className="space-y-2">
@@ -250,21 +274,29 @@ export default function RegisterPage() {
                   disabled={loading}
                   autoComplete="tel"
                 />
-                {errors.phone && <div className="text-red-500 text-sm">{errors.phone}</div>}
+                {errors.phone && <div className="text-red-500 text-xs">{errors.phone}</div>}
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-2 relative">
                 <Input
                   name="password"
-                  type="password"
+                  type={showPassword ? 'text' : 'password'}
                   placeholder="密码"
                   value={formData.password}
                   onChange={handleInputChange}
+                  onFocus={() => setShowPasswordTips(true)}
+                  onBlur={() => setShowPasswordTips(false)}
                   className="h-12 px-4 text-base"
                   disabled={loading}
                   autoComplete="new-password"
                 />
-                {errors.password && <div className="text-red-500 text-sm">{errors.password}</div>}
+                <EyeIcon
+                  onClick={() => setShowPassword(!showPassword)}
+                  size={20}
+                  className="absolute right-4 top-1/2 transform -translate-y-3/4 text-gray-500 cursor-pointer"
+                />
+                {errors.password && <div className="text-red-500 text-xs">{errors.password}</div>}
+                {showPasswordTips && <PasswordTips password={formData.password} />}
               </div>
 
               <div className="space-y-2">
@@ -279,7 +311,7 @@ export default function RegisterPage() {
                   autoComplete="new-password"
                 />
                 {errors.confirmPassword && (
-                  <div className="text-red-500 text-sm">{errors.confirmPassword}</div>
+                  <div className="text-red-500 text-xs">{errors.confirmPassword}</div>
                 )}
               </div>
 
@@ -316,6 +348,9 @@ export default function RegisterPage() {
                 <Link href="/login" className="text-blue-600 hover:underline">
                   立即登录
                 </Link>
+                <Link href="/reset-password" className="text-blue-600 hover:underline ml-6">
+                  忘记密码？
+                </Link>
               </div>
             </form>
           </div>
@@ -323,7 +358,6 @@ export default function RegisterPage() {
       </main>
 
       <Footer />
-      <Toaster />
     </div>
   );
 }

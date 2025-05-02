@@ -10,6 +10,7 @@ const PUBLIC_PATHS = [
   '/products', // 商品列表
   '/login', // 登录页
   '/register', // 注册页
+  '/reset-password', // 重置密码页
   '/cart', // 购物车页
   // '/checkout', // 结算页
   // '/checkout/success', // 结算成功页
