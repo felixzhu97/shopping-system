@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import { AppleProductCard } from '@/components/apple-product-card';
+import { ProductCard } from '@/components/product-card';
 import { CartProvider } from '../lib/cart-context';
 
 const mockProduct = {
@@ -17,11 +17,11 @@ const productWithOriginalPrice = {
   originalPrice: 1099.99,
 };
 
-describe('AppleProductCard', () => {
+describe('ProductCard', () => {
   it('渲染产品基本信息', () => {
     render(
       <CartProvider>
-        <AppleProductCard product={mockProduct} />
+        <ProductCard product={mockProduct} />
       </CartProvider>
     );
 
@@ -33,7 +33,7 @@ describe('AppleProductCard', () => {
   it('渲染产品图片', () => {
     render(
       <CartProvider>
-        <AppleProductCard product={mockProduct} />
+        <ProductCard product={mockProduct} />
       </CartProvider>
     );
 
@@ -43,13 +43,13 @@ describe('AppleProductCard', () => {
   });
 
   it('不显示描述当 showDescription 为 false', () => {
-    render(<AppleProductCard product={mockProduct} showDescription={false} />);
+    render(<ProductCard product={mockProduct} showDescription={false} />);
 
     expect(screen.queryByText(/新一代 iPhone，搭载 A17 Pro 芯片/)).not.toBeInTheDocument();
   });
 
   it('显示原价（如果有）', () => {
-    render(<AppleProductCard product={productWithOriginalPrice} />);
+    render(<ProductCard product={productWithOriginalPrice} />);
 
     expect(screen.getByText('¥1099.99')).toBeInTheDocument();
   });

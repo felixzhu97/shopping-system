@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Navbar } from '@/components/navbar';
-import { AppleProductCard } from '@/components/apple-product-card';
+import { ProductCard } from '@/components/product-card';
 import { Footer } from '@/components/footer';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/components/ui/use-toast';
@@ -536,7 +536,7 @@ function ProductDetail({ productId }: { productId: string }) {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {relatedProducts && relatedProducts.length > 0 ? (
             relatedProducts.map(product => (
-              <AppleProductCard key={product.id} product={product} showDescription={false} />
+              <ProductCard key={product.id} product={product} showDescription={false} />
             ))
           ) : (
             <div className="col-span-full py-12 text-center">

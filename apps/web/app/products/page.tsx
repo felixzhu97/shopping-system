@@ -13,7 +13,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
-import { AppleProductCard } from '@/components/apple-product-card';
+import { ProductCard } from '@/components/product-card';
 import { Navbar } from '@/components/navbar';
 import { Footer } from '@/components/footer';
 import { Product } from '@/lib/types';
@@ -74,7 +74,7 @@ function AppleStyleProductGrid({ products }: { products: Product[] }) {
     <>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 px-6">
         {visibleProducts.map((product, index) => (
-          <AppleProductCard key={`${product.id}-${index}`} product={product} />
+          <ProductCard key={`${product.id}-${index}`} product={product} />
         ))}
       </div>
       {/* 只在加载更多时显示 loading */}
