@@ -82,7 +82,7 @@ const LoginForm = ({
           />
           <Button
             type="submit"
-            className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 absolute right-2 top-2 p-0 flex items-center justify-center"
+            className="w-8 h-8 rounded-full bg-gray-200 hover:bg-gray-300 absolute right-2 top-2 p-0 flex items-center justify-center"
             disabled={loading}
           >
             {loading ? (

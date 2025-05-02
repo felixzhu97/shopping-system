@@ -32,11 +32,21 @@ export default function PasswordTips({ password }: { password: string }) {
       </div>
       <div className="space-y-1 text-sm text-gray-600">
         <div>密码要求：</div>
-        <div>• 至少8个字符</div>
-        <div>• 至少1个数字</div>
-        <div>• 至少1个大写字母</div>
-        <div>• 至少1个小写字母</div>
-        <div>• 至少包含以下特殊字符之一：@$!%*?&</div>
+        <div className={` ${password.length >= 8 ? 'text-green-500' : 'text-gray-500'}`}>
+          • 至少8个字符
+        </div>
+        <div className={` ${/\d/.test(password) ? 'text-green-500' : 'text-gray-500'}`}>
+          • 至少1个数字
+        </div>
+        <div className={` ${/[A-Z]/.test(password) ? 'text-green-500' : 'text-gray-500'}`}>
+          • 至少1个大写字母
+        </div>
+        <div className={` ${/[a-z]/.test(password) ? 'text-green-500' : 'text-gray-500'}`}>
+          • 至少1个小写字母
+        </div>
+        <div className={` ${/[@$!%*?&]/.test(password) ? 'text-green-500' : 'text-gray-500'}`}>
+          • 只能包含以下特殊字符之一：@$!%*?&
+        </div>
       </div>
     </div>
   );

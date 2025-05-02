@@ -23,7 +23,7 @@ function ProtectedContent({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (isProtectedPath(pathname) && !token && pathname !== '/auth/confirm') {
+    if (isProtectedPath(pathname) && !token) {
       setLoading(true);
       router.replace(`/auth/confirm?redirect=${encodeURIComponent(pathname)}`);
     } else {

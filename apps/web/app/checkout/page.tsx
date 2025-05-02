@@ -280,27 +280,22 @@ export default function CheckoutPage() {
       try {
         if (!userId) return;
         const user = await getUserById(userId);
-        setFormData({
-          ...formData,
+        await setFormData({
           firstName: user.firstName,
           lastName: user.lastName,
           email: user.email,
           phone: user.phone,
+          address: user.address,
+          city: user.city,
+          paymentMethod: user.paymentMethod || 'alipay',
         });
-        if (user.address) {
-          setFormData({ ...formData, address: user.address });
-        }
-        if (user.city) {
-          setSelectedCity(user.city);
-        }
+
         if (user.province) {
           setSelectedProvince(user.province);
-        }
-        if (user.postalCode) {
-          setFormData({ ...formData, postalCode: user.postalCode });
-        }
-        if (user.paymentMethod) {
-          setFormData({ ...formData, paymentMethod: user.paymentMethod });
+
+          if (user.city) {
+            setSelectedCity(user.city);
+          }
         }
       } catch (error) {
         console.error('加载用户信息失败:', error);

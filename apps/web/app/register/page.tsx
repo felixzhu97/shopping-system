@@ -56,6 +56,10 @@ export default function RegisterPage() {
   // useMemo 缓存正则和 schema
   const emailRegex = useMemo(() => z.string().email(), []);
   const phoneRegex = useMemo(() => z.string().regex(/^1[3-9]\d{9}$/), []);
+  const passwordRegex = useMemo(
+    () => z.string().regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/),
+    []
+  );
 
   useEffect(() => {
     if (formData.email || formData.phone) {
@@ -113,6 +117,9 @@ export default function RegisterPage() {
       isValid = false;
     } else if (formData.password.length < 6) {
       newErrors.password = '密码长度至少为6位';
+      isValid = false;
+    } else if (!passwordRegex.safeParse(formData.password).success) {
+      newErrors.password = '密码必须包含大小写字母、数字和特殊字符';
       isValid = false;
     }
 

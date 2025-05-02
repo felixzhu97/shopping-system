@@ -73,9 +73,11 @@ const CartDropdown = memo(
     const handleLogout = useCallback(
       (e: React.MouseEvent) => {
         e.preventDefault();
-        clearToken();
-        router.push('/login');
-        onClose();
+        router.replace('/login');
+        setTimeout(() => {
+          clearToken();
+          onClose();
+        }, 500);
       },
       [clearToken, router, onClose]
     );
