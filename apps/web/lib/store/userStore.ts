@@ -9,7 +9,7 @@ export const USER_INFO_KEY = 'u';
 interface UserSlice {
   [TOKEN_KEY]: string | null;
   saveToken: (user: User) => string;
-  logout: () => void;
+  clearToken: () => void;
   getToken: () => string | null;
   getUser: () => User | null;
   getUserId: () => string;
@@ -30,11 +30,11 @@ export const useUserStore = create<UserSlice>()(
         }
       },
 
-      logout: () => {
+      clearToken: () => {
         try {
           set({ [TOKEN_KEY]: null });
         } catch (error) {
-          console.error('退出登录失败:', error);
+          console.error('清除token失败:', error);
         }
       },
 
@@ -88,4 +88,8 @@ export const useToken = () => useUserStore(state => state.getToken());
 export const useUserId = () => useUserStore(state => state.getUserId());
 
 export const useSaveToken = () => useUserStore(state => state.saveToken);
-export const useLogout = () => useUserStore(state => state.logout);
+export const useClearToken = () => useUserStore(state => state.clearToken);
+
+export const clearUserStore = () => {
+  localStorage.removeItem(USER_INFO_KEY);
+};

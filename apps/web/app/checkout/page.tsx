@@ -227,7 +227,7 @@ export default function CheckoutPage() {
         productId: item.productId,
         quantity: item.quantity,
       }));
-
+      setIsSubmitting(true);
       const order = await createOrder(userId, {
         shippingAddress: {
           fullName: `${formData.firstName} ${formData.lastName}`,
@@ -241,7 +241,7 @@ export default function CheckoutPage() {
         orderItems,
       });
 
-      updateUser(userId, {
+      await updateUser(userId, {
         firstName: formData.firstName,
         lastName: formData.lastName,
         email: formData.email,
@@ -258,6 +258,7 @@ export default function CheckoutPage() {
 
       // 重置表单
       resetForm();
+      setIsSubmitting(false);
 
       // 跳转到订单确认页面
       router.replace(`/checkout/success?orderId=${order.id}`);
@@ -279,10 +280,28 @@ export default function CheckoutPage() {
       try {
         if (!userId) return;
         const user = await getUserById(userId);
-        setFormData(user);
-
-        setSelectedProvince(user.province);
-        setSelectedCity(user.city);
+        setFormData({
+          ...formData,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+          phone: user.phone,
+        });
+        if (user.address) {
+          setFormData({ ...formData, address: user.address });
+        }
+        if (user.city) {
+          setSelectedCity(user.city);
+        }
+        if (user.province) {
+          setSelectedProvince(user.province);
+        }
+        if (user.postalCode) {
+          setFormData({ ...formData, postalCode: user.postalCode });
+        }
+        if (user.paymentMethod) {
+          setFormData({ ...formData, paymentMethod: user.paymentMethod });
+        }
       } catch (error) {
         console.error('加载用户信息失败:', error);
       }
