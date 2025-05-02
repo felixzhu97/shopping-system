@@ -21,7 +21,7 @@ import { Badge } from '@/components/ui/badge';
 
 import PanelDropdown from '@/components/ui/panel-dropdown';
 import Image from '@/components/ui/image';
-import { useLogout, useToken, useUserStore } from '@/lib/store/userStore';
+import { useClearToken, useToken } from '@/lib/store/userStore';
 import { useCartItems } from '@/lib/store/cartStore';
 // 定义快捷链接数据
 const quickLinks = [
@@ -68,16 +68,16 @@ const CartDropdown = memo(
   }) => {
     const [token, setToken] = useState('');
     const userToken = useToken();
-    const logout = useLogout();
+    const clearToken = useClearToken();
 
     const handleLogout = useCallback(
       (e: React.MouseEvent) => {
         e.preventDefault();
-        logout();
+        clearToken();
         router.push('/login');
         onClose();
       },
-      [logout, router, onClose]
+      [clearToken, router, onClose]
     );
 
     const handleCartClick = useCallback(() => {
@@ -211,7 +211,6 @@ function NavbarClient() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const items = useCartItems();
-  const logout = useUserStore(state => state.logout);
 
   // 使用 useCallback 优化事件处理函数
   const handleSearch = useCallback(

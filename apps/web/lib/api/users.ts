@@ -1,11 +1,12 @@
+import { clearUserStore } from '../store/userStore';
 import { API_CONFIG, fetchApi } from './config';
 import { User, ApiResponse, UserRegister, UserLogin, UserResetPassword } from 'shared';
-
 // 获取用户信息
 export async function getUserById(id: string): Promise<User> {
   const url = `${API_CONFIG.usersUrl}/${id}`;
   const response = await fetchApi<ApiResponse<User>>(url);
   if (!response.success || !response.data) {
+    clearUserStore();
     throw new Error('获取用户信息失败');
   }
   return response.data;

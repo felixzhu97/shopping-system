@@ -459,7 +459,6 @@ export default function AccountPage() {
   const [addressModalOpen, setAddressModalOpen] = useState(false);
   const [paymentMethodModalOpen, setPaymentMethodModalOpen] = useState(false);
   const { formData, setFormData } = useCheckoutStore();
-
   const userId = useUserId();
 
   useEffect(() => {
