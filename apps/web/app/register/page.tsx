@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Navbar } from '@/components/navbar';
@@ -14,6 +14,7 @@ import { z } from 'zod';
 import { useSaveToken } from '@/lib/store/userStore';
 import PasswordTips from '@/components/password-tips';
 import { EyeIcon } from 'lucide-react';
+import { toast } from '@/components/ui/use-toast';
 
 interface FormData {
   email: string;
@@ -52,6 +53,10 @@ export default function RegisterPage() {
   // 使用防抖处理输入
   const debouncedFormData = useDebounce(formData, 300);
 
+  // useMemo 缓存正则和 schema
+  const emailRegex = useMemo(() => z.string().email(), []);
+  const phoneRegex = useMemo(() => z.string().regex(/^1[3-9]\d{9}$/), []);
+
   useEffect(() => {
     if (formData.email || formData.phone) {
       setFormData(prev => ({
@@ -85,7 +90,6 @@ export default function RegisterPage() {
     }
 
     // 验证邮箱
-    const emailRegex = z.string().email();
     if (!formData.email.trim()) {
       newErrors.email = '请输入邮箱';
       isValid = false;
@@ -95,7 +99,6 @@ export default function RegisterPage() {
     }
 
     // 验证手机号
-    const phoneRegex = z.string().regex(/^1[3-9]\d{9}$/);
     if (!formData.phone.trim()) {
       newErrors.phone = '请输入手机号';
       isValid = false;
@@ -124,7 +127,7 @@ export default function RegisterPage() {
 
     setErrors(newErrors);
     return isValid;
-  }, [formData, setErrors]);
+  }, [formData, setErrors, emailRegex, phoneRegex]);
 
   const handleInputChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -161,7 +164,12 @@ export default function RegisterPage() {
 
         // 保存用户信息并跳转
         saveToken(user);
-        router.replace('/');
+        router.replace('/login');
+
+        toast({
+          title: '注册成功',
+          description: '请登录您的账户',
+        });
       } catch (err: any) {
         setErrors((prev: FormErrors) => ({
           ...prev,
@@ -195,9 +203,17 @@ export default function RegisterPage() {
                     className="h-12 px-4 text-base"
                     disabled={loading}
                     autoComplete="given-name"
+                    aria-invalid={!!errors.firstName}
+                    aria-describedby="firstName-error"
                   />
                   {errors.firstName && (
-                    <div className="text-red-500 text-xs">{errors.firstName}</div>
+                    <div
+                      className="text-red-500 text-xs mt-1 absolute bottom--6"
+                      id="firstName-error"
+                      aria-live="polite"
+                    >
+                      {errors.firstName}
+                    </div>
                   )}
                 </div>
                 <div className="space-y-2">
@@ -209,12 +225,22 @@ export default function RegisterPage() {
                     className="h-12 px-4 text-base"
                     disabled={loading}
                     autoComplete="family-name"
+                    aria-invalid={!!errors.lastName}
+                    aria-describedby="lastName-error"
                   />
-                  {errors.lastName && <div className="text-red-500 text-xs">{errors.lastName}</div>}
+                  {errors.lastName && (
+                    <div
+                      className="text-red-500 text-xs mt-1 absolute bottom--6"
+                      id="lastName-error"
+                      aria-live="polite"
+                    >
+                      {errors.lastName}
+                    </div>
+                  )}
                 </div>
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-2 relative">
                 <Input
                   name="email"
                   type="email"
@@ -224,11 +250,21 @@ export default function RegisterPage() {
                   className="h-12 px-4 text-base"
                   disabled={loading}
                   autoComplete="email"
+                  aria-invalid={!!errors.email}
+                  aria-describedby="email-error"
                 />
-                {errors.email && <div className="text-red-500 text-xs">{errors.email}</div>}
+                {errors.email && (
+                  <div
+                    className="text-red-500 text-xs mt-1 absolute bottom--6"
+                    id="email-error"
+                    aria-live="polite"
+                  >
+                    {errors.email}
+                  </div>
+                )}
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-2 relative">
                 <Input
                   name="phone"
                   type="tel"
@@ -238,8 +274,18 @@ export default function RegisterPage() {
                   className="h-12 px-4 text-base"
                   disabled={loading}
                   autoComplete="tel"
+                  aria-invalid={!!errors.phone}
+                  aria-describedby="phone-error"
                 />
-                {errors.phone && <div className="text-red-500 text-xs">{errors.phone}</div>}
+                {errors.phone && (
+                  <div
+                    className="text-red-500 text-xs mt-1 absolute bottom--6"
+                    id="phone-error"
+                    aria-live="polite"
+                  >
+                    {errors.phone}
+                  </div>
+                )}
               </div>
 
               <div className="space-y-2 relative">
@@ -254,17 +300,33 @@ export default function RegisterPage() {
                   className="h-12 px-4 text-base"
                   disabled={loading}
                   autoComplete="new-password"
+                  aria-invalid={!!errors.password}
+                  aria-describedby="password-error"
                 />
                 <EyeIcon
                   onClick={() => setShowPassword(!showPassword)}
                   size={20}
                   className="absolute right-4 top-1/2 transform -translate-y-3/4 text-gray-500 cursor-pointer"
+                  aria-label={showPassword ? '隐藏密码' : '显示密码'}
+                  tabIndex={0}
+                  role="button"
+                  onKeyDown={e => {
+                    if (e.key === 'Enter' || e.key === ' ') setShowPassword(!showPassword);
+                  }}
                 />
-                {errors.password && <div className="text-red-500 text-xs">{errors.password}</div>}
+                {errors.password && (
+                  <div
+                    className="text-red-500 text-xs mt-1 absolute bottom--6"
+                    id="password-error"
+                    aria-live="polite"
+                  >
+                    {errors.password}
+                  </div>
+                )}
                 {showPasswordTips && <PasswordTips password={formData.password} />}
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-2 relative">
                 <Input
                   name="confirmPassword"
                   type="password"
@@ -274,9 +336,17 @@ export default function RegisterPage() {
                   className="h-12 px-4 text-base"
                   disabled={loading}
                   autoComplete="new-password"
+                  aria-invalid={!!errors.confirmPassword}
+                  aria-describedby="confirmPassword-error"
                 />
                 {errors.confirmPassword && (
-                  <div className="text-red-500 text-xs">{errors.confirmPassword}</div>
+                  <div
+                    className="text-red-500 text-xs mt-1 absolute bottom--6"
+                    id="confirmPassword-error"
+                    aria-live="polite"
+                  >
+                    {errors.confirmPassword}
+                  </div>
                 )}
               </div>
 

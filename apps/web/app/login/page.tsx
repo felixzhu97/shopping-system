@@ -140,7 +140,6 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
   const { toast } = useToast();
   const searchParams = useSearchParams();
@@ -229,37 +228,21 @@ export default function LoginPage() {
     setPassword(e.target.value);
   }, []);
 
-  // 预加载注册页面
-  useEffect(() => {
-    router.prefetch('/register');
-
-    // 模拟页面加载
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 500);
-
-    return () => clearTimeout(timer);
-  }, [router]);
-
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
 
       <main className="flex-1 flex flex-col items-center px-4 py-16 bg-[#f5f5f7]">
         <Suspense fallback={<LoginFormSkeleton />}>
-          {isLoading ? (
-            <LoginFormSkeleton />
-          ) : (
-            <LoginForm
-              emailOrPhone={emailOrPhone}
-              password={password}
-              loading={loading}
-              error={error}
-              onEmailOrPhoneChange={handleEmailOrPhoneChange}
-              onPasswordChange={handlePasswordChange}
-              onSubmit={handleSubmit}
-            />
-          )}
+          <LoginForm
+            emailOrPhone={emailOrPhone}
+            password={password}
+            loading={loading}
+            error={error}
+            onEmailOrPhoneChange={handleEmailOrPhoneChange}
+            onPasswordChange={handlePasswordChange}
+            onSubmit={handleSubmit}
+          />
         </Suspense>
       </main>
 

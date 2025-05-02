@@ -258,7 +258,7 @@ export default function CheckoutPage() {
       resetForm();
 
       // 跳转到订单确认页面
-      router.push(`/orders/${order.id}`);
+      router.replace(`/checkout/success?orderId=${order.id}`);
     } catch (error) {
       console.error('创建订单失败:', error);
       toast({

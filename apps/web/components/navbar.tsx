@@ -21,7 +21,7 @@ import { Badge } from '@/components/ui/badge';
 
 import PanelDropdown from '@/components/ui/panel-dropdown';
 import Image from '@/components/ui/image';
-import { useToken, useUserStore } from '@/lib/store/userStore';
+import { useLogout, useToken, useUserStore } from '@/lib/store/userStore';
 import { useCartItems } from '@/lib/store/cartStore';
 // 定义快捷链接数据
 const quickLinks = [
@@ -60,16 +60,15 @@ const CartDropdown = memo(
     onClose,
     items,
     router,
-    logout,
   }: {
     open: boolean;
     onClose: () => void;
     items: any[];
     router: any;
-    logout: () => void;
   }) => {
     const [token, setToken] = useState('');
     const userToken = useToken();
+    const logout = useLogout();
 
     const handleLogout = useCallback(
       (e: React.MouseEvent) => {
@@ -464,7 +463,6 @@ function NavbarClient() {
                 onClose={() => setShowCart(false)}
                 items={items}
                 router={router}
-                logout={logout}
               />
             </div>
           </div>

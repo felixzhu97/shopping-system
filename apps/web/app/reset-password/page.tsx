@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Navbar } from '@/components/navbar';
@@ -37,14 +37,18 @@ export default function ResetPasswordPage() {
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
 
+  // useMemo 缓存正则和 schema
+  const emailRegex = useMemo(() => z.string().email(), []);
+  const phoneRegex = useMemo(() => z.string().regex(/^1[3-9]\d{9}$/), []);
+  const passwordRegex = useMemo(
+    () => z.string().regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/),
+    []
+  );
+
   // 表单验证
   const validateForm = useCallback(() => {
     const newErrors: FormErrors = {};
     let isValid = true;
-
-    // 验证邮箱或手机号
-    const emailRegex = z.string().email();
-    const phoneRegex = z.string().regex(/^1[3-9]\d{9}$/);
 
     if (!formData.emailOrPhone.trim()) {
       newErrors.emailOrPhone = '请输入邮箱或手机号';
@@ -57,10 +61,6 @@ export default function ResetPasswordPage() {
         isValid = false;
       }
     }
-
-    const passwordRegex = z
-      .string()
-      .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/);
 
     // 验证密码
     if (!formData.password) {
@@ -85,7 +85,7 @@ export default function ResetPasswordPage() {
 
     setErrors(newErrors);
     return isValid;
-  }, [formData]);
+  }, [formData, emailRegex, phoneRegex, passwordRegex]);
 
   const handleInputChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -152,9 +152,15 @@ export default function ResetPasswordPage() {
                   className="h-12 px-4 text-base"
                   disabled={loading}
                   autoComplete="email"
+                  aria-invalid={!!errors.emailOrPhone}
+                  aria-describedby="emailOrPhone-error"
                 />
                 {errors.emailOrPhone && (
-                  <div className="text-red-500 text-xs absolute bottom--6">
+                  <div
+                    className="text-red-500 text-xs mt-1  absolute bottom--6"
+                    id="emailOrPhone-error"
+                    aria-live="polite"
+                  >
                     {errors.emailOrPhone}
                   </div>
                 )}
@@ -172,14 +178,28 @@ export default function ResetPasswordPage() {
                   className="h-12 px-4 text-base"
                   disabled={loading}
                   autoComplete="off"
+                  aria-invalid={!!errors.password}
+                  aria-describedby="password-error"
                 />
                 <EyeIcon
                   onClick={() => setShowPassword(!showPassword)}
                   size={20}
                   className="absolute right-4 top-1/2 transform -translate-y-3/4 text-gray-500 cursor-pointer"
+                  aria-label={showPassword ? '隐藏密码' : '显示密码'}
+                  tabIndex={0}
+                  role="button"
+                  onKeyDown={e => {
+                    if (e.key === 'Enter' || e.key === ' ') setShowPassword(!showPassword);
+                  }}
                 />
                 {errors.password && (
-                  <div className="text-red-500 text-xs absolute bottom--6">{errors.password}</div>
+                  <div
+                    className="text-red-500 text-xs  absolute bottom--6"
+                    id="password-error"
+                    aria-live="polite"
+                  >
+                    {errors.password}
+                  </div>
                 )}
 
                 {showPasswordTips && <PasswordTips password={formData.password} />}
@@ -194,9 +214,15 @@ export default function ResetPasswordPage() {
                   onChange={handleInputChange}
                   className="h-12 px-4 text-base"
                   disabled={loading}
+                  aria-invalid={!!errors.confirmPassword}
+                  aria-describedby="confirmPassword-error"
                 />
                 {errors.confirmPassword && (
-                  <div className="text-red-500 text-xs absolute bottom--6">
+                  <div
+                    className="text-red-500 text-xs absolute bottom--6"
+                    id="confirmPassword-error"
+                    aria-live="polite"
+                  >
                     {errors.confirmPassword}
                   </div>
                 )}

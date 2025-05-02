@@ -1,6 +1,6 @@
 'use client';
 
-import { Usable, use, useEffect, useState } from 'react';
+import { Usable, use, useEffect, useState, useMemo, useCallback } from 'react';
 import Link from 'next/link';
 import {
   Package,
@@ -36,6 +36,135 @@ import {
 } from '@/components/ui/alert-dialog';
 import { paymentMethods } from '@/components/payment-method';
 
+// 收货信息组件
+interface ShippingInfoProps {
+  shippingAddress: Order['shippingAddress'];
+}
+const ShippingInfo = ({ shippingAddress }: ShippingInfoProps) => (
+  <div className="bg-white rounded-2xl shadow-sm p-6 hover:shadow-md transition-shadow">
+    <h2 className="text-lg font-semibold mb-4 flex items-center">
+      <Home className="h-5 w-5 mr-2 text-blue-600" />
+      收货信息
+    </h2>
+    <div className="space-y-3">
+      <div>
+        <div className="text-sm text-gray-500">收货人</div>
+        <div className="font-medium">{shippingAddress.fullName}</div>
+      </div>
+      <div>
+        <div className="text-sm text-gray-500">联系电话</div>
+        <div className="font-medium">{shippingAddress.phone}</div>
+      </div>
+      <div>
+        <div className="text-sm text-gray-500">收货地址</div>
+        <div className="font-medium">
+          {shippingAddress.address}, {shippingAddress.city} {shippingAddress.province},{' '}
+          {shippingAddress.postalCode}
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
+// 支付信息组件
+interface PaymentInfoProps {
+  paymentMethod: Order['paymentMethod'];
+  createdAt: string;
+}
+const PaymentInfo = ({ paymentMethod, createdAt }: PaymentInfoProps) => (
+  <div className="bg-white rounded-2xl shadow-sm p-6 hover:shadow-md transition-shadow">
+    <h2 className="text-lg font-semibold mb-4 flex items-center">
+      <CreditCard className="h-5 w-5 mr-2 text-blue-600" />
+      支付信息
+    </h2>
+    <div className="space-y-3">
+      <div>
+        <div className="text-sm text-gray-500">支付方式</div>
+        <div className="font-medium">{paymentMethods[paymentMethod]}</div>
+      </div>
+      <div>
+        <div className="text-sm text-gray-500">支付状态</div>
+        <div className="font-medium text-green-600">已支付</div>
+      </div>
+      <div>
+        <div className="text-sm text-gray-500">支付时间</div>
+        <div className="font-medium">{new Date(createdAt).toLocaleString()}</div>
+      </div>
+    </div>
+  </div>
+);
+
+// 订单金额组件
+interface OrderAmountProps {
+  totalAmount: number;
+}
+const OrderAmount = ({ totalAmount }: OrderAmountProps) => (
+  <div className="bg-white rounded-2xl shadow-sm p-6 hover:shadow-md transition-shadow">
+    <h2 className="text-lg font-semibold mb-4 flex items-center">
+      <Receipt className="h-5 w-5 mr-2 text-blue-600" />
+      订单金额
+    </h2>
+    <div className="space-y-3">
+      <div className="flex justify-between">
+        <span className="text-gray-500">商品总额</span>
+        <span className="font-medium">¥{totalAmount.toFixed(2)}</span>
+      </div>
+      <div className="flex justify-between">
+        <span className="text-gray-500">运费</span>
+        <span className="font-medium">¥0.00</span>
+      </div>
+      <div className="flex justify-between">
+        <span className="text-gray-500">优惠金额</span>
+        <span className="font-medium text-red-500">-¥0.00</span>
+      </div>
+      <div className="pt-3 border-t">
+        <div className="flex justify-between">
+          <span className="font-medium">实付金额</span>
+          <span className="font-bold text-xl text-blue-600">¥{totalAmount.toFixed(2)}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
+// 商品清单组件
+import type { OrderItem } from '@/lib/types';
+interface OrderItemsListProps {
+  items: OrderItem[];
+}
+const OrderItemsList = ({ items }: OrderItemsListProps) => (
+  <div className="divide-y divide-gray-100">
+    {items.map(item => (
+      <div
+        key={item.productId}
+        className="flex items-center gap-4 p-6 hover:bg-gray-50 transition-colors"
+      >
+        <div className="relative w-20 h-20 flex-shrink-0">
+          <Image
+            src={item.image || item.product?.image}
+            alt={item.name || item.product?.name}
+            className="object-cover rounded-xl"
+            wrapperClassName="w-20 h-20"
+            loading="lazy"
+          />
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="font-medium text-gray-900">{item.name || item.product?.name}</div>
+          <div className="text-sm text-gray-500 mt-1">
+            单价: ¥{(item.price ?? item.product?.price ?? 0).toFixed(2)}
+          </div>
+          <div className="text-sm text-gray-500">数量: {item.quantity}</div>
+        </div>
+        <div className="text-right">
+          <div className="font-semibold text-gray-900">
+            ¥{((item.price ?? item.product?.price ?? 0) * item.quantity).toFixed(2)}
+          </div>
+        </div>
+      </div>
+    ))}
+  </div>
+);
+
 export default function OrderDetailPage({ params }: { params: Usable<{ id: string }> }) {
   const [order, setOrder] = useState<Order | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -44,39 +173,69 @@ export default function OrderDetailPage({ params }: { params: Usable<{ id: strin
   const { id } = use(params);
 
   useEffect(() => {
-    const fetchOrder = async () => {
-      try {
-        const order = await getOrderById(id);
-        setOrder(order);
-      } catch (error) {
-        console.error('获取订单详情失败', error);
-        toast({
-          title: '获取订单失败',
-          description: '请稍后重试',
-          variant: 'destructive',
-        });
-      } finally {
-        setIsLoading(false);
-      }
+    let isMounted = true;
+    setIsLoading(true);
+    getOrderById(id)
+      .then(order => {
+        if (isMounted) setOrder(order);
+      })
+      .catch(error => {
+        if (isMounted) {
+          console.error('获取订单详情失败', error);
+          toast({
+            title: '获取订单失败',
+            description: '请稍后重试',
+            variant: 'destructive',
+          });
+        }
+      })
+      .finally(() => {
+        if (isMounted) setIsLoading(false);
+      });
+    return () => {
+      isMounted = false;
     };
+  }, [id]);
 
-    fetchOrder();
-  }, [id, toast]);
+  // useMemo 缓存金额和状态文本
+  const orderAmount = useMemo(() => {
+    if (!order) return { total: 0, amountText: '' };
+    return {
+      total: order.totalAmount.toFixed(2),
+      amountText: `¥${order.totalAmount.toFixed(2)}`,
+    };
+  }, [order]);
 
-  const handleCancelOrder = async () => {
+  const statusText = useMemo(() => {
+    if (!order) return '';
+    switch (order.status) {
+      case 'pending':
+        return '待处理';
+      case 'processing':
+        return '处理中';
+      case 'shipped':
+        return '已发货';
+      case 'delivered':
+        return '已送达';
+      case 'cancelled':
+        return '已取消';
+      default:
+        return '';
+    }
+  }, [order]);
+
+  // useCallback 优化事件
+  const handleCancelOrder = useCallback(async () => {
     if (!order) return;
-
     setIsCancelling(true);
     try {
       await cancelOrder(order.id);
-      const updatedOrder = await getOrderById(id);
-      setOrder(updatedOrder);
+      setOrder({ ...order, status: 'cancelled' });
       toast({
         title: '订单已取消',
         description: '您的订单已成功取消',
       });
     } catch (error) {
-      console.error('取消订单失败:', error);
       toast({
         title: '取消订单失败',
         description: '请稍后重试',
@@ -85,7 +244,7 @@ export default function OrderDetailPage({ params }: { params: Usable<{ id: strin
     } finally {
       setIsCancelling(false);
     }
-  };
+  }, [order, toast]);
 
   const getStatusIcon = (status: Order['status']) => {
     switch (status) {
@@ -99,21 +258,6 @@ export default function OrderDetailPage({ params }: { params: Usable<{ id: strin
         return <CheckCircle className="h-5 w-5 text-green-500" />;
       case 'cancelled':
         return <XCircle className="h-5 w-5 text-red-500" />;
-    }
-  };
-
-  const getStatusText = (status: Order['status']) => {
-    switch (status) {
-      case 'pending':
-        return '待处理';
-      case 'processing':
-        return '处理中';
-      case 'shipped':
-        return '已发货';
-      case 'delivered':
-        return '已送达';
-      case 'cancelled':
-        return '已取消';
     }
   };
 
@@ -228,10 +372,8 @@ export default function OrderDetailPage({ params }: { params: Usable<{ id: strin
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="font-bold text-2xl">¥{order.totalAmount.toFixed(2)}</div>
-                    <div className="text-sm font-medium opacity-90">
-                      {getStatusText(order.status)}
-                    </div>
+                    <div className="font-bold text-2xl">{orderAmount.amountText}</div>
+                    <div className="text-sm font-medium opacity-90">{statusText}</div>
                   </div>
                 </div>
 
@@ -298,82 +440,9 @@ export default function OrderDetailPage({ params }: { params: Usable<{ id: strin
 
             {/* 订单详情卡片 */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
-              {/* 收货信息 */}
-              <div className="bg-white rounded-2xl shadow-sm p-6 hover:shadow-md transition-shadow">
-                <h2 className="text-lg font-semibold mb-4 flex items-center">
-                  <Home className="h-5 w-5 mr-2 text-blue-600" />
-                  收货信息
-                </h2>
-                <div className="space-y-3">
-                  <div>
-                    <div className="text-sm text-gray-500">收货人</div>
-                    <div className="font-medium">{order.shippingAddress.fullName}</div>
-                  </div>
-                  <div>
-                    <div className="text-sm text-gray-500">联系电话</div>
-                    <div className="font-medium">{order.shippingAddress.phone}</div>
-                  </div>
-                  <div>
-                    <div className="text-sm text-gray-500">收货地址</div>
-                    <div className="font-medium">
-                      {order.shippingAddress.address}, {order.shippingAddress.city}{' '}
-                      {order.shippingAddress.province}, {order.shippingAddress.postalCode}
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* 支付信息 */}
-              <div className="bg-white rounded-2xl shadow-sm p-6 hover:shadow-md transition-shadow">
-                <h2 className="text-lg font-semibold mb-4 flex items-center">
-                  <CreditCard className="h-5 w-5 mr-2 text-blue-600" />
-                  支付信息
-                </h2>
-                <div className="space-y-3">
-                  <div>
-                    <div className="text-sm text-gray-500">支付方式</div>
-                    <div className="font-medium">{paymentMethods[order.paymentMethod]}</div>
-                  </div>
-                  <div>
-                    <div className="text-sm text-gray-500">支付状态</div>
-                    <div className="font-medium text-green-600">已支付</div>
-                  </div>
-                  <div>
-                    <div className="text-sm text-gray-500">支付时间</div>
-                    <div className="font-medium">{new Date(order.createdAt).toLocaleString()}</div>
-                  </div>
-                </div>
-              </div>
-
-              {/* 订单金额 */}
-              <div className="bg-white rounded-2xl shadow-sm p-6 hover:shadow-md transition-shadow">
-                <h2 className="text-lg font-semibold mb-4 flex items-center">
-                  <Receipt className="h-5 w-5 mr-2 text-blue-600" />
-                  订单金额
-                </h2>
-                <div className="space-y-3">
-                  <div className="flex justify-between">
-                    <span className="text-gray-500">商品总额</span>
-                    <span className="font-medium">¥{order.totalAmount.toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-500">运费</span>
-                    <span className="font-medium">¥0.00</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-500">优惠金额</span>
-                    <span className="font-medium text-red-500">-¥0.00</span>
-                  </div>
-                  <div className="pt-3 border-t">
-                    <div className="flex justify-between">
-                      <span className="font-medium">实付金额</span>
-                      <span className="font-bold text-xl text-blue-600">
-                        ¥{order.totalAmount.toFixed(2)}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <ShippingInfo shippingAddress={order.shippingAddress} />
+              <PaymentInfo paymentMethod={order.paymentMethod} createdAt={order.createdAt} />
+              <OrderAmount totalAmount={order.totalAmount} />
             </div>
 
             {/* 商品清单 */}
@@ -382,38 +451,7 @@ export default function OrderDetailPage({ params }: { params: Usable<{ id: strin
                 <Package className="h-5 w-5 mr-2 text-blue-600" />
                 商品清单
               </h2>
-              <div className="divide-y divide-gray-100">
-                {order.items.map(item => (
-                  <div
-                    key={item.productId}
-                    className="flex items-center gap-4 p-6 hover:bg-gray-50 transition-colors"
-                  >
-                    <div className="relative w-20 h-20 flex-shrink-0">
-                      <Image
-                        src={item.image || item.product?.image}
-                        alt={item.name || item.product?.name}
-                        className="object-cover rounded-xl"
-                        wrapperClassName="w-20 h-20"
-                        loading="lazy"
-                      />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="font-medium text-gray-900">
-                        {item.name || item.product?.name}
-                      </div>
-                      <div className="text-sm text-gray-500 mt-1">
-                        单价: ¥{(item.price ?? item.product?.price ?? 0).toFixed(2)}
-                      </div>
-                      <div className="text-sm text-gray-500">数量: {item.quantity}</div>
-                    </div>
-                    <div className="text-right">
-                      <div className="font-semibold text-gray-900">
-                        ¥{((item.price ?? item.product?.price ?? 0) * item.quantity).toFixed(2)}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
+              <OrderItemsList items={order.items} />
             </div>
           </div>
         </div>
