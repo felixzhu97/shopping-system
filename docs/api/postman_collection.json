@@ -269,7 +269,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"username\": \"用户名\",\n  \"email\": \"user@example.com\",\n  \"password\": \"密码\"\n}",
+              "raw": "{\n  \"firstName\": \"张\",\n  \"lastName\": \"三\",\n  \"phone\": \"13800138000\",\n  \"email\": \"zhangsan@example.com\" , \"password\": \"123456\"}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -291,7 +291,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"密码\"\n}",
+              "raw": "{\n  \"email\": \"zhangsan@example.com\",\n  \"password\": \"123456\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -352,16 +352,16 @@
           "response": []
         },
         {
-          "name": "添加地址",
+          "name": "更新用户",
           "request": {
-            "method": "POST",
+            "method": "PUT",
             "url": {
-              "raw": "{{BASE_URL}}/api/users/:userId/addresses",
+              "raw": "{{BASE_URL}}/api/users/:id",
               "host": ["{{BASE_URL}}"],
-              "path": ["api", "users", ":userId", "addresses"],
+              "path": ["api", "users", ":id"],
               "variable": [
                 {
-                  "key": "userId",
+                  "key": "id",
                   "value": "",
                   "description": "用户ID"
                 }
@@ -369,83 +369,38 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"address\": \"北京市朝阳区\",\n  \"city\": \"北京\",\n  \"province\": \"北京\",\n  \"postalCode\": \"100000\",\n  \"isDefault\": true\n}",
-              "options": {
+              "raw": "{\n  \"firstName\": \"张\",\n  \"lastName\": \"三\",\n  \"phone\": \"13800138000\",\n  \"email\": \"zhangsan@example.com\",\n  \"address\": \"北京市朝阳区\",\n  \"city\": \"北京\",\n  \"province\": \"北京\",\n  \"postalCode\": \"100000\",\n  \"paymentMethod\": \"credit-card\",\n  \"cardNumber\": \"4111111111111111\",\n  \"expiration\": \"12/25\",\n  \"cvv\": \"123\"\n }",
+                "options": {
                 "raw": {
                   "language": "json"
                 }
               }
             },
-            "description": "为用户添加新的地址"
+            "description": "更新指定用户的信息"
           },
-          "response": [
-            {
-              "name": "成功响应",
-              "originalRequest": {
-                "method": "POST",
-                "url": {
-                  "raw": "{{BASE_URL}}/api/users/:userId/addresses"
-                }
-              },
-              "status": "Created",
-              "code": 201,
-              "header": [
-                {
-                  "key": "Content-Type",
-                  "value": "application/json"
-                }
-              ],
-              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"addresses\": [\n      {\n        \"id\": \"507f1f77bcf86cd799439012\",\n        \"address\": \"北京市朝阳区\",\n        \"city\": \"北京\",\n        \"province\": \"北京\",\n        \"postalCode\": \"100000\",\n        \"isDefault\": true\n      }\n    ]\n  }\n}"
-            }
-          ]
+          "response": []
         },
         {
-          "name": "添加支付方式",
+          "name": "重置密码",
           "request": {
             "method": "POST",
             "url": {
-              "raw": "{{BASE_URL}}/api/users/:userId/payment-methods",
+              "raw": "{{BASE_URL}}/api/users/reset-password",
               "host": ["{{BASE_URL}}"],
-              "path": ["api", "users", ":userId", "payment-methods"],
-              "variable": [
-                {
-                  "key": "userId",
-                  "value": "",
-                  "description": "用户ID"
-                }
-              ]
+              "path": ["api", "users", "reset-password"]
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"type\": \"credit-card\",\n  \"cardNumber\": \"4111111111111111\",\n  \"expiration\": \"12/25\",\n  \"cvv\": \"123\",\n  \"isDefault\": true\n}",
+              "raw": "{\n  \"email\": \"user@example.com\",\n  \"phone\": \"12345678901\",\n  \"newPassword\": \"新密码\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
                 }
               }
             },
-            "description": "为用户添加新的支付方式"
+            "description": "重置指定用户的密码"
           },
-          "response": [
-            {
-              "name": "成功响应",
-              "originalRequest": {
-                "method": "POST",
-                "url": {
-                  "raw": "{{BASE_URL}}/api/users/:userId/payment-methods"
-                }
-              },
-              "status": "Created",
-              "code": 201,
-              "header": [
-                {
-                  "key": "Content-Type",
-                  "value": "application/json"
-                }
-              ],
-              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"paymentMethods\": [\n      {\n        \"id\": \"507f1f77bcf86cd799439013\",\n        \"type\": \"credit-card\",\n        \"isDefault\": true\n      }\n    ]\n  }\n}"
-            }
-          ]
+          "response": []
         }
       ]
     },

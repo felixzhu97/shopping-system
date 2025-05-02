@@ -17,8 +17,8 @@ const HeroCard = ({
   <div className={`${color} rounded-[28px] overflow-hidden`}>
     <div className="block relative">
       <div className="pt-12 px-8 text-center">
-        <h2 className={`text-[40px] font-medium ${textColor} mb-1`}>{product.name}</h2>
-        <p className={`text-[21px] ${textColor}/90 mb-3`}>{product.description}</p>
+        <h2 className={`text-[40px] font-medium ${textColor} mb-1`}>{product?.name}</h2>
+        <p className={`text-[21px] ${textColor}/90 mb-3`}>{product?.description}</p>
         <div className="flex justify-center gap-4 text-[17px]">
           <Button
             asChild
@@ -26,7 +26,7 @@ const HeroCard = ({
             size="lg"
             className="rounded-full px-8 py-6 bg-white text-black hover:bg-white/90 text-base"
           >
-            <Link href={`/products/${product.id}`}>了解更多</Link>
+            <Link href={`/products/${product?.id}`}>了解更多</Link>
           </Button>
           <Button
             asChild
@@ -34,14 +34,14 @@ const HeroCard = ({
             size="lg"
             className="rounded-full px-8 py-6 bg-black text-white hover: text-base"
           >
-            <Link href={`/products/${product.id}`}>购买</Link>
+            <Link href={`/products/${product?.id}`}>购买</Link>
           </Button>
         </div>
       </div>
       <div className="mt-8 flex justify-center">
         <Image
-          src={product.image}
-          alt={product.name}
+          src={product?.image}
+          alt={product?.name}
           className="w-full h-auto object-cover"
           loading="lazy"
         />
@@ -55,18 +55,18 @@ const DualCard = ({ product, color = 'bg-white' }: { product: Product; color?: s
   <div className={`${color} rounded-[28px] overflow-hidden`}>
     <div className="block relative">
       <div className="pt-8 px-6 text-center">
-        <h2 className="text-[32px] font-medium text-[#1d1d1f] mb-1">{product.name}</h2>
-        <p className="text-[17px] text-[#1d1d1f]/90 mb-3">{product.description}</p>
+        <h2 className="text-[32px] font-medium text-[#1d1d1f] mb-1">{product?.name}</h2>
+        <p className="text-[17px] text-[#1d1d1f]/90 mb-3">{product?.description}</p>
         <div className="flex justify-center gap-4 text-[14px]">
-          <Link href={`/products/${product.id}`} className="text-blue-500 hover:underline">
+          <Link href={`/products/${product?.id}`} className="text-blue-500 hover:underline">
             了解更多 <span className="ml-1">→</span>
           </Link>
         </div>
       </div>
       <div className="mt-6 flex justify-center">
         <Image
-          src={product.image}
-          alt={product.name}
+          src={product?.image}
+          alt={product?.name}
           className="w-full h-auto object-cover"
           loading="lazy"
         />
@@ -114,7 +114,17 @@ async function CategoryShowcase() {
     const [electronics] = await Promise.all([api.getProducts('electronics')]);
 
     // 选择展示产品
-    const featuredProducts = electronics.slice(0, 3);
+    const featuredProducts = electronics.filter(Boolean).slice(0, 3);
+
+    // 判空处理，避免 undefined 报错
+    if (featuredProducts.length < 3) {
+      return (
+        <div className="text-center py-8">
+          <h3 className="text-lg font-medium mb-2">暂无足够的产品数据</h3>
+          <p className="text-gray-500">请稍后再试</p>
+        </div>
+      );
+    }
 
     return (
       <div className="space-y-4 px-6">
@@ -135,14 +145,14 @@ async function CategoryShowcase() {
             title="母亲节献礼"
             description="为妈妈挑选完美礼物"
             image="/mothers-day.png"
-            link="/products?category=gifts"
+            link="/products"
             color="bg-[#fafafa]"
           />
           <PromoCard
             title="以旧换新"
             description="换购新机最高可享95折优惠"
             image="/trade-in.jpg"
-            link="/trade-in"
+            link="/products"
             color="bg-[#fafafa]"
           />
         </div>

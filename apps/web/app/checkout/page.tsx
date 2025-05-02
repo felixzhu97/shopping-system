@@ -21,14 +21,18 @@ import { useToast } from '@/components/ui/use-toast';
 import { Toaster } from '@/components/ui/toaster';
 import { Navbar } from '@/components/navbar';
 import { Footer } from '@/components/footer';
-import { useCartStore } from '@/lib/store/cartStore';
-import { useUserStore } from '@/lib/store/userStore';
+
 import { useCheckoutStore } from '@/lib/store/checkoutStore';
 // import { useAccountStore } from '@/lib/store/accountStore';
 import { Image } from '@/components/ui/image';
 import { cn } from '@/lib/utils/utils';
 import { provinces } from '@/components/china-region';
 import { createOrder } from '@/lib/api/orders';
+import { useUserId } from '@/lib/store/userStore';
+import { getUserById, updateUser } from '@/lib/api/users';
+import { paymentMethods } from '@/components/payment-method';
+import { useCartClearCart, useCartItems } from '@/lib/store/cartStore';
+import { PaymentMethod } from 'shared';
 
 // 订单摘要商品项组件
 const OrderSummaryItem = React.memo(function OrderSummaryItem({ item }: { item: any }) {
@@ -57,8 +61,6 @@ const OrderSummaryItem = React.memo(function OrderSummaryItem({ item }: { item: 
 
 export default function CheckoutPage() {
   // 1. 所有 store hooks
-  const { items, clearCart } = useCartStore();
-  const { getUserId, getCheckoutInfo, saveCheckoutInfo } = useUserStore();
   const {
     formData,
     errors,
@@ -74,6 +76,9 @@ export default function CheckoutPage() {
   } = useCheckoutStore();
   const { toast } = useToast();
   const router = useRouter();
+  const userId = useUserId();
+  const items = useCartItems();
+  const clearCart = useCartClearCart();
 
   // 2. 所有 useMemo hooks
   const { subtotal, shipping, tax, total } = useMemo(() => {
@@ -86,16 +91,16 @@ export default function CheckoutPage() {
     const total = subtotal + shipping + tax;
 
     return { subtotal, shipping, tax, total };
-  }, [items]);
+  }, [items.length]);
 
   // 3. 表单处理函数
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData({ [name]: value });
+    setFormData({ ...formData, [name]: value });
   };
 
-  const handleSelectChange = (name: string, value: string) => {
-    setFormData({ [name]: value });
+  const handleSelectChange = (value: PaymentMethod) => {
+    setFormData({ ...formData, paymentMethod: value });
   };
 
   const handleProvinceChange = (value: string) => {
@@ -164,16 +169,16 @@ export default function CheckoutPage() {
     if (!formData.postalCode) {
       newErrors.postalCode = '请输入邮政编码';
       isValid = false;
-    } else if (!/^\d{6}$/.test(formData.postalCode)) {
+    } else if (!/^\d{6}$/.test(formData.postalCode || '')) {
       newErrors.postalCode = '请输入有效的邮政编码';
       isValid = false;
     }
 
-    if (formData.paymentMethod === 'credit-card') {
+    if (formData.paymentMethod === paymentMethods['credit-card']) {
       if (!formData.cardNumber) {
         newErrors.cardNumber = '请输入卡号';
         isValid = false;
-      } else if (!/^\d{16}$/.test(formData.cardNumber)) {
+      } else if (!/^\d{16}$/.test(formData.cardNumber || '')) {
         newErrors.cardNumber = '请输入有效的卡号';
         isValid = false;
       }
@@ -181,7 +186,7 @@ export default function CheckoutPage() {
       if (!formData.expiration) {
         newErrors.expiration = '请输入有效期';
         isValid = false;
-      } else if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(formData.expiration)) {
+      } else if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(formData.expiration || '')) {
         newErrors.expiration = '请输入有效的有效期（MM/YY）';
         isValid = false;
       }
@@ -189,7 +194,7 @@ export default function CheckoutPage() {
       if (!formData.cvv) {
         newErrors.cvv = '请输入CVV';
         isValid = false;
-      } else if (!/^\d{3,4}$/.test(formData.cvv)) {
+      } else if (!/^\d{3,4}$/.test(formData.cvv || '')) {
         newErrors.cvv = '请输入有效的CVV';
         isValid = false;
       }
@@ -214,7 +219,6 @@ export default function CheckoutPage() {
     setIsSubmitting(true);
 
     try {
-      const userId = getUserId();
       if (!userId) {
         throw new Error('用户未登录');
       }
@@ -237,8 +241,7 @@ export default function CheckoutPage() {
         orderItems,
       });
 
-      // 保存结算信息
-      saveCheckoutInfo({
+      updateUser(userId, {
         firstName: formData.firstName,
         lastName: formData.lastName,
         email: formData.email,
@@ -257,7 +260,7 @@ export default function CheckoutPage() {
       resetForm();
 
       // 跳转到订单确认页面
-      router.push(`/orders/${order.id}`);
+      router.replace(`/checkout/success?orderId=${order.id}`);
     } catch (error) {
       console.error('创建订单失败:', error);
       toast({
@@ -272,16 +275,20 @@ export default function CheckoutPage() {
 
   // 4. 加载用户信息
   useEffect(() => {
-    try {
-      const checkoutInfo = getCheckoutInfo();
-      setFormData(checkoutInfo);
+    const fetchUserData = async () => {
+      try {
+        if (!userId) return;
+        const user = await getUserById(userId);
+        setFormData(user);
 
-      setSelectedProvince(checkoutInfo.province);
-      setSelectedCity(checkoutInfo.city);
-    } catch (error) {
-      console.error('加载用户信息失败:', error);
-    }
-  }, [getCheckoutInfo, setFormData, setSelectedProvince, setSelectedCity]);
+        setSelectedProvince(user.province);
+        setSelectedCity(user.city);
+      } catch (error) {
+        console.error('加载用户信息失败:', error);
+      }
+    };
+    fetchUserData();
+  }, [userId, setFormData, setSelectedProvince, setSelectedCity]);
 
   // 获取当前省份的城市列表
   const currentCities = useMemo(() => {
@@ -572,7 +579,7 @@ export default function CheckoutPage() {
                     <div className="space-y-6">
                       <RadioGroup
                         defaultValue={formData.paymentMethod}
-                        onValueChange={value => handleSelectChange('paymentMethod', value)}
+                        onValueChange={handleSelectChange}
                         className="space-y-4"
                       >
                         <div className="flex items-center space-x-3 border border-gray-200 p-4 rounded-xl hover:border-blue-500 transition-colors">
@@ -595,14 +602,14 @@ export default function CheckoutPage() {
                         <div className="flex items-center space-x-3 border border-gray-200 p-4 rounded-xl hover:border-blue-500 transition-colors">
                           <RadioGroupItem value="alipay" id="alipay" className="text-blue-600" />
                           <Label htmlFor="alipay" className="flex-1 font-medium cursor-pointer">
-                            支付宝
+                            {paymentMethods.alipay}
                           </Label>
                           <div className="h-8 w-12 rounded bg-blue-500"></div>
                         </div>
                         <div className="flex items-center space-x-3 border border-gray-200 p-4 rounded-xl hover:border-blue-500 transition-colors">
                           <RadioGroupItem value="wechat" id="wechat" className="text-blue-600" />
                           <Label htmlFor="wechat" className="flex-1 font-medium cursor-pointer">
-                            微信支付
+                            {paymentMethods.wechat}
                           </Label>
                           <div className="h-8 w-12 rounded bg-green-500"></div>
                         </div>

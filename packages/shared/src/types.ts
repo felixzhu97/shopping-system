@@ -37,30 +37,35 @@ export type UserRole = 'user' | 'admin';
 export interface User {
   id?: string;
   password?: string;
+  role?: UserRole;
   // -------用户信息-------
   firstName: string;
   lastName: string;
   phone: string;
   email: string;
-  role: UserRole;
-  // -------地址-------
-  address: {
-    firstName: string;
-    lastName: string;
-    company: string;
-    street: string;
-    apt: string;
-    zip: string;
-    city: string;
-    province: string;
-    country: string;
-    phone: string;
-  };
-  // -------支付方式-------
-  paymentMethod: string;
+  // -------收货地址-------
+  address: string;
+  city: string;
+  province: string;
+  postalCode: string;
+  // -------支付信息-------
+  paymentMethod: PaymentMethod;
   cardNumber?: string;
   expiration?: string;
   cvv?: string;
+}
+
+export interface UserRegister
+  extends Pick<User, 'email' | 'password' | 'firstName' | 'lastName' | 'phone'> {}
+
+export interface UserLogin {
+  emailOrPhone: string;
+  password: string;
+}
+
+export interface UserResetPassword {
+  emailOrPhone: string;
+  newPassword: string;
 }
 
 // -----------Order-----------
@@ -99,4 +104,9 @@ export interface ApiResponse<T> {
   data?: T;
   error?: string;
   success: boolean;
+}
+
+export interface ErrorResponse {
+  message: string;
+  fields?: string[];
 }
