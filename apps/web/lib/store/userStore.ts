@@ -29,7 +29,6 @@ export const useUserStore = create<UserState>()(
       saveToken: (user: User): string => {
         try {
           const token = encrypt(JSON.stringify(user));
-          localStorage.setItem(TOKEN_KEY, token);
           set({ [TOKEN_KEY]: token });
           return token;
         } catch (error) {
@@ -40,7 +39,7 @@ export const useUserStore = create<UserState>()(
 
       getToken: (): string | null => {
         try {
-          const token = localStorage.getItem(TOKEN_KEY);
+          const token = get()[TOKEN_KEY];
           return token ? token : null;
         } catch (error) {
           console.error('获取用户信息失败:', error);
@@ -50,7 +49,7 @@ export const useUserStore = create<UserState>()(
 
       getUser: (): User | null => {
         try {
-          const token = localStorage.getItem(TOKEN_KEY);
+          const token = get()[TOKEN_KEY];
           if (!token) {
             return null;
           }
@@ -76,7 +75,6 @@ export const useUserStore = create<UserState>()(
 
       logout: () => {
         try {
-          localStorage.removeItem(TOKEN_KEY);
           set({ [TOKEN_KEY]: null });
         } catch (error) {
           console.error('退出登录失败:', error);
@@ -86,7 +84,6 @@ export const useUserStore = create<UserState>()(
       // ---------CHECKOUT_INFO---------
       saveCheckoutInfo: (data: any) => {
         try {
-          localStorage.setItem(CHECKOUT_INFO_KEY, JSON.stringify(data));
           set({ [CHECKOUT_INFO_KEY]: data });
         } catch (error) {
           console.error('保存结算信息失败:', error);
@@ -95,7 +92,7 @@ export const useUserStore = create<UserState>()(
 
       getCheckoutInfo: () => {
         try {
-          const checkoutInfo = localStorage.getItem(CHECKOUT_INFO_KEY);
+          const checkoutInfo = get()[CHECKOUT_INFO_KEY];
           if (!checkoutInfo) return null;
           return JSON.parse(checkoutInfo);
         } catch (error) {
@@ -106,7 +103,6 @@ export const useUserStore = create<UserState>()(
 
       clearCheckoutInfo: () => {
         try {
-          localStorage.removeItem(CHECKOUT_INFO_KEY);
           set({ [CHECKOUT_INFO_KEY]: null });
         } catch (error) {
           console.error('清除结算信息失败:', error);

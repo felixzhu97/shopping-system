@@ -66,7 +66,7 @@ export async function GET(request: NextRequest, { params }: { params: { path: st
   } catch (error: any) {
     console.error('代理请求失败:', error);
     const errorResponse = NextResponse.json(
-      { error: '请求失败', details: error.message },
+      { error: '请求失败', message: error.message },
       { status: 500 }
     );
     return setCorsHeaders(errorResponse);
@@ -148,7 +148,7 @@ export async function POST(
     console.error('代理POST请求失败:', error);
     const errorResponse = NextResponse.json(
       {
-        details: error.message,
+        message: error.message,
       },
       error.cause ? { status: error.cause.status } : { status: 500 }
     );
@@ -204,7 +204,7 @@ export async function PUT(request: NextRequest, { params }: { params: { path: st
   } catch (error: any) {
     console.error('代理PUT请求失败:', error);
     const errorResponse = NextResponse.json(
-      { error: '请求失败', details: error.message },
+      { error: '请求失败', message: error.message },
       { status: 500 }
     );
     return setCorsHeaders(errorResponse);
@@ -248,7 +248,7 @@ export async function DELETE(request: NextRequest, { params }: { params: { path:
   } catch (error: any) {
     console.error('代理DELETE请求失败:', error);
     const errorResponse = NextResponse.json(
-      { error: '请求失败', details: error.message },
+      { error: '请求失败', message: error.message },
       { status: 500 }
     );
     return setCorsHeaders(errorResponse);

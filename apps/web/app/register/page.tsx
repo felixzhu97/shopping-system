@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { register } from '@/lib/api/users';
 import { useDebounce } from '@/lib/hooks/use-debounce';
-import { saveToken } from '@/lib/store/userStore';
+import { getCheckoutInfo, saveToken } from '@/lib/store/userStore';
 import { useToast } from '@/components/ui/use-toast';
 import { Toaster } from '@/components/ui/toaster';
 
@@ -54,7 +54,7 @@ export default function RegisterPage() {
 
   // 从结算页面获取预填充数据
   useEffect(() => {
-    const savedInfo = localStorage.getItem('checkoutInfo');
+    const savedInfo = getCheckoutInfo();
     if (savedInfo) {
       try {
         const parsedInfo = JSON.parse(savedInfo);

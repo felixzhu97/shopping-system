@@ -26,15 +26,15 @@ export async function fetchApi<T>(url: string, options: RequestInit = {}): Promi
         ...options.headers,
       },
     });
+    const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      console.error(`url: ${url} status: ${response.status}`, data);
+      throw new Error(data.message || '请求失败');
     }
 
-    const data = await response.json();
     return { data, success: true };
   } catch (error) {
-    console.error('请求失败:', error);
     return {
       success: false,
       error: error instanceof Error ? error.message : '未知错误',
