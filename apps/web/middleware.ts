@@ -13,16 +13,32 @@ const CORS_PATHS = [
   '/api/orders/',
 ];
 
+// 需要登录才能访问的路由
+const protectedRoutes = ['/account', '/orders', '/cart', '/checkout', '/wishlist', '/settings'];
+
 // 判断请求路径是否需要CORS
 function shouldApplyCors(path: string): boolean {
   return CORS_PATHS.some(corsPath => path === corsPath || path.startsWith(`${corsPath}/`));
 }
 
 export function middleware(request: NextRequest) {
-  const path = request.nextUrl.pathname;
+  const token = request.cookies.get('user-store')?.value;
+  const pathname = request.nextUrl.pathname;
+
+  // 检查是否是需要保护的路由
+  const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route));
+
+  if (isProtectedRoute && !token) {
+    // 构建回调 URL
+    const callbackUrl = encodeURIComponent(request.nextUrl.pathname + request.nextUrl.search);
+
+    // 重定向到登录确认页面
+    const redirectUrl = new URL(`/auth/confirm?callbackUrl=${callbackUrl}`, request.url);
+    return NextResponse.redirect(redirectUrl);
+  }
 
   // 不为API路由添加CORS
-  if (!shouldApplyCors(path)) {
+  if (!shouldApplyCors(pathname)) {
     return NextResponse.next();
   }
 

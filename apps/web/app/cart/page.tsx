@@ -1,6 +1,6 @@
 'use client';
 
-import { memo, useEffect } from 'react';
+import { memo, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, ArrowRight, CreditCard, Package, ShoppingBag } from 'lucide-react';
@@ -12,7 +12,14 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { CartItem } from '@/components/cart-item';
 import { Navbar } from '@/components/navbar';
 import { Footer } from '@/components/footer';
-import { useCartStore } from '@/lib/store/cartStore';
+import {
+  useCartItems,
+  useCartUpdateQuantity,
+  useCartRemoveFromCart,
+  useCartClearCart,
+  useCartIsLoading,
+  useCartError,
+} from '@/lib/store/cartStore';
 import { useToast } from '@/components/ui/use-toast';
 // 加载状态的骨架屏组件
 const LoadingSkeleton = memo(() => (
@@ -202,7 +209,12 @@ const PageHeader = memo(() => (
 ));
 
 export default function CartPage() {
-  const { items, updateQuantity, removeFromCart, clearCart, isLoading, error } = useCartStore();
+  const items = useCartItems();
+  const updateQuantity = useCartUpdateQuantity();
+  const removeFromCart = useCartRemoveFromCart();
+  const clearCart = useCartClearCart();
+  const isLoading = useCartIsLoading();
+  const error = useCartError();
   const { toast } = useToast();
   const router = useRouter();
 
@@ -217,13 +229,17 @@ export default function CartPage() {
     }
   }, [error, toast]);
 
-  const subtotal = items.reduce((total, item) => {
-    const price = item.product?.price || 0;
-    return total + price * item.quantity;
-  }, 0);
-  const shipping = subtotal > 200 ? 0 : 15; // 订单满200元免运费
-  const tax = subtotal * 0.06; // 6%税率
-  const total = subtotal + shipping + tax;
+  const { subtotal, shipping, tax, total } = useMemo(() => {
+    const subtotal = items.reduce((total, item) => {
+      const price = item.product?.price || 0;
+      return total + price * item.quantity;
+    }, 0);
+    const shipping = subtotal > 200 ? 0 : 15; // 订单满200元免运费
+    const tax = subtotal * 0.06; // 6%税率
+    const total = subtotal + shipping + tax;
+
+    return { subtotal, shipping, tax, total };
+  }, [items.length]);
 
   const handleCheckout = () => {
     if (items.length === 0) {

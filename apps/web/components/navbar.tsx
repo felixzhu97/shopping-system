@@ -18,12 +18,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Badge } from '@/components/ui/badge';
-import { useCartStore } from '@/lib/store/cartStore';
+
 import PanelDropdown from '@/components/ui/panel-dropdown';
 import Image from '@/components/ui/image';
-import { useUserStore } from '@/lib/store/userStore';
-import { getToken } from '@/lib/store/userStore';
-
+import { useLogout, useToken, useUserStore } from '@/lib/store/userStore';
+import { useCartItems } from '@/lib/store/cartStore';
 // 定义快捷链接数据
 const quickLinks = [
   { title: '智能设备', path: '/products?category=electronics' },
@@ -61,19 +60,15 @@ const CartDropdown = memo(
     onClose,
     items,
     router,
-    logout,
   }: {
     open: boolean;
     onClose: () => void;
     items: any[];
     router: any;
-    logout: () => void;
   }) => {
-    const [token, setToken] = useState<string | null>(null);
-
-    useEffect(() => {
-      setToken(getToken());
-    }, []);
+    const [token, setToken] = useState('');
+    const userToken = useToken();
+    const logout = useLogout();
 
     const handleLogout = useCallback(
       (e: React.MouseEvent) => {
@@ -89,6 +84,10 @@ const CartDropdown = memo(
       router.push('/cart');
       onClose();
     }, [router, onClose]);
+
+    useEffect(() => {
+      setToken(userToken || '');
+    }, [userToken]);
 
     return (
       <PanelDropdown
@@ -211,7 +210,7 @@ function NavbarClient() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const router = useRouter();
-  const { items } = useCartStore();
+  const items = useCartItems();
   const logout = useUserStore(state => state.logout);
 
   // 使用 useCallback 优化事件处理函数
@@ -464,7 +463,6 @@ function NavbarClient() {
                 onClose={() => setShowCart(false)}
                 items={items}
                 router={router}
-                logout={logout}
               />
             </div>
           </div>

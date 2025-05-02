@@ -8,11 +8,11 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Navbar } from '@/components/navbar';
-import { AppleProductCard } from '@/components/apple-product-card';
+import { ProductCard } from '@/components/product-card';
 import { Footer } from '@/components/footer';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/components/ui/use-toast';
-import { useCartStore } from '@/lib/store/cartStore';
+import { useCartAddToCart } from '@/lib/store/cartStore';
 import { cn } from '@/lib/utils/utils';
 import { useProductStore } from '@/lib/store/productStore';
 import Image from '@/components/ui/image';
@@ -48,7 +48,7 @@ function ProductDetail({ productId }: { productId: string }) {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [fullscreenImage, setFullscreenImage] = useState(false);
   const imageContainerRef = useRef<HTMLDivElement>(null);
-  const { addToCart } = useCartStore();
+  const addToCart = useCartAddToCart();
   const { toast } = useToast();
   const router = useRouter();
 
@@ -95,6 +95,7 @@ function ProductDetail({ productId }: { productId: string }) {
     if (!product) return;
     try {
       setIsBuyNowLoading(true);
+      setIsAddToCartLoading(true);
       await addToCart(product, quantity);
       router.push('/checkout');
     } catch (err) {
@@ -535,9 +536,7 @@ function ProductDetail({ productId }: { productId: string }) {
         <h2 className="text-3xl font-semibold text-center mb-12">更多推荐</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {relatedProducts && relatedProducts.length > 0 ? (
-            relatedProducts.map(product => (
-              <AppleProductCard key={product.id} product={product} showDescription={false} />
-            ))
+            relatedProducts.map(product => <ProductCard key={product.id} product={product} />)
           ) : (
             <div className="col-span-full py-12 text-center">
               <p className="text-gray-500">暂无相关产品</p>

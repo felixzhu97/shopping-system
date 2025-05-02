@@ -142,3 +142,14 @@ export const useCartStore = create<CartStore>()(
     }
   )
 );
+export const useCartItems = () => useCartStore(state => state.items);
+export const useCartSubtotal = () => useCartStore(state => state.subtotal);
+export const useCartShipping = () => useCartStore(state => state.shipping);
+export const useCartTax = () => useCartStore(state => state.tax);
+export const useCartTotal = () => useCartStore(state => state.total);
+export const useCartIsLoading = () => useCartStore(state => state.isLoading);
+export const useCartError = () => useCartStore(state => state.error);
+export const useCartAddToCart = () => useCartStore(state => state.addToCart);
+export const useCartUpdateQuantity = () => useCartStore(state => state.updateQuantity);
+export const useCartRemoveFromCart = () => useCartStore(state => state.removeFromCart);
+export const useCartClearCart = () => useCartStore(state => state.clearCart);

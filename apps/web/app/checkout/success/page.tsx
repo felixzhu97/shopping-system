@@ -17,8 +17,6 @@ import {
 import { Button } from '@/components/ui/button';
 import { Navbar } from '@/components/navbar';
 import { Footer } from '@/components/footer';
-import { Separator } from '@/components/ui/separator';
-import { Skeleton } from '@/components/ui/skeleton';
 
 // 骨架屏组件
 const SuccessPageSkeleton = () => (
@@ -185,7 +183,7 @@ export default function CheckoutSuccessPage() {
       window.removeEventListener('beforeunload', handleBeforeUnload);
       clearTimeout(timer);
     };
-  }, []);
+  }, [orderId]);
 
   return (
     <div className="flex flex-col min-h-screen bg-[#f5f5f7]">
