@@ -95,6 +95,8 @@ function ProductDetail({ productId }: { productId: string }) {
     if (!product) return;
     try {
       setIsBuyNowLoading(true);
+      setIsAddToCartLoading(true);
+      await addToCart(product, quantity);
       router.push('/checkout');
     } catch (err) {
       toast({

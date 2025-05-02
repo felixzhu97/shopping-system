@@ -32,6 +32,7 @@ import { useUserId } from '@/lib/store/userStore';
 import { getUserById, updateUser } from '@/lib/api/users';
 import { paymentMethods } from '@/components/payment-method';
 import { useCartClearCart, useCartItems } from '@/lib/store/cartStore';
+import { PaymentMethod } from 'shared';
 
 // 订单摘要商品项组件
 const OrderSummaryItem = React.memo(function OrderSummaryItem({ item }: { item: any }) {
@@ -95,11 +96,11 @@ export default function CheckoutPage() {
   // 3. 表单处理函数
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData({ [name]: value });
+    setFormData({ ...formData, [name]: value });
   };
 
-  const handleSelectChange = (name: string, value: string) => {
-    setFormData({ [name]: value });
+  const handleSelectChange = (value: PaymentMethod) => {
+    setFormData({ ...formData, paymentMethod: value });
   };
 
   const handleProvinceChange = (value: string) => {
@@ -173,7 +174,7 @@ export default function CheckoutPage() {
       isValid = false;
     }
 
-    if (formData.paymentMethod === 'credit-card') {
+    if (formData.paymentMethod === paymentMethods['credit-card']) {
       if (!formData.cardNumber) {
         newErrors.cardNumber = '请输入卡号';
         isValid = false;
@@ -249,6 +250,7 @@ export default function CheckoutPage() {
         city: selectedCity,
         province: selectedProvince,
         postalCode: formData.postalCode,
+        paymentMethod: formData.paymentMethod,
       });
 
       // 清空购物车
@@ -577,7 +579,7 @@ export default function CheckoutPage() {
                     <div className="space-y-6">
                       <RadioGroup
                         defaultValue={formData.paymentMethod}
-                        onValueChange={value => handleSelectChange('paymentMethod', value)}
+                        onValueChange={handleSelectChange}
                         className="space-y-4"
                       >
                         <div className="flex items-center space-x-3 border border-gray-200 p-4 rounded-xl hover:border-blue-500 transition-colors">
