@@ -34,6 +34,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import { paymentMethods } from '@/components/payment-method';
 
 export default function OrderDetailPage({ params }: { params: Usable<{ id: string }> }) {
   const [order, setOrder] = useState<Order | null>(null);
@@ -331,11 +332,7 @@ export default function OrderDetailPage({ params }: { params: Usable<{ id: strin
                 <div className="space-y-3">
                   <div>
                     <div className="text-sm text-gray-500">支付方式</div>
-                    <div className="font-medium">
-                      {order.paymentMethod === 'credit-card' && '信用卡'}
-                      {order.paymentMethod === 'alipay' && '支付宝'}
-                      {order.paymentMethod === 'wechat' && '微信支付'}
-                    </div>
+                    <div className="font-medium">{paymentMethods[order.paymentMethod]}</div>
                   </div>
                   <div>
                     <div className="text-sm text-gray-500">支付状态</div>

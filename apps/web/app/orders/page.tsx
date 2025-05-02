@@ -10,16 +10,17 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { getUserOrders } from '@/lib/api/orders';
 import { Order } from '@/lib/types';
-import Image from '@/components/ui/image';
-import { getUserId } from '@/lib/store/userStore';
+import { useUserId } from '@/lib/store/userStore';
+
 export default function OrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    const userId = useUserId();
+
     const fetchOrders = async () => {
       try {
-        const userId = getUserId();
         if (!userId) throw new Error('未登录');
         const orders = await getUserOrders(userId);
         setOrders(orders);

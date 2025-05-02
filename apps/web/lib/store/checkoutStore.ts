@@ -2,20 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { User } from 'shared';
 
-export interface CheckoutFormData {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  address: string;
-  city: string;
-  province: string;
-  postalCode: string;
-  paymentMethod: string;
-  cardNumber?: string;
-  expiration?: string;
-  cvv?: string;
-}
+export interface CheckoutFormData extends User {}
 
 interface CheckoutState {
   formData: CheckoutFormData;
@@ -38,11 +25,16 @@ const initialState: CheckoutFormData = {
   lastName: '',
   email: '',
   phone: '',
+  // 收货地址
   address: '',
   city: '',
   province: '',
   postalCode: '',
-  paymentMethod: '',
+  // 支付信息
+  paymentMethod: 'alipay',
+  cardNumber: '',
+  expiration: '',
+  cvv: '',
 };
 
 export const useCheckoutStore = create<CheckoutState>()(

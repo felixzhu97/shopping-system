@@ -531,7 +531,7 @@ POST /orders
     "city": "北京市",
     "postalCode": "100080"
   },
-  "paymentMethod": "creditCard"
+  "paymentMethod": "alipay"
 }
 ```
 
@@ -562,7 +562,7 @@ POST /orders
         "city": "北京市",
         "postalCode": "100080"
       },
-      "paymentMethod": "creditCard",
+      "paymentMethod": "alipay",
       "status": "pending",
       "createdAt": "2023-06-21T11:00:00Z",
       "updatedAt": "2023-06-21T11:00:00Z"
@@ -674,7 +674,7 @@ GET /orders/:id
         "city": "北京市",
         "postalCode": "100080"
       },
-      "paymentMethod": "creditCard",
+      "paymentMethod": "alipay",
       "status": "processing",
       "statusHistory": [
         {

@@ -5,8 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Navbar } from '@/components/navbar';
 import { Footer } from '@/components/footer';
 import { useState, useEffect } from 'react';
-import { updateUserAddress, getUserById } from '@/lib/api/users';
-import { getUserId, useUserStore } from '@/lib/store/userStore';
+import { getUserById, updateUser } from '@/lib/api/users';
+import { useUserId } from '@/lib/store/userStore';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
@@ -21,6 +21,9 @@ import { AlertCircle } from 'lucide-react';
 import { cn } from '@/lib/utils/utils';
 import { useCheckoutStore } from '@/lib/store/checkoutStore';
 import { CheckoutFormData } from '@/lib/store/checkoutStore';
+import { paymentMethods } from '@/components/payment-method';
+import { PaymentMethod } from 'shared';
+
 // 基础弹出层组件
 interface BaseModalProps {
   open: boolean;
@@ -190,8 +193,8 @@ function EditAddressModal({
       if (province) {
         setSelectedProvince(province.name);
         // 确保城市存在于该省份的城市列表中
-        if (province.cities.includes(initialData.city)) {
-          setSelectedCity(initialData.city);
+        if (province.cities.includes(initialData.city || '')) {
+          setSelectedCity(initialData.city || '');
         } else {
           setSelectedCity('');
         }
@@ -342,37 +345,158 @@ function EditAddressModal({
   );
 }
 
+// 支付方式编辑弹出层
+function EditPaymentMethodModal({
+  open,
+  onClose,
+  onSave,
+  initialData,
+}: {
+  open: boolean;
+  onClose: () => void;
+  onSave: (data: any) => void;
+  initialData: CheckoutFormData;
+}) {
+  const [form, setForm] = useState(initialData);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    setForm(initialData);
+  }, [initialData]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handlePaymentMethodChange = (value: PaymentMethod) => {
+    setForm({ ...form, paymentMethod: value });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+
+    try {
+      await onSave(form);
+      onClose();
+    } catch (err: any) {
+      setError(err.message || '保存失败');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <BaseModal
+      open={open}
+      onClose={onClose}
+      title="编辑支付方式"
+      onSubmit={handleSubmit}
+      loading={loading}
+      error={error}
+    >
+      <div className="space-y-4">
+        <Label htmlFor="paymentMethod">支付方式</Label>
+        <Select value={form.paymentMethod} onValueChange={handlePaymentMethodChange}>
+          <SelectTrigger
+            id="paymentMethod"
+            className={cn('mt-1', !form.paymentMethod && 'text-muted-foreground')}
+          >
+            <SelectValue placeholder="选择支付方式" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="alipay">{paymentMethods.alipay}</SelectItem>
+            <SelectItem value="wechat">{paymentMethods.wechat}</SelectItem>
+            <SelectItem value="credit-card">{paymentMethods['credit-card']}</SelectItem>
+          </SelectContent>
+        </Select>
+        {form.paymentMethod === 'credit-card' && (
+          <>
+            <div>
+              <Label htmlFor="cardNumber">卡号</Label>
+              <Input
+                id="cardNumber"
+                name="cardNumber"
+                value={form.cardNumber || ''}
+                onChange={handleChange}
+                className="mt-1"
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor="expiration">有效期</Label>
+              <Input
+                id="expiration"
+                name="expiration"
+                value={form.expiration || ''}
+                onChange={handleChange}
+                className="mt-1"
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor="cvv">CVV</Label>
+              <Input
+                id="cvv"
+                name="cvv"
+                value={form.cvv || ''}
+                onChange={handleChange}
+                className="mt-1"
+                required
+              />
+            </div>
+          </>
+        )}
+      </div>
+    </BaseModal>
+  );
+}
+
 export default function AccountPage() {
   const [personalInfoModalOpen, setPersonalInfoModalOpen] = useState(false);
   const [addressModalOpen, setAddressModalOpen] = useState(false);
+  const [paymentMethodModalOpen, setPaymentMethodModalOpen] = useState(false);
   const { formData, setFormData } = useCheckoutStore();
-  const { getCheckoutInfo } = useUserStore();
+
+  const userId = useUserId();
 
   useEffect(() => {
     const fetchUserData = async () => {
-      const checkoutInfo = await getCheckoutInfo();
-      setFormData(checkoutInfo);
+      const user = await getUserById(userId);
+      setFormData({
+        firstName: user.firstName,
+        lastName: user.lastName,
+        phone: user.phone,
+        address: user.address || '',
+        city: user.city || '',
+        province: user.province || '',
+        postalCode: user.postalCode || '',
+        paymentMethod: user.paymentMethod || '',
+        cardNumber: user.cardNumber || '',
+        expiration: user.expiration || '',
+        cvv: user.cvv || '',
+      });
     };
     fetchUserData();
-  }, [getCheckoutInfo, setFormData]);
+  }, [setFormData]);
 
   const handleSavePersonalInfo = async (data: any) => {
     try {
-      const userId = getUserId();
       if (!userId) throw new Error('未登录');
-      await updateUserAddress(userId, {
-        ...data,
+      await updateUser(userId, {
         firstName: data.firstName,
         lastName: data.lastName,
         phone: data.phone,
       });
-      const newData = {
+
+      setFormData({
         ...formData,
         firstName: data.firstName,
         lastName: data.lastName,
         phone: data.phone,
-      };
-      setFormData(newData);
+      });
     } catch (error) {
       throw error;
     }
@@ -380,17 +504,43 @@ export default function AccountPage() {
 
   const handleSaveAddress = async (data: any) => {
     try {
-      const userId = getUserId();
       if (!userId) throw new Error('未登录');
-      await updateUserAddress(userId, {
-        ...formData,
-        ...data,
+      await updateUser(userId, {
+        address: data.address,
+        city: data.city,
+        province: data.province,
+        postalCode: data.postalCode,
       });
-      const newData = {
+
+      setFormData({
         ...formData,
-        ...data,
-      };
-      setFormData(newData);
+        address: data.address,
+        city: data.city,
+        province: data.province,
+        postalCode: data.postalCode,
+      });
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const handleSavePaymentMethod = async (data: any) => {
+    try {
+      if (!userId) throw new Error('未登录');
+      await updateUser(userId, {
+        paymentMethod: data.paymentMethod,
+        cardNumber: data.cardNumber,
+        expiration: data.expiration,
+        cvv: data.cvv,
+      });
+
+      setFormData({
+        ...formData,
+        paymentMethod: data.paymentMethod,
+        cardNumber: data.cardNumber,
+        expiration: data.expiration,
+        cvv: data.cvv,
+      });
     } catch (error) {
       throw error;
     }
@@ -465,9 +615,11 @@ export default function AccountPage() {
                 <div className="flex items-center justify-between">
                   <div>
                     <div className="text-sm text-gray-500">默认支付方式</div>
-                    <div className="font-medium">未设置</div>
+                    <div className="font-medium">{paymentMethods[formData.paymentMethod]}</div>
                   </div>
-                  <Button variant="ghost">添加</Button>
+                  <Button variant="ghost" onClick={() => setPaymentMethodModalOpen(true)}>
+                    编辑
+                  </Button>
                 </div>
               </div>
             </div>
@@ -507,6 +659,12 @@ export default function AccountPage() {
         open={addressModalOpen}
         onClose={() => setAddressModalOpen(false)}
         onSave={handleSaveAddress}
+        initialData={formData}
+      />
+      <EditPaymentMethodModal
+        open={paymentMethodModalOpen}
+        onClose={() => setPaymentMethodModalOpen(false)}
+        onSave={handleSavePaymentMethod}
         initialData={formData}
       />
     </div>

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback, Suspense, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Navbar } from '@/components/navbar';
 import { Footer } from '@/components/footer';
@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { login } from '@/lib/api/users';
 import { useDebounce } from '@/lib/hooks/use-debounce';
-import { saveToken } from '@/lib/store/userStore';
+import { useSaveToken } from '@/lib/store/userStore';
 import { useToast } from '@/components/ui/use-toast';
 import { Toaster } from '@/components/ui/toaster';
 
@@ -35,19 +35,19 @@ const LoginFormSkeleton = () => (
 
 // 登录表单组件
 const LoginForm = ({
-  email,
+  emailOrPhone,
   password,
   loading,
   error,
-  onEmailChange,
+  onEmailOrPhoneChange,
   onPasswordChange,
   onSubmit,
 }: {
-  email: string;
+  emailOrPhone: string;
   password: string;
   loading: boolean;
   error: string;
-  onEmailChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onEmailOrPhoneChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onPasswordChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onSubmit: (e: React.FormEvent) => void;
 }) => (
@@ -62,8 +62,8 @@ const LoginForm = ({
           <Input
             type="email"
             placeholder="邮箱或手机号码"
-            value={email}
-            onChange={onEmailChange}
+            value={emailOrPhone}
+            onChange={onEmailOrPhoneChange}
             className="h-12 px-4 text-base"
             disabled={loading}
             autoComplete="email"
@@ -136,25 +136,27 @@ const LoginForm = ({
 );
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('');
+  const [emailOrPhone, setEmailOrPhone] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
   const { toast } = useToast();
+  const searchParams = useSearchParams();
+  const saveToken = useSaveToken();
 
   // 使用防抖处理输入
-  const debouncedEmail = useDebounce(email, 300);
+  const debouncedEmailOrPhone = useDebounce(emailOrPhone, 300);
   const debouncedPassword = useDebounce(password, 300);
 
   // 表单验证
   const validateForm = useCallback(() => {
-    if (!debouncedEmail) {
-      setError('请输入邮箱');
+    if (!debouncedEmailOrPhone) {
+      setError('请输入邮箱或手机号码');
       return false;
     }
-    if (!debouncedEmail.includes('@')) {
+    if (!debouncedEmailOrPhone.includes('@')) {
       setError('请输入有效的邮箱地址');
       return false;
     }
@@ -167,7 +169,7 @@ export default function LoginPage() {
       return false;
     }
     return true;
-  }, [debouncedEmail, debouncedPassword]);
+  }, [debouncedEmailOrPhone, debouncedPassword]);
 
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
@@ -187,7 +189,7 @@ export default function LoginPage() {
       setError('');
 
       try {
-        const user = await login(debouncedEmail, debouncedPassword);
+        const user = await login(debouncedEmailOrPhone, debouncedPassword);
 
         toast({
           title: '登录成功',
@@ -200,7 +202,9 @@ export default function LoginPage() {
 
         // 先保存用户信息，再跳转
         saveToken(user);
-        router.replace('/');
+
+        const redirect = searchParams.get('redirect') || '/';
+        router.replace(redirect);
       } catch (err: any) {
         setError(err.message || '登录失败，请稍后重试');
         toast({
@@ -212,12 +216,12 @@ export default function LoginPage() {
         setLoading(false);
       }
     },
-    [debouncedEmail, debouncedPassword, validateForm, router, toast]
+    [debouncedEmailOrPhone, debouncedPassword, validateForm, router, toast]
   );
 
-  const handleEmailChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleEmailOrPhoneChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     setError('');
-    setEmail(e.target.value);
+    setEmailOrPhone(e.target.value);
   }, []);
 
   const handlePasswordChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
@@ -247,11 +251,11 @@ export default function LoginPage() {
             <LoginFormSkeleton />
           ) : (
             <LoginForm
-              email={email}
+              emailOrPhone={emailOrPhone}
               password={password}
               loading={loading}
               error={error}
-              onEmailChange={handleEmailChange}
+              onEmailOrPhoneChange={handleEmailOrPhoneChange}
               onPasswordChange={handlePasswordChange}
               onSubmit={handleSubmit}
             />

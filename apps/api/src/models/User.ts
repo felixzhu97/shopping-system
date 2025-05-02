@@ -1,15 +1,8 @@
 import mongoose, { Schema, Document } from 'mongoose';
 import bcrypt from 'bcryptjs';
+import { User as SharedUser } from 'shared';
 
-export interface UserType {
-  id?: string;
-  email: string;
-  password?: string;
-  role: 'user' | 'admin';
-  firstName: string;
-  lastName: string;
-  phone: string;
-}
+export interface UserType extends SharedUser {}
 
 export interface UserDocument extends Document, Omit<UserType, 'id'> {
   password: string;
@@ -24,17 +17,16 @@ const UserSchema: Schema = new Schema(
     firstName: { type: String, required: true },
     lastName: { type: String, required: true },
     phone: { type: String, required: true },
-    address: {
-      firstName: { type: String, default: '' },
-      lastName: { type: String, default: '' },
-      company: { type: String, default: '' },
-      street: { type: String, default: '' },
-      apt: { type: String, default: '' },
-      zip: { type: String, default: '' },
-      city: { type: String, default: '' },
-      country: { type: String, default: '' },
-      phone: { type: String, default: '' },
-    },
+    // 收货地址
+    address: { type: String, default: '' },
+    city: { type: String, default: '' },
+    province: { type: String, default: '' },
+    postalCode: { type: String, default: '' },
+    // 支付信息
+    paymentMethod: { type: String, default: '' },
+    cardNumber: { type: String, default: '' },
+    expiration: { type: String, default: '' },
+    cvv: { type: String, default: '' },
   },
   { timestamps: true }
 );

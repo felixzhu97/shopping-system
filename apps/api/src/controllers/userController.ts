@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { UserLogin, UserResetPassword } from 'shared';
 import User from '../models/User';
 
 // 注册新用户
@@ -51,12 +51,12 @@ export const register = async (req: any, res: any) => {
 // 用户登录
 export const login = async (req: any, res: any) => {
   try {
-    const { phone, email, password } = req.body;
+    const { emailOrPhone, password } = req.body as UserLogin;
 
     // 构造$or条件，避免null，指定any类型
     const orConditions: any[] = [];
-    if (phone) orConditions.push({ phone });
-    if (email) orConditions.push({ email });
+    if (emailOrPhone) orConditions.push({ email: emailOrPhone });
+    if (emailOrPhone) orConditions.push({ phone: emailOrPhone });
 
     const user = await User.findOne(orConditions.length > 0 ? { $or: orConditions } : {});
 
@@ -99,20 +99,23 @@ export const getUserById = async (req: any, res: any) => {
       return res.status(404 as number).json({ message: '用户不存在' });
     }
 
-    // 明确返回 address 字段
     let userObj: any = user.toObject();
-    if (!userObj.address) {
-      userObj.address = {
-        firstName: '',
-        lastName: '',
-        company: '',
-        street: '',
-        apt: '',
-        zip: '',
-        city: '',
-        country: '',
-        phone: '',
-      };
+
+    // 收货地址
+    userObj.address = userObj?.address || '';
+    userObj.city = userObj?.city || '';
+    userObj.province = userObj?.province || '';
+    userObj.postalCode = userObj?.postalCode || '';
+    // 支付信息
+    userObj.paymentMethod = userObj?.paymentMethod || '';
+    if (userObj.paymentMethod === 'credit-card') {
+      userObj.cardNumber = userObj?.cardNumber || '';
+      userObj.expiration = userObj?.expiration || '';
+      userObj.cvv = userObj?.cvv || '';
+    } else {
+      userObj.cardNumber = '';
+      userObj.expiration = '';
+      userObj.cvv = '';
     }
 
     res.status(200 as number).json(userObj);
@@ -126,7 +129,20 @@ export const getUserById = async (req: any, res: any) => {
 export const updateUser = async (req: any, res: any) => {
   try {
     const { id } = req.params;
-    const { email, phone, address } = req.body;
+    const {
+      email,
+      phone,
+      firstName,
+      lastName,
+      address,
+      city,
+      province,
+      postalCode,
+      paymentMethod,
+      cardNumber,
+      expiration,
+      cvv,
+    } = req.body;
 
     // 检查用户是否存在
     const user = await User.findById(id);
@@ -152,9 +168,18 @@ export const updateUser = async (req: any, res: any) => {
 
     // 更新用户信息和地址
     const updateData: any = {};
-    if (email) updateData.email = email;
-    if (phone) updateData.phone = phone;
+    if (firstName) updateData.firstName = firstName;
+    if (lastName) updateData.lastName = lastName;
+    // 收货地址
     if (address) updateData.address = address;
+    if (city) updateData.city = city;
+    if (province) updateData.province = province;
+    if (postalCode) updateData.postalCode = postalCode;
+    // 支付信息
+    if (paymentMethod) updateData.paymentMethod = paymentMethod;
+    if (cardNumber) updateData.cardNumber = cardNumber;
+    if (expiration) updateData.expiration = expiration;
+    if (cvv) updateData.cvv = cvv;
 
     const updatedUser = await User.findByIdAndUpdate(id, updateData, { new: true }).select(
       '-password'
@@ -170,7 +195,7 @@ export const updateUser = async (req: any, res: any) => {
 // 重置密码
 export const resetPassword = async (req: any, res: any) => {
   try {
-    const { emailOrPhone, newPassword } = req.body;
+    const { emailOrPhone, newPassword } = req.body as UserResetPassword;
 
     // 检查邮箱是否存在
     const user = await User.findOne({ $or: [{ email: emailOrPhone }, { phone: emailOrPhone }] });

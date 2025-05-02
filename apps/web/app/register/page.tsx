@@ -11,12 +11,11 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { register } from '@/lib/api/users';
 import { useDebounce } from '@/lib/hooks/use-debounce';
 import { z } from 'zod';
-import { useUserStore } from '@/lib/store/userStore';
+import { useSaveToken } from '@/lib/store/userStore';
 import PasswordTips from '@/components/password-tips';
 import { EyeIcon } from 'lucide-react';
 
 interface FormData {
-  username: string;
   email: string;
   password: string;
   confirmPassword: string;
@@ -26,7 +25,6 @@ interface FormData {
 }
 
 interface FormErrors {
-  username?: string;
   email?: string;
   password?: string;
   confirmPassword?: string;
@@ -37,7 +35,6 @@ interface FormErrors {
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState<FormData>({
-    username: '',
     email: '',
     password: '',
     confirmPassword: '',
@@ -48,30 +45,12 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
   const router = useRouter();
-  const { getCheckoutInfo, saveToken } = useUserStore();
+  const saveToken = useSaveToken();
+
   const [showPasswordTips, setShowPasswordTips] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   // 使用防抖处理输入
   const debouncedFormData = useDebounce(formData, 300);
-
-  // 从结算页面获取预填充数据
-  useEffect(() => {
-    const savedInfo = getCheckoutInfo();
-    if (savedInfo) {
-      try {
-        const parsedInfo = JSON.parse(savedInfo);
-        setFormData(prev => ({
-          ...prev,
-          firstName: parsedInfo.firstName || '',
-          lastName: parsedInfo.lastName || '',
-          email: parsedInfo.email || '',
-          phone: parsedInfo.phone || '',
-        }));
-      } catch (error) {
-        console.error('Error parsing saved info:', error);
-      }
-    }
-  }, []);
 
   useEffect(() => {
     if (formData.email || formData.phone) {
@@ -178,20 +157,6 @@ export default function RegisterPage() {
           firstName: debouncedFormData.firstName,
           lastName: debouncedFormData.lastName,
           phone: debouncedFormData.phone,
-          address: {
-            firstName: debouncedFormData.firstName,
-            lastName: debouncedFormData.lastName,
-            company: '',
-            street: '',
-            apt: '',
-            zip: '',
-            city: '',
-            province: '',
-            country: '',
-            phone: debouncedFormData.phone,
-          },
-          role: 'user',
-          paymentMethod: '',
         });
 
         // 保存用户信息并跳转
