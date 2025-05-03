@@ -21,7 +21,7 @@ import { Badge } from '@/components/ui/badge';
 
 import PanelDropdown from '@/components/ui/panel-dropdown';
 import Image from '@/components/ui/image';
-import { useClearToken, useToken } from '@/lib/store/userStore';
+import { clearUserStore, useToken } from '@/lib/store/userStore';
 import { useCartItems } from '@/lib/store/cartStore';
 // 定义快捷链接数据
 const quickLinks = [
@@ -68,18 +68,17 @@ const CartDropdown = memo(
   }) => {
     const [token, setToken] = useState('');
     const userToken = useToken();
-    const clearToken = useClearToken();
 
     const handleLogout = useCallback(
       (e: React.MouseEvent) => {
         e.preventDefault();
         router.replace('/login');
         setTimeout(() => {
-          clearToken();
+          clearUserStore();
           onClose();
         }, 500);
       },
-      [clearToken, router, onClose]
+      [router, onClose]
     );
 
     const handleCartClick = useCallback(() => {

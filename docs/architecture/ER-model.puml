@@ -8,7 +8,7 @@ LAYOUT_WITH_LEGEND()
 ' 数据库模型图
 Container_Boundary(database, "数据库模型") {
     Component(user, "User", "Mongoose Schema", "用户信息") {
-        Component(user_fields, "字段", "Schema", "email, password, role, firstName, lastName, phone, address, city, province, postalCode, country, paymentMethod, cardNumber, expiration, cvv")
+        Component(user_fields, "字段", "Schema", "email, password, role, firstName, lastName, phone, address, city, province, postalCode, country, paymentMethod")
     }
 
     Component(product, "Product", "Mongoose Schema", "商品信息") {
@@ -26,7 +26,7 @@ Container_Boundary(database, "数据库模型") {
     }
 
     Component(payment, "Payment", "Mongoose Schema", "支付信息") {
-        Component(payment_fields, "字段", "Schema", "userId, firstName, lastName, email, phone, address, city, province, postalCode, paymentMethod, cardNumber, expiration, cvv")
+        Component(payment_fields, "字段", "Schema", "userId, firstName, lastName, email, phone, address, city, province, postalCode, paymentMethod")
     }
 }
 

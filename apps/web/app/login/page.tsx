@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { login } from '@/lib/api/users';
 import { useDebounce } from '@/lib/hooks/use-debounce';
-import { useSaveToken } from '@/lib/store/userStore';
+import { useSaveToken, useSaveUserInfo } from '@/lib/store/userStore';
 import { useToast } from '@/components/ui/use-toast';
 import { Toaster } from '@/components/ui/toaster';
 
@@ -144,6 +144,7 @@ export default function LoginPage() {
   const { toast } = useToast();
   const searchParams = useSearchParams();
   const saveToken = useSaveToken();
+  const saveUserInfo = useSaveUserInfo();
 
   // 使用防抖处理输入
   const debouncedEmailOrPhone = useDebounce(emailOrPhone, 300);
@@ -200,7 +201,8 @@ export default function LoginPage() {
         });
 
         // 先保存用户信息，再跳转
-        saveToken(user);
+        saveToken(user.token || '');
+        saveUserInfo(user);
 
         const redirect = searchParams.get('redirect') || '/';
         router.replace(redirect);

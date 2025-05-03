@@ -38,6 +38,7 @@ export interface User {
   id?: string;
   password?: string;
   role?: UserRole;
+  token?: string;
   // -------用户信息-------
   firstName: string;
   lastName: string;
@@ -50,9 +51,6 @@ export interface User {
   postalCode: string;
   // -------支付信息-------
   paymentMethod: PaymentMethod;
-  cardNumber?: string;
-  expiration?: string;
-  cvv?: string;
 }
 
 export interface UserRegister
@@ -94,9 +92,6 @@ export interface Payment {
   province: string;
   postalCode: string;
   paymentMethod: PaymentMethod;
-  cardNumber: string;
-  expiration: string;
-  cvv: string;
 }
 
 // -----------ApiResponse-----------

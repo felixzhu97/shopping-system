@@ -900,9 +900,6 @@ Content-Type: application/json
 {
   "userId": "507f1f77bcf86cd799439011",
   "paymentMethod": "credit-card",
-  "cardNumber": "4111111111111111",
-  "expiration": "12/25",
-  "cvv": "123"
 }
 ```
 
@@ -916,9 +913,6 @@ Content-Type: application/json
       "id": "507f1f77bcf86cd799439011",
       "userId": "507f1f77bcf86cd799439011",
       "paymentMethod": "credit-card",
-      "cardNumber": "4111111111111111",
-      "expiration": "12/25",
-      "cvv": "123",
       "createdAt": "2024-03-20T10:00:00.000Z",
       "updatedAt": "2024-03-20T10:00:00.000Z"
     }
@@ -947,9 +941,6 @@ Authorization: Bearer <token>
       "id": "507f1f77bcf86cd799439011",
       "userId": "507f1f77bcf86cd799439011",
       "paymentMethod": "credit-card",
-      "cardNumber": "4111111111111111",
-      "expiration": "12/25",
-      "cvv": "123",
       "createdAt": "2024-03-20T10:00:00.000Z",
       "updatedAt": "2024-03-20T10:00:00.000Z"
     },

@@ -67,6 +67,7 @@ export async function GET(request: NextRequest, { params }: { params: { path: st
       headers: {
         Accept: 'application/json',
         Origin: '*',
+        Authorization: request.headers.get('authorization') || '',
       },
       // 增加请求超时
       signal: AbortSignal.timeout(10000), // 10秒超时
@@ -131,6 +132,7 @@ export async function POST(
       headers: {
         'Content-Type': contentType,
         Origin: '*',
+        Authorization: request.headers.get('authorization') || '',
       },
       body: typeof body === 'string' ? body : JSON.stringify(body),
       signal: AbortSignal.timeout(10000), // 10秒超时
@@ -182,6 +184,7 @@ export async function PUT(request: NextRequest, { params }: { params: { path: st
       headers: {
         'Content-Type': contentType,
         Origin: '*',
+        Authorization: request.headers.get('authorization') || '',
       },
       body: typeof body === 'string' ? body : JSON.stringify(body),
       signal: AbortSignal.timeout(10000), // 10秒超时
@@ -223,6 +226,7 @@ export async function DELETE(request: NextRequest, { params }: { params: { path:
       headers: {
         Accept: 'application/json',
         Origin: '*',
+        Authorization: request.headers.get('authorization') || '',
       },
       signal: AbortSignal.timeout(10000), // 10秒超时
     });

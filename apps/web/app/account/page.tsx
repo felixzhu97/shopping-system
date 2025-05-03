@@ -423,43 +423,6 @@ function EditPaymentMethodModal({
             <SelectItem value="credit-card">{paymentMethods['credit-card']}</SelectItem>
           </SelectContent>
         </Select>
-        {form.paymentMethod === 'credit-card' && (
-          <>
-            <div>
-              <Label htmlFor="cardNumber">卡号</Label>
-              <Input
-                id="cardNumber"
-                name="cardNumber"
-                value={form.cardNumber || ''}
-                onChange={handleChange}
-                className="mt-1"
-                required
-              />
-            </div>
-            <div>
-              <Label htmlFor="expiration">有效期</Label>
-              <Input
-                id="expiration"
-                name="expiration"
-                value={form.expiration || ''}
-                onChange={handleChange}
-                className="mt-1"
-                required
-              />
-            </div>
-            <div>
-              <Label htmlFor="cvv">CVV</Label>
-              <Input
-                id="cvv"
-                name="cvv"
-                value={form.cvv || ''}
-                onChange={handleChange}
-                className="mt-1"
-                required
-              />
-            </div>
-          </>
-        )}
       </div>
     </BaseModal>
   );
@@ -486,9 +449,6 @@ export default function AccountPage() {
         province: user.province || '',
         postalCode: user.postalCode || '',
         paymentMethod: user.paymentMethod || '',
-        cardNumber: user.cardNumber || '',
-        expiration: user.expiration || '',
-        cvv: user.cvv || '',
       });
     };
     fetchUserData();
@@ -543,17 +503,11 @@ export default function AccountPage() {
       if (!userId) throw new Error('未登录');
       await updateUser(userId, {
         paymentMethod: data.paymentMethod,
-        cardNumber: data.cardNumber,
-        expiration: data.expiration,
-        cvv: data.cvv,
       });
 
       setFormData({
         ...formData,
         paymentMethod: data.paymentMethod,
-        cardNumber: data.cardNumber,
-        expiration: data.expiration,
-        cvv: data.cvv,
       });
     } catch (error) {
       throw error;
@@ -670,6 +624,7 @@ export default function AccountPage() {
           firstName: formData.firstName,
           lastName: formData.lastName,
           phone: formData.phone,
+          email: formData.email,
         }}
       />
       <EditAddressModal

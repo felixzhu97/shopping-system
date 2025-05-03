@@ -39,9 +39,11 @@ describe('用户控制器', () => {
   describe('register', () => {
     it('应该成功注册新用户', async () => {
       const req = mockRequest({
-        username: 'testuser',
-        email: 'test@example.com',
+        firstName: 'testuser',
+        lastName: 'testuser',
         password: 'password123',
+        email: 'test@example2.com',
+        phone: '12345678902',
       });
       const res = mockResponse();
 
@@ -50,9 +52,11 @@ describe('用户控制器', () => {
       expect(res.status).toHaveBeenCalledWith(201);
       expect(res.json).toHaveBeenCalledWith(
         expect.objectContaining({
-          username: 'testuser',
-          email: 'test@example.com',
+          firstName: 'testuser',
+          lastName: 'testuser',
           role: 'user',
+          email: 'test@example2.com',
+          phone: '12345678902',
         })
       );
     });
@@ -60,13 +64,15 @@ describe('用户控制器', () => {
     it('应该拒绝重复的用户名', async () => {
       // 先创建一个用户
       await User.create({
-        username: 'existinguser',
+        firstName: 'existinguser',
+        lastName: 'existinguser',
         email: 'existing@example.com',
         password: 'password123',
       });
 
       const req = mockRequest({
-        username: 'existinguser',
+        firstName: 'existinguser',
+        lastName: 'existinguser',
         email: 'new@example.com',
         password: 'password123',
       });
@@ -83,13 +89,15 @@ describe('用户控制器', () => {
     it('应该成功登录', async () => {
       // 先创建一个用户
       await User.create({
-        username: 'testuser',
+        firstName: 'testuser',
+        lastName: 'testuser',
         email: 'test@example.com',
         password: 'password123',
       });
 
       const req = mockRequest({
-        username: 'testuser',
+        firstName: 'testuser',
+        lastName: 'testuser',
         password: 'password123',
       });
       const res = mockResponse();
@@ -99,7 +107,8 @@ describe('用户控制器', () => {
       expect(res.status).toHaveBeenCalledWith(200);
       expect(res.json).toHaveBeenCalledWith(
         expect.objectContaining({
-          username: 'testuser',
+          firstName: 'testuser',
+          lastName: 'testuser',
           email: 'test@example.com',
           role: 'user',
         })
@@ -109,13 +118,15 @@ describe('用户控制器', () => {
     it('应该拒绝错误的密码', async () => {
       // 先创建一个用户
       await User.create({
-        username: 'testuser',
+        firstName: 'testuser',
+        lastName: 'testuser',
         email: 'test@example.com',
         password: 'password123',
       });
 
       const req = mockRequest({
-        username: 'testuser',
+        firstName: 'testuser',
+        lastName: 'testuser',
         password: 'wrongpassword',
       });
       const res = mockResponse();
@@ -131,7 +142,8 @@ describe('用户控制器', () => {
     it('应该成功获取用户信息', async () => {
       // 先创建一个用户
       const user = await User.create({
-        username: 'testuser',
+        firstName: 'testuser',
+        lastName: 'testuser',
         email: 'test@example.com',
         password: 'password123',
       });
@@ -144,7 +156,8 @@ describe('用户控制器', () => {
       expect(res.status).toHaveBeenCalledWith(200);
       expect(res.json).toHaveBeenCalledWith(
         expect.objectContaining({
-          username: 'testuser',
+          firstName: 'testuser',
+          lastName: 'testuser',
           email: 'test@example.com',
         })
       );
@@ -165,14 +178,16 @@ describe('用户控制器', () => {
     it('应该成功更新用户信息', async () => {
       // 先创建一个用户
       const user = await User.create({
-        username: 'testuser',
+        firstName: 'testuser',
+        lastName: 'testuser',
         email: 'test@example.com',
         password: 'password123',
       });
 
       const req = mockRequest(
         {
-          username: 'newusername',
+          firstName: 'newusername',
+          lastName: 'newusername',
           email: 'new@example.com',
         },
         { id: user._id.toString() }
@@ -184,7 +199,8 @@ describe('用户控制器', () => {
       expect(res.status).toHaveBeenCalledWith(200);
       expect(res.json).toHaveBeenCalledWith(
         expect.objectContaining({
-          username: 'newusername',
+          firstName: 'newusername',
+          lastName: 'newusername',
           email: 'new@example.com',
         })
       );
@@ -193,19 +209,22 @@ describe('用户控制器', () => {
     it('应该拒绝重复的用户名', async () => {
       // 创建两个用户
       await User.create({
-        username: 'existinguser',
+        firstName: 'existinguser',
+        lastName: 'existinguser',
         email: 'existing@example.com',
         password: 'password123',
       });
       const user2 = await User.create({
-        username: 'testuser',
+        firstName: 'testuser',
+        lastName: 'testuser',
         email: 'test@example.com',
         password: 'password123',
       });
 
       const req = mockRequest(
         {
-          username: 'existinguser',
+          firstName: 'existinguser',
+          lastName: 'existinguser',
         },
         { id: user2._id.toString() }
       );

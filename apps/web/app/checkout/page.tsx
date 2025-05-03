@@ -147,32 +147,6 @@ export default function CheckoutPage() {
       isValid = false;
     }
 
-    if (formData.paymentMethod === paymentMethods['credit-card']) {
-      if (!formData.cardNumber) {
-        newErrors.cardNumber = '请输入卡号';
-        isValid = false;
-      } else if (!/^\d{16}$/.test(formData.cardNumber || '')) {
-        newErrors.cardNumber = '请输入有效的卡号';
-        isValid = false;
-      }
-
-      if (!formData.expiration) {
-        newErrors.expiration = '请输入有效期';
-        isValid = false;
-      } else if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(formData.expiration || '')) {
-        newErrors.expiration = '请输入有效的有效期（MM/YY）';
-        isValid = false;
-      }
-
-      if (!formData.cvv) {
-        newErrors.cvv = '请输入CVV';
-        isValid = false;
-      } else if (!/^\d{3,4}$/.test(formData.cvv || '')) {
-        newErrors.cvv = '请输入有效的CVV';
-        isValid = false;
-      }
-    }
-
     setErrors(newErrors);
     return isValid;
   };
@@ -220,16 +194,12 @@ export default function CheckoutPage() {
         city: selectedCity,
         postalCode: formData.postalCode,
         paymentMethod: formData.paymentMethod,
-        cardNumber: formData.cardNumber,
-        expiration: formData.expiration,
-        cvv: formData.cvv,
       });
 
       // 清空购物车
       clearCart();
 
       // 重置表单
-      resetForm();
       setIsSubmitting(false);
 
       // 跳转到订单确认页面
@@ -263,10 +233,6 @@ export default function CheckoutPage() {
           postalCode: user.postalCode,
           // Payment
           paymentMethod: user.paymentMethod || 'alipay',
-          // Credit Card
-          cardNumber: user.cardNumber,
-          expiration: user.expiration,
-          cvv: user.cvv,
         });
 
         if (user.province) {
@@ -519,91 +485,6 @@ export default function CheckoutPage() {
                           <div className="h-8 w-12 rounded bg-green-500"></div>
                         </div>
                       </RadioGroup>
-
-                      {formData.paymentMethod === 'credit-card' && (
-                        <div className="pt-4 space-y-6 border-t border-gray-100">
-                          <div className="space-y-2">
-                            <Label
-                              htmlFor="cardNumber"
-                              className="text-sm font-medium text-gray-700"
-                            >
-                              卡号
-                            </Label>
-                            <Input
-                              id="cardNumber"
-                              name="cardNumber"
-                              placeholder="**** **** **** ****"
-                              value={formData.cardNumber}
-                              onChange={handleInputChange}
-                              className={cn(
-                                'h-12 rounded-xl transition-colors',
-                                errors.cardNumber
-                                  ? 'border-red-500 focus:ring-red-500'
-                                  : 'focus:ring-blue-500'
-                              )}
-                            />
-                            {errors.cardNumber && (
-                              <p className="text-sm text-red-500 flex items-center mt-1">
-                                <AlertCircle className="h-3 w-3 mr-1" />
-                                {errors.cardNumber}
-                              </p>
-                            )}
-                          </div>
-                          <div className="grid grid-cols-2 gap-6">
-                            <div className="space-y-2">
-                              <Label
-                                htmlFor="expiration"
-                                className="text-sm font-medium text-gray-700"
-                              >
-                                到期日
-                              </Label>
-                              <Input
-                                id="expiration"
-                                name="expiration"
-                                placeholder="MM/YY"
-                                value={formData.expiration}
-                                onChange={handleInputChange}
-                                className={cn(
-                                  'h-12 rounded-xl transition-colors',
-                                  errors.expiration
-                                    ? 'border-red-500 focus:ring-red-500'
-                                    : 'focus:ring-blue-500'
-                                )}
-                              />
-                              {errors.expiration && (
-                                <p className="text-sm text-red-500 flex items-center mt-1">
-                                  <AlertCircle className="h-3 w-3 mr-1" />
-                                  {errors.expiration}
-                                </p>
-                              )}
-                            </div>
-                            <div className="space-y-2">
-                              <Label htmlFor="cvv" className="text-sm font-medium text-gray-700">
-                                CVV
-                              </Label>
-                              <Input
-                                id="cvv"
-                                name="cvv"
-                                placeholder="***"
-                                value={formData.cvv}
-                                onChange={handleInputChange}
-                                className={cn(
-                                  'h-12 rounded-xl transition-colors',
-                                  errors.cvv
-                                    ? 'border-red-500 focus:ring-red-500'
-                                    : 'focus:ring-blue-500'
-                                )}
-                              />
-                              {errors.cvv && (
-                                <p className="text-sm text-red-500 flex items-center mt-1">
-                                  <AlertCircle className="h-3 w-3 mr-1" />
-                                  {errors.cvv}
-                                </p>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                      )}
                     </div>
                   </div>
 

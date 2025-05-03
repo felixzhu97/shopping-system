@@ -31,9 +31,6 @@ const initialState: CheckoutFormData = {
   postalCode: '',
   // 支付信息
   paymentMethod: 'alipay',
-  cardNumber: '',
-  expiration: '',
-  cvv: '',
 };
 
 export const useCheckoutStore = create<CheckoutState>()(set => ({

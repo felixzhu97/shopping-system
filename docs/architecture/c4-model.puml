@@ -101,7 +101,7 @@ Container_Boundary(database, "数据库模型") {
     Component(user, "User", "Mongoose Schema", "用户信息") {
         Component(user_fields, "字段", "Schema", "email, password, role, firstName, lastName, phone")
         Component(user_addresses, "Addresses", "Schema", "address, city, province, postalCode, isDefault")
-        Component(user_payments, "PaymentMethods", "Schema", "type, cardNumber, expiration, cvv, isDefault")
+        Component(user_payments, "PaymentMethods", "Schema", "type, isDefault")
     }
 
     Component(product, "Product", "Mongoose Schema", "商品信息") {

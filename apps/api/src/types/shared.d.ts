@@ -40,9 +40,6 @@ declare module 'shared' {
     postalCode: string;
     // 支付信息
     paymentMethod: 'alipay' | 'wechat' | 'credit-card';
-    cardNumber: string;
-    expiration: string;
-    cvv: string;
   }
 
   export interface UserLogin {
@@ -78,9 +75,6 @@ declare module 'shared' {
     province: string;
     postalCode: string;
     paymentMethod: 'alipay' | 'wechat' | 'credit-card';
-    cardNumber: string;
-    expiration: string;
-    cvv: string;
   }
 }
 

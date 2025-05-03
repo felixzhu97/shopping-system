@@ -1,5 +1,7 @@
 import { UserLogin, UserResetPassword } from 'shared';
 import User from '../models/User';
+import jwt from 'jsonwebtoken';
+import { getJwtSecret } from '../index';
 
 // 注册新用户
 export const register = async (req: any, res: any) => {
@@ -52,6 +54,7 @@ export const register = async (req: any, res: any) => {
 export const login = async (req: any, res: any) => {
   try {
     const { emailOrPhone, password } = req.body as UserLogin;
+    console.log('emailOrPhone', emailOrPhone, password);
 
     // 构造$or条件，避免null，指定any类型
     const orConditions: any[] = [];
@@ -71,6 +74,10 @@ export const login = async (req: any, res: any) => {
       return res.status(401 as number).json({ message: '账号或密码错误，请重新输入' });
     }
 
+    const jwtSecret = getJwtSecret();
+    // 生成 JWT token
+    const token = jwt.sign({ id: user._id, role: user.role }, jwtSecret, { expiresIn: '7d' });
+
     // 不返回密码信息
     const userResponse = {
       id: user._id,
@@ -79,6 +86,7 @@ export const login = async (req: any, res: any) => {
       firstName: user.firstName,
       lastName: user.lastName,
       phone: user.phone,
+      token,
     };
 
     res.status(200 as number).json(userResponse);
@@ -108,16 +116,6 @@ export const getUserById = async (req: any, res: any) => {
     userObj.postalCode = userObj?.postalCode || '';
     // 支付信息
     userObj.paymentMethod = userObj?.paymentMethod || '';
-    if (userObj.paymentMethod === 'credit-card') {
-      userObj.cardNumber = userObj?.cardNumber || '';
-      userObj.expiration = userObj?.expiration || '';
-      userObj.cvv = userObj?.cvv || '';
-    } else {
-      userObj.cardNumber = '';
-      userObj.expiration = '';
-      userObj.cvv = '';
-    }
-
     res.status(200 as number).json(userObj);
   } catch (error) {
     console.error('获取用户信息失败:', error);
@@ -139,9 +137,6 @@ export const updateUser = async (req: any, res: any) => {
       province,
       postalCode,
       paymentMethod,
-      cardNumber,
-      expiration,
-      cvv,
     } = req.body;
 
     // 检查用户是否存在
@@ -177,9 +172,6 @@ export const updateUser = async (req: any, res: any) => {
     if (postalCode) updateData.postalCode = postalCode;
     // 支付信息
     if (paymentMethod) updateData.paymentMethod = paymentMethod;
-    if (cardNumber) updateData.cardNumber = cardNumber;
-    if (expiration) updateData.expiration = expiration;
-    if (cvv) updateData.cvv = cvv;
 
     const updatedUser = await User.findByIdAndUpdate(id, updateData, { new: true }).select(
       '-password'
@@ -196,7 +188,10 @@ export const updateUser = async (req: any, res: any) => {
 export const resetPassword = async (req: any, res: any) => {
   try {
     const { emailOrPhone, newPassword } = req.body as UserResetPassword;
-
+    // 校验验证码（此处仅示例，实际应与短信/邮箱服务集成）
+    // if (!code || code !== '123456') {
+    //   return res.status(400 as number).json({ message: '验证码错误' });
+    // }
     // 检查邮箱是否存在
     const user = await User.findOne({ $or: [{ email: emailOrPhone }, { phone: emailOrPhone }] });
     if (!user) {

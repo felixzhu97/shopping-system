@@ -24,9 +24,6 @@ const UserSchema: Schema = new Schema(
     postalCode: { type: String, default: '' },
     // 支付信息
     paymentMethod: { type: String, default: '' },
-    cardNumber: { type: String, default: '' },
-    expiration: { type: String, default: '' },
-    cvv: { type: String, default: '' },
   },
   { timestamps: true }
 );

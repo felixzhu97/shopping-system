@@ -1,4 +1,5 @@
 import { ApiResponse, ErrorResponse } from 'shared';
+import { getTokenFromStore } from '../store/userStore';
 
 export const API_CONFIG = {
   baseUrl: process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000',
@@ -18,6 +19,15 @@ export const CATEGORY_MAPPING: Record<string, string> = {
 
 export async function fetchApi<T>(url: string, options: RequestInit = {}): Promise<ApiResponse<T>> {
   try {
+    const token = getTokenFromStore();
+    let headers = {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      ...options.headers,
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    };
+    // 需要鉴权的接口自动加上token
+    // if (!/\/users\/(login|register|reset-password)$/.test(url)) {
     const response = await fetch(`${API_CONFIG.baseUrl}${API_CONFIG.proxyUrl}${url}`, {
       ...options,
       headers,
@@ -25,7 +35,6 @@ export async function fetchApi<T>(url: string, options: RequestInit = {}): Promi
 
     if (!response.ok) {
       const data = (await response.json()) as ErrorResponse;
-      console.error(`url: ${url} status: ${response.status}`, data);
 
       throw new Error(data.message || '请求失败');
     }
@@ -34,6 +43,7 @@ export async function fetchApi<T>(url: string, options: RequestInit = {}): Promi
 
     return { data, success: true };
   } catch (error) {
+    console.error('fetchApi error', error);
     return {
       success: false,
       error: error instanceof Error ? error.message : '未知错误',

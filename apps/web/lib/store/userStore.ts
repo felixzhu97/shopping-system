@@ -1,17 +1,21 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { User } from 'shared';
-import { encrypt, decrypt, encryptedStorage } from '../utils/crypto';
+import { encryptedStorage } from '../utils/crypto';
 
-export const TOKEN_KEY = 'ss-t';
-export const USER_INFO_KEY = 'ss-u';
+export const TOKEN_KEY = 'ss-u-t';
+export const INFO_KEY = 'ss-u-i';
+export const USER_KEY = 'ss-u';
 
 interface UserSlice {
   [TOKEN_KEY]: string | null;
-  saveToken: (user: User) => string;
+  [INFO_KEY]: User | null;
+  saveToken: (token: string) => string;
   clearToken: () => void;
+  saveUserInfo: (info: User) => User;
+  clearUserInfo: () => void;
   getToken: () => string | null;
-  getUser: () => User | null;
+  getUserInfo: () => User | null;
   getUserId: () => string;
 }
 
@@ -19,63 +23,47 @@ export const useUserStore = create<UserSlice>()(
   persist(
     (set, get) => ({
       [TOKEN_KEY]: null,
-      saveToken: (user: User): string => {
-        try {
-          const token = encrypt(JSON.stringify(user));
-          set({ [TOKEN_KEY]: token });
-          return token;
-        } catch (error) {
-          console.error('保存用户信息失败:', error);
-          return '';
-        }
+      [INFO_KEY]: null,
+      saveToken: (token: string): string => {
+        set({ [TOKEN_KEY]: token });
+        return token;
+      },
+
+      saveUserInfo: (info: User) => {
+        set({ [INFO_KEY]: info });
+
+        return info;
       },
 
       clearToken: () => {
-        try {
-          set({ [TOKEN_KEY]: null });
-        } catch (error) {
-          console.error('清除token失败:', error);
-        }
+        set({ [TOKEN_KEY]: null });
+      },
+
+      clearUserInfo: () => {
+        set({ [INFO_KEY]: null });
       },
 
       getToken: (): string | null => {
-        try {
-          const token = get()[TOKEN_KEY];
-          return token ? token : null;
-        } catch (error) {
-          console.error('获取用户信息失败:', error);
-          return null;
-        }
+        const token = get()[TOKEN_KEY];
+        return token ? token : null;
       },
 
-      getUser: (): User | null => {
-        try {
-          const token = get()[TOKEN_KEY];
-          if (!token) {
-            return null;
-          }
-
-          // 解密并缓存用户信息
-          const user = JSON.parse(decrypt(token));
-          return user;
-        } catch (error) {
-          console.error('获取用户信息失败:', error);
+      getUserInfo: (): User | null => {
+        const info = get()[INFO_KEY];
+        if (!info) {
           return null;
         }
+
+        return info;
       },
 
       getUserId: (): string => {
-        try {
-          const user = get().getUser();
-          return user?.id || '';
-        } catch (error) {
-          console.error('获取用户ID失败:', error);
-          return '';
-        }
+        const user = get().getUserInfo();
+        return user?.id || '';
       },
     }),
     {
-      name: USER_INFO_KEY,
+      name: USER_KEY,
       storage: {
         getItem: name => {
           const str = encryptedStorage.getItem(name);
@@ -90,13 +78,27 @@ export const useUserStore = create<UserSlice>()(
   )
 );
 
-export const useUser = () => useUserStore(state => state.getUser());
+export const useSaveToken = () => useUserStore(state => state.saveToken);
+export const useSaveUserInfo = () => useUserStore(state => state.saveUserInfo);
+
 export const useToken = () => useUserStore(state => state.getToken());
+export const useUserInfo = () => useUserStore(state => state.getUserInfo());
 export const useUserId = () => useUserStore(state => state.getUserId());
 
-export const useSaveToken = () => useUserStore(state => state.saveToken);
-export const useClearToken = () => useUserStore(state => state.clearToken);
-
 export const clearUserStore = () => {
-  localStorage.removeItem(USER_INFO_KEY);
+  encryptedStorage.removeItem(USER_KEY);
 };
+
+export function getTokenFromStore() {
+  try {
+    const store = encryptedStorage.getItem(USER_KEY);
+    if (store) {
+      const parsed = JSON.parse(store);
+      if (parsed && parsed.state && parsed.state[TOKEN_KEY]) {
+        return parsed.state[TOKEN_KEY];
+      }
+    }
+  } catch (e) {
+    console.error('getTokenFromStore error', e);
+  }
+}

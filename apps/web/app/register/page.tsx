@@ -11,7 +11,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { register } from '@/lib/api/users';
 import { useDebounce } from '@/lib/hooks/use-debounce';
 import { z } from 'zod';
-import { useSaveToken } from '@/lib/store/userStore';
+import { useSaveToken, useSaveUserInfo } from '@/lib/store/userStore';
 import PasswordTips from '@/components/password-tips';
 import { EyeIcon } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
@@ -47,6 +47,7 @@ export default function RegisterPage() {
   const [errors, setErrors] = useState<FormErrors>({});
   const router = useRouter();
   const saveToken = useSaveToken();
+  const saveUserInfo = useSaveUserInfo();
 
   const [showPasswordTips, setShowPasswordTips] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -170,7 +171,8 @@ export default function RegisterPage() {
         });
 
         // 保存用户信息并跳转
-        saveToken(user);
+        saveToken(user.token || '');
+        saveUserInfo(user);
         router.replace('/login');
 
         toast({
@@ -187,7 +189,7 @@ export default function RegisterPage() {
         setLoading(false);
       }
     },
-    [debouncedFormData, validateForm, router]
+    [debouncedFormData, validateForm, router, saveToken, saveUserInfo]
   );
 
   return (

@@ -3,11 +3,11 @@
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { useEffect } from 'react';
-import { useUser } from '@/lib/store/userStore';
+import { useUserInfo } from '@/lib/store/userStore';
 
 export default function AuthConfirmPage() {
   const router = useRouter();
-  const user = useUser();
+  const user = useUserInfo();
   const searchParams = useSearchParams();
 
   // 获取回调 URL
