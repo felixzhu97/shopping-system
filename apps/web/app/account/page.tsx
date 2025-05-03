@@ -162,6 +162,17 @@ function EditPersonalInfoModal({
           required
         />
       </div>
+      <div>
+        <Label htmlFor="email">邮箱</Label>
+        <Input
+          id="email"
+          name="email"
+          value={form.email}
+          onChange={handleChange}
+          className="mt-1"
+          required
+        />
+      </div>
     </BaseModal>
   );
 }
@@ -469,6 +480,7 @@ export default function AccountPage() {
         firstName: user.firstName,
         lastName: user.lastName,
         phone: user.phone,
+        email: user.email,
         address: user.address || '',
         city: user.city || '',
         province: user.province || '',
@@ -489,6 +501,7 @@ export default function AccountPage() {
         firstName: data.firstName,
         lastName: data.lastName,
         phone: data.phone,
+        email: data.email,
       });
 
       setFormData({
@@ -496,6 +509,7 @@ export default function AccountPage() {
         firstName: data.firstName,
         lastName: data.lastName,
         phone: data.phone,
+        email: data.email,
       });
     } catch (error) {
       throw error;
@@ -574,9 +588,12 @@ export default function AccountPage() {
                     <div className="text-sm text-gray-500">手机号码</div>
                     <div className="font-medium">{formData.phone}</div>
                   </div>
-                  <Button variant="ghost" onClick={() => setPersonalInfoModalOpen(true)}>
-                    编辑
-                  </Button>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="text-sm text-gray-500">邮箱</div>
+                    <div className="font-medium">{formData.email}</div>
+                  </div>
                 </div>
               </div>
             </div>

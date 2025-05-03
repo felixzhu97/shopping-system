@@ -21,7 +21,7 @@ export async function updateUserById(id: string, data: Partial<User>): Promise<U
     body: JSON.stringify(data),
   });
   if (!response.success || !response.data) {
-    throw new Error('更新用户信息失败');
+    throw new Error(response.error || '更新用户信息失败');
   }
   return response.data;
 }
@@ -62,7 +62,7 @@ export async function updateUser(id: string, user: Partial<User>): Promise<User>
     body: JSON.stringify(user),
   });
   if (!response.success || !response.data) {
-    throw new Error('更新用户失败');
+    throw new Error(response.error || '更新用户失败');
   }
   return response.data;
 }

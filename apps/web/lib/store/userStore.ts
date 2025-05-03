@@ -1,10 +1,10 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { User } from 'shared';
-import { encrypt, decrypt } from '../utils/crypto';
+import { encrypt, decrypt, encryptedStorage } from '../utils/crypto';
 
-export const TOKEN_KEY = 't';
-export const USER_INFO_KEY = 'u';
+export const TOKEN_KEY = 'ss-t';
+export const USER_INFO_KEY = 'ss-u';
 
 interface UserSlice {
   [TOKEN_KEY]: string | null;
@@ -76,9 +76,16 @@ export const useUserStore = create<UserSlice>()(
     }),
     {
       name: USER_INFO_KEY,
-      partialize: state => ({
-        [TOKEN_KEY]: state[TOKEN_KEY],
-      }),
+      storage: {
+        getItem: name => {
+          const str = encryptedStorage.getItem(name);
+          return str ? JSON.parse(str) : null;
+        },
+        setItem: (name, value) => {
+          encryptedStorage.setItem(name, JSON.stringify(value));
+        },
+        removeItem: encryptedStorage.removeItem,
+      },
     }
   )
 );

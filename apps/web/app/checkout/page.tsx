@@ -134,33 +134,6 @@ export default function CheckoutPage() {
       isValid = false;
     }
 
-    // 验证其他字段
-    if (!formData.firstName) {
-      newErrors.firstName = '请输入名字';
-      isValid = false;
-    }
-
-    if (!formData.lastName) {
-      newErrors.lastName = '请输入姓氏';
-      isValid = false;
-    }
-
-    if (!formData.email) {
-      newErrors.email = '请输入邮箱';
-      isValid = false;
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = '请输入有效的邮箱地址';
-      isValid = false;
-    }
-
-    if (!formData.phone) {
-      newErrors.phone = '请输入手机号';
-      isValid = false;
-    } else if (!/^1[3-9]\d{9}$/.test(formData.phone)) {
-      newErrors.phone = '请输入有效的手机号';
-      isValid = false;
-    }
-
     if (!formData.address) {
       newErrors.address = '请输入详细地址';
       isValid = false;
@@ -242,15 +215,14 @@ export default function CheckoutPage() {
       });
 
       await updateUser(userId, {
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        email: formData.email,
-        phone: formData.phone,
         address: formData.address,
-        city: selectedCity,
         province: selectedProvince,
+        city: selectedCity,
         postalCode: formData.postalCode,
         paymentMethod: formData.paymentMethod,
+        cardNumber: formData.cardNumber,
+        expiration: formData.expiration,
+        cvv: formData.cvv,
       });
 
       // 清空购物车
@@ -283,11 +255,18 @@ export default function CheckoutPage() {
         await setFormData({
           firstName: user.firstName,
           lastName: user.lastName,
-          email: user.email,
           phone: user.phone,
+          // Address
           address: user.address,
           city: user.city,
+          province: user.province,
+          postalCode: user.postalCode,
+          // Payment
           paymentMethod: user.paymentMethod || 'alipay',
+          // Credit Card
+          cardNumber: user.cardNumber,
+          expiration: user.expiration,
+          cvv: user.cvv,
         });
 
         if (user.province) {
@@ -366,103 +345,15 @@ export default function CheckoutPage() {
                     <div className="space-y-6">
                       <div className="grid sm:grid-cols-2 gap-6">
                         <div className="space-y-2">
-                          <Label htmlFor="firstName" className="text-sm font-medium text-gray-700">
-                            姓氏
-                          </Label>
-                          <Input
-                            id="firstName"
-                            name="firstName"
-                            value={formData.firstName}
-                            onChange={handleInputChange}
-                            required
-                            className={cn(
-                              'h-12 rounded-xl transition-colors',
-                              errors.firstName
-                                ? 'border-red-500 focus:ring-red-500'
-                                : 'focus:ring-blue-500'
-                            )}
-                          />
-                          {errors.firstName && (
-                            <p className="text-sm text-red-500 flex items-center mt-1">
-                              <AlertCircle className="h-3 w-3 mr-1" />
-                              {errors.firstName}
-                            </p>
-                          )}
+                          <Label className="text-sm font-medium text-gray-700">姓名</Label>
+                          <div className="flex items-center gap-2">
+                            {formData.lastName} {formData.firstName}
+                          </div>
                         </div>
                         <div className="space-y-2">
-                          <Label htmlFor="lastName" className="text-sm font-medium text-gray-700">
-                            名字
-                          </Label>
-                          <Input
-                            id="lastName"
-                            name="lastName"
-                            value={formData.lastName}
-                            onChange={handleInputChange}
-                            required
-                            className={cn(
-                              'h-12 rounded-xl transition-colors',
-                              errors.lastName
-                                ? 'border-red-500 focus:ring-red-500'
-                                : 'focus:ring-blue-500'
-                            )}
-                          />
-                          {errors.lastName && (
-                            <p className="text-sm text-red-500 flex items-center mt-1">
-                              <AlertCircle className="h-3 w-3 mr-1" />
-                              {errors.lastName}
-                            </p>
-                          )}
+                          <Label className="text-sm font-medium text-gray-700">手机号码</Label>
+                          <div className="flex items-center gap-2">{formData.phone}</div>
                         </div>
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="email" className="text-sm font-medium text-gray-700">
-                          邮箱
-                        </Label>
-                        <Input
-                          id="email"
-                          name="email"
-                          type="email"
-                          value={formData.email}
-                          onChange={handleInputChange}
-                          required
-                          className={cn(
-                            'h-12 rounded-xl transition-colors',
-                            errors.email
-                              ? 'border-red-500 focus:ring-red-500'
-                              : 'focus:ring-blue-500'
-                          )}
-                        />
-                        {errors.email && (
-                          <p className="text-sm text-red-500 flex items-center mt-1">
-                            <AlertCircle className="h-3 w-3 mr-1" />
-                            {errors.email}
-                          </p>
-                        )}
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="phone" className="text-sm font-medium text-gray-700">
-                          手机号码
-                        </Label>
-                        <Input
-                          id="phone"
-                          name="phone"
-                          type="tel"
-                          value={formData.phone}
-                          onChange={handleInputChange}
-                          required
-                          className={cn(
-                            'h-12 rounded-xl transition-colors',
-                            errors.phone
-                              ? 'border-red-500 focus:ring-red-500'
-                              : 'focus:ring-blue-500'
-                          )}
-                        />
-                        {errors.phone && (
-                          <p className="text-sm text-red-500 flex items-center mt-1">
-                            <AlertCircle className="h-3 w-3 mr-1" />
-                            {errors.phone}
-                          </p>
-                        )}
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="address" className="text-sm font-medium text-gray-700">

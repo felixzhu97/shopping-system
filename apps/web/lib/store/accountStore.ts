@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { encryptedStorage } from '@/lib/utils/crypto';
 
 interface AccountFormData {
   firstName: string;
@@ -45,7 +46,7 @@ const initialFormData: AccountFormData = {
 
 export const useAccountStore = create<AccountStore>()(
   persist(
-    set => ({
+    (set, get) => ({
       formData: initialFormData,
       setFormData: data =>
         set(state => ({
@@ -61,7 +62,17 @@ export const useAccountStore = create<AccountStore>()(
       resetForm: () => set({ formData: initialFormData }),
     }),
     {
-      name: 'account-storage',
+      name: 'account',
+      storage: {
+        getItem: name => {
+          const str = encryptedStorage.getItem(name);
+          return str ? JSON.parse(str) : null;
+        },
+        setItem: (name, value) => {
+          encryptedStorage.setItem(name, JSON.stringify(value));
+        },
+        removeItem: encryptedStorage.removeItem,
+      },
     }
   )
 );

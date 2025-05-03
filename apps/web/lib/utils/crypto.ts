@@ -13,3 +13,26 @@ export function decrypt(encryptedData: string): string {
   const bytes = CryptoJS.AES.decrypt(encryptedData, SECRET_KEY);
   return bytes.toString(CryptoJS.enc.Utf8);
 }
+
+// 适配 zustand persist 的 storage
+export const encryptedStorage = {
+  getItem: (name: string): string | null => {
+    if (typeof localStorage === 'undefined') return null;
+    const data = localStorage.getItem(name);
+    if (!data) return null;
+    try {
+      return decrypt(data);
+    } catch {
+      return null;
+    }
+  },
+  setItem: (name: string, value: string) => {
+    if (typeof localStorage === 'undefined') return;
+    const encrypted = encrypt(value);
+    localStorage.setItem(name, encrypted);
+  },
+  removeItem: (name: string) => {
+    if (typeof localStorage === 'undefined') return;
+    localStorage.removeItem(name);
+  },
+};

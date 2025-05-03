@@ -2,8 +2,9 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
 import type { CartItem, Product } from '../types';
+import { encryptedStorage } from '@/lib/utils/crypto';
 
-const CART_STORAGE_KEY = 'shopping-cart';
+const CART_STORAGE_KEY = 'ss-c';
 
 interface CartStore {
   items: CartItem[];
@@ -136,8 +137,18 @@ export const useCartStore = create<CartStore>()(
     }),
     {
       name: CART_STORAGE_KEY,
+      storage: {
+        getItem: name => {
+          const str = encryptedStorage.getItem(name);
+          return str ? JSON.parse(str) : null;
+        },
+        setItem: (name, value) => {
+          encryptedStorage.setItem(name, JSON.stringify(value));
+        },
+        removeItem: encryptedStorage.removeItem,
+      },
       partialize: state => ({
-        items: state.items,
+        ...state,
       }),
     }
   )
