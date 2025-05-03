@@ -20,11 +20,7 @@ export async function fetchApi<T>(url: string, options: RequestInit = {}): Promi
   try {
     const response = await fetch(`${API_CONFIG.baseUrl}${API_CONFIG.proxyUrl}${url}`, {
       ...options,
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-        ...options.headers,
-      },
+      headers,
     });
 
     if (!response.ok) {
