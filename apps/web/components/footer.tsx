@@ -91,7 +91,7 @@ export function Footer() {
       <div className="container mx-auto px-4">
         <div className="border-t border-gray-200 py-8">
           <div className="md:flex md:items-center md:justify-between text-xs text-gray-500">
-            <p>Copyright © 2025 购物系统. 版权所有.</p>
+            <p>Copyright © 2025 Felix 版权所有.</p>
             <div className="flex flex-wrap mt-4 md:mt-0 gap-x-6">
               <Link href="/privacy" className="hover:underline">
                 隐私政策
