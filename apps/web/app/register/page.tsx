@@ -10,8 +10,13 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { register } from '@/lib/api/users';
 import { useDebounce } from '@/lib/hooks/use-debounce';
-import { z } from 'zod';
-import { useSaveToken, useSaveUserInfo } from '@/lib/store/userStore';
+import {
+  useSaveToken,
+  useSaveUserInfo,
+  emailRegex,
+  phoneRegex,
+  passwordRegex,
+} from '@/lib/store/userStore';
 import PasswordTips from '@/components/password-tips';
 import { EyeIcon } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
@@ -55,12 +60,9 @@ export default function RegisterPage() {
   const debouncedFormData = useDebounce(formData, 300);
 
   // useMemo 缓存正则和 schema
-  const emailRegex = useMemo(() => z.string().email(), []);
-  const phoneRegex = useMemo(() => z.string().regex(/^1[3-9]\d{9}$/), []);
-  const passwordRegex = useMemo(
-    () => z.string().regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/),
-    []
-  );
+  const memoizedEmailRegex = useMemo(() => emailRegex, []);
+  const memoizedPhoneRegex = useMemo(() => phoneRegex, []);
+  const memoizedPasswordRegex = useMemo(() => passwordRegex, []);
 
   useEffect(() => {
     if (formData.email || formData.phone) {
@@ -98,7 +100,7 @@ export default function RegisterPage() {
     if (!formData.email.trim()) {
       newErrors.email = '请输入邮箱';
       isValid = false;
-    } else if (!emailRegex.safeParse(formData.email).success) {
+    } else if (!memoizedEmailRegex.safeParse(formData.email).success) {
       newErrors.email = '请输入有效的邮箱地址';
       isValid = false;
     }
@@ -107,7 +109,7 @@ export default function RegisterPage() {
     if (!formData.phone.trim()) {
       newErrors.phone = '请输入手机号';
       isValid = false;
-    } else if (!phoneRegex.safeParse(formData.phone).success) {
+    } else if (!memoizedPhoneRegex.safeParse(formData.phone).success) {
       newErrors.phone = '请输入有效的手机号';
       isValid = false;
     }
@@ -119,7 +121,7 @@ export default function RegisterPage() {
     } else if (formData.password.length < 6) {
       newErrors.password = '密码长度至少为6位';
       isValid = false;
-    } else if (!passwordRegex.safeParse(formData.password).success) {
+    } else if (!memoizedPasswordRegex.safeParse(formData.password).success) {
       newErrors.password = '密码必须包含大小写字母、数字和特殊字符';
       isValid = false;
     }
@@ -135,7 +137,7 @@ export default function RegisterPage() {
 
     setErrors(newErrors);
     return isValid;
-  }, [formData, setErrors, emailRegex, phoneRegex]);
+  }, [formData, setErrors, memoizedEmailRegex, memoizedPhoneRegex, memoizedPasswordRegex]);
 
   const handleInputChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {

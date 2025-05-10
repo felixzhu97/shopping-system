@@ -7,7 +7,7 @@ export default function PasswordTips({ password }: { password: string }) {
     if (/\d/.test(password)) strength += 25;
     if (/[A-Z]/.test(password)) strength += 25;
     if (/[a-z]/.test(password)) strength += 25;
-    if (/[@$!%*?&]/.test(password)) strength += 25;
+    if (/[!@#$%^&*()-=_+]/.test(password)) strength += 25;
     return Math.min(100, strength);
   };
 
@@ -45,7 +45,7 @@ export default function PasswordTips({ password }: { password: string }) {
           • 至少1个小写字母
         </div>
         <div className={` ${/[@$!%*?&]/.test(password) ? 'text-green-500' : 'text-gray-500'}`}>
-          • 只能包含以下特殊字符之一：@$!%*?&
+          • 只能包含以下特殊字符之一：!@#$%^&*()-=_+
         </div>
       </div>
     </div>

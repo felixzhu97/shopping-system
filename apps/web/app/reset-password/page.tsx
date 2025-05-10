@@ -7,12 +7,11 @@ import { Navbar } from '@/components/navbar';
 import { Footer } from '@/components/footer';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { z } from 'zod';
 import { resetPassword } from '@/lib/api/users';
 import PasswordTips from '@/components/password-tips';
 import { EyeIcon } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
-
+import { emailRegex, phoneRegex, passwordRegex } from '@/lib/store/userStore';
 interface FormData {
   emailOrPhone: string;
   password: string;
@@ -38,12 +37,9 @@ export default function ResetPasswordPage() {
   const router = useRouter();
 
   // useMemo 缓存正则和 schema
-  const emailRegex = useMemo(() => z.string().email(), []);
-  const phoneRegex = useMemo(() => z.string().regex(/^1[3-9]\d{9}$/), []);
-  const passwordRegex = useMemo(
-    () => z.string().regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/),
-    []
-  );
+  const memoizedEmailRegex = useMemo(() => emailRegex, []);
+  const memoizedPhoneRegex = useMemo(() => phoneRegex, []);
+  const memoizedPasswordRegex = useMemo(() => passwordRegex, []);
 
   // 表单验证
   const validateForm = useCallback(() => {
@@ -54,8 +50,8 @@ export default function ResetPasswordPage() {
       newErrors.emailOrPhone = '请输入邮箱或手机号';
       isValid = false;
     } else {
-      const isEmail = emailRegex.safeParse(formData.emailOrPhone).success;
-      const isPhone = phoneRegex.safeParse(formData.emailOrPhone).success;
+      const isEmail = memoizedEmailRegex.safeParse(formData.emailOrPhone).success;
+      const isPhone = memoizedPhoneRegex.safeParse(formData.emailOrPhone).success;
       if (!isEmail && !isPhone) {
         newErrors.emailOrPhone = '请输入有效的邮箱或手机号';
         isValid = false;
@@ -69,7 +65,7 @@ export default function ResetPasswordPage() {
     } else if (formData.password.length < 8) {
       newErrors.password = '密码长度至少为8位';
       isValid = false;
-    } else if (!passwordRegex.safeParse(formData.password).success) {
+    } else if (!memoizedPasswordRegex.safeParse(formData.password).success) {
       newErrors.password = '请检查密码格式是否正确';
       isValid = false;
     }
@@ -85,7 +81,7 @@ export default function ResetPasswordPage() {
 
     setErrors(newErrors);
     return isValid;
-  }, [formData, emailRegex, phoneRegex, passwordRegex]);
+  }, [formData, memoizedEmailRegex, memoizedPhoneRegex, memoizedPasswordRegex]);
 
   const handleInputChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {

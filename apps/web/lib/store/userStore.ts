@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { User } from 'shared';
 import { encryptedStorage } from '../utils/crypto';
+import { z } from 'zod';
 
 export const TOKEN_KEY = 'ss-u-t';
 export const INFO_KEY = 'ss-u-i';
@@ -102,3 +103,11 @@ export function getTokenFromStore() {
     console.error('getTokenFromStore error', e);
   }
 }
+
+export const passwordRegex = z
+  .string()
+  .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()-=_+])[A-Za-z\d!@#$%^&*()-=_+]{8,}$/);
+
+export const emailRegex = z.string().email();
+
+export const phoneRegex = z.string().regex(/^1[3-9]\d{9}$/);
