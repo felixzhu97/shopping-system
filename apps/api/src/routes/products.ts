@@ -124,7 +124,7 @@ router.get("/:id", getProductById);
  *             schema:
  *               $ref: '#/components/schemas/Product'
  */
-router.post("/", createProduct);
+// router.post("/", createProduct);
 
 /**
  * @swagger
@@ -167,7 +167,7 @@ router.post("/", createProduct);
  *       404:
  *         description: 产品不存在
  */
-router.put("/:id", updateProduct);
+// router.put("/:id", updateProduct);
 
 /**
  * @swagger
@@ -187,6 +187,6 @@ router.put("/:id", updateProduct);
  *       404:
  *         description: 产品不存在
  */
-router.delete("/:id", deleteProduct);
+// router.delete("/:id", deleteProduct);
 
 export default router;
