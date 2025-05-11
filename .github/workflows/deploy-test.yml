@@ -50,3 +50,4 @@ jobs:
           MONGODB_URI_test: ${{ secrets.MONGODB_URI_TEST }}
           JWT_SECRET_test: ${{ secrets.JWT_SECRET_TEST }}
           CORS_ORIGINS_test: ${{ secrets.CORS_ORIGINS_TEST }}
+          ADMIN_SECRET_test: ${{ secrets.ADMIN_SECRET_TEST }}

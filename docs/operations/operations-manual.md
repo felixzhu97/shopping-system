@@ -36,6 +36,7 @@
 - `MONGODB_URI`：MongoDB连接字符串
 - `JWT_SECRET`：JWT认证密钥
 - `NODE_ENV`：运行环境标识符
+- `ADMIN_SECRET`：管理员认证密钥
 
 各环境的环境变量在Vercel平台上管理。确保在添加或修改环境变量后重新部署应用。
 

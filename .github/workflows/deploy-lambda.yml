@@ -116,6 +116,7 @@ jobs:
           echo "MONGODB_URI=${{ secrets.MONGODB_URI }}" >> .env.prod
           echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env.prod
           echo "CORS_ORIGINS=${{ secrets.CORS_ORIGINS }}" >> .env.prod
+          echo "ADMIN_SECRET=${{ secrets.ADMIN_SECRET }}" >> .env.prod
           echo "已创建部署环境变量文件："
           cat .env.prod
 
@@ -124,7 +125,7 @@ jobs:
           cd apps/api
           echo "正在确保serverless.yml中包含所有需要的环境变量"
           grep -q "JWT_SECRET:" serverless.yml || sed -i '/environment:/a\    JWT_SECRET: ${env:JWT_SECRET}' serverless.yml
-
+          grep -q "ADMIN_SECRET:" serverless.yml || sed -i '/environment:/a\    ADMIN_SECRET: ${env:ADMIN_SECRET}' serverless.yml
       - name: 部署到AWS Lambda
         run: cd apps/api && cp .env.prod .env && pnpm dlx serverless@3 deploy
         env:
