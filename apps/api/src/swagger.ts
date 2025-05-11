@@ -15,6 +15,16 @@ const options = {
         description: "开发服务器",
       },
     ],
+    components: {
+      securitySchemes: {
+        adminSecret: {
+          type: "apiKey",
+          in: "header",
+          name: "admin-secret",
+          description: "管理员密钥，仅用于产品的增删改操作"
+        }
+      }
+    }
   },
   apis: [path.resolve(__dirname, "./routes/*.ts")],
 };

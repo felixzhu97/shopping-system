@@ -6,6 +6,7 @@ import {
   updateProduct,
   deleteProduct,
 } from "../controllers/productController";
+import { adminAuth } from "../middleware/adminAuth";
 
 const router = express.Router();
 
@@ -94,6 +95,8 @@ router.get("/:id", getProductById);
  * /api/products:
  *   post:
  *     summary: 创建新产品
+ *     security:
+ *       - adminSecret: []
  *     requestBody:
  *       required: true
  *       content:
@@ -123,14 +126,18 @@ router.get("/:id", getProductById);
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Product'
+ *       403:
+ *         description: 没有管理员权限
  */
-// router.post("/", createProduct);
+router.post("/", adminAuth, createProduct);
 
 /**
  * @swagger
  * /api/products/{id}:
  *   put:
  *     summary: 更新产品
+ *     security:
+ *       - adminSecret: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -166,14 +173,18 @@ router.get("/:id", getProductById);
  *               $ref: '#/components/schemas/Product'
  *       404:
  *         description: 产品不存在
+ *       403:
+ *         description: 没有管理员权限
  */
-// router.put("/:id", updateProduct);
+router.put("/:id", adminAuth, updateProduct);
 
 /**
  * @swagger
  * /api/products/{id}:
  *   delete:
  *     summary: 删除产品
+ *     security:
+ *       - adminSecret: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -186,7 +197,9 @@ router.get("/:id", getProductById);
  *         description: 产品删除成功
  *       404:
  *         description: 产品不存在
+ *       403:
+ *         description: 没有管理员权限
  */
-// router.delete("/:id", deleteProduct);
+router.delete("/:id", adminAuth, deleteProduct);
 
 export default router;
