@@ -36,6 +36,7 @@ shopping-system/
 ## 主要功能
 
 ### 前端功能
+
 - 响应式导航栏，支持移动端和桌面端
 - 商品分类浏览和搜索
 - 购物车管理
@@ -44,11 +45,34 @@ shopping-system/
 - 订单管理
 
 ### 后端功能
+
 - RESTful API 接口
 - 用户认证和授权
 - 商品管理
 - 订单处理
 - 数据验证和错误处理
+
+## 项目架构
+
+### C4-Context
+
+![c4-context.svg](docs/svgs/c4-context.svg)
+
+### C4-Container
+
+![c4-container.svg](docs/svgs/c4-container.svg)
+
+### C4-Component
+
+![c4-context.svg](docs/svgs/c4-component.svg)
+
+### C4-Code
+
+![c4-context.svg](docs/svgs/c4-code.svg)
+
+## 数据库关系
+
+![ER-model.svg](docs/svgs/ER-model.svg)
 
 ## 配置说明
 
@@ -171,9 +195,53 @@ pnpm lint
 - 集成测试：使用 Vitest 进行端到端测试
 
 测试文件位于各包的 `tests` 目录下，遵循以下命名规范：
+
 - 组件测试：`*.test.tsx`
 - API 测试：`*.test.ts`
 - 集成测试：`*.integration.test.ts`
+
+## API 文档
+
+项目提供完整的 OpenAPI 规范文档和 Postman 集合：
+
+- [API 文档](docs/api/api-documentation.md)
+- [OpenAPI 规范](docs/api/openapi.json)
+- [Postman 集合](docs/api/postman_collection.json)
+
+## 数据库初始化
+
+项目提供多种数据库种子脚本：
+
+```bash
+# 使用200个商品数据初始化数据库
+pnpm seed:products200
+
+# 使用完整商品数据初始化数据库
+pnpm seed:products
+```
+
+## 系统架构
+
+项目架构文档和图表位于 `docs/architecture/` 目录：
+
+- [系统架构图](docs/architecture/system-architecture.md)
+- [ER 模型图](docs/architecture/ER-model.puml)
+- [C4 模型图](docs/architecture/c4-model.puml)
+
+## 环境变量配置
+
+复制 `.env.example` 文件并重命名为 `.env.local`，然后配置以下变量：
+
+```
+MONGODB_URI=mongodb://localhost:27017/shopping-system-public
+JWT_SECRET=your_jwt_secret_here
+NEXTAUTH_SECRET=your_nextauth_secret_here
+NEXTAUTH_URL=http://localhost:3000
+```
+
+## 项目访问链接
+
+https://felixzhu.shop
 
 ## 贡献指南
 
