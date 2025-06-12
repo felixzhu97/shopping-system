@@ -1,0 +1,21 @@
+@startuml
+!include ./c4-plantuml/C4_Context.puml
+!include ./c4-plantuml//C4_Container.puml
+!include ./c4-plantuml//C4_Component.puml
+
+LAYOUT_WITH_LEGEND()
+
+' 代码图 - 支付流程
+Container_Boundary(payment_flow, "支付流程") {
+    Component(payment_route, "PaymentRoute", "Express Router", "处理支付请求")
+    Component(payment_controller, "PaymentController", "TypeScript", "处理支付逻辑")
+    Component(payment_model, "PaymentModel", "Mongoose", "支付数据模型")
+    Component(payment_gateway, "PaymentGateway", "TypeScript", "与支付网关通信")
+}
+
+Rel(payment_route, payment_controller, "调用", "TypeScript")
+Rel(payment_controller, payment_model, "调用", "TypeScript")
+Rel(payment_controller, payment_gateway, "调用", "HTTPS")
+
+
+@enduml

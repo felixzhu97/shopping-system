@@ -1,0 +1,42 @@
+@startuml
+!include ./c4-plantuml/C4_Context.puml
+!include ./c4-plantuml//C4_Container.puml
+!include ./c4-plantuml//C4_Component.puml
+
+LAYOUT_WITH_LEGEND()
+
+' 组件图 - Web应用
+Container_Boundary(web_app, "Web应用") {
+    Component(home_page, "首页", "Next.js Page", "展示商品列表")
+    Component(products_page, "商品页", "Next.js Page", "商品列表和详情")
+    Component(cart_page, "购物车页", "Next.js Page", "管理购物车")
+    Component(checkout_page, "结算页", "Next.js Page", "处理订单结算")
+    Component(orders_page, "订单页", "Next.js Page", "查看订单")
+    Component(account_page, "账户页", "Next.js Page", "用户信息管理")
+    Component(login_page, "登录页", "Next.js Page", "用户登录")
+    Component(register_page, "注册页", "Next.js Page", "用户注册")
+    Component(payment_page, "支付页", "Next.js Page", "管理支付信息")
+}
+
+' 组件图 - API服务
+Container_Boundary(api, "API服务") {
+    Component(users_route, "用户路由", "Express Router", "处理用户相关请求")
+    Component(products_route, "商品路由", "Express Router", "处理商品相关请求")
+    Component(orders_route, "订单路由", "Express Router", "处理订单相关请求")
+    Component(cart_route, "购物车路由", "Express Router", "处理购物车相关请求")
+    Component(payment_route, "支付路由", "Express Router", "处理支付相关请求")
+
+    Component(user_controller, "用户控制器", "TypeScript", "处理用户认证和授权")
+    Component(product_controller, "商品控制器", "TypeScript", "处理商品业务逻辑")
+    Component(order_controller, "订单控制器", "TypeScript", "处理订单业务逻辑")
+    Component(cart_controller, "购物车控制器", "TypeScript", "处理购物车业务逻辑")
+    Component(payment_controller, "支付控制器", "TypeScript", "处理支付业务逻辑")
+
+    Component(user_model, "用户模型", "Mongoose", "用户数据模型")
+    Component(product_model, "商品模型", "Mongoose", "商品数据模型")
+    Component(order_model, "订单模型", "Mongoose", "订单数据模型")
+    Component(cart_model, "购物车模型", "Mongoose", "购物车数据模型")
+    Component(payment_model, "支付模型", "Mongoose", "支付数据模型")
+}
+
+@enduml

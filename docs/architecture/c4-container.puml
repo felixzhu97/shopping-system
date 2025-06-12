@@ -1,0 +1,36 @@
+@startuml
+!include ./c4-plantuml/C4_Context.puml
+!include ./c4-plantuml//C4_Container.puml
+!include ./c4-plantuml//C4_Component.puml
+
+LAYOUT_WITH_LEGEND()
+
+' 容器图
+System_Boundary(web_app_boundary, "Web应用") {
+    Container(web_app, "Web应用", "Next.js", "提供用户界面")
+    Container(components, "组件库", "React", "可复用的UI组件")
+    Container(api_client, "API客户端", "Axios", "与后端通信")
+}
+
+System_Boundary(api_boundary, "API服务") {
+    Container(api, "API服务", "Express.js", "处理业务逻辑")
+    Container(routes, "路由层", "Express Router", "处理HTTP请求")
+    Container(controllers, "控制器", "TypeScript", "处理业务逻辑")
+    Container(models, "数据模型", "Mongoose", "数据持久化")
+}
+
+System_Boundary(external_boundary, "外部服务") {
+    ContainerDb(db, "MongoDB", "数据库", "存储系统数据")
+    System_Ext(payment_gateway, "支付网关", "处理支付")
+}
+
+Rel(web_app, components, "使用", "TypeScript")
+Rel(web_app, api_client, "使用", "TypeScript")
+Rel(api_client, api, "调用", "HTTPS")
+Rel(api, routes, "路由", "TypeScript")
+Rel(routes, controllers, "调用", "TypeScript")
+Rel(controllers, models, "调用", "TypeScript")
+Rel(models, db, "读写", "MongoDB")
+Rel(controllers, payment_gateway, "调用", "HTTPS")
+
+@enduml
