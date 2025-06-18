@@ -66,17 +66,7 @@ describe('Orders Routes', () => {
     expect(orderController.getOrderById).toHaveBeenCalled();
   });
 
-  it('should handle GET /api/orders with admin auth', async () => {
-    (orderController.getAllOrders as any).mockImplementation((req: any, res: any) => {
-      res.status(200).json({ orders: [] });
-    });
-
-    const response = await request(app).get('/api/orders');
-
-    expect(response.status).toBe(200);
-    expect(adminAuth).toHaveBeenCalled();
-    expect(orderController.getAllOrders).toHaveBeenCalled();
-  });
+  // Remove this test since getAllOrders route was removed
 
   it('should handle POST /api/orders/:id/cancel', async () => {
     (orderController.cancelOrder as any).mockImplementation((req: any, res: any) => {
