@@ -9,7 +9,7 @@ vi.mock('next/navigation', () => ({
 }));
 
 describe('PageTransition', () => {
-  it('应该正确渲染子组件', () => {
+  it('should render child component', () => {
     (usePathname as ReturnType<typeof vi.fn>).mockReturnValue('/');
 
     render(
@@ -21,7 +21,7 @@ describe('PageTransition', () => {
     expect(screen.getByText('测试内容')).toBeInTheDocument();
   });
 
-  it('应该包含动画容器', () => {
+  it('should contain animation container', () => {
     (usePathname as ReturnType<typeof vi.fn>).mockReturnValue('/');
 
     const { container } = render(
@@ -34,7 +34,7 @@ describe('PageTransition', () => {
     expect(animationContainer).toBeInTheDocument();
   });
 
-  it('应该使用正确的 key 属性', () => {
+  it('should use correct key attribute', () => {
     const testPath = '/test-path';
     (usePathname as ReturnType<typeof vi.fn>).mockReturnValue(testPath);
 

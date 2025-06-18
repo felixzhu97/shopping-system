@@ -19,7 +19,7 @@ Object.defineProperty(window, 'matchMedia', {
 });
 
 describe('ThemeProvider', () => {
-  it('应该正确渲染子组件', () => {
+  it('should render child component', () => {
     render(
       <ThemeProvider>
         <div>测试内容</div>
@@ -29,7 +29,7 @@ describe('ThemeProvider', () => {
     expect(screen.getByText('测试内容')).toBeInTheDocument();
   });
 
-  it('应该正确传递属性', () => {
+  it('should pass props correctly', () => {
     const testProps: ThemeProviderProps = {
       attribute: 'class',
       defaultTheme: 'system',
@@ -42,7 +42,7 @@ describe('ThemeProvider', () => {
       </ThemeProvider>
     );
 
-    // 检查 ThemeProvider 是否正确渲染
+    // check if ThemeProvider is rendered correctly
     expect(container.firstChild).toBeInTheDocument();
   });
 });

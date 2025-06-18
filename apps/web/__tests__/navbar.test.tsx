@@ -2,7 +2,20 @@ import { render, screen } from '@testing-library/react';
 import { Navbar } from '../components/navbar';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useRouter } from 'next/navigation';
-import { useCartStore } from '@/lib/store/cartStore';
+import {
+  useCartStore,
+  useCartItems,
+  useCartSubtotal,
+  useCartShipping,
+  useCartTax,
+  useCartTotal,
+  useCartIsLoading,
+  useCartError,
+  useCartAddToCart,
+  useCartUpdateQuantity,
+  useCartRemoveFromCart,
+  useCartClearCart,
+} from '@/lib/store/cartStore';
 
 // 模拟 next/navigation
 vi.mock('next/navigation', () => ({
@@ -11,9 +24,20 @@ vi.mock('next/navigation', () => ({
   useSearchParams: vi.fn().mockReturnValue(new URLSearchParams()),
 }));
 
-// 模拟 cart-context
-vi.mock('@/lib/cart-store', () => ({
+// 模拟 cart-store
+vi.mock('@/lib/store/cartStore', () => ({
   useCartStore: vi.fn(),
+  useCartItems: vi.fn(),
+  useCartSubtotal: vi.fn(),
+  useCartShipping: vi.fn(),
+  useCartTax: vi.fn(),
+  useCartTotal: vi.fn(),
+  useCartIsLoading: vi.fn(),
+  useCartError: vi.fn(),
+  useCartAddToCart: vi.fn(),
+  useCartUpdateQuantity: vi.fn(),
+  useCartRemoveFromCart: vi.fn(),
+  useCartClearCart: vi.fn(),
 }));
 
 describe('Navbar', () => {
@@ -25,18 +49,31 @@ describe('Navbar', () => {
     vi.clearAllMocks();
     (useRouter as ReturnType<typeof vi.fn>).mockReturnValue(mockRouter);
     (useCartStore as any).mockReturnValue({
-      cartItems: [],
-      itemCount: 0,
+      items: [],
       subtotal: 0,
+      shipping: 0,
+      tax: 0,
+      total: 0,
     });
+    (useCartItems as any).mockReturnValue([]);
+    (useCartSubtotal as any).mockReturnValue(0);
+    (useCartShipping as any).mockReturnValue(0);
+    (useCartTax as any).mockReturnValue(0);
+    (useCartTotal as any).mockReturnValue(0);
+    (useCartIsLoading as any).mockReturnValue(false);
+    (useCartError as any).mockReturnValue(null);
+    (useCartAddToCart as any).mockReturnValue(vi.fn());
+    (useCartUpdateQuantity as any).mockReturnValue(vi.fn());
+    (useCartRemoveFromCart as any).mockReturnValue(vi.fn());
+    (useCartClearCart as any).mockReturnValue(vi.fn());
   });
 
-  it('渲染导航栏标题', () => {
+  it('should render navbar title', () => {
     render(<Navbar />);
     expect(screen.getByText('首页')).toBeInTheDocument();
   });
 
-  it('渲染导航链接', () => {
+  it('should render navbar links', () => {
     render(<Navbar />);
 
     expect(screen.getByText('首页')).toBeInTheDocument();
@@ -47,7 +84,7 @@ describe('Navbar', () => {
     expect(screen.getByText('图书')).toBeInTheDocument();
   });
 
-  it('导航链接包含正确的 href 属性', () => {
+  it('should contain correct href attribute in navbar links', () => {
     render(<Navbar />);
 
     const homeLink = screen.getByRole('link', { name: '首页' });
@@ -60,38 +97,40 @@ describe('Navbar', () => {
     expect(electronicsLink).toHaveAttribute('href', '/products?category=electronics');
   });
 
-  it('渲染搜索框', () => {
+  it('should render search input', () => {
     render(<Navbar />);
 
     const searchInputs = screen.getAllByPlaceholderText('搜索 产品');
     expect(searchInputs.length).toBeGreaterThan(0);
   });
 
-  it('渲染购物车按钮', () => {
+  it('should render cart button', () => {
     render(<Navbar />);
 
     expect(screen.getByRole('button', { name: /购物车/i })).toBeInTheDocument();
   });
 
-  it('渲染账户按钮', () => {
+  it('should render account related links', () => {
     render(<Navbar />);
 
-    expect(screen.getByRole('button', { name: /账户/i })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /账户设置/i })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /登录/i })).toBeInTheDocument();
   });
 
-  it('渲染购物车图标和数量', () => {
-    (useCartStore as any).mockReturnValue({
-      cartItems: [],
-      itemCount: 5,
-      subtotal: 0,
-    });
+  it('should render cart icon and quantity', () => {
+    const mockItems = [
+      { productId: '1', quantity: 2, product: { id: '1', name: 'Product 1', price: 10 } },
+      { productId: '2', quantity: 3, product: { id: '2', name: 'Product 2', price: 20 } },
+    ];
+
+    (useCartItems as any).mockReturnValue(mockItems);
 
     render(<Navbar />);
 
     expect(screen.getByText('5')).toBeInTheDocument();
   });
 
-  it('当没有购物车数量时不显示数量', () => {
+  it('should not show quantity when there is no cart items', () => {
     render(<Navbar />);
 
     expect(screen.queryByText('0')).not.toBeInTheDocument();
