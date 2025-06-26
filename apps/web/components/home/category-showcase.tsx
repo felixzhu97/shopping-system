@@ -55,7 +55,7 @@ const HeroCard = ({
 // 双列展示卡片组件
 const DualCard = ({ product, color = 'bg-white' }: { product: Product; color?: string }) => (
   <div
-    className={`${color} rounded-[28px] overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 ease-out hover:scale-[1.03] hover:-translate-y-2`}
+    className={`${color} rounded-[28px] overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 ease-out hover:scale-[1.01]`}
   >
     <div className="block relative">
       <div className="pt-8 px-6 text-center">
@@ -94,7 +94,7 @@ const PromoCard = ({
   color?: string;
 }) => (
   <div
-    className={`${color} rounded-[28px] overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 ease-out hover:scale-[1.03] hover:-translate-y-2`}
+    className={`${color} rounded-[28px] overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 ease-out hover:scale-[1.01]`}
   >
     <div className="block relative">
       <div className="pt-8 px-6 text-center">
