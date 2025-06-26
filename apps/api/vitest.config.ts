@@ -5,7 +5,17 @@ export default defineConfig({
   test: {
     include: ['**/*.test.ts'],
     coverage: {
-      reporter: ['text', 'json', 'html'],
+      reporter: ['text', 'json', 'html', 'lcov'],
+      reportsDirectory: './coverage',
+      exclude: ['node_modules/**', 'dist/**', '**/*.d.ts', 'src/scripts/**', 'vitest.config.ts'],
+      thresholds: {
+        global: {
+          branches: 90,
+          functions: 90,
+          lines: 90,
+          statements: 90,
+        },
+      },
     },
     globals: true,
     environment: 'node',

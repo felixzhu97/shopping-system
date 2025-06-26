@@ -34,7 +34,7 @@ const quickLinks = [
 // 将购物车项组件提取出来并使用 memo 包装
 const CartItem = memo(({ item }: { item: any }) => (
   <div className="flex items-center mb-4 last:mb-0">
-    <div className="w-10 h-10 rounded-lg bg-gray-100 mr-4 border overflow-hidden">
+    <div className="w-10 h-10 rounded-lg bg-gray-100 mr-4 border overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 ease-out">
       <Image
         src={item.product?.image || ''}
         alt={item.product?.name || ''}

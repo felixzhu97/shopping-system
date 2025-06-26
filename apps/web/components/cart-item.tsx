@@ -71,7 +71,7 @@ const ProductImage = React.memo(function ProductImage({
   return (
     <Link
       href={`/products/${productId}`}
-      className="relative h-24 w-24 overflow-hidden rounded-xl bg-[#f5f5f7] p-2 flex-shrink-0 transition-transform hover:scale-105"
+      className="relative h-24 w-24 overflow-hidden rounded-xl bg-[#f5f5f7] p-2 flex-shrink-0 shadow-md hover:shadow-lg transition-all duration-300 ease-out"
     >
       <Image
         src={image}
