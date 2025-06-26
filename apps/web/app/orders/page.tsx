@@ -119,7 +119,7 @@ export default function OrdersPage() {
               <Link
                 key={order.id}
                 href={`/orders/${order.id}`}
-                className="block bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow p-0 group border border-gray-100"
+                className="block bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 ease-out hover:scale-[1.01] hover:-translate-y-1 p-0 group border border-gray-100"
               >
                 {/* 订单头部 */}
                 <div className="flex items-center justify-between px-6 pt-6 pb-2">
@@ -151,7 +151,7 @@ export default function OrdersPage() {
                       <img
                         src={item.image || item.product?.image}
                         alt={item.name || item.product?.name}
-                        className="w-14 h-14 object-cover rounded-xl bg-gray-100 border"
+                        className="w-14 h-14 object-cover rounded-xl bg-gray-100 border shadow-md hover:shadow-lg transition-all duration-300 ease-out"
                       />
                       <div className="flex-1 min-w-0">
                         <div className="font-medium text-gray-900 truncate">

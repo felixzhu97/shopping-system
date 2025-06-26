@@ -14,13 +14,13 @@ export function ProductCard({ product }: ProductCardProps) {
   const productId = String(product.id);
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm">
+    <div className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 ease-out hover:scale-[1.01]">
       <Link href={`/products/${productId}`} className="block">
         <div className="relative aspect-square mb-4 overflow-hidden rounded-lg">
           <Image
             src={product.image}
             alt={product.name}
-            className="object-cover hover:scale-105 transition-transform duration-300 aspect-square"
+            className="object-cover transition-transform duration-300 aspect-square"
             loading="lazy"
           />
         </div>

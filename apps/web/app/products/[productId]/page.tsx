@@ -186,7 +186,7 @@ function ProductDetail({ productId }: { productId: string }) {
         {/* 产品图片部分，左侧 */}
         <div className="space-y-4">
           <div
-            className="aspect-square bg-[#fafafa] rounded-3xl overflow-hidden flex items-center justify-center p-8 relative cursor-zoom-in"
+            className="aspect-square bg-[#fafafa] rounded-3xl overflow-hidden flex items-center justify-center p-8 relative cursor-zoom-in shadow-lg hover:shadow-xl transition-all duration-300 ease-out"
             onClick={handleImageClick}
             ref={imageContainerRef}
           >
@@ -210,7 +210,7 @@ function ProductDetail({ productId }: { productId: string }) {
               <button
                 key={index}
                 className={cn(
-                  'w-20 h-20 rounded-xl overflow-hidden border-2 bg-[#fafafa]',
+                  'w-20 h-20 rounded-xl overflow-hidden border-2 bg-[#fafafa] shadow-md hover:shadow-lg transition-all duration-300 ease-out hover:scale-105',
                   selectedImage === img ? 'border-blue-500' : 'border-transparent'
                 )}
                 onClick={() => setSelectedImage(img)}

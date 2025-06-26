@@ -14,7 +14,9 @@ const HeroCard = ({
   color?: string;
   textColor?: string;
 }) => (
-  <div className={`${color} rounded-[28px] overflow-hidden`}>
+  <div
+    className={`${color} rounded-[28px] overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300 ease-out hover:scale-[1.01]`}
+  >
     <div className="block relative">
       <div className="pt-12 px-8 text-center">
         <h2 className={`text-[40px] font-medium ${textColor} mb-1`}>{product?.name}</h2>
@@ -52,7 +54,9 @@ const HeroCard = ({
 
 // 双列展示卡片组件
 const DualCard = ({ product, color = 'bg-white' }: { product: Product; color?: string }) => (
-  <div className={`${color} rounded-[28px] overflow-hidden`}>
+  <div
+    className={`${color} rounded-[28px] overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 ease-out hover:scale-[1.03] hover:-translate-y-2`}
+  >
     <div className="block relative">
       <div className="pt-8 px-6 text-center">
         <h2 className="text-[32px] font-medium text-[#1d1d1f] mb-1">{product?.name}</h2>
@@ -89,7 +93,9 @@ const PromoCard = ({
   link: string;
   color?: string;
 }) => (
-  <div className={`${color} rounded-[28px] overflow-hidden`}>
+  <div
+    className={`${color} rounded-[28px] overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 ease-out hover:scale-[1.03] hover:-translate-y-2`}
+  >
     <div className="block relative">
       <div className="pt-8 px-6 text-center">
         <h2 className="text-[32px] font-medium text-[#1d1d1f] mb-1">{title}</h2>
