@@ -119,7 +119,7 @@ export default function OrdersPage() {
               <Link
                 key={order.id}
                 href={`/orders/${order.id}`}
-                className="block bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 ease-out hover:scale-[1.01] hover:-translate-y-1 p-0 group border border-gray-100"
+                className="block bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 ease-out hover:scale-[1.01] p-0 group border border-gray-100"
               >
                 {/* 订单头部 */}
                 <div className="flex items-center justify-between px-6 pt-6 pb-2">
