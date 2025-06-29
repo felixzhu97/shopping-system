@@ -6,6 +6,9 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useToken } from '@/lib/store/userStore';
 import Loading from '@/components/Loading';
 
+// 只在客户端导入 i18n
+import '../i18n';
+
 const PROTECTED_PATHS = [
   '/account', // 账户页
 ];

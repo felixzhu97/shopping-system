@@ -448,8 +448,7 @@ function NavbarClient() {
                 <ShoppingCart className="h-[17px] w-[17px]" />
                 {itemCount > 0 && (
                   <Badge
-                    variant="destructive"
-                    className={`absolute -top-1 -right-1 h-[14px] w-[14px] p-0 flex items-center justify-center rounded-full text-[10px] ${
+                    className={`absolute bottom-[6px] right-[2px] h-[14px] w-[14px] p-0 flex items-center justify-center rounded-full text-[10px] ${
                       cartBadgeAnimate ? 'animate-bounce' : ''
                     }`}
                   >

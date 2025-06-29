@@ -109,6 +109,14 @@ export function Footer() {
                 网站地图
               </Link>
             </div>
+            <div className="flex flex-wrap mt-4 md:mt-0 gap-x-6">
+              <Link href="/privacy" className="hover:underline">
+                简体中文
+              </Link>
+              <Link href="/terms" className="hover:underline">
+                English
+              </Link>
+            </div>
           </div>
         </div>
       </div>
