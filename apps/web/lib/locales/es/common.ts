@@ -239,6 +239,8 @@ export default {
     'Cancelar un pedido hará que no se pueda recuperar si has pagado. El reembolso se devolverá a tu cuenta de pago dentro de 3-5 días hábiles.',
   the_order_you_visited_does_not_exist_or_has_been_deleted:
     'El pedido que visitaste no existe o ha sido eliminado',
+  'remote_areas_may_require_additional_1-3_days':
+    'Las áreas remotas pueden requerir 1-3 días adicionales',
 
   // Vocabulario básico
   hello: 'Hola',

@@ -236,6 +236,7 @@ export default {
     'Cancelling an order will make it impossible to recover it if you have paid. The refund will be returned to your payment account within 3-5 working days.',
   the_order_you_visited_does_not_exist_or_has_been_deleted:
     'The order you visited does not exist or has been deleted',
+  'remote_areas_may_require_additional_1-3_days': 'Remote areas may require additional 1-3 days',
 
   // Basic vocabulary
   hello: 'Hello',

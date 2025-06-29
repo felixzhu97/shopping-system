@@ -232,6 +232,7 @@ export default {
   cancelling_an_order_will_make_it_impossible_to_recover_it_if_you_have_paid_the_refund_will_be_returned_to_your_payment_account_within_3_to_5_working_days:
     '取消订单后，该订单将无法恢复。如果您已经支付，退款将在3-5个工作日内退回到您的支付账户。',
   the_order_you_visited_does_not_exist_or_has_been_deleted: '您访问的订单不存在或已被删除',
+  'remote_areas_may_require_additional_1-3_days': '偏远地区可能需要额外1-3天',
 
   // 基本词汇
   hello: '你好',
