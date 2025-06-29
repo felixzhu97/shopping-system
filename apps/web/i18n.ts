@@ -4,6 +4,7 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 
 import enTranslations from './lib/locales/en';
 import zhTranslations from './lib/locales/zh';
+import esTranslations from './lib/locales/es';
 import { isDev } from './lib/utils/env';
 
 // 翻译资源
@@ -13,6 +14,9 @@ const resources = {
   },
   zh: {
     translation: zhTranslations,
+  },
+  es: {
+    translation: esTranslations,
   },
 };
 
