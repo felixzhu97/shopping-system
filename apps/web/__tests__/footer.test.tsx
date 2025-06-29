@@ -25,7 +25,7 @@ describe('Footer', () => {
 
     // check bottom links
     expect(screen.getByText('隐私政策')).toBeInTheDocument();
-    expect(screen.getByText('使用条款')).toBeInTheDocument();
+    expect(screen.getByText('服务条款')).toBeInTheDocument();
     expect(screen.getByText('销售政策')).toBeInTheDocument();
     expect(screen.getByText('法律信息')).toBeInTheDocument();
     expect(screen.getByText('网站地图')).toBeInTheDocument();
@@ -55,6 +55,6 @@ describe('Footer', () => {
     // check some key links href
     expect(screen.getByText('全部商品').closest('a')).toHaveAttribute('href', '/products');
     expect(screen.getByText('隐私政策').closest('a')).toHaveAttribute('href', '/privacy');
-    expect(screen.getByText('使用条款').closest('a')).toHaveAttribute('href', '/terms');
+    expect(screen.getByText('服务条款').closest('a')).toHaveAttribute('href', '/terms');
   });
 });

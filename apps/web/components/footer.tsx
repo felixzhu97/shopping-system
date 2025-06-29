@@ -100,7 +100,7 @@ export function Footer() {
         <div className="border-t border-gray-200 py-8">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 text-xs text-gray-500">
             {/* left: copyright */}
-            <p>{t('common.copyright')}</p>
+            <p>Copyright {t('common.copyright')}</p>
 
             {/* middle: policy links */}
             <div className="flex flex-wrap gap-x-6">

@@ -1,5 +1,6 @@
 import '@testing-library/jest-dom';
 import { vi } from 'vitest';
+import i18n from './i18n';
 
 // Mock global fetch
 global.fetch = vi.fn();
@@ -77,4 +78,20 @@ vi.mock('next/navigation', () => ({
   }),
   usePathname: () => '/',
   useSearchParams: () => new URLSearchParams(),
+}));
+
+// Mock react-i18next
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (key: string) => i18n.t(key),
+    i18n: {
+      changeLanguage: vi.fn(),
+      language: 'zh',
+    },
+  }),
+  Trans: ({ children }: { children: React.ReactNode }) => children,
+  initReactI18next: {
+    type: '3rdParty',
+    init: vi.fn(),
+  },
 }));

@@ -20,7 +20,7 @@ export default {
   items_in_cart: '件商品在购物车中',
   quick_links: '快捷链接',
   menu: '菜单',
-  search_products: '搜索产品',
+  search_products: '搜索 产品',
 
   // Footer
   privacy_policy: '隐私政策',

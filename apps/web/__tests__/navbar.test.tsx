@@ -107,7 +107,7 @@ describe('Navbar', () => {
   it('should render cart button', () => {
     render(<Navbar />);
 
-    expect(screen.getByRole('button', { name: /购物车/i })).toBeInTheDocument();
+    expect(screen.getByLabelText('购物车')).toBeInTheDocument();
   });
 
   it('should render account related links', () => {
