@@ -6,17 +6,16 @@ import { ChevronDownIcon, CheckIcon } from 'lucide-react';
 
 // supported languages
 const languages = [
-  { code: 'en', name: 'English', region: 'United States' },
-  { code: 'zh', name: '简体中文', region: 'China' },
-  { code: 'es', name: 'español', region: 'España' },
+  { code: 'en', locale: ['en'], name: 'English', region: 'United States' },
+  { code: 'zh', locale: ['zh-CN', 'zh'], name: '简体中文', region: 'China' },
+  { code: 'es', locale: ['es'], name: 'español', region: 'España' },
 ];
 
 export function LanguageSwitcher() {
   const { i18n } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-
-  const currentLanguage = languages.find(lang => lang.code === i18n.language) || languages[0];
+  const [currentLanguage, setCurrentLanguage] = useState(languages[0]);
 
   // click outside to close dropdown
   useEffect(() => {
@@ -36,6 +35,10 @@ export function LanguageSwitcher() {
     i18n.changeLanguage(languageCode);
     setIsOpen(false);
   };
+
+  useEffect(() => {
+    setCurrentLanguage(languages.find(lang => lang.locale.includes(i18n.language)) || languages[0]);
+  }, [i18n.language]);
 
   return (
     <div className="relative" ref={dropdownRef}>
