@@ -16,6 +16,7 @@ import { useCartAddToCart } from '@/lib/store/cartStore';
 import { cn } from '@/lib/utils/utils';
 import { useProductStore } from '@/lib/store/productStore';
 import Image from '@/components/ui/image';
+import { useTranslation } from 'react-i18next';
 
 function LoadingSkeleton() {
   return (
@@ -51,6 +52,7 @@ function ProductDetail({ productId }: { productId: string }) {
   const addToCart = useCartAddToCart();
   const { toast } = useToast();
   const router = useRouter();
+  const { t } = useTranslation();
 
   useEffect(() => {
     fetchProduct(productId);
@@ -75,14 +77,14 @@ function ProductDetail({ productId }: { productId: string }) {
       setAddedToCart(true);
       setTimeout(() => setAddedToCart(false), 2000);
       toast({
-        title: '已添加到购物车',
-        description: `${product.name} × ${quantity} 已成功添加到购物车`,
+        title: t('common.added_to_cart'),
+        description: `${product.name} × ${quantity} ${t('common.added_to_cart_message')}`,
         duration: 3000,
       });
     } catch (err) {
       toast({
-        title: '添加失败',
-        description: '添加商品到购物车时出错，请稍后再试',
+        title: t('common.add_to_cart_failed'),
+        description: t('common.add_to_cart_failed_message'),
         variant: 'destructive',
         duration: 3000,
       });
@@ -100,8 +102,8 @@ function ProductDetail({ productId }: { productId: string }) {
       router.push('/checkout');
     } catch (err) {
       toast({
-        title: '操作失败',
-        description: '处理您的请求时出错，请稍后再试',
+        title: t('common.operation_failed'),
+        description: t('common.operation_failed_message'),
         variant: 'destructive',
         duration: 3000,
       });
@@ -117,10 +119,12 @@ function ProductDetail({ productId }: { productId: string }) {
   if (error || !product) {
     return (
       <div className="text-center py-12">
-        <div className="text-xl font-medium text-gray-900 mb-2">产品不存在或发生错误</div>
-        <p className="text-gray-500 mb-6">{error || '无法加载产品信息'}</p>
+        <div className="text-xl font-medium text-gray-900 mb-2">
+          {t('common.product_not_found')}
+        </div>
+        <p className="text-gray-500 mb-6">{error || t('common.product_not_found_message')}</p>
         <Button asChild variant="outline" className="rounded-full px-6">
-          <Link href="/products">返回产品列表</Link>
+          <Link href="/products">{t('common.return_to_product_list')}</Link>
         </Button>
       </div>
     );
@@ -200,7 +204,7 @@ function ProductDetail({ productId }: { productId: string }) {
             {/* 点击查看大图提示 */}
             <div className="absolute bottom-3 right-3 bg-white/80 backdrop-blur-sm rounded-full p-2 flex items-center gap-2 text-xs text-gray-600 shadow-sm">
               <Search className="h-3 w-3" />
-              <span>点击查看大图</span>
+              <span>{t('common.click_to_view_large_image')}</span>
             </div>
           </div>
 
@@ -252,7 +256,8 @@ function ProductDetail({ productId }: { productId: string }) {
                   ))}
               </div>
               <span className="ml-2 text-sm text-gray-500">
-                {(product.rating || 0).toFixed(1)} ({product.reviewCount || 0} 评价)
+                {(product.rating || 0).toFixed(1)} ({product.reviewCount || 0} {t('common.reviews')}
+                )
               </span>
             </div>
           </div>
@@ -269,18 +274,16 @@ function ProductDetail({ productId }: { productId: string }) {
             </div>
             {product.originalPrice && (
               <div className="mt-1 text-sm text-green-600">
-                节省 ¥{(product.originalPrice - product.price).toFixed(2)} (
-                {Math.round((1 - product.price / product.originalPrice) * 100)}% 优惠)
+                {t('common.save')} ¥{(product.originalPrice - product.price).toFixed(2)} (
+                {Math.round((1 - product.price / product.originalPrice) * 100)}%{' '}
+                {t('common.discount')})
               </div>
             )}
           </div>
 
           {/* 产品描述 */}
           <div className="mb-8 text-gray-600">
-            <p>
-              {product.description ||
-                '这款优质产品提供卓越的品质和价值。适合日常使用，它将耐用性与优雅的设计相结合。由高品质材料制成，经久耐用，同时保持其时尚外观。'}
-            </p>
+            <p>{product.description || t('common.product_description')}</p>
           </div>
 
           {/* 库存和配送信息 */}
@@ -294,18 +297,21 @@ function ProductDetail({ productId }: { productId: string }) {
               >
                 {product.inStock && <Check className="h-3 w-3 text-white" />}
               </div>
-              <span>{product.inStock ? '现货' : '缺货'}</span>
+              <span>{product.inStock ? t('common.in_stock') : t('common.out_of_stock')}</span>
             </div>
 
             <div className="flex items-center text-sm text-green-600">
               <Truck className="h-4 w-4 mr-2" />
-              <span>订单满¥200免运费，预计{product.inStock ? '1-3天内发货' : '暂时无法发货'}</span>
+              <span>
+                {t('common.order_free_shipping')}¥200 {t('common.expected_delivery_time')}
+                {product.inStock ? t('common.in_stock') : t('common.out_of_stock')}
+              </span>
             </div>
           </div>
 
           {/* 数量选择器 */}
           <div className="mb-8">
-            <div className="font-medium mb-2">数量</div>
+            <div className="font-medium mb-2">{t('common.quantity')}</div>
             <div className="inline-flex items-center border border-gray-300 rounded-full">
               <Button
                 variant="ghost"
@@ -315,7 +321,7 @@ function ProductDetail({ productId }: { productId: string }) {
                 disabled={quantity <= 1}
               >
                 <Minus className="h-4 w-4" />
-                <span className="sr-only">减少数量</span>
+                <span className="sr-only">{t('common.decrease_quantity')}</span>
               </Button>
               <span className="w-12 text-center">{quantity}</span>
               <Button
@@ -326,7 +332,7 @@ function ProductDetail({ productId }: { productId: string }) {
                 disabled={quantity >= (product.stock || 99)}
               >
                 <Plus className="h-4 w-4" />
-                <span className="sr-only">增加数量</span>
+                <span className="sr-only">{t('common.increase_quantity')}</span>
               </Button>
             </div>
           </div>
@@ -343,16 +349,16 @@ function ProductDetail({ productId }: { productId: string }) {
               disabled={isAddToCartLoading || !product.inStock}
             >
               {isAddToCartLoading ? (
-                <>加载中...</>
+                <>{t('common.loading')}...</>
               ) : addedToCart ? (
                 <>
                   <Check className="mr-2 h-5 w-5" />
-                  已添加到购物车
+                  {t('common.added_to_cart')}
                 </>
               ) : (
                 <>
                   <ShoppingCart className="mr-2 h-5 w-5" />
-                  加入购物车
+                  {t('common.add_to_cart')}
                 </>
               )}
             </Button>
@@ -364,11 +370,13 @@ function ProductDetail({ productId }: { productId: string }) {
               onClick={handleBuyNow}
               disabled={isBuyNowLoading || !product.inStock}
             >
-              {isBuyNowLoading ? '加载中...' : '立即购买'}
+              {isBuyNowLoading ? t('common.loading') : t('common.buy_now')}
             </Button>
 
             {!product.inStock && (
-              <div className="text-red-500 font-medium text-center mt-2">该商品当前缺货</div>
+              <div className="text-red-500 font-medium text-center mt-2">
+                {t('common.out_of_stock')}
+              </div>
             )}
           </div>
         </div>
@@ -379,79 +387,79 @@ function ProductDetail({ productId }: { productId: string }) {
         <Tabs defaultValue="details" className="w-full">
           <TabsList className="w-full grid grid-cols-3 bg-gray-100 rounded-full p-1 h-12">
             <TabsTrigger value="details" className="rounded-full data-[state=active]:bg-white">
-              详细信息
+              {t('common.details')}
             </TabsTrigger>
             <TabsTrigger value="shipping" className="rounded-full data-[state=active]:bg-white">
-              配送与退货
+              {t('common.shipping_and_return')}
             </TabsTrigger>
             <TabsTrigger value="reviews" className="rounded-full data-[state=active]:bg-white">
-              用户评价
+              {t('common.user_reviews')}
             </TabsTrigger>
           </TabsList>
 
           <TabsContent value="details" className="pt-8">
             <div className="space-y-8">
               <div>
-                <h3 className="text-xl font-medium mb-4">产品特点</h3>
+                <h3 className="text-xl font-medium mb-4">{t('common.product_features')}</h3>
                 <ul className="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-600">
                   <li className="flex items-start">
                     <div className="bg-blue-100 text-blue-600 rounded-full p-1 mr-3 mt-0.5">
                       <Check className="h-4 w-4" />
                     </div>
-                    <span>优质材料，耐用性强</span>
+                    <span>{t('common.high_quality_material')}</span>
                   </li>
                   <li className="flex items-start">
                     <div className="bg-blue-100 text-blue-600 rounded-full p-1 mr-3 mt-0.5">
                       <Check className="h-4 w-4" />
                     </div>
-                    <span>精美设计，注重细节</span>
+                    <span>{t('common.beautiful_design')}</span>
                   </li>
                   <li className="flex items-start">
                     <div className="bg-blue-100 text-blue-600 rounded-full p-1 mr-3 mt-0.5">
                       <Check className="h-4 w-4" />
                     </div>
-                    <span>多功能用途，提升使用体验</span>
+                    <span>{t('common.multi_function')}</span>
                   </li>
                   <li className="flex items-start">
                     <div className="bg-blue-100 text-blue-600 rounded-full p-1 mr-3 mt-0.5">
                       <Check className="h-4 w-4" />
                     </div>
-                    <span>环保制造，符合现代标准</span>
+                    <span>{t('common.environmental_protection')}</span>
                   </li>
                 </ul>
               </div>
 
               <div>
-                <h3 className="text-xl font-medium mb-4">规格参数</h3>
+                <h3 className="text-xl font-medium mb-4">{t('common.specification_parameters')}</h3>
                 <div className="bg-gray-50 rounded-2xl p-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-4">
                       <div className="flex justify-between">
-                        <span className="text-gray-500">品牌</span>
-                        <span className="font-medium">优质品牌</span>
+                        <span className="text-gray-500">{t('common.brand')}</span>
+                        <span className="font-medium">{t('common.high_quality_brand')}</span>
                       </div>
                       <div className="border-t border-gray-200 pt-4 flex justify-between">
-                        <span className="text-gray-500">型号</span>
-                        <span className="font-medium">PRO-2023</span>
+                        <span className="text-gray-500">{t('common.model')}</span>
+                        <span className="font-medium">{t('common.pro_2023')}</span>
                       </div>
                       <div className="border-t border-gray-200 pt-4 flex justify-between">
-                        <span className="text-gray-500">尺寸</span>
-                        <span className="font-medium">适中</span>
+                        <span className="text-gray-500">{t('common.size')}</span>
+                        <span className="font-medium">{t('common.medium')}</span>
                       </div>
                     </div>
 
                     <div className="space-y-4">
                       <div className="flex justify-between">
-                        <span className="text-gray-500">材质</span>
-                        <span className="font-medium">高级材料</span>
+                        <span className="text-gray-500">{t('common.material')}</span>
+                        <span className="font-medium">{t('common.high_quality_material')}</span>
                       </div>
                       <div className="border-t border-gray-200 pt-4 flex justify-between">
-                        <span className="text-gray-500">保修</span>
-                        <span className="font-medium">1年</span>
+                        <span className="text-gray-500">{t('common.warranty')}</span>
+                        <span className="font-medium">{t('common.one_year')}</span>
                       </div>
                       <div className="border-t border-gray-200 pt-4 flex justify-between">
-                        <span className="text-gray-500">产地</span>
-                        <span className="font-medium">中国</span>
+                        <span className="text-gray-500">{t('common.origin')}</span>
+                        <span className="font-medium">{t('common.china')}</span>
                       </div>
                     </div>
                   </div>
@@ -463,15 +471,19 @@ function ProductDetail({ productId }: { productId: string }) {
           <TabsContent value="shipping" className="pt-8">
             <div className="space-y-8">
               <div>
-                <h3 className="text-xl font-medium mb-4">配送信息</h3>
+                <h3 className="text-xl font-medium mb-4">{t('common.shipping_information')}</h3>
                 <p className="text-gray-600 bg-gray-50 rounded-2xl p-6">
-                  我们提供全国范围内的配送服务。标准配送时间为1-3个工作日，偏远地区可能需要额外1-2天。订单满200元享受免费配送，否则配送费为15元。
+                  {t('common.we_provide_national_delivery_service')}
+                  {t('common.standard_delivery_time')}
+                  {t('common.remote_areas_may_require_additional_1-3_days')}
+                  {t('common.free_delivery_for_orders_over_200_yuan')}
+                  {t('common.delivery_fee_is_15_yuan')}
                 </p>
               </div>
               <div>
-                <h3 className="text-xl font-medium mb-4">退货政策</h3>
+                <h3 className="text-xl font-medium mb-4">{t('common.return_policy')}</h3>
                 <p className="text-gray-600 bg-gray-50 rounded-2xl p-6">
-                  自收到商品之日起30天内，如产品未使用且保持原包装完好，可申请无理由退货。部分特殊商品可能不支持退货，详情请参考商品描述。退货运费由买家承担。
+                  {t('common.return_policy_description')}
                 </p>
               </div>
             </div>
@@ -533,13 +545,15 @@ function ProductDetail({ productId }: { productId: string }) {
 
       {/* 相关产品 - Apple风格 */}
       <div className="mt-20">
-        <h2 className="text-3xl font-semibold text-center mb-12">更多推荐</h2>
+        <h2 className="text-3xl font-semibold text-center mb-12">
+          {t('common.more_recommendations')}
+        </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {relatedProducts && relatedProducts.length > 0 ? (
             relatedProducts.map(product => <ProductCard key={product.id} product={product} />)
           ) : (
             <div className="col-span-full py-12 text-center">
-              <p className="text-gray-500">暂无相关产品</p>
+              <p className="text-gray-500">{t('common.no_related_products')}</p>
             </div>
           )}
         </div>

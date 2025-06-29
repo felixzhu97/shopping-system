@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import CategoryShowcase from '../components/home/category-showcase';
 
 // Mock the API
@@ -44,56 +44,80 @@ vi.mock('../components/ui/button', () => ({
     asChild ? children : <button {...props}>{children}</button>,
 }));
 
+vi.mock('../components/ui/loading-spinner', () => ({
+  LoadingSpinner: () => <div data-testid="loading-spinner">Loading...</div>,
+}));
+
 describe('CategoryShowcase', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
   it('should render the component without crashing', async () => {
-    const Comp = await CategoryShowcase();
-    render(Comp);
+    render(<CategoryShowcase />);
+
+    // Wait for loading to complete
+    await waitFor(() => {
+      expect(screen.queryByTestId('loading-spinner')).not.toBeInTheDocument();
+    });
 
     // Just check that something is rendered
     expect(document.body).toBeTruthy();
   });
 
   it('should render featured products when data is available', async () => {
-    const Comp = await CategoryShowcase();
-    render(Comp);
+    render(<CategoryShowcase />);
+
+    // Wait for products to load
+    await waitFor(() => {
+      expect(screen.getByText('iPhone 15')).toBeInTheDocument();
+    });
 
     // Check for product names
-    expect(screen.getByText('iPhone 15')).toBeDefined();
-    expect(screen.getByText('MacBook Air')).toBeDefined();
-    expect(screen.getByText('AirPods')).toBeDefined();
+    expect(screen.getByText('iPhone 15')).toBeInTheDocument();
+    expect(screen.getByText('MacBook Air')).toBeInTheDocument();
+    expect(screen.getByText('AirPods')).toBeInTheDocument();
   });
 
   it('should render product descriptions', async () => {
-    const Comp = await CategoryShowcase();
-    render(Comp);
+    render(<CategoryShowcase />);
+
+    // Wait for products to load
+    await waitFor(() => {
+      expect(screen.getByText('最新iPhone')).toBeInTheDocument();
+    });
 
     // Check for product descriptions
-    expect(screen.getByText('最新iPhone')).toBeDefined();
-    expect(screen.getByText('超薄笔记本')).toBeDefined();
-    expect(screen.getByText('无线耳机')).toBeDefined();
+    expect(screen.getByText('最新iPhone')).toBeInTheDocument();
+    expect(screen.getByText('超薄笔记本')).toBeInTheDocument();
+    expect(screen.getByText('无线耳机')).toBeInTheDocument();
   });
 
   it('should render product images', async () => {
-    const Comp = await CategoryShowcase();
-    render(Comp);
+    render(<CategoryShowcase />);
+
+    // Wait for products to load
+    await waitFor(() => {
+      expect(screen.getByAltText('iPhone 15')).toBeInTheDocument();
+    });
 
     // Check for product images
     const images = screen.getAllByRole('img');
     expect(images.length).toBeGreaterThanOrEqual(3);
 
     // Check specific images
-    expect(screen.getByAltText('iPhone 15')).toBeDefined();
-    expect(screen.getByAltText('MacBook Air')).toBeDefined();
-    expect(screen.getByAltText('AirPods')).toBeDefined();
+    expect(screen.getByAltText('iPhone 15')).toBeInTheDocument();
+    expect(screen.getByAltText('MacBook Air')).toBeInTheDocument();
+    expect(screen.getByAltText('AirPods')).toBeInTheDocument();
   });
 
   it('should have proper links for products', async () => {
-    const Comp = await CategoryShowcase();
-    render(Comp);
+    render(<CategoryShowcase />);
+
+    // Wait for products to load
+    await waitFor(() => {
+      expect(screen.getByText('iPhone 15')).toBeInTheDocument();
+    });
 
     // Check for links to product pages
     const links = screen.getAllByRole('link');
@@ -105,19 +129,27 @@ describe('CategoryShowcase', () => {
   });
 
   it('should have promotional sections', async () => {
-    const Comp = await CategoryShowcase();
-    render(Comp);
+    render(<CategoryShowcase />);
 
-    // Check for promotional content
-    expect(screen.getByText('母亲节献礼')).toBeDefined();
-    expect(screen.getByText('以旧换新')).toBeDefined();
-    expect(screen.getByText('为妈妈挑选完美礼物')).toBeDefined();
-    expect(screen.getByText('换购新机最高可享95折优惠')).toBeDefined();
+    // Wait for products to load
+    await waitFor(() => {
+      expect(screen.getByText('iPhone 15')).toBeInTheDocument();
+    });
+
+    // Check for promotional content (these are translated texts)
+    expect(screen.getByText('母亲节献礼')).toBeInTheDocument();
+    expect(screen.getByText('以旧换新')).toBeInTheDocument();
+    expect(screen.getByText('为妈妈挑选完美礼物')).toBeInTheDocument();
+    expect(screen.getByText('换购新机最高可享95折优惠')).toBeInTheDocument();
   });
 
   it('should display proper grid layout', async () => {
-    const Comp = await CategoryShowcase();
-    render(Comp);
+    render(<CategoryShowcase />);
+
+    // Wait for products to load
+    await waitFor(() => {
+      expect(screen.getByText('iPhone 15')).toBeInTheDocument();
+    });
 
     // Check for grid layout classes
     const gridElements = document.querySelectorAll('.grid');
@@ -125,8 +157,12 @@ describe('CategoryShowcase', () => {
   });
 
   it('should be responsive', async () => {
-    const Comp = await CategoryShowcase();
-    render(Comp);
+    render(<CategoryShowcase />);
+
+    // Wait for products to load
+    await waitFor(() => {
+      expect(screen.getByText('iPhone 15')).toBeInTheDocument();
+    });
 
     // Check for responsive classes
     const responsiveElements = document.querySelectorAll(

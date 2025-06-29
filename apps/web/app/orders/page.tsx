@@ -11,8 +11,10 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { getUserOrders } from '@/lib/api/orders';
 import { Order } from '@/lib/types';
 import { useUserId } from '@/lib/store/userStore';
+import { useTranslation } from 'react-i18next';
 
 export default function OrdersPage() {
+  const { t } = useTranslation();
   const [orders, setOrders] = useState<Order[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const userId = useUserId();
@@ -20,7 +22,7 @@ export default function OrdersPage() {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        if (!userId) throw new Error('未登录');
+        if (!userId) throw new Error(t('common.please_login'));
         const orders = await getUserOrders(userId);
         setOrders(orders);
       } catch (error) {
@@ -51,15 +53,15 @@ export default function OrdersPage() {
   const getStatusText = (status: Order['status']) => {
     switch (status) {
       case 'pending':
-        return '待处理';
+        return t('common.pending');
       case 'processing':
-        return '处理中';
+        return t('common.processing');
       case 'shipped':
-        return '已发货';
+        return t('common.shipped');
       case 'delivered':
-        return '已送达';
+        return t('common.delivered');
       case 'cancelled':
-        return '已取消';
+        return t('common.cancelled');
     }
   };
 
@@ -88,16 +90,16 @@ export default function OrdersPage() {
         <Navbar />
         <main className="flex-1 container mx-auto px-4 py-12">
           <div className="max-w-3xl mx-auto text-center">
-            <h1 className="text-2xl font-semibold mb-4">暂无订单</h1>
-            <p className="text-gray-500 mb-8">您还没有任何订单记录</p>
+            <h1 className="text-2xl font-semibold mb-4">{t('common.no_orders')}</h1>
+            <p className="text-gray-500 mb-8">{t('common.no_orders_message')}</p>
             <div className="flex justify-center gap-4">
               <Button asChild>
-                <Link href="/products">浏览商品</Link>
+                <Link href="/products">{t('common.browse_products')}</Link>
               </Button>
               <Button asChild variant="outline">
                 <Link href="/">
                   <Home className="mr-2 h-4 w-4" />
-                  返回首页
+                  {t('common.return_to_home')}
                 </Link>
               </Button>
             </div>
@@ -113,7 +115,7 @@ export default function OrdersPage() {
       <Navbar />
       <main className="flex-1 container mx-auto px-4 py-12">
         <div className="max-w-3xl mx-auto">
-          <h1 className="text-2xl font-semibold mb-8">我的订单</h1>
+          <h1 className="text-2xl font-semibold mb-8">{t('common.my_orders')}</h1>
           <div className="space-y-6">
             {orders.map(order => (
               <Link
@@ -127,7 +129,7 @@ export default function OrdersPage() {
                     {getStatusIcon(order.status)}
                     <div>
                       <div className="text-base font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
-                        订单 #{order.id}
+                        {t('common.order')} #{order.id}
                       </div>
                       <div className="text-xs text-yellow-600 font-medium flex items-center gap-1 mt-0.5">
                         {getStatusText(order.status)}
@@ -157,7 +159,9 @@ export default function OrdersPage() {
                         <div className="font-medium text-gray-900 truncate">
                           {item.name || item.product?.name}
                         </div>
-                        <div className="text-gray-500 text-xs mt-0.5">数量: {item.quantity}</div>
+                        <div className="text-gray-500 text-xs mt-0.5">
+                          {t('common.quantity')}: {item.quantity}
+                        </div>
                       </div>
                       <div className="font-semibold text-right text-gray-800 min-w-[60px]">
                         ¥{(item.price ?? item.product?.price ?? 0) * item.quantity}

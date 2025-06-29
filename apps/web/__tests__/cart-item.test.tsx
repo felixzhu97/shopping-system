@@ -42,7 +42,7 @@ describe('CartItem', () => {
     );
 
     expect(screen.getByText('测试商品')).toBeInTheDocument();
-    expect(screen.getByText('单价: ¥99.99')).toBeInTheDocument();
+    expect(screen.getByText('价格: ¥99.99')).toBeInTheDocument();
     expect(screen.getByText('¥199.98')).toBeInTheDocument(); // 2 * 99.99
   });
 

@@ -21,6 +21,8 @@ import {
   useCartError,
 } from '@/lib/store/cartStore';
 import { useToast } from '@/components/ui/use-toast';
+import { useTranslation } from 'react-i18next';
+
 // 加载状态的骨架屏组件
 const LoadingSkeleton = memo(() => (
   <div className="space-y-8">
@@ -74,21 +76,25 @@ const LoadingSkeleton = memo(() => (
 ));
 
 // 空购物车组件
-const EmptyCart = memo(() => (
-  <div className="bg-white rounded-2xl shadow-sm p-8 text-center">
-    <div className="w-16 h-16 mx-auto mb-4">
-      <ShoppingBag className="w-full h-full text-gray-400" />
+const EmptyCart = memo(() => {
+  const { t } = useTranslation();
+
+  return (
+    <div className="bg-white rounded-2xl shadow-sm p-8 text-center">
+      <div className="w-16 h-16 mx-auto mb-4">
+        <ShoppingBag className="w-full h-full text-gray-400" />
+      </div>
+      <h2 className="text-xl font-medium text-gray-900 mb-2">{t('common.your_cart_is_empty')}</h2>
+      <p className="text-gray-600 mb-6">{t('common.please_add_products_to_cart')}</p>
+      <Link href="/products">
+        <Button className="rounded-full">
+          {t('common.browse_products')}
+          <ArrowRight className="ml-2 h-4 w-4" />
+        </Button>
+      </Link>
     </div>
-    <h2 className="text-xl font-medium text-gray-900 mb-2">您的购物袋是空的</h2>
-    <p className="text-gray-600 mb-6">快去挑选一些商品吧！</p>
-    <Link href="/products">
-      <Button className="rounded-full">
-        浏览商品
-        <ArrowRight className="ml-2 h-4 w-4" />
-      </Button>
-    </Link>
-  </div>
-));
+  );
+});
 
 // 订单摘要组件
 const OrderSummary = memo(function OrderSummary({
@@ -104,28 +110,32 @@ const OrderSummary = memo(function OrderSummary({
   total: number;
   onCheckout: () => void;
 }) {
+  const { t } = useTranslation();
+
   return (
     <div className="bg-white rounded-2xl shadow-sm p-6 md:p-8">
-      <h2 className="font-medium text-lg mb-6">订单摘要</h2>
+      <h2 className="font-medium text-lg mb-6">{t('common.order_summary')}</h2>
       <div className="space-y-4">
         <div className="flex justify-between text-gray-600">
-          <span>小计</span>
+          <span>{t('common.subtotal')}</span>
           <span>¥{subtotal.toFixed(2)}</span>
         </div>
         <div className="flex justify-between text-gray-600">
-          <span>运费</span>
+          <span>{t('common.shipping')}</span>
           <span className={shipping === 0 ? 'text-green-600' : ''}>
-            {shipping === 0 ? '免费' : `¥${shipping.toFixed(2)}`}
+            {shipping === 0 ? t('common.free') : `¥${shipping.toFixed(2)}`}
           </span>
         </div>
-        {shipping === 0 && <div className="text-xs text-green-600 -mt-2">您已获得免费配送</div>}
+        {shipping === 0 && (
+          <div className="text-xs text-green-600 -mt-2">{t('common.you_have_free_shipping')}</div>
+        )}
         <div className="flex justify-between text-gray-600">
-          <span>税费</span>
+          <span>{t('common.tax')}</span>
           <span>¥{tax.toFixed(2)}</span>
         </div>
         <Separator />
         <div className="flex justify-between font-medium text-lg">
-          <span>总计</span>
+          <span>{t('common.total')}</span>
           <span>¥{total.toFixed(2)}</span>
         </div>
 
@@ -135,17 +145,15 @@ const OrderSummary = memo(function OrderSummary({
             onClick={onCheckout}
           >
             <CreditCard className="mr-2 h-4 w-4" />
-            前往结算
+            {t('common.checkout')}
           </Button>
 
           <div className="bg-gray-50 p-4 rounded-xl text-sm">
             <div className="flex items-start">
               <Package className="h-5 w-5 text-gray-700 mr-2 mt-0.5 flex-shrink-0" />
               <div>
-                <p className="font-medium text-gray-900">配送说明</p>
-                <p className="text-gray-600 mt-1">
-                  订单满200元即可享受免费配送服务。我们承诺在3-5个工作日内送达。
-                </p>
+                <p className="font-medium text-gray-900">{t('common.shipping_description')}</p>
+                <p className="text-gray-600 mt-1">{t('common.order_over_200_free_shipping')}</p>
               </div>
             </div>
           </div>
@@ -167,11 +175,13 @@ const CartList = memo(function CartList({
   onRemove: (id: string) => void;
   onClear: () => void;
 }) {
+  const { t } = useTranslation();
+
   return (
     <div className="bg-white rounded-2xl shadow-sm p-6 md:p-8 mb-8">
       <div className="flex items-center justify-between pb-6 border-b">
         <h2 className="font-medium text-lg">
-          商品清单 <span className="text-gray-500 ml-1">({items.length})</span>
+          {t('common.product_list')} <span className="text-gray-500 ml-1">({items.length})</span>
         </h2>
         <Button
           variant="ghost"
@@ -179,7 +189,7 @@ const CartList = memo(function CartList({
           onClick={onClear}
           className="text-sm text-gray-600 hover:text-gray-900"
         >
-          清空购物袋
+          {t('common.clear_cart')}
         </Button>
       </div>
 
@@ -198,15 +208,22 @@ const CartList = memo(function CartList({
 });
 
 // 页面头部组件
-const PageHeader = memo(() => (
-  <div className="flex items-center justify-between mb-8">
-    <h1 className="text-3xl font-semibold text-gray-900">购物袋</h1>
-    <Link href="/products" className="text-blue-600 hover:text-blue-800 text-sm flex items-center">
-      <ArrowLeft className="h-4 w-4 mr-1" />
-      继续购物
-    </Link>
-  </div>
-));
+const PageHeader = memo(() => {
+  const { t } = useTranslation();
+
+  return (
+    <div className="flex items-center justify-between mb-8">
+      <h1 className="text-3xl font-semibold text-gray-900">{t('common.cart')}</h1>
+      <Link
+        href="/products"
+        className="text-blue-600 hover:text-blue-800 text-sm flex items-center"
+      >
+        <ArrowLeft className="h-4 w-4 mr-1" />
+        {t('common.continue_shopping')}
+      </Link>
+    </div>
+  );
+});
 
 export default function CartPage() {
   const items = useCartItems();
@@ -217,12 +234,13 @@ export default function CartPage() {
   const error = useCartError();
   const { toast } = useToast();
   const router = useRouter();
+  const { t } = useTranslation();
 
   // 显示错误提示
   useEffect(() => {
     if (error) {
       toast({
-        title: '出错了',
+        title: t('common.error'),
         description: error,
         variant: 'destructive',
       });
@@ -244,8 +262,8 @@ export default function CartPage() {
   const handleCheckout = () => {
     if (items.length === 0) {
       toast({
-        title: '购物车为空',
-        description: '请先添加商品到购物车',
+        title: t('common.cart_is_empty'),
+        description: t('common.please_add_products_to_cart'),
         variant: 'destructive',
       });
       return;

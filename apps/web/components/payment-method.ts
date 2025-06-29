@@ -1,5 +1,7 @@
+import i18n from '@/i18n';
+
 export const paymentMethods = {
-  alipay: '支付宝',
-  wechat: '微信',
-  'credit-card': '信用卡',
+  alipay: i18n.t('common.alipay'),
+  wechat: i18n.t('common.wechat'),
+  'credit-card': i18n.t('common.credit_card'),
 };

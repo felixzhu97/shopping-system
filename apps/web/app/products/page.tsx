@@ -20,6 +20,7 @@ import { Product } from '@/lib/types';
 import { cn } from '@/lib/utils/utils';
 import { useProductStore } from '@/lib/store/productStore';
 import { ProductCardSkeleton } from '@/components/product-card-skeleton';
+import { useTranslation } from 'react-i18next';
 
 // 改造后的产品网格，以Apple Store风格展示
 function AppleStyleProductGrid({ products }: { products: Product[] }) {
@@ -82,34 +83,35 @@ function AppleStyleProductGrid({ products }: { products: Product[] }) {
 
 // 为每个类别添加一个水平标题组件
 function CategoryHeader({ category }: { category: string }) {
+  const { t } = useTranslation();
   const categoryInfo = {
     electronics: {
-      title: '电子产品',
-      description: '探索最新科技产品，体验科技带来的便利与乐趣',
+      title: t('common.electronics'),
+      description: t('common.electronics_description'),
       color: 'text-[#1d1d1f]',
       bgColor: 'bg-white',
     },
     clothing: {
-      title: '服装',
-      description: '时尚穿搭，展现个性，彰显您的独特魅力',
+      title: t('common.clothing'),
+      description: t('common.clothing_description'),
       color: 'text-[#1d1d1f]',
       bgColor: 'bg-white',
     },
     'home-kitchen': {
-      title: '家居厨房',
-      description: '打造舒适生活空间，让家更有温度',
+      title: t('common.home_kitchen'),
+      description: t('common.home_kitchen_description'),
       color: 'text-[#1d1d1f]',
       bgColor: 'bg-white',
     },
     books: {
-      title: '图书',
-      description: '知识的海洋，尽在掌握，开启智慧之门',
+      title: t('common.books'),
+      description: t('common.books_description'),
       color: 'text-[#1d1d1f]',
       bgColor: 'bg-white',
     },
     default: {
-      title: '全部商品',
-      description: '以最好的方式购买您喜爱的产品',
+      title: t('common.all_products'),
+      description: t('common.all_products_description'),
       color: 'text-[#1d1d1f]',
       bgColor: 'bg-white',
     },
@@ -137,6 +139,7 @@ function ClientProductsList() {
   const { productsByCategory, productsLoadedByCategory, isLoading, error, fetchProducts } =
     useProductStore();
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
+  const { t } = useTranslation();
 
   // 获取所有查询参数
   const category = searchParams.get('category') || 'all';
@@ -176,8 +179,8 @@ function ClientProductsList() {
   if (!isLoading && productsLoadedByCategory[category] && filteredProducts.length === 0) {
     return (
       <div className="col-span-full py-12 text-center">
-        <h3 className="text-lg font-medium mb-2">未找到产品</h3>
-        <p className="text-muted-foreground">请尝试调整您的搜索或筛选条件</p>
+        <h3 className="text-lg font-medium mb-2">{t('common.no_products_found')}</h3>
+        <p className="text-muted-foreground">{t('common.please_try_again')}</p>
       </div>
     );
   }
@@ -185,9 +188,9 @@ function ClientProductsList() {
   if (error) {
     return (
       <div className="py-12 text-center">
-        <div className="text-xl font-medium text-red-500 mb-2">加载出错</div>
+        <div className="text-xl font-medium text-red-500 mb-2">{t('common.loading_error')}</div>
         <p className="text-gray-500 mb-6">{error}</p>
-        <Button onClick={() => window.location.reload()}>重试</Button>
+        <Button onClick={() => window.location.reload()}>{t('common.try_again')}</Button>
       </div>
     );
   }
@@ -210,6 +213,7 @@ function ClientProductsPage() {
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
   const [currentSort, setCurrentSort] = useState('featured');
+  const { t } = useTranslation();
 
   // 获取所有查询参数
   const category = searchParams.get('category') || '';
@@ -245,16 +249,16 @@ function ClientProductsPage() {
         {/* 搜索和筛选工具栏 */}
         <div className="flex justify-end mb-8 px-6">
           <div className="flex gap-2 items-center">
-            <span className="text-sm text-gray-500">排序方式:</span>
+            <span className="text-sm text-gray-500">{t('common.sort_by')}:</span>
             <Select value={currentSort} onValueChange={handleSortChange} disabled={isPending}>
               <SelectTrigger className="w-40 rounded-full bg-white">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="featured">推荐</SelectItem>
-                <SelectItem value="price-asc">价格: 从低到高</SelectItem>
-                <SelectItem value="price-desc">价格: 从高到低</SelectItem>
-                <SelectItem value="rating">评分最高</SelectItem>
+                <SelectItem value="featured">{t('common.featured')}</SelectItem>
+                <SelectItem value="price-asc">{t('common.price_asc')}</SelectItem>
+                <SelectItem value="price-desc">{t('common.price_desc')}</SelectItem>
+                <SelectItem value="rating">{t('common.rating')}</SelectItem>
               </SelectContent>
             </Select>
           </div>

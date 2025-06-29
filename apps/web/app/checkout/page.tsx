@@ -33,9 +33,11 @@ import { getUserById, updateUser } from '@/lib/api/users';
 import { paymentMethods } from '@/components/payment-method';
 import { useCartClearCart, useCartItems } from '@/lib/store/cartStore';
 import { PaymentMethod } from 'shared';
+import { useTranslation } from 'react-i18next';
 
 // 订单摘要商品项组件
 const OrderSummaryItem = React.memo(function OrderSummaryItem({ item }: { item: any }) {
+  const { t } = useTranslation();
   if (!item.product) return null;
   return (
     <div key={item.productId} className="flex items-center space-x-4">
@@ -52,7 +54,9 @@ const OrderSummaryItem = React.memo(function OrderSummaryItem({ item }: { item: 
       </div>
       <div className="flex-1">
         <h3 className="font-medium">{item.product.name}</h3>
-        <p className="text-sm text-gray-500">数量: {item.quantity}</p>
+        <p className="text-sm text-gray-500">
+          {t('common.quantity')}: {item.quantity}
+        </p>
       </div>
       <p className="font-medium">¥{item.product.price * item.quantity}</p>
     </div>
@@ -79,7 +83,7 @@ export default function CheckoutPage() {
   const userId = useUserId();
   const items = useCartItems();
   const clearCart = useCartClearCart();
-
+  const { t } = useTranslation();
   // 2. 所有 useMemo hooks
   const { subtotal, shipping, tax, total } = useMemo(() => {
     const subtotal = items.reduce((total, item) => {
@@ -124,26 +128,26 @@ export default function CheckoutPage() {
 
     // 验证省份
     if (!selectedProvince) {
-      newErrors.province = '请选择省份';
+      newErrors.province = t('common.please_select_province');
       isValid = false;
     }
 
     // 验证城市
     if (!selectedCity) {
-      newErrors.city = '请选择城市';
+      newErrors.city = t('common.please_select_city');
       isValid = false;
     }
 
     if (!formData.address) {
-      newErrors.address = '请输入详细地址';
+      newErrors.address = t('common.please_enter_detailed_address');
       isValid = false;
     }
 
     if (!formData.postalCode) {
-      newErrors.postalCode = '请输入邮政编码';
+      newErrors.postalCode = t('common.please_enter_postal_code');
       isValid = false;
     } else if (!/^\d{6}$/.test(formData.postalCode || '')) {
-      newErrors.postalCode = '请输入有效的邮政编码';
+      newErrors.postalCode = t('common.please_enter_valid_postal_code');
       isValid = false;
     }
 
@@ -156,8 +160,8 @@ export default function CheckoutPage() {
 
     if (!validateForm()) {
       toast({
-        title: '表单验证失败',
-        description: '请检查并修正表单中的错误',
+        title: t('common.form_validation_failed'),
+        description: t('common.please_check_and_correct_the_form_errors'),
         variant: 'destructive',
       });
       return;
@@ -167,7 +171,7 @@ export default function CheckoutPage() {
 
     try {
       if (!userId) {
-        throw new Error('用户未登录');
+        throw new Error(t('common.user_not_logged_in'));
       }
 
       const orderItems = items.map(item => ({
@@ -207,8 +211,8 @@ export default function CheckoutPage() {
     } catch (error) {
       console.error('创建订单失败:', error);
       toast({
-        title: '创建订单失败',
-        description: error instanceof Error ? error.message : '请稍后重试',
+        title: t('common.create_order_failed'),
+        description: error instanceof Error ? error.message : t('common.please_try_again'),
         variant: 'destructive',
       });
     } finally {
@@ -284,7 +288,9 @@ export default function CheckoutPage() {
                     d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                   ></path>
                 </svg>
-                <div className="text-lg font-medium text-gray-700">订单提交中，请稍候...</div>
+                <div className="text-lg font-medium text-gray-700">
+                  {t('common.order_submitted')}
+                </div>
               </div>
             </div>
           )}
@@ -294,11 +300,11 @@ export default function CheckoutPage() {
               className="text-blue-600 hover:text-blue-800 text-sm flex items-center transition-colors"
             >
               <ChevronLeft className="h-4 w-4 mr-1" />
-              返回购物袋
+              {t('common.return_to_cart')}
             </Link>
           </div>
 
-          <h1 className="text-3xl font-semibold text-gray-900 mb-8">结算</h1>
+          <h1 className="text-3xl font-semibold text-gray-900 mb-8">{t('common.checkout')}</h1>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* 左侧表单 */}
@@ -307,23 +313,29 @@ export default function CheckoutPage() {
                 <div className="space-y-8">
                   {/* 配送信息 */}
                   <div className="bg-white rounded-2xl shadow-sm p-6 md:p-8">
-                    <h2 className="text-xl font-semibold mb-6">配送信息</h2>
+                    <h2 className="text-xl font-semibold mb-6">
+                      {t('common.shipping_information')}
+                    </h2>
                     <div className="space-y-6">
                       <div className="grid sm:grid-cols-2 gap-6">
                         <div className="space-y-2">
-                          <Label className="text-sm font-medium text-gray-700">姓名</Label>
+                          <Label className="text-sm font-medium text-gray-700">
+                            {t('common.name')}
+                          </Label>
                           <div className="flex items-center gap-2">
                             {formData.lastName} {formData.firstName}
                           </div>
                         </div>
                         <div className="space-y-2">
-                          <Label className="text-sm font-medium text-gray-700">手机号码</Label>
+                          <Label className="text-sm font-medium text-gray-700">
+                            {t('common.phone_number')}
+                          </Label>
                           <div className="flex items-center gap-2">{formData.phone}</div>
                         </div>
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="address" className="text-sm font-medium text-gray-700">
-                          详细地址
+                          {t('common.detailed_address')}
                         </Label>
                         <Input
                           id="address"
@@ -348,7 +360,7 @@ export default function CheckoutPage() {
                       <div className="grid sm:grid-cols-3 gap-6">
                         <div className="space-y-2">
                           <Label htmlFor="province" className="text-sm font-medium text-gray-700">
-                            省份
+                            {t('common.province')}
                           </Label>
                           <Select value={selectedProvince} onValueChange={handleProvinceChange}>
                             <SelectTrigger
@@ -361,7 +373,7 @@ export default function CheckoutPage() {
                                 !selectedProvince && 'text-muted-foreground'
                               )}
                             >
-                              <SelectValue placeholder="选择省份" />
+                              <SelectValue placeholder={t('common.select_province')} />
                             </SelectTrigger>
                             <SelectContent className="max-h-[300px]">
                               {provinces.map(prov => (
@@ -380,7 +392,7 @@ export default function CheckoutPage() {
                         </div>
                         <div className="space-y-2">
                           <Label htmlFor="city" className="text-sm font-medium text-gray-700">
-                            城市
+                            {t('common.city')}
                           </Label>
                           <Select
                             value={selectedCity}
@@ -398,7 +410,11 @@ export default function CheckoutPage() {
                               )}
                             >
                               <SelectValue
-                                placeholder={selectedProvince ? '选择城市' : '请先选择省份'}
+                                placeholder={
+                                  selectedProvince
+                                    ? t('common.select_city')
+                                    : t('common.select_province')
+                                }
                               />
                             </SelectTrigger>
                             <SelectContent className="max-h-[300px]">
@@ -418,7 +434,7 @@ export default function CheckoutPage() {
                         </div>
                         <div className="space-y-2">
                           <Label htmlFor="postalCode" className="text-sm font-medium text-gray-700">
-                            邮政编码
+                            {t('common.postal_code')}
                           </Label>
                           <Input
                             id="postalCode"
@@ -446,7 +462,7 @@ export default function CheckoutPage() {
 
                   {/* 支付方式 */}
                   <div className="bg-white rounded-2xl shadow-sm p-6 md:p-8">
-                    <h2 className="text-xl font-semibold mb-6">支付方式</h2>
+                    <h2 className="text-xl font-semibold mb-6">{t('common.payment_method')}</h2>
                     <div className="space-y-6">
                       <RadioGroup
                         defaultValue={formData.paymentMethod}
@@ -463,7 +479,7 @@ export default function CheckoutPage() {
                             htmlFor="credit-card"
                             className="flex-1 font-medium cursor-pointer"
                           >
-                            信用卡
+                            {t('common.credit_card')}
                           </Label>
                           <div className="flex space-x-2">
                             <div className="h-8 w-12 rounded bg-gradient-to-r from-blue-400 to-blue-600"></div>
@@ -515,12 +531,12 @@ export default function CheckoutPage() {
                             d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                           ></path>
                         </svg>
-                        处理中...
+                        {t('common.processing')}
                       </span>
                     ) : (
                       <span className="flex items-center justify-center">
                         <CreditCard className="mr-2 h-5 w-5" />
-                        提交订单
+                        {t('common.submit_order')}
                       </span>
                     )}
                   </Button>
@@ -531,7 +547,7 @@ export default function CheckoutPage() {
             {/* 右侧订单摘要 */}
             <div className="space-y-6">
               <div className="bg-white rounded-lg shadow-sm p-6">
-                <h2 className="text-lg font-semibold mb-4">订单摘要</h2>
+                <h2 className="text-lg font-semibold mb-4">{t('common.order_summary')}</h2>
                 <div className="space-y-4">
                   {items.map(item => (
                     <OrderSummaryItem key={item.productId} item={item} />
@@ -540,20 +556,20 @@ export default function CheckoutPage() {
                 <Separator className="my-4" />
                 <div className="space-y-2">
                   <div className="flex justify-between">
-                    <span>小计</span>
+                    <span>{t('common.subtotal')}</span>
                     <span>¥{subtotal}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span>运费</span>
-                    <span>{shipping === 0 ? '免费' : `¥${shipping}`}</span>
+                    <span>{t('common.shipping')}</span>
+                    <span>{shipping === 0 ? t('common.free') : `¥${shipping}`}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span>税费</span>
+                    <span>{t('common.tax')}</span>
                     <span>¥{tax.toFixed(2)}</span>
                   </div>
                   <Separator className="my-2" />
                   <div className="flex justify-between font-semibold">
-                    <span>总计</span>
+                    <span>{t('common.total')}</span>
                     <span>¥{total.toFixed(2)}</span>
                   </div>
                 </div>

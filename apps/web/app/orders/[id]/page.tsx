@@ -35,135 +35,154 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { paymentMethods } from '@/components/payment-method';
+import { useTranslation } from 'react-i18next';
 
 // 收货信息组件
 interface ShippingInfoProps {
   shippingAddress: Order['shippingAddress'];
 }
-const ShippingInfo = ({ shippingAddress }: ShippingInfoProps) => (
-  <div className="bg-white rounded-2xl shadow-sm p-6 hover:shadow-md transition-shadow">
-    <h2 className="text-lg font-semibold mb-4 flex items-center">
-      <Home className="h-5 w-5 mr-2 text-blue-600" />
-      收货信息
-    </h2>
-    <div className="space-y-3">
-      <div>
-        <div className="text-sm text-gray-500">收货人</div>
-        <div className="font-medium">{shippingAddress.fullName}</div>
-      </div>
-      <div>
-        <div className="text-sm text-gray-500">联系电话</div>
-        <div className="font-medium">{shippingAddress.phone}</div>
-      </div>
-      <div>
-        <div className="text-sm text-gray-500">收货地址</div>
-        <div className="font-medium">
-          {shippingAddress.address}, {shippingAddress.city} {shippingAddress.province},{' '}
-          {shippingAddress.postalCode}
+const ShippingInfo = ({ shippingAddress }: ShippingInfoProps) => {
+  const { t } = useTranslation();
+
+  return (
+    <div className="bg-white rounded-2xl shadow-sm p-6 hover:shadow-md transition-shadow">
+      <h2 className="text-lg font-semibold mb-4 flex items-center">
+        <Home className="h-5 w-5 mr-2 text-blue-600" />
+        {t('common.shipping_info')}
+      </h2>
+      <div className="space-y-3">
+        <div>
+          <div className="text-sm text-gray-500">{t('common.recipient')}</div>
+          <div className="font-medium">{shippingAddress.fullName}</div>
+        </div>
+        <div>
+          <div className="text-sm text-gray-500">{t('common.phone')}</div>
+          <div className="font-medium">{shippingAddress.phone}</div>
+        </div>
+        <div>
+          <div className="text-sm text-gray-500">{t('common.shipping_address')}</div>
+          <div className="font-medium">
+            {shippingAddress.address}, {shippingAddress.city} {shippingAddress.province},{' '}
+            {shippingAddress.postalCode}
+          </div>
         </div>
       </div>
     </div>
-  </div>
-);
+  );
+};
 
 // 支付信息组件
 interface PaymentInfoProps {
   paymentMethod: Order['paymentMethod'];
   createdAt: string;
 }
-const PaymentInfo = ({ paymentMethod, createdAt }: PaymentInfoProps) => (
-  <div className="bg-white rounded-2xl shadow-sm p-6 hover:shadow-md transition-shadow">
-    <h2 className="text-lg font-semibold mb-4 flex items-center">
-      <CreditCard className="h-5 w-5 mr-2 text-blue-600" />
-      支付信息
-    </h2>
-    <div className="space-y-3">
-      <div>
-        <div className="text-sm text-gray-500">支付方式</div>
-        <div className="font-medium">{paymentMethods[paymentMethod]}</div>
-      </div>
-      <div>
-        <div className="text-sm text-gray-500">支付状态</div>
-        <div className="font-medium text-green-600">已支付</div>
-      </div>
-      <div>
-        <div className="text-sm text-gray-500">支付时间</div>
-        <div className="font-medium">{new Date(createdAt).toLocaleString()}</div>
+const PaymentInfo = ({ paymentMethod, createdAt }: PaymentInfoProps) => {
+  const { t } = useTranslation();
+
+  return (
+    <div className="bg-white rounded-2xl shadow-sm p-6 hover:shadow-md transition-shadow">
+      <h2 className="text-lg font-semibold mb-4 flex items-center">
+        <CreditCard className="h-5 w-5 mr-2 text-blue-600" />
+        {t('common.payment_info')}
+      </h2>
+      <div className="space-y-3">
+        <div>
+          <div className="text-sm text-gray-500">{t('common.payment_method')}</div>
+          <div className="font-medium">{paymentMethods[paymentMethod]}</div>
+        </div>
+        <div>
+          <div className="text-sm text-gray-500">{t('common.payment_status')}</div>
+          <div className="font-medium text-green-600">{t('common.paid')}</div>
+        </div>
+        <div>
+          <div className="text-sm text-gray-500">{t('common.payment_time')}</div>
+          <div className="font-medium">{new Date(createdAt).toLocaleString()}</div>
+        </div>
       </div>
     </div>
-  </div>
-);
+  );
+};
 
 // 订单金额组件
 interface OrderAmountProps {
   totalAmount: number;
 }
-const OrderAmount = ({ totalAmount }: OrderAmountProps) => (
-  <div className="bg-white rounded-2xl shadow-sm p-6 hover:shadow-md transition-shadow">
-    <h2 className="text-lg font-semibold mb-4 flex items-center">
-      <Receipt className="h-5 w-5 mr-2 text-blue-600" />
-      订单金额
-    </h2>
-    <div className="space-y-3">
-      <div className="flex justify-between">
-        <span className="text-gray-500">商品总额</span>
-        <span className="font-medium">¥{totalAmount.toFixed(2)}</span>
-      </div>
-      <div className="flex justify-between">
-        <span className="text-gray-500">运费</span>
-        <span className="font-medium">¥0.00</span>
-      </div>
-      <div className="flex justify-between">
-        <span className="text-gray-500">优惠金额</span>
-        <span className="font-medium text-red-500">-¥0.00</span>
-      </div>
-      <div className="pt-3 border-t">
+const OrderAmount = ({ totalAmount }: OrderAmountProps) => {
+  const { t } = useTranslation();
+
+  return (
+    <div className="bg-white rounded-2xl shadow-sm p-6 hover:shadow-md transition-shadow">
+      <h2 className="text-lg font-semibold mb-4 flex items-center">
+        <Receipt className="h-5 w-5 mr-2 text-blue-600" />
+        {t('common.order_amount')}
+      </h2>
+      <div className="space-y-3">
         <div className="flex justify-between">
-          <span className="font-medium">实付金额</span>
-          <span className="font-bold text-xl text-blue-600">¥{totalAmount.toFixed(2)}</span>
+          <span className="text-gray-500">{t('common.product_total')}</span>
+          <span className="font-medium">¥{totalAmount.toFixed(2)}</span>
+        </div>
+        <div className="flex justify-between">
+          <span className="text-gray-500">{t('common.shipping_fee')}</span>
+          <span className="font-medium">¥0.00</span>
+        </div>
+        <div className="flex justify-between">
+          <span className="text-gray-500">{t('common.discount_amount')}</span>
+          <span className="font-medium text-red-500">-¥0.00</span>
+        </div>
+        <div className="pt-3 border-t">
+          <div className="flex justify-between">
+            <span className="font-medium">{t('common.total_amount_paid')}</span>
+            <span className="font-bold text-xl text-blue-600">¥{totalAmount.toFixed(2)}</span>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-);
+  );
+};
 
 // 商品清单组件
 import type { OrderItem } from '@/lib/types';
 interface OrderItemsListProps {
   items: OrderItem[];
 }
-const OrderItemsList = ({ items }: OrderItemsListProps) => (
-  <div className="divide-y divide-gray-100">
-    {items.map(item => (
-      <div
-        key={item.productId}
-        className="flex items-center gap-4 p-6 hover:bg-gray-50 transition-colors"
-      >
-        <div className="relative w-20 h-20 flex-shrink-0">
-          <Image
-            src={item.image || item.product?.image}
-            alt={item.name || item.product?.name}
-            className="object-cover rounded-xl"
-            wrapperClassName="w-20 h-20"
-            loading="lazy"
-          />
-        </div>
-        <div className="flex-1 min-w-0">
-          <div className="font-medium text-gray-900">{item.name || item.product?.name}</div>
-          <div className="text-sm text-gray-500 mt-1">
-            单价: ¥{(item.price ?? item.product?.price ?? 0).toFixed(2)}
+const OrderItemsList = ({ items }: OrderItemsListProps) => {
+  const { t } = useTranslation();
+
+  return (
+    <div className="divide-y divide-gray-100">
+      {items.map(item => (
+        <div
+          key={item.productId}
+          className="flex items-center gap-4 p-6 hover:bg-gray-50 transition-colors"
+        >
+          <div className="relative w-20 h-20 flex-shrink-0">
+            <Image
+              src={item.image || item.product?.image}
+              alt={item.name || item.product?.name}
+              className="object-cover rounded-xl"
+              wrapperClassName="w-20 h-20"
+              loading="lazy"
+            />
           </div>
-          <div className="text-sm text-gray-500">数量: {item.quantity}</div>
-        </div>
-        <div className="text-right">
-          <div className="font-semibold text-gray-900">
-            ¥{((item.price ?? item.product?.price ?? 0) * item.quantity).toFixed(2)}
+          <div className="flex-1 min-w-0">
+            <div className="font-medium text-gray-900">{item.name || item.product?.name}</div>
+            <div className="text-sm text-gray-500 mt-1">
+              {t('common.price')}: ¥{(item.price ?? item.product?.price ?? 0).toFixed(2)}
+            </div>
+            <div className="text-sm text-gray-500">
+              {t('common.quantity')}: {item.quantity}
+            </div>
+          </div>
+          <div className="text-right">
+            <div className="font-semibold text-gray-900">
+              ¥{((item.price ?? item.product?.price ?? 0) * item.quantity).toFixed(2)}
+            </div>
           </div>
         </div>
-      </div>
-    ))}
-  </div>
-);
+      ))}
+    </div>
+  );
+};
 
 export default function OrderDetailPage({ params }: { params: Usable<{ id: string }> }) {
   const [order, setOrder] = useState<Order | null>(null);
@@ -171,6 +190,7 @@ export default function OrderDetailPage({ params }: { params: Usable<{ id: strin
   const [isCancelling, setIsCancelling] = useState(false);
   const { toast } = useToast();
   const { id } = use(params);
+  const { t } = useTranslation();
 
   useEffect(() => {
     let isMounted = true;
@@ -183,8 +203,8 @@ export default function OrderDetailPage({ params }: { params: Usable<{ id: strin
         if (isMounted) {
           console.error('获取订单详情失败', error);
           toast({
-            title: '获取订单失败',
-            description: '请稍后重试',
+            title: t('common.get_order_failed'),
+            description: t('common.please_try_again_later'),
             variant: 'destructive',
           });
         }
@@ -210,15 +230,15 @@ export default function OrderDetailPage({ params }: { params: Usable<{ id: strin
     if (!order) return '';
     switch (order.status) {
       case 'pending':
-        return '待处理';
+        return t('common.pending');
       case 'processing':
-        return '处理中';
+        return t('common.processing');
       case 'shipped':
-        return '已发货';
+        return t('common.shipped');
       case 'delivered':
-        return '已送达';
+        return t('common.delivered');
       case 'cancelled':
-        return '已取消';
+        return t('common.cancelled');
       default:
         return '';
     }
@@ -232,13 +252,13 @@ export default function OrderDetailPage({ params }: { params: Usable<{ id: strin
       await cancelOrder(order.id);
       setOrder({ ...order, status: 'cancelled' });
       toast({
-        title: '订单已取消',
-        description: '您的订单已成功取消',
+        title: t('common.order_cancelled'),
+        description: t('common.your_order_has_been_successfully_cancelled'),
       });
     } catch (error) {
       toast({
-        title: '取消订单失败',
-        description: '请稍后重试',
+        title: t('common.cancel_order_failed'),
+        description: t('common.please_try_again_later'),
         variant: 'destructive',
       });
     } finally {
@@ -294,16 +314,18 @@ export default function OrderDetailPage({ params }: { params: Usable<{ id: strin
               <div className="flex justify-center mb-6">
                 <AlertCircle className="h-12 w-12 text-gray-400" />
               </div>
-              <h1 className="text-2xl font-semibold mb-4">订单不存在</h1>
-              <p className="text-gray-500 mb-8">您访问的订单不存在或已被删除</p>
+              <h1 className="text-2xl font-semibold mb-4">{t('common.order_not_found')}</h1>
+              <p className="text-gray-500 mb-8">
+                {t('common.the_order_you_visited_does_not_exist_or_has_been_deleted')}
+              </p>
               <div className="flex justify-center gap-4">
                 <Button asChild size="lg">
-                  <Link href="/orders">返回订单列表</Link>
+                  <Link href="/orders">{t('common.return_to_order_list')}</Link>
                 </Button>
                 <Button asChild variant="outline" size="lg">
                   <Link href="/">
                     <Home className="mr-2 h-4 w-4" />
-                    返回首页
+                    {t('common.return_to_home')}
                   </Link>
                 </Button>
               </div>
@@ -327,7 +349,7 @@ export default function OrderDetailPage({ params }: { params: Usable<{ id: strin
               <Button asChild variant="ghost" size="lg" className="rounded-full">
                 <Link href="/orders" className="flex items-center">
                   <ArrowLeft className="mr-2 h-5 w-5" />
-                  返回订单列表
+                  {t('common.return_to_order_list')}
                 </Link>
               </Button>
               {canCancel && (
@@ -339,19 +361,23 @@ export default function OrderDetailPage({ params }: { params: Usable<{ id: strin
                       className="rounded-full"
                       disabled={isCancelling}
                     >
-                      {isCancelling ? '取消中...' : '取消订单'}
+                      {isCancelling ? t('common.cancelling') : t('common.cancel_order')}
                     </Button>
                   </AlertDialogTrigger>
                   <AlertDialogContent>
                     <AlertDialogHeader>
-                      <AlertDialogTitle>确认取消订单？</AlertDialogTitle>
+                      <AlertDialogTitle>{t('common.confirm_cancel_order')}</AlertDialogTitle>
                       <AlertDialogDescription>
-                        取消订单后，该订单将无法恢复。如果您已经支付，退款将在3-5个工作日内退回到您的支付账户。
+                        {t(
+                          'common.cancelling_an_order_will_make_it_impossible_to_recover_it_if_you_have_paid_the_refund_will_be_returned_to_your_payment_account_within_3_to_5_working_days'
+                        )}
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                      <AlertDialogCancel>返回</AlertDialogCancel>
-                      <AlertDialogAction onClick={handleCancelOrder}>确认取消</AlertDialogAction>
+                      <AlertDialogCancel>{t('common.return')}</AlertDialogCancel>
+                      <AlertDialogAction onClick={handleCancelOrder}>
+                        {t('common.confirm_cancel_order')}
+                      </AlertDialogAction>
                     </AlertDialogFooter>
                   </AlertDialogContent>
                 </AlertDialog>
@@ -365,9 +391,11 @@ export default function OrderDetailPage({ params }: { params: Usable<{ id: strin
                   <div className="flex items-center gap-3">
                     {getStatusIcon(order.status)}
                     <div>
-                      <h1 className="font-semibold text-xl">订单 #{order.id}</h1>
+                      <h1 className="font-semibold text-xl">
+                        {t('common.order')} #{order.id}
+                      </h1>
                       <span className="text-sm opacity-90">
-                        下单时间：{new Date(order.createdAt).toLocaleString()}
+                        {t('common.order_time')}: {new Date(order.createdAt).toLocaleString()}
                       </span>
                     </div>
                   </div>
@@ -392,7 +420,7 @@ export default function OrderDetailPage({ params }: { params: Usable<{ id: strin
                       >
                         <Clock className="h-4 w-4" />
                       </div>
-                      <span className="text-xs">待处理</span>
+                      <span className="text-xs">{t('common.pending')}</span>
                     </div>
                     <div className="flex flex-col items-center">
                       <div
@@ -405,7 +433,7 @@ export default function OrderDetailPage({ params }: { params: Usable<{ id: strin
                       >
                         <Package className="h-4 w-4" />
                       </div>
-                      <span className="text-xs">处理中</span>
+                      <span className="text-xs">{t('common.processing')}</span>
                     </div>
                     <div className="flex flex-col items-center">
                       <div
@@ -418,7 +446,7 @@ export default function OrderDetailPage({ params }: { params: Usable<{ id: strin
                       >
                         <Truck className="h-4 w-4" />
                       </div>
-                      <span className="text-xs">已发货</span>
+                      <span className="text-xs">{t('common.shipped')}</span>
                     </div>
                     <div className="flex flex-col items-center">
                       <div
@@ -431,7 +459,7 @@ export default function OrderDetailPage({ params }: { params: Usable<{ id: strin
                       >
                         <CheckCircle className="h-4 w-4" />
                       </div>
-                      <span className="text-xs">已送达</span>
+                      <span className="text-xs">{t('common.delivered')}</span>
                     </div>
                   </div>
                 </div>
@@ -449,7 +477,7 @@ export default function OrderDetailPage({ params }: { params: Usable<{ id: strin
             <div className="bg-white rounded-2xl shadow-sm mt-6 overflow-hidden">
               <h2 className="text-lg font-semibold p-6 border-b flex items-center">
                 <Package className="h-5 w-5 mr-2 text-blue-600" />
-                商品清单
+                {t('common.product_list')}
               </h2>
               <OrderItemsList items={order.items} />
             </div>

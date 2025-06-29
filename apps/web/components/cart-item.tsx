@@ -9,6 +9,7 @@ import { CartItem as CartItemType } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Image } from '@/components/ui/image';
 import { cn } from '@/lib/utils/utils';
+import { useTranslation } from 'react-i18next';
 
 interface CartItemProps {
   item: CartItemType;
@@ -26,6 +27,8 @@ const QuantityControl = React.memo(function QuantityControl({
   isUpdating: boolean;
   onQuantityChange: (delta: number) => void;
 }) {
+  const { t } = useTranslation();
+
   return (
     <div className="inline-flex items-center border border-gray-300 rounded-full overflow-hidden">
       <Button
@@ -39,7 +42,7 @@ const QuantityControl = React.memo(function QuantityControl({
         disabled={isUpdating || quantity <= 1}
       >
         <Minus className="h-3 w-3" />
-        <span className="sr-only">减少数量</span>
+        <span className="sr-only">{t('common.decrease_quantity')}</span>
       </Button>
       <span className="w-10 text-center text-sm font-medium">
         {isUpdating ? <Skeleton className="h-4 w-4 mx-auto" /> : quantity}
@@ -52,7 +55,7 @@ const QuantityControl = React.memo(function QuantityControl({
         disabled={isUpdating}
       >
         <Plus className="h-3 w-3" />
-        <span className="sr-only">增加数量</span>
+        <span className="sr-only">{t('common.increase_quantity')}</span>
       </Button>
     </div>
   );
@@ -91,6 +94,7 @@ const CartItem = React.memo(function CartItem({ item, onUpdateQuantity, onRemove
   const [isRemoving, setIsRemoving] = useState(false);
   const [quantity, setQuantity] = useState(item.quantity);
   const [error, setError] = useState<string | null>(null);
+  const { t } = useTranslation();
 
   // 处理数量变化
   const handleQuantityChange = (delta: number) => {
@@ -104,7 +108,7 @@ const CartItem = React.memo(function CartItem({ item, onUpdateQuantity, onRemove
       setQuantity(newQuantity);
       onUpdateQuantity(item.productId, newQuantity);
     } catch (err) {
-      setError('更新数量失败');
+      setError(t('common.update_quantity_failed'));
       // 恢复原始数量
       setQuantity(item.quantity);
       console.error('更新购物车数量失败:', err);
@@ -121,7 +125,7 @@ const CartItem = React.memo(function CartItem({ item, onUpdateQuantity, onRemove
     try {
       onRemove(item.productId);
     } catch (err) {
-      setError('移除商品失败');
+      setError(t('common.remove_product_failed'));
       console.error('从购物车移除商品失败:', err);
       setIsRemoving(false);
     }
@@ -148,7 +152,9 @@ const CartItem = React.memo(function CartItem({ item, onUpdateQuantity, onRemove
             {item.product.name}
           </Link>
 
-          <div className="text-sm text-gray-500">单价: ¥{item.product.price.toFixed(2)}</div>
+          <div className="text-sm text-gray-500">
+            {t('common.price')}: ¥{item.product.price.toFixed(2)}
+          </div>
 
           <div className="flex flex-wrap items-center justify-between gap-2 pt-3">
             <QuantityControl
@@ -166,7 +172,9 @@ const CartItem = React.memo(function CartItem({ item, onUpdateQuantity, onRemove
                 disabled={isRemoving}
               >
                 <Trash2 className="h-4 w-4 mr-1" />
-                <span className="text-sm">{isRemoving ? '移除中...' : '移除'}</span>
+                <span className="text-sm">
+                  {isRemoving ? t('common.removing') : t('common.remove')}
+                </span>
               </Button>
 
               <div className="font-medium">¥{(item.product.price * quantity).toFixed(2)}</div>
