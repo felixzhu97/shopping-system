@@ -161,6 +161,8 @@ export default {
   alipay: '支付宝',
   wechat: '微信',
   credit_card: '信用卡',
+  select_province: '选择省份',
+  select_city: '选择城市',
 
   // Checkout Success
   thank_you_for_your_order: '谢谢您的订购',
@@ -179,6 +181,8 @@ export default {
   order_common_questions: '订单常见问题',
   view_help_center: '查看帮助中心',
   return_to_home: '返回首页',
+  we_have_sent_an_order_confirmation_email_to_your_email_address_containing_detailed_order_information:
+    '我们已向您的邮箱发送了订单确认邮件，包含详细的订单信息',
 
   // Cart
   please_add_products_to_cart: '请先添加商品到购物车',

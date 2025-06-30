@@ -166,6 +166,8 @@ export default {
   alipay: 'Alipay',
   wechat: 'Wechat',
   credit_card: 'Tarjeta de crédito',
+  select_province: 'Seleccionar provincia',
+  select_city: 'Seleccionar ciudad',
 
   // Checkout Success
   thank_you_for_your_order: 'Gracias por tu pedido',
@@ -184,6 +186,8 @@ export default {
   order_common_questions: 'Preguntas frecuentes de pedidos',
   view_help_center: 'Ver centro de ayuda',
   return_to_home: 'Volver a la página de inicio',
+  we_have_sent_an_order_confirmation_email_to_your_email_address_containing_detailed_order_information:
+    'Hemos enviado un correo electrónico de confirmación de pedido a tu dirección de correo electrónico que contiene información detallada del pedido',
 
   // Cart
   please_add_products_to_cart: 'Por favor, añade productos al carrito',
