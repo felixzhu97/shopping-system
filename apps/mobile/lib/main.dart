@@ -20,7 +20,7 @@ class ShoppingApp extends StatelessWidget {
         title: '购物系统',
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color(0xFF2563EB), // 蓝色主题
+            seedColor: const Color(0xFF2563EB),
             brightness: Brightness.light,
           ),
           useMaterial3: true,
@@ -120,133 +120,501 @@ class _HomeTabState extends State<HomeTab> {
       ),
       body: Consumer<ProductProvider>(
         builder: (context, productProvider, child) {
-          if (productProvider.isLoading) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          if (productProvider.error != null) {
-            return Center(
+          return RefreshIndicator(
+            onRefresh: () async {
+              await productProvider.fetchRecommendedProducts();
+            },
+            child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.error_outline, size: 64, color: Colors.red),
-                  const SizedBox(height: 16),
-                  Text(
-                    '加载失败: ${productProvider.error}',
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(fontSize: 16),
-                  ),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: () {
-                      productProvider.fetchRecommendedProducts();
-                    },
-                    child: const Text('重试'),
-                  ),
+                  // Hero 区域
+                  _buildHeroSection(),
+                  
+                  // 商店标语
+                  _buildStoreHeadline(),
+                  
+                  // 产品展示区域
+                  _buildProductShowcase(productProvider),
+                  
+                  // 促销活动区域
+                  _buildPromoSection(),
+                  
+                  // 快捷功能区域
+                  _buildQuickActions(),
                 ],
               ),
-            );
-          }
-
-          return SingleChildScrollView(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // 轮播图占位
-                Container(
-                  height: 200,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: Colors.grey[200],
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: const Center(
-                    child: Text(
-                      '轮播图区域',
-                      style: TextStyle(fontSize: 18, color: Colors.grey),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 24),
-
-                // 功能快捷入口
-                const Text(
-                  '快捷功能',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 16),
-                GridView.count(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  crossAxisCount: 4,
-                  crossAxisSpacing: 16,
-                  mainAxisSpacing: 16,
-                  children: [
-                    _buildQuickAction(Icons.local_offer, '优惠券'),
-                    _buildQuickAction(Icons.star, '收藏夹'),
-                    _buildQuickAction(Icons.history, '浏览记录'),
-                    _buildQuickAction(Icons.location_on, '收货地址'),
-                    _buildQuickAction(Icons.support_agent, '客服'),
-                    _buildQuickAction(Icons.settings, '设置'),
-                    _buildQuickAction(Icons.help, '帮助'),
-                    _buildQuickAction(Icons.info, '关于'),
-                  ],
-                ),
-                const SizedBox(height: 24),
-
-                // 推荐商品
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      '推荐商品',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        // TODO: 跳转到商品列表页
-                      },
-                      child: const Text('查看更多'),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                if (productProvider.recommendedProducts.isEmpty)
-                  const Center(
-                    child: Padding(
-                      padding: EdgeInsets.all(32.0),
-                      child: Text(
-                        '暂无推荐商品',
-                        style: TextStyle(fontSize: 16, color: Colors.grey),
-                      ),
-                    ),
-                  )
-                else
-                  GridView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          crossAxisSpacing: 16,
-                          mainAxisSpacing: 16,
-                          childAspectRatio: 0.75,
-                        ),
-                    itemCount: productProvider.recommendedProducts.length,
-                    itemBuilder: (context, index) {
-                      final product =
-                          productProvider.recommendedProducts[index];
-                      return _buildProductCard(product);
-                    },
-                  ),
-              ],
             ),
           );
         },
+      ),
+    );
+  }
+
+  // Hero 区域
+  Widget _buildHeroSection() {
+    return Container(
+      height: 300,
+      width: double.infinity,
+      decoration: const BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage('assets/hero-apple-style.jpg'),
+          fit: BoxFit.cover,
+        ),
+      ),
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Colors.transparent,
+              Colors.black.withValues(alpha: 0.3),
+            ],
+          ),
+        ),
+        child: const Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                '新品上市',
+                style: TextStyle(
+                  color: Colors.white70,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              SizedBox(height: 8),
+              Text(
+                '智能生活',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 48,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(height: 16),
+              Text(
+                '发现更多智能便捷的生活方式',
+                style: TextStyle(
+                  color: Colors.white70,
+                  fontSize: 18,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: 32),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _HeroButton(
+                    text: '了解更多',
+                    isPrimary: false,
+                  ),
+                  SizedBox(width: 16),
+                  _HeroButton(
+                    text: '立即购买',
+                    isPrimary: true,
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  // 商店标语
+  Widget _buildStoreHeadline() {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 24),
+      color: const Color(0xFFF5F5F7),
+      child: const Text(
+        '所有产品都经过精心设计，为您提供卓越的用户体验',
+        style: TextStyle(
+          fontSize: 20,
+          color: Color(0xFF1D1D1F),
+        ),
+        textAlign: TextAlign.center,
+      ),
+    );
+  }
+
+  // 产品展示区域
+  Widget _buildProductShowcase(ProductProvider productProvider) {
+    if (productProvider.isLoading) {
+      return const Center(
+        child: Padding(
+          padding: EdgeInsets.all(32.0),
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+
+    if (productProvider.error != null) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(32.0),
+          child: Column(
+            children: [
+              const Icon(Icons.error_outline, size: 64, color: Colors.red),
+              const SizedBox(height: 16),
+              Text(
+                '加载失败: ${productProvider.error}',
+                textAlign: TextAlign.center,
+                style: const TextStyle(fontSize: 16),
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () {
+                  productProvider.fetchRecommendedProducts();
+                },
+                child: const Text('重试'),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    if (productProvider.recommendedProducts.isEmpty) {
+      return const Center(
+        child: Padding(
+          padding: EdgeInsets.all(32.0),
+          child: Text(
+            '暂无推荐商品',
+            style: TextStyle(fontSize: 16, color: Colors.grey),
+          ),
+        ),
+      );
+    }
+
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // 主要产品展示（大卡片）
+          if (productProvider.recommendedProducts.isNotEmpty)
+            _buildHeroCard(productProvider.recommendedProducts[0]),
+          
+          const SizedBox(height: 16),
+          
+          // 双列产品展示
+          if (productProvider.recommendedProducts.length >= 3)
+            Row(
+              children: [
+                Expanded(
+                  child: _buildDualCard(productProvider.recommendedProducts[1]),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: _buildDualCard(productProvider.recommendedProducts[2]),
+                ),
+              ],
+            ),
+        ],
+      ),
+    );
+  }
+
+  // 主要产品卡片
+  Widget _buildHeroCard(Product product) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.black,
+        borderRadius: BorderRadius.circular(28),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.1),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              children: [
+                Text(
+                  product.name,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 32,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  product.description ?? '',
+                  style: const TextStyle(
+                    color: Colors.white70,
+                    fontSize: 18,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 24),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    _HeroButton(
+                      text: '了解更多',
+                      isPrimary: false,
+                    ),
+                    const SizedBox(width: 16),
+                    _HeroButton(
+                      text: '购买',
+                      isPrimary: true,
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          if (product.image != null && product.image!.isNotEmpty)
+            ClipRRect(
+              borderRadius: const BorderRadius.vertical(bottom: Radius.circular(28)),
+              child: Image.network(
+                product.image!,
+                width: double.infinity,
+                height: 200,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(
+                    height: 200,
+                    color: Colors.grey[300],
+                    child: const Icon(Icons.image, size: 64, color: Colors.grey),
+                  );
+                },
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  // 双列产品卡片
+  Widget _buildDualCard(Product product) {
+    return Container(
+      decoration: BoxDecoration(
+        color: const Color(0xFFFAFAFA),
+        borderRadius: BorderRadius.circular(28),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.1),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              children: [
+                Text(
+                  product.name,
+                  style: const TextStyle(
+                    color: Color(0xFF1D1D1F),
+                    fontSize: 24,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  product.description ?? '',
+                  style: const TextStyle(
+                    color: Color(0xFF1D1D1F),
+                    fontSize: 14,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 16),
+                TextButton(
+                  onPressed: () {
+                    // TODO: 跳转到产品详情
+                  },
+                  child: const Text(
+                    '了解更多 →',
+                    style: TextStyle(
+                      color: Colors.blue,
+                      fontSize: 14,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (product.image != null && product.image!.isNotEmpty)
+            ClipRRect(
+              borderRadius: const BorderRadius.vertical(bottom: Radius.circular(28)),
+              child: Image.network(
+                product.image!,
+                width: double.infinity,
+                height: 150,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(
+                    height: 150,
+                    color: Colors.grey[300],
+                    child: const Icon(Icons.image, size: 48, color: Colors.grey),
+                  );
+                },
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  // 促销活动区域
+  Widget _buildPromoSection() {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            '特别活动',
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(
+                child: _buildPromoCard(
+                  title: '母亲节礼物',
+                  description: '为您的母亲选择完美礼物',
+                  image: 'assets/mothers-day.png',
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: _buildPromoCard(
+                  title: '以旧换新',
+                  description: '新设备最高可享95折优惠',
+                  image: 'assets/trade-in.jpg',
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  // 促销卡片
+  Widget _buildPromoCard({
+    required String title,
+    required String description,
+    required String image,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        color: const Color(0xFFFAFAFA),
+        borderRadius: BorderRadius.circular(28),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.1),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    color: Color(0xFF1D1D1F),
+                    fontSize: 20,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  description,
+                  style: const TextStyle(
+                    color: Color(0xFF1D1D1F),
+                    fontSize: 14,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 16),
+                TextButton(
+                  onPressed: () {
+                    // TODO: 跳转到活动页面
+                  },
+                  child: const Text(
+                    '立即购买 →',
+                    style: TextStyle(
+                      color: Colors.blue,
+                      fontSize: 14,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Container(
+            height: 120,
+            decoration: BoxDecoration(
+              color: Colors.grey[300],
+              borderRadius: const BorderRadius.vertical(bottom: Radius.circular(28)),
+            ),
+            child: const Center(
+              child: Icon(Icons.image, size: 48, color: Colors.grey),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // 快捷功能区域
+  Widget _buildQuickActions() {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            '快捷功能',
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 16),
+          GridView.count(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            crossAxisCount: 4,
+            crossAxisSpacing: 16,
+            mainAxisSpacing: 16,
+            children: [
+              _buildQuickAction(Icons.local_offer, '优惠券'),
+              _buildQuickAction(Icons.star, '收藏夹'),
+              _buildQuickAction(Icons.history, '浏览记录'),
+              _buildQuickAction(Icons.location_on, '收货地址'),
+              _buildQuickAction(Icons.support_agent, '客服'),
+              _buildQuickAction(Icons.settings, '设置'),
+              _buildQuickAction(Icons.help, '帮助'),
+              _buildQuickAction(Icons.info, '关于'),
+            ],
+          ),
+        ],
       ),
     );
   }
@@ -272,75 +640,36 @@ class _HomeTabState extends State<HomeTab> {
       ],
     );
   }
+}
 
-  Widget _buildProductCard(Product product) {
-    return Card(
-      elevation: 2,
-      child: InkWell(
-        onTap: () {
-          // TODO: 跳转到商品详情页
-        },
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: Container(
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: Colors.grey[200],
-                  borderRadius: const BorderRadius.vertical(
-                    top: Radius.circular(8),
-                  ),
-                ),
-                child: product.image != null && product.image!.isNotEmpty
-                    ? ClipRRect(
-                        borderRadius: const BorderRadius.vertical(
-                          top: Radius.circular(8),
-                        ),
-                        child: Image.network(
-                          product.image!,
-                          fit: BoxFit.cover,
-                          width: double.infinity,
-                          errorBuilder: (context, error, stackTrace) {
-                            return const Center(
-                              child: Icon(
-                                Icons.image,
-                                size: 40,
-                                color: Colors.grey,
-                              ),
-                            );
-                          },
-                        ),
-                      )
-                    : const Center(
-                        child: Icon(Icons.image, size: 40, color: Colors.grey),
-                      ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    product.name,
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    '¥${product.price.toStringAsFixed(2)}',
-                    style: const TextStyle(
-                      color: Colors.red,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
+// Hero 按钮组件
+class _HeroButton extends StatelessWidget {
+  final String text;
+  final bool isPrimary;
+
+  const _HeroButton({
+    required this.text,
+    required this.isPrimary,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+      decoration: BoxDecoration(
+        color: isPrimary ? Colors.white : Colors.transparent,
+        border: Border.all(
+          color: Colors.white,
+          width: 1,
+        ),
+        borderRadius: BorderRadius.circular(25),
+      ),
+      child: Text(
+        text,
+        style: TextStyle(
+          color: isPrimary ? Colors.black : Colors.white,
+          fontSize: 16,
+          fontWeight: FontWeight.w500,
         ),
       ),
     );
