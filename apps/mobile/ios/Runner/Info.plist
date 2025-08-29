@@ -45,5 +45,16 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	
+	<!-- 开发期允许本地网络 HTTP 访问 -->
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsLocalNetworking</key>
+		<true/>
+	</dict>
+	
+	<!-- 本地网络访问权限说明 -->
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>需要在局域网内访问开发服务器</string>
 </dict>
 </plist>
