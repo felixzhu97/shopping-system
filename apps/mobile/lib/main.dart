@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'providers/product_provider.dart';
 import 'models/product.dart';
 import 'pages/product_detail_page.dart';
+import 'pages/categories_page.dart';
 
 void main() {
   runApp(const ShoppingApp());
@@ -46,7 +47,7 @@ class _ShoppingHomePageState extends State<ShoppingHomePage> {
 
   static const List<Widget> _pages = <Widget>[
     HomeTab(),
-    CategoriesTab(),
+    CategoriesPage(),
     CartTab(),
     ProfileTab(),
   ];
@@ -833,18 +834,6 @@ class _HeroButton extends StatelessWidget {
           fontWeight: FontWeight.w500,
         ),
       ),
-    );
-  }
-}
-
-class CategoriesTab extends StatelessWidget {
-  const CategoriesTab({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('商品分类')),
-      body: const Center(child: Text('分类页面 - 开发中')),
     );
   }
 }
