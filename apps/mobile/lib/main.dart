@@ -2,9 +2,11 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'providers/product_provider.dart';
+import 'providers/cart_provider.dart';
 import 'models/product.dart';
 import 'pages/product_detail_page.dart';
 import 'pages/categories_page.dart';
+import 'pages/cart_page.dart';
 
 void main() {
   runApp(const ShoppingApp());
@@ -18,6 +20,7 @@ class ShoppingApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => ProductProvider()..init()),
+        ChangeNotifierProvider(create: (_) => CartProvider()),
       ],
       child: MaterialApp(
         title: '购物系统',
@@ -48,7 +51,7 @@ class _ShoppingHomePageState extends State<ShoppingHomePage> {
   static const List<Widget> _pages = <Widget>[
     HomeTab(),
     CategoriesPage(),
-    CartTab(),
+    CartPage(),
     ProfileTab(),
   ];
 
@@ -834,18 +837,6 @@ class _HeroButton extends StatelessWidget {
           fontWeight: FontWeight.w500,
         ),
       ),
-    );
-  }
-}
-
-class CartTab extends StatelessWidget {
-  const CartTab({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('购物车')),
-      body: const Center(child: Text('购物车页面 - 开发中')),
     );
   }
 }

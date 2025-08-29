@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../models/product.dart';
+import '../providers/cart_provider.dart';
 import '../services/api_service.dart';
 
 class ProductDetailPage extends StatefulWidget {
@@ -102,8 +104,8 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     });
 
     try {
-      // TODO: 实现添加到购物车的逻辑
-      await Future.delayed(const Duration(seconds: 1)); // 模拟网络请求
+      final cartProvider = context.read<CartProvider>();
+      await cartProvider.addToCart(_product!, quantity: _quantity);
 
       setState(() {
         _addedToCart = true;
@@ -117,6 +119,14 @@ class _ProductDetailPageState extends State<ProductDetailPage>
             content: Text('${_product!.name} × $_quantity 已添加到购物车'),
             backgroundColor: Colors.green,
             duration: const Duration(seconds: 2),
+            action: SnackBarAction(
+              label: '查看购物车',
+              textColor: Colors.white,
+              onPressed: () {
+                // 切换到购物车页面
+                DefaultTabController.of(context).animateTo(2);
+              },
+            ),
           ),
         );
       }
