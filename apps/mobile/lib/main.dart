@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'providers/product_provider.dart';
@@ -128,18 +129,18 @@ class _HomeTabState extends State<HomeTab> {
               physics: const AlwaysScrollableScrollPhysics(),
               child: Column(
                 children: [
-                  // Hero 区域
-                  _buildHeroSection(),
-                  
+                  // 轮播图区域
+                  _buildCarouselSection(),
+
                   // 商店标语
                   _buildStoreHeadline(),
-                  
+
                   // 产品展示区域
                   _buildProductShowcase(productProvider),
-                  
+
                   // 促销活动区域
                   _buildPromoSection(),
-                  
+
                   // 快捷功能区域
                   _buildQuickActions(),
                 ],
@@ -151,78 +152,9 @@ class _HomeTabState extends State<HomeTab> {
     );
   }
 
-  // Hero 区域
-  Widget _buildHeroSection() {
-    return Container(
-      height: 300,
-      width: double.infinity,
-      decoration: const BoxDecoration(
-        image: DecorationImage(
-          image: AssetImage('assets/hero-apple-style.jpg'),
-          fit: BoxFit.cover,
-        ),
-      ),
-      child: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Colors.transparent,
-              Colors.black.withValues(alpha: 0.3),
-            ],
-          ),
-        ),
-        child: const Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                '新品上市',
-                style: TextStyle(
-                  color: Colors.white70,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              SizedBox(height: 8),
-              Text(
-                '智能生活',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 48,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              SizedBox(height: 16),
-              Text(
-                '发现更多智能便捷的生活方式',
-                style: TextStyle(
-                  color: Colors.white70,
-                  fontSize: 18,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(height: 32),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  _HeroButton(
-                    text: '了解更多',
-                    isPrimary: false,
-                  ),
-                  SizedBox(width: 16),
-                  _HeroButton(
-                    text: '立即购买',
-                    isPrimary: true,
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
+  // 轮播图区域
+  Widget _buildCarouselSection() {
+    return const CarouselWidget();
   }
 
   // 商店标语
@@ -232,10 +164,7 @@ class _HomeTabState extends State<HomeTab> {
       color: const Color(0xFFF5F5F7),
       child: const Text(
         '所有产品都经过精心设计，为您提供卓越的用户体验',
-        style: TextStyle(
-          fontSize: 20,
-          color: Color(0xFF1D1D1F),
-        ),
+        style: TextStyle(fontSize: 20, color: Color(0xFF1D1D1F)),
         textAlign: TextAlign.center,
       ),
     );
@@ -298,9 +227,9 @@ class _HomeTabState extends State<HomeTab> {
           // 主要产品展示（大卡片）
           if (productProvider.recommendedProducts.isNotEmpty)
             _buildHeroCard(productProvider.recommendedProducts[0]),
-          
+
           const SizedBox(height: 16),
-          
+
           // 双列产品展示
           if (productProvider.recommendedProducts.length >= 3)
             Row(
@@ -351,25 +280,16 @@ class _HomeTabState extends State<HomeTab> {
                 const SizedBox(height: 8),
                 Text(
                   product.description ?? '',
-                  style: const TextStyle(
-                    color: Colors.white70,
-                    fontSize: 18,
-                  ),
+                  style: const TextStyle(color: Colors.white70, fontSize: 18),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 24),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    _HeroButton(
-                      text: '了解更多',
-                      isPrimary: false,
-                    ),
+                    _HeroButton(text: '了解更多', isPrimary: false),
                     const SizedBox(width: 16),
-                    _HeroButton(
-                      text: '购买',
-                      isPrimary: true,
-                    ),
+                    _HeroButton(text: '购买', isPrimary: true),
                   ],
                 ),
               ],
@@ -377,7 +297,9 @@ class _HomeTabState extends State<HomeTab> {
           ),
           if (product.image != null && product.image!.isNotEmpty)
             ClipRRect(
-              borderRadius: const BorderRadius.vertical(bottom: Radius.circular(28)),
+              borderRadius: const BorderRadius.vertical(
+                bottom: Radius.circular(28),
+              ),
               child: Image.network(
                 product.image!,
                 width: double.infinity,
@@ -387,7 +309,11 @@ class _HomeTabState extends State<HomeTab> {
                   return Container(
                     height: 200,
                     color: Colors.grey[300],
-                    child: const Icon(Icons.image, size: 64, color: Colors.grey),
+                    child: const Icon(
+                      Icons.image,
+                      size: 64,
+                      color: Colors.grey,
+                    ),
                   );
                 },
               ),
@@ -442,10 +368,7 @@ class _HomeTabState extends State<HomeTab> {
                   },
                   child: const Text(
                     '了解更多 →',
-                    style: TextStyle(
-                      color: Colors.blue,
-                      fontSize: 14,
-                    ),
+                    style: TextStyle(color: Colors.blue, fontSize: 14),
                   ),
                 ),
               ],
@@ -453,7 +376,9 @@ class _HomeTabState extends State<HomeTab> {
           ),
           if (product.image != null && product.image!.isNotEmpty)
             ClipRRect(
-              borderRadius: const BorderRadius.vertical(bottom: Radius.circular(28)),
+              borderRadius: const BorderRadius.vertical(
+                bottom: Radius.circular(28),
+              ),
               child: Image.network(
                 product.image!,
                 width: double.infinity,
@@ -463,7 +388,11 @@ class _HomeTabState extends State<HomeTab> {
                   return Container(
                     height: 150,
                     color: Colors.grey[300],
-                    child: const Icon(Icons.image, size: 48, color: Colors.grey),
+                    child: const Icon(
+                      Icons.image,
+                      size: 48,
+                      color: Colors.grey,
+                    ),
                   );
                 },
               ),
@@ -482,10 +411,7 @@ class _HomeTabState extends State<HomeTab> {
         children: [
           const Text(
             '特别活动',
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-            ),
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 16),
           Row(
@@ -561,10 +487,7 @@ class _HomeTabState extends State<HomeTab> {
                   },
                   child: const Text(
                     '立即购买 →',
-                    style: TextStyle(
-                      color: Colors.blue,
-                      fontSize: 14,
-                    ),
+                    style: TextStyle(color: Colors.blue, fontSize: 14),
                   ),
                 ),
               ],
@@ -574,7 +497,9 @@ class _HomeTabState extends State<HomeTab> {
             height: 120,
             decoration: BoxDecoration(
               color: Colors.grey[300],
-              borderRadius: const BorderRadius.vertical(bottom: Radius.circular(28)),
+              borderRadius: const BorderRadius.vertical(
+                bottom: Radius.circular(28),
+              ),
             ),
             child: const Center(
               child: Icon(Icons.image, size: 48, color: Colors.grey),
@@ -642,15 +567,219 @@ class _HomeTabState extends State<HomeTab> {
   }
 }
 
+// 轮播图组件
+class CarouselWidget extends StatefulWidget {
+  const CarouselWidget({super.key});
+
+  @override
+  State<CarouselWidget> createState() => _CarouselWidgetState();
+}
+
+class _CarouselWidgetState extends State<CarouselWidget> {
+  final PageController _pageController = PageController();
+  int _currentPage = 0;
+  Timer? _timer;
+
+  final List<CarouselItem> _carouselItems = [
+    CarouselItem(
+      image: 'assets/hero-apple-style.jpg',
+      title: '新品上市',
+      subtitle: '智能生活',
+      description: '发现更多智能便捷的生活方式',
+      primaryButtonText: '立即购买',
+      secondaryButtonText: '了解更多',
+    ),
+    CarouselItem(
+      image: 'assets/hero_apple_event_september.jpg',
+      title: '秋季新品',
+      subtitle: '创新科技',
+      description: '体验最新科技带来的无限可能',
+      primaryButtonText: '立即购买',
+      secondaryButtonText: '了解更多',
+    ),
+    CarouselItem(
+      image: 'assets/promo_iphone_tradein.jpg',
+      title: '以旧换新',
+      subtitle: '优惠活动',
+      description: '新设备最高可享95折优惠',
+      primaryButtonText: '立即参与',
+      secondaryButtonText: '了解更多',
+    ),
+    CarouselItem(
+      image: 'assets/promo_macbook_air_avail.jpg',
+      title: 'MacBook Air',
+      subtitle: '轻薄便携',
+      description: '强大的性能，轻薄的设计',
+      primaryButtonText: '立即购买',
+      secondaryButtonText: '了解更多',
+    ),
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _startAutoPlay();
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  void _startAutoPlay() {
+    _timer = Timer.periodic(const Duration(seconds: 4), (timer) {
+      if (_currentPage < _carouselItems.length - 1) {
+        _pageController.nextPage(
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.easeInOut,
+        );
+      } else {
+        _pageController.animateToPage(
+          0,
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.easeInOut,
+        );
+      }
+    });
+  }
+
+  void _onPageChanged(int page) {
+    setState(() {
+      _currentPage = page;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 300,
+      child: Stack(
+        children: [
+          // 轮播图页面
+          PageView.builder(
+            controller: _pageController,
+            onPageChanged: _onPageChanged,
+            itemCount: _carouselItems.length,
+            itemBuilder: (context, index) {
+              return _buildCarouselPage(_carouselItems[index]);
+            },
+          ),
+          // 指示器
+          Positioned(
+            bottom: 20,
+            left: 0,
+            right: 0,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: List.generate(
+                _carouselItems.length,
+                (index) => Container(
+                  width: 8,
+                  height: 8,
+                  margin: const EdgeInsets.symmetric(horizontal: 4),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: _currentPage == index
+                        ? Colors.white
+                        : Colors.white.withValues(alpha: 0.5),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCarouselPage(CarouselItem item) {
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage(item.image),
+          fit: BoxFit.cover,
+        ),
+      ),
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Colors.transparent, Colors.black.withValues(alpha: 0.3)],
+          ),
+        ),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                item.title,
+                style: const TextStyle(
+                  color: Colors.white70,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                item.subtitle,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 48,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                item.description,
+                style: const TextStyle(color: Colors.white70, fontSize: 18),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 32),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _HeroButton(text: item.secondaryButtonText, isPrimary: false),
+                  const SizedBox(width: 16),
+                  _HeroButton(text: item.primaryButtonText, isPrimary: true),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// 轮播图数据模型
+class CarouselItem {
+  final String image;
+  final String title;
+  final String subtitle;
+  final String description;
+  final String primaryButtonText;
+  final String secondaryButtonText;
+
+  CarouselItem({
+    required this.image,
+    required this.title,
+    required this.subtitle,
+    required this.description,
+    required this.primaryButtonText,
+    required this.secondaryButtonText,
+  });
+}
+
 // Hero 按钮组件
 class _HeroButton extends StatelessWidget {
   final String text;
   final bool isPrimary;
 
-  const _HeroButton({
-    required this.text,
-    required this.isPrimary,
-  });
+  const _HeroButton({required this.text, required this.isPrimary});
 
   @override
   Widget build(BuildContext context) {
@@ -658,10 +787,7 @@ class _HeroButton extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
       decoration: BoxDecoration(
         color: isPrimary ? Colors.white : Colors.transparent,
-        border: Border.all(
-          color: Colors.white,
-          width: 1,
-        ),
+        border: Border.all(color: Colors.white, width: 1),
         borderRadius: BorderRadius.circular(25),
       ),
       child: Text(
