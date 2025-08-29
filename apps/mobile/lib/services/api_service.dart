@@ -52,18 +52,18 @@ class ApiService {
   }
 
   // 获取单个产品
-  Future<Product> getProductById(String id) async {
+  Future<Product?> getProductById(String id) async {
     try {
       final response = await _dio.get('${ApiConstants.products}/$id');
 
       if (response.statusCode == 200) {
         return Product.fromJson(response.data);
       } else {
-        throw Exception('获取产品详情失败: ${response.statusCode}');
+        return null;
       }
     } on DioException catch (e) {
       if (e.response?.statusCode == 404) {
-        throw Exception('产品不存在');
+        return null;
       }
       throw Exception('网络请求失败: ${e.message}');
     } catch (e) {

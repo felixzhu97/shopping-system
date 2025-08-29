@@ -1,9 +1,15 @@
 import 'dart:io';
 import 'app_config.dart';
+import 'package:flutter/foundation.dart';
 
 class ApiConstants {
   // 基础 URL - Android 模拟器特殊处理
   static String get baseUrl {
+    // 在web环境下直接返回配置的URL
+    if (kIsWeb) {
+      return AppConfig.apiUrl;
+    }
+
     // Android 模拟器访问宿主机要用 10.0.2.2
     if (Platform.isAndroid && AppConfig.apiUrl.contains('localhost')) {
       return AppConfig.apiUrl.replaceFirst('localhost', '10.0.2.2');

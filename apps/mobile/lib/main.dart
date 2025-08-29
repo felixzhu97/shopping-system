@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'providers/product_provider.dart';
 import 'models/product.dart';
+import 'pages/product_detail_page.dart';
 
 void main() {
   runApp(const ShoppingApp());
@@ -94,7 +95,9 @@ class _HomeTabState extends State<HomeTab> {
     // 页面加载时自动获取推荐产品
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
-        context.read<ProductProvider>().fetchRecommendedProducts();
+        final productProvider = context.read<ProductProvider>();
+        productProvider.init(); // 确保API服务初始化
+        productProvider.fetchRecommendedProducts();
       }
     });
   }
@@ -250,154 +253,186 @@ class _HomeTabState extends State<HomeTab> {
 
   // 主要产品卡片
   Widget _buildHeroCard(Product product) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.black,
-        borderRadius: BorderRadius.circular(28),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.1),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(24.0),
-            child: Column(
-              children: [
-                Text(
-                  product.name,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 32,
-                    fontWeight: FontWeight.w500,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  product.description ?? '',
-                  style: const TextStyle(color: Colors.white70, fontSize: 18),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 24),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    _HeroButton(text: '了解更多', isPrimary: false),
-                    const SizedBox(width: 16),
-                    _HeroButton(text: '购买', isPrimary: true),
-                  ],
-                ),
-              ],
+    return GestureDetector(
+      onTap: () {
+        if (product.id != null && product.id!.isNotEmpty) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ProductDetailPage(productId: product.id!),
             ),
-          ),
-          if (product.image != null && product.image!.isNotEmpty)
-            ClipRRect(
-              borderRadius: const BorderRadius.vertical(
-                bottom: Radius.circular(28),
-              ),
-              child: Image.network(
-                product.image!,
-                width: double.infinity,
-                height: 200,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return Container(
-                    height: 200,
-                    color: Colors.grey[300],
-                    child: const Icon(
-                      Icons.image,
-                      size: 64,
-                      color: Colors.grey,
+          );
+        }
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.black,
+          borderRadius: BorderRadius.circular(28),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.1),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: Column(
+                children: [
+                  Text(
+                    product.name,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 32,
+                      fontWeight: FontWeight.w500,
                     ),
-                  );
-                },
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    product.description ?? '',
+                    style: const TextStyle(color: Colors.white70, fontSize: 18),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 24),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      _HeroButton(text: '了解更多', isPrimary: false),
+                      const SizedBox(width: 16),
+                      _HeroButton(text: '购买', isPrimary: true),
+                    ],
+                  ),
+                ],
               ),
             ),
-        ],
+            if (product.image != null && product.image!.isNotEmpty)
+              ClipRRect(
+                borderRadius: const BorderRadius.vertical(
+                  bottom: Radius.circular(28),
+                ),
+                child: Image.network(
+                  product.image!,
+                  width: double.infinity,
+                  height: 200,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      height: 200,
+                      color: Colors.grey[300],
+                      child: const Icon(
+                        Icons.image,
+                        size: 64,
+                        color: Colors.grey,
+                      ),
+                    );
+                  },
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }
 
   // 双列产品卡片
   Widget _buildDualCard(Product product) {
-    return Container(
-      decoration: BoxDecoration(
-        color: const Color(0xFFFAFAFA),
-        borderRadius: BorderRadius.circular(28),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.1),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Column(
-              children: [
-                Text(
-                  product.name,
-                  style: const TextStyle(
-                    color: Color(0xFF1D1D1F),
-                    fontSize: 24,
-                    fontWeight: FontWeight.w500,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  product.description ?? '',
-                  style: const TextStyle(
-                    color: Color(0xFF1D1D1F),
-                    fontSize: 14,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 16),
-                TextButton(
-                  onPressed: () {
-                    // TODO: 跳转到产品详情
-                  },
-                  child: const Text(
-                    '了解更多 →',
-                    style: TextStyle(color: Colors.blue, fontSize: 14),
-                  ),
-                ),
-              ],
+    return GestureDetector(
+      onTap: () {
+        if (product.id != null && product.id!.isNotEmpty) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ProductDetailPage(productId: product.id!),
             ),
-          ),
-          if (product.image != null && product.image!.isNotEmpty)
-            ClipRRect(
-              borderRadius: const BorderRadius.vertical(
-                bottom: Radius.circular(28),
-              ),
-              child: Image.network(
-                product.image!,
-                width: double.infinity,
-                height: 150,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return Container(
-                    height: 150,
-                    color: Colors.grey[300],
-                    child: const Icon(
-                      Icons.image,
-                      size: 48,
-                      color: Colors.grey,
+          );
+        }
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          color: const Color(0xFFFAFAFA),
+          borderRadius: BorderRadius.circular(28),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.1),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                children: [
+                  Text(
+                    product.name,
+                    style: const TextStyle(
+                      color: Color(0xFF1D1D1F),
+                      fontSize: 24,
+                      fontWeight: FontWeight.w500,
                     ),
-                  );
-                },
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    product.description ?? '',
+                    style: const TextStyle(
+                      color: Color(0xFF1D1D1F),
+                      fontSize: 14,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 16),
+                  TextButton(
+                    onPressed: () {
+                      if (product.id != null && product.id!.isNotEmpty) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                ProductDetailPage(productId: product.id!),
+                          ),
+                        );
+                      }
+                    },
+                    child: const Text(
+                      '了解更多 →',
+                      style: TextStyle(color: Colors.blue, fontSize: 14),
+                    ),
+                  ),
+                ],
               ),
             ),
-        ],
+            if (product.image != null && product.image!.isNotEmpty)
+              ClipRRect(
+                borderRadius: const BorderRadius.vertical(
+                  bottom: Radius.circular(28),
+                ),
+                child: Image.network(
+                  product.image!,
+                  width: double.infinity,
+                  height: 150,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      height: 150,
+                      color: Colors.grey[300],
+                      child: const Icon(
+                        Icons.image,
+                        size: 48,
+                        color: Colors.grey,
+                      ),
+                    );
+                  },
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }

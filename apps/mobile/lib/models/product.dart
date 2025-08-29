@@ -4,14 +4,19 @@ part 'product.g.dart';
 
 @JsonSerializable()
 class Product {
-  @JsonKey(name: '_id')
+  @JsonKey(name: 'id')
   final String? id;
   final String name;
   final String? description;
   final double price;
+  final double? originalPrice;
   final String? image;
+  final List<String>? images;
   final String? category;
   final int? stock;
+  final bool? inStock;
+  final double? rating;
+  final int? reviewCount;
   final DateTime? createdAt;
   final DateTime? updatedAt;
 
@@ -20,9 +25,14 @@ class Product {
     required this.name,
     this.description,
     required this.price,
+    this.originalPrice,
     this.image,
+    this.images,
     this.category,
     this.stock,
+    this.inStock,
+    this.rating,
+    this.reviewCount,
     this.createdAt,
     this.updatedAt,
   });
@@ -36,9 +46,14 @@ class Product {
     String? name,
     String? description,
     double? price,
+    double? originalPrice,
     String? image,
+    List<String>? images,
     String? category,
     int? stock,
+    bool? inStock,
+    double? rating,
+    int? reviewCount,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
@@ -47,12 +62,38 @@ class Product {
       name: name ?? this.name,
       description: description ?? this.description,
       price: price ?? this.price,
+      originalPrice: originalPrice ?? this.originalPrice,
       image: image ?? this.image,
+      images: images ?? this.images,
       category: category ?? this.category,
       stock: stock ?? this.stock,
+      inStock: inStock ?? this.inStock,
+      rating: rating ?? this.rating,
+      reviewCount: reviewCount ?? this.reviewCount,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );
+  }
+
+  // 获取所有图片，包括主图片
+  List<String> getAllImages() {
+    final allImages = <String>[];
+    if (image != null && image!.isNotEmpty) {
+      allImages.add(image!);
+    }
+    if (images != null && images!.isNotEmpty) {
+      allImages.addAll(images!);
+    }
+    return allImages;
+  }
+
+  // 检查是否有库存
+  bool get hasStock => inStock ?? (stock ?? 0) > 0;
+
+  // 获取折扣百分比
+  double? get discountPercentage {
+    if (originalPrice == null || originalPrice! <= price) return null;
+    return ((originalPrice! - price) / originalPrice! * 100).roundToDouble();
   }
 
   @override
