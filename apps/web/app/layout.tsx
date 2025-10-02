@@ -4,6 +4,7 @@ import './globals.css';
 import ClientLayout from './ClientLayout';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/react';
+import { PostHogProvider } from '../components/PostHogProvider';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -16,9 +17,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="zh-CN">
       <body className={inter.className} suppressHydrationWarning>
-        <ClientLayout>{children}</ClientLayout>
-        <Analytics />
-        <SpeedInsights />
+        <PostHogProvider>
+          <ClientLayout>{children}</ClientLayout>
+          <Analytics />
+          <SpeedInsights />
+        </PostHogProvider>
       </body>
     </html>
   );
