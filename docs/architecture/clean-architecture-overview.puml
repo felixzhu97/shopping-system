@@ -7,13 +7,13 @@ title 整洁架构概览图
 
 ' 核心层次
 rectangle "整洁架构核心原则" {
-  component "依赖规则\nDependency Rule" as Rule {
-    note right
-      依赖只能从外层指向内层
-      内层不依赖外层
-    end note
-  }
+  component "依赖规则\nDependency Rule" as Rule
 }
+
+note right of Rule
+  依赖只能从外层指向内层
+  内层不依赖外层
+end note
 
 ' 层次结构
 rectangle "层次结构" {

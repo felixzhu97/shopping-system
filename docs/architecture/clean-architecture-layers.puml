@@ -98,11 +98,10 @@ CreateProductUC --> DTO : uses
 ProductEntity --> MoneyVO : uses
 ProductEntity --> Error : throws
 
-' 样式
-Controller -[#blue]->
-GetProductsUC -[#green]->
-RepoInterface -[#red]->
-ProductEntity
+' 样式（关键依赖路径）
+Controller -[#blue]-> GetProductsUC
+GetProductsUC -[#green]-> RepoInterface
+RepoInterface -[#red]-> ProductEntity
 
 @enduml
 
