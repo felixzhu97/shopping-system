@@ -1,0 +1,71 @@
+@startuml Clean Architecture Sequence Diagram - Get Products
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam sequenceArrowThickness 2
+skinparam roundcorner 10
+
+title 整洁架构序列图 - 获取商品列表
+
+actor User as user
+participant "HTTP Client" as client
+participant "ProductController\n(Infrastructure)" as controller
+participant "GetProductsUseCase\n(Application)" as usecase
+participant "IProductRepository\n(Domain Interface)" as repoInterface
+participant "ProductRepository\n(Infrastructure)" as repoImpl
+participant "ProductModel\n(MongoDB)" as model
+participant "Product Entity\n(Domain)" as entity
+
+user -> client: GET /api/products?category=electronics
+activate client
+
+client -> controller: HTTP Request
+activate controller
+
+controller -> usecase: execute({ category: "electronics" })
+activate usecase
+
+note right of usecase
+  1. 业务逻辑处理
+  2. 类别规范化
+  3. 调用仓储接口
+end note
+
+usecase -> usecase: normalizeCategory("electronics")
+usecase -> repoInterface: findByCategory("electronics")
+activate repoInterface
+
+repoInterface -> repoImpl: findByCategory("electronics")
+activate repoImpl
+
+repoImpl -> model: find({ category: "electronics" })
+activate model
+
+model --> repoImpl: ProductDocument[]
+deactivate model
+
+repoImpl -> repoImpl: map documents to entities
+repoImpl -> entity: new Product(...)
+activate entity
+
+entity --> repoImpl: Product[]
+deactivate entity
+
+repoImpl --> repoInterface: Product[]
+deactivate repoImpl
+
+repoInterface --> usecase: Product[]
+deactivate repoInterface
+
+usecase -> usecase: log result
+usecase --> controller: Product[]
+deactivate usecase
+
+controller -> controller: serialize response
+controller --> client: HTTP 200 + JSON
+deactivate controller
+
+client --> user: Product List
+deactivate client
+
+@enduml
+

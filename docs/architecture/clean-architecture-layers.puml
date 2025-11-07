@@ -1,0 +1,108 @@
+@startuml Clean Architecture Layers
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam componentStyle rectangle
+
+title 整洁架构层次结构图
+
+package "Presentation Layer\n(表示层)" {
+  component [ProductController] as Controller
+  component [ProductSerializer] as Serializer
+  note right of Controller
+    薄层，只负责
+    HTTP 请求/响应
+  end note
+}
+
+package "Infrastructure Layer\n(基础设施层)" {
+  package "HTTP" {
+    component [Express Server] as Server
+    component [Routes] as Routes
+    component [Middleware] as Middleware
+  }
+  
+  package "Persistence" {
+    component [ProductRepository\nImplementation] as RepoImpl
+    component [ProductModel\n(Mongoose)] as Model
+    component [ProductMapper] as Mapper
+  }
+  
+  package "Services" {
+    component [AuthService] as AuthService
+    component [EmailService] as EmailService
+  }
+  
+  note right of RepoImpl
+    实现 Domain 层
+    定义的接口
+  end note
+}
+
+package "Application Layer\n(应用层)" {
+  component [GetProductsUseCase] as GetProductsUC
+  component [CreateProductUseCase] as CreateProductUC
+  component [UpdateProductUseCase] as UpdateProductUC
+  component [DeleteProductUseCase] as DeleteProductUC
+  
+  component [ProductDto] as DTO
+  
+  note right of GetProductsUC
+    用例包含业务逻辑
+    协调 Domain 对象
+  end note
+}
+
+package "Domain Layer\n(领域层)" {
+  component [Product Entity] as ProductEntity
+  component [IProductRepository\n(Interface)] as RepoInterface
+  component [Money ValueObject] as MoneyVO
+  component [DomainError] as Error
+  
+  note right of ProductEntity
+    纯业务对象
+    无框架依赖
+  end note
+}
+
+' 依赖关系（从外到内）
+Controller --> GetProductsUC : uses
+Controller --> CreateProductUC : uses
+Controller --> UpdateProductUC : uses
+Controller --> DeleteProductUC : uses
+
+GetProductsUC --> RepoInterface : depends on
+CreateProductUC --> RepoInterface : depends on
+UpdateProductUC --> RepoInterface : depends on
+DeleteProductUseCase --> RepoInterface : depends on
+
+GetProductsUC --> ProductEntity : uses
+CreateProductUC --> ProductEntity : uses
+UpdateProductUC --> ProductEntity : uses
+DeleteProductUseCase --> ProductEntity : uses
+
+RepoImpl ..|> RepoInterface : implements
+RepoImpl --> Model : uses
+RepoImpl --> Mapper : uses
+Mapper --> ProductEntity : converts to/from
+
+Routes --> Controller : routes to
+Server --> Routes : serves
+Middleware --> Controller : protects
+
+Controller --> Serializer : uses
+Serializer --> ProductEntity : serializes
+
+GetProductsUC --> DTO : returns
+CreateProductUC --> DTO : uses
+
+ProductEntity --> MoneyVO : uses
+ProductEntity --> Error : throws
+
+' 样式
+Controller -[#blue]->
+GetProductsUC -[#green]->
+RepoInterface -[#red]->
+ProductEntity
+
+@enduml
+

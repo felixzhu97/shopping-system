@@ -1,0 +1,110 @@
+@startuml Clean Architecture Overview
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam componentStyle rectangle
+
+title 整洁架构概览图
+
+' 核心层次
+rectangle "整洁架构核心原则" {
+  component "依赖规则\nDependency Rule" as Rule {
+    note right
+      依赖只能从外层指向内层
+      内层不依赖外层
+    end note
+  }
+}
+
+' 层次结构
+rectangle "层次结构" {
+  
+  rectangle "外层 (Outer Layers)" #LightBlue {
+    component "Presentation Layer\n表示层" as Presentation
+    component "Infrastructure Layer\n基础设施层" as Infrastructure
+  }
+  
+  rectangle "内层 (Inner Layers)" #LightCoral {
+    component "Application Layer\n应用层" as Application
+    component "Domain Layer\n领域层" as Domain
+  }
+}
+
+' 各层职责
+rectangle "各层职责" {
+  
+  rectangle "Domain Layer" #LightCoral {
+    component "Entities\n实体" as Entities
+    component "Value Objects\n值对象" as ValueObjects
+    component "Repository Interfaces\n仓储接口" as RepoInterfaces
+    component "Domain Services\n领域服务接口" as DomainServices
+    
+    note right of Entities
+      业务对象
+      包含业务规则
+    end note
+  }
+  
+  rectangle "Application Layer" #LightYellow {
+    component "Use Cases\n用例" as UseCases
+    component "DTOs\n数据传输对象" as DTOs
+    component "Application Interfaces\n应用接口" as AppInterfaces
+    
+    note right of UseCases
+      实现业务用例
+      协调领域对象
+    end note
+  }
+  
+  rectangle "Infrastructure Layer" #LightGreen {
+    component "Repository Implementations\n仓储实现" as RepoImpl
+    component "HTTP Controllers\nHTTP控制器" as Controllers
+    component "Database Models\n数据库模型" as Models
+    component "External Services\n外部服务" as ExternalServices
+    
+    note right of RepoImpl
+      实现 Domain 层接口
+      处理框架相关代码
+    end note
+  }
+  
+  rectangle "Presentation Layer" #LightBlue {
+    component "Serializers\n序列化器" as Serializers
+    component "Validators\n验证器" as Validators
+    
+    note right of Serializers
+      格式化响应
+      处理请求验证
+    end note
+  }
+}
+
+' 依赖关系
+Domain <-- Application : depends on
+Application <-- Infrastructure : implements
+Infrastructure <-- Presentation : uses
+
+' 数据流
+Presentation --> Infrastructure : HTTP Request
+Infrastructure --> Application : calls UseCase
+Application --> Domain : uses Entity
+Domain --> Application : returns Entity
+Application --> Infrastructure : returns Result
+Infrastructure --> Presentation : HTTP Response
+
+' 关键特性
+rectangle "关键特性" {
+  component "可测试性\nTestability" as Testability
+  component "框架独立性\nFramework Independence" as FrameworkIndep
+  component "可维护性\nMaintainability" as Maintainability
+  component "可扩展性\nExtensibility" as Extensibility
+}
+
+note bottom
+  ✅ 业务逻辑在 Domain 和 Application 层
+  ✅ 可以独立测试业务逻辑（Mock Repository）
+  ✅ 可以轻松切换框架和数据库
+  ✅ 代码结构清晰，易于维护
+end note
+
+@enduml
+

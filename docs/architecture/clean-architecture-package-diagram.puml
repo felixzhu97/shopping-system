@@ -1,0 +1,240 @@
+@startuml Clean Architecture Package Diagram
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam packageStyle rectangle
+
+title 整洁架构包结构图
+
+package "apps/api/src" {
+  
+  package "domain" #LightCoral {
+    package "entities" {
+      [Product]
+      [User]
+      [Order]
+      [Cart]
+    }
+    
+    package "value-objects" {
+      [Money]
+      [Email]
+      [Address]
+    }
+    
+    package "repositories" {
+      interface "IProductRepository"
+      interface "IUserRepository"
+      interface "IOrderRepository"
+      interface "ICartRepository"
+    }
+    
+    package "services" {
+      interface "IAuthService"
+      interface "IPaymentService"
+    }
+  }
+  
+  package "application" #LightYellow {
+    package "use-cases" {
+      package "product" {
+        [GetProductsUseCase]
+        [GetProductByIdUseCase]
+        [CreateProductUseCase]
+        [UpdateProductUseCase]
+        [DeleteProductUseCase]
+      }
+      
+      package "user" {
+        [RegisterUserUseCase]
+        [LoginUserUseCase]
+        [ResetPasswordUseCase]
+      }
+      
+      package "cart" {
+        [AddToCartUseCase]
+        [RemoveFromCartUseCase]
+        [GetCartUseCase]
+      }
+      
+      package "order" {
+        [CreateOrderUseCase]
+        [GetOrderUseCase]
+        [UpdateOrderStatusUseCase]
+      }
+    }
+    
+    package "dto" {
+      package "product" {
+        [CreateProductDto]
+        [UpdateProductDto]
+      }
+      
+      package "user" {
+        [RegisterUserDto]
+        [LoginUserDto]
+      }
+    }
+    
+    package "interfaces" {
+      interface "ILogger"
+      interface "IEventBus"
+    }
+  }
+  
+  package "infrastructure" #LightGreen {
+    package "persistence" {
+      package "mongodb" {
+        package "repositories" {
+          [ProductRepository]
+          [UserRepository]
+          [OrderRepository]
+          [CartRepository]
+        }
+        
+        package "models" {
+          [ProductModel]
+          [UserModel]
+          [OrderModel]
+          [CartModel]
+        }
+        
+        package "mappers" {
+          [ProductMapper]
+          [UserMapper]
+          [OrderMapper]
+          [CartMapper]
+        }
+      }
+      
+      package "database" {
+        [Connection]
+      }
+    }
+    
+    package "http" {
+      package "express" {
+        package "controllers" {
+          [ProductController]
+          [UserController]
+          [OrderController]
+          [CartController]
+        }
+        
+        package "routes" {
+          [ProductRoutes]
+          [UserRoutes]
+          [OrderRoutes]
+          [CartRoutes]
+        }
+        
+        package "middleware" {
+          [AuthMiddleware]
+          [ErrorMiddleware]
+          [ValidationMiddleware]
+        }
+        
+        package "validators" {
+          [ProductValidators]
+          [UserValidators]
+          [OrderValidators]
+        }
+      }
+      
+      [Server]
+    }
+    
+    package "services" {
+      [AuthService]
+      [PaymentService]
+      [EmailService]
+    }
+    
+    package "logging" {
+      [Logger]
+    }
+  }
+  
+  package "presentation" #LightBlue {
+    package "serializers" {
+      [ProductSerializer]
+      [UserSerializer]
+      [ErrorSerializer]
+    }
+  }
+  
+  package "shared" {
+    package "errors" {
+      [DomainError]
+      [ValidationError]
+      [NotFoundError]
+    }
+    
+    package "types" {
+      [SharedTypes]
+    }
+    
+    package "utils" {
+      [Utils]
+    }
+  }
+  
+  package "config" {
+    [DatabaseConfig]
+    [ServerConfig]
+    [EnvironmentConfig]
+  }
+}
+
+' 依赖关系
+[ProductController] --> [GetProductsUseCase]
+[ProductController] --> [CreateProductUseCase]
+[ProductController] --> [UpdateProductUseCase]
+[ProductController] --> [DeleteProductUseCase]
+
+[GetProductsUseCase] --> [IProductRepository]
+[CreateProductUseCase] --> [IProductRepository]
+[UpdateProductUseCase] --> [IProductRepository]
+[DeleteProductUseCase] --> [IProductRepository]
+
+[GetProductsUseCase] --> [Product]
+[CreateProductUseCase] --> [Product]
+[UpdateProductUseCase] --> [Product]
+[DeleteProductUseCase] --> [Product]
+
+[ProductRepository] ..|> [IProductRepository]
+[ProductRepository] --> [ProductModel]
+[ProductRepository] --> [ProductMapper]
+[ProductMapper] --> [Product]
+
+[ProductController] --> [ProductSerializer]
+[ProductSerializer] --> [Product]
+
+[GetProductsUseCase] --> [ILogger]
+[Logger] ..|> [ILogger]
+
+[CreateProductUseCase] --> [CreateProductDto]
+[UpdateProductUseCase] --> [UpdateProductDto]
+
+[Product] --> [Money]
+[Product] --> [DomainError]
+
+note right of domain
+  领域层
+  最内层
+  无外部依赖
+end note
+
+note right of application
+  应用层
+  依赖 Domain
+  实现用例
+end note
+
+note right of infrastructure
+  基础设施层
+  最外层
+  实现接口
+end note
+
+@enduml
+
