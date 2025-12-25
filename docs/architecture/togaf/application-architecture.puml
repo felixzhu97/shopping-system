@@ -1,0 +1,132 @@
+@startuml
+title TOGAF 应用架构图 - 购物系统
+
+skinparam componentStyle rectangle
+skinparam packageStyle rectangle
+skinparam linetype ortho
+
+' Web前端应用系统
+package "Web前端应用系统" {
+    component [Web前端应用\nNext.js] as web_frontend
+    component [UI组件库\nReact Components] as ui_library
+    component [状态管理\nReact Hooks + Context] as state_mgmt
+    component [API客户端\nFetch/Axios] as api_client
+    
+    ' Web前端应用组件
+    component [商品页面] as products_page
+    component [购物车页面] as cart_page
+    component [结算页面] as checkout_page
+    component [订单页面] as orders_page
+    component [账户页面] as account_page
+    component [认证页面] as auth_pages
+}
+
+' 移动应用系统
+package "移动应用系统" {
+    component [移动应用\nFlutter] as mobile_frontend
+    component [移动服务层\nDart Services] as mobile_services
+    component [API客户端\nHTTP Client] as mobile_api_client
+}
+
+' API后端服务系统
+package "API后端服务系统" {
+    component [API服务器\nExpress.js] as api_server
+    component [路由层\nExpress Router] as routes_layer
+    component [中间件层\nExpress Middleware] as middleware_layer
+    component [控制器层\nTypeScript Controllers] as controllers_layer
+    component [服务层\nTypeScript Services] as services_layer
+    component [数据访问层\nMongoose Models] as data_access_layer
+    
+    ' API后端应用组件
+    component [用户路由] as users_route
+    component [商品路由] as products_route
+    component [订单路由] as orders_route
+    component [购物车路由] as cart_route
+    
+    component [用户控制器] as user_controller
+    component [商品控制器] as product_controller
+    component [订单控制器] as order_controller
+    component [购物车控制器] as cart_controller
+    
+    component [用户服务] as user_service
+    component [商品服务] as product_service
+    component [订单服务] as order_service
+    component [购物车服务] as cart_service
+}
+
+' 应用接口层
+package "应用接口层" {
+    interface "RESTful API\nHTTP/HTTPS" as rest_api
+    interface "认证接口\nJWT" as auth_api
+    interface "数据同步接口\nWebSocket/HTTP" as data_sync_api
+}
+
+' 外部系统集成
+cloud "支付网关\n第三方支付服务" as payment_gateway
+cloud "邮件服务\n邮件通知服务" as email_service
+
+' Web前端系统内部关系
+web_frontend --> ui_library : 使用
+web_frontend --> state_mgmt : 使用
+web_frontend --> api_client : 使用
+products_page --> api_client : 使用
+cart_page --> api_client : 使用
+checkout_page --> api_client : 使用
+orders_page --> api_client : 使用
+account_page --> api_client : 使用
+auth_pages --> api_client : 使用
+
+' 移动应用系统内部关系
+mobile_frontend --> mobile_services : 使用
+mobile_frontend --> mobile_api_client : 使用
+
+' API客户端到接口层
+api_client --> rest_api : 调用
+api_client --> auth_api : 调用
+mobile_api_client --> rest_api : 调用
+mobile_api_client --> auth_api : 调用
+
+' API后端系统内部关系
+rest_api --> api_server : 提供
+api_server --> routes_layer : 路由
+routes_layer --> middleware_layer : 通过
+middleware_layer --> controllers_layer : 调用
+controllers_layer --> services_layer : 调用
+services_layer --> data_access_layer : 调用
+
+' 路由到控制器
+users_route --> user_controller : 路由到
+products_route --> product_controller : 路由到
+orders_route --> order_controller : 路由到
+cart_route --> cart_controller : 路由到
+
+' 控制器到服务
+user_controller --> user_service : 调用
+product_controller --> product_service : 调用
+order_controller --> order_service : 调用
+cart_controller --> cart_service : 调用
+
+' 外部系统集成
+order_service --> payment_gateway : 集成
+user_service --> email_service : 集成
+
+note right of web_frontend
+  Web前端应用系统
+  基于Next.js框架
+  提供Web用户界面
+end note
+
+note right of api_server
+  API后端服务系统
+  基于Express.js框架
+  处理HTTP请求和业务逻辑
+end note
+
+note right of mobile_frontend
+  移动应用系统
+  基于Flutter框架
+  提供移动用户界面
+end note
+
+@enduml
+

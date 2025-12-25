@@ -1,0 +1,93 @@
+@startuml
+title TOGAF 业务架构图 - 购物系统
+
+skinparam componentStyle rectangle
+skinparam packageStyle rectangle
+skinparam actorStyle awesome
+skinparam linetype ortho
+
+' 业务角色和组织结构
+actor "顾客\n浏览和购买商品的最终用户" as customer
+actor "管理员\n管理商品、订单和用户的系统管理者" as admin
+
+' 业务能力域
+package "业务能力域" {
+    component [商品管理能力\n商品创建、更新、下架、分类管理] as product_mgmt
+    component [订单处理能力\n订单创建、处理、跟踪、完成] as order_mgmt
+    component [用户管理能力\n用户注册、认证、授权、资料管理] as user_mgmt
+    component [支付处理能力\n支付处理、支付验证、退款处理] as payment_mgmt
+    component [库存管理能力\n库存查询、库存更新、库存预警] as inventory_mgmt
+    component [购物车管理能力\n购物车添加、更新、删除、结算] as cart_mgmt
+}
+
+' 业务流程
+package "核心业务流程" {
+    component [购物流程\n浏览商品 → 添加购物车 → 结算 → 支付 → 订单确认] as shopping_process
+    component [订单管理流程\n订单创建 → 订单处理 → 订单配送 → 订单完成] as order_process
+    component [商品管理流程\n商品创建 → 商品上架 → 库存管理 → 商品下架] as product_process
+    component [用户认证流程\n注册 → 登录 → 授权 → 会话管理] as auth_process
+}
+
+' 业务服务
+package "业务服务层" {
+    component [商品浏览服务\n提供商品列表、搜索、筛选、详情查看] as product_service
+    component [购物车服务\n提供购物车添加、更新、删除、查询功能] as cart_service
+    component [订单服务\n提供订单创建、查询、状态更新、历史记录] as order_service
+    component [支付服务\n提供支付处理、支付验证、支付状态查询] as payment_service
+    component [用户服务\n提供用户注册、登录、资料管理、权限管理] as user_service
+}
+
+' 关系定义
+customer --> shopping_process : 执行
+customer --> cart_service : 使用
+customer --> product_service : 使用
+customer --> order_service : 使用
+customer --> payment_service : 使用
+customer --> user_service : 使用
+
+admin --> product_process : 执行
+admin --> order_process : 执行
+admin --> product_mgmt : 使用
+admin --> order_mgmt : 使用
+admin --> user_mgmt : 使用
+admin --> inventory_mgmt : 使用
+
+shopping_process --> product_service : 调用
+shopping_process --> cart_service : 调用
+shopping_process --> order_service : 调用
+shopping_process --> payment_service : 调用
+
+order_process --> order_service : 调用
+order_process --> inventory_mgmt : 调用
+
+product_process --> product_mgmt : 调用
+product_process --> inventory_mgmt : 调用
+
+auth_process --> user_service : 调用
+
+product_service ..> product_mgmt : 实现
+cart_service ..> cart_mgmt : 实现
+order_service ..> order_mgmt : 实现
+payment_service ..> payment_mgmt : 实现
+user_service ..> user_mgmt : 实现
+
+note right of customer
+  业务角色：顾客
+  主要职责：
+  - 浏览和购买商品
+  - 管理购物车
+  - 查看订单
+  - 完成支付
+end note
+
+note right of admin
+  业务角色：管理员
+  主要职责：
+  - 管理商品
+  - 处理订单
+  - 管理用户
+  - 管理库存
+end note
+
+@enduml
+
