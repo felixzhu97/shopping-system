@@ -1,0 +1,131 @@
+@startuml
+title 敏捷框架对比图
+
+skinparam componentStyle rectangle
+skinparam packageStyle rectangle
+skinparam linetype ortho
+
+component "敏捷方法论对比" as comparison #lightblue
+
+package "Scrum" as scrum_pkg {
+    component [特点] as scrum_features {
+        component [时间盒迭代（Sprint）]
+        component [固定角色（PO、SM、团队）]
+        component [仪式（规划、站会、评审、回顾）]
+        component [工件（Product Backlog、Sprint Backlog、增量）]
+    }
+
+    component [适用场景] as scrum_scenarios {
+        component [新产品开发]
+        component [需要结构化的团队]
+        component [变更频繁的项目]
+    }
+
+    component [优势] as scrum_advantages {
+        component [框架清晰]
+        component [角色明确]
+        component [易于实施]
+    }
+
+    component [挑战] as scrum_challenges {
+        component [需要专门的 Scrum Master]
+        component [固定时间盒可能不灵活]
+    }
+}
+
+package "看板" as kanban_pkg {
+    component [特点] as kanban_features {
+        component [可视化工作流]
+        component [限制在制品（WIP）]
+        component [拉动式系统]
+        component [持续交付]
+    }
+
+    component [适用场景] as kanban_scenarios {
+        component [运维和支持工作]
+        component [持续改进现有流程]
+        component [需要灵活性的团队]
+    }
+
+    component [优势] as kanban_advantages {
+        component [灵活性高]
+        component [无固定仪式]
+        component [渐进式改进]
+    }
+
+    component [挑战] as kanban_challenges {
+        component [缺乏结构指导]
+        component [需要高度自律]
+    }
+}
+
+package "极限编程（XP）" as xp_pkg {
+    component [特点] as xp_features {
+        component [工程实践（TDD、结对编程）]
+        component [客户协作]
+        component [小型频繁发布]
+        component [技术卓越]
+    }
+
+    component [适用场景] as xp_scenarios {
+        component [技术挑战大的项目]
+        component [客户可现场参与]
+        component [需要高质量代码]
+    }
+
+    component [优势] as xp_advantages {
+        component [高质量代码]
+        component [快速反馈]
+        component [技术债务少]
+    }
+
+    component [挑战] as xp_challenges {
+        component [需要现场客户]
+        component [实践要求高]
+    }
+}
+
+package "混合方法" as hybrid_pkg {
+    component [Scrum + 看板\n(Scrumban)] as scrumban
+    component [Scrum + XP] as scrumxp
+    component [看板 + XP] as kanbanxp
+}
+
+comparison --> scrum_pkg
+comparison --> kanban_pkg
+comparison --> xp_pkg
+
+scrum_pkg <--> kanban_pkg : 可结合使用
+scrum_pkg <--> xp_pkg : 可结合使用
+kanban_pkg <--> xp_pkg : 可结合使用
+
+scrum_pkg --> scrumban
+kanban_pkg --> scrumban
+scrum_pkg --> scrumxp
+xp_pkg --> scrumxp
+kanban_pkg --> kanbanxp
+xp_pkg --> kanbanxp
+
+note right of scrum_pkg
+  Scrum
+  - 迭代式开发
+  - 角色和仪式明确
+  - 适合新产品开发
+end note
+
+note right of kanban_pkg
+  看板
+  - 流程可视化
+  - 无固定时间盒
+  - 适合持续改进
+end note
+
+note right of xp_pkg
+  极限编程
+  - 工程实践丰富
+  - 客户高度参与
+  - 强调技术卓越
+end note
+
+@enduml
+

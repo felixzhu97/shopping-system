@@ -1,0 +1,119 @@
+@startuml
+title 敏捷团队结构图
+
+skinparam componentStyle rectangle
+skinparam packageStyle rectangle
+skinparam actorStyle awesome
+skinparam linetype ortho
+
+actor "产品负责人\nProduct Owner" as PO #lightgreen
+actor "Scrum Master" as SM #lightyellow
+
+package "跨职能开发团队\n(3-9人)" as team_pkg {
+    component "前端开发" as FE {
+        component [UI/UX开发]
+        component [前端测试]
+        component [性能优化]
+    }
+
+    component "后端开发" as BE {
+        component [API开发]
+        component [业务逻辑]
+        component [数据访问]
+    }
+
+    component "测试工程师" as QA {
+        component [功能测试]
+        component [自动化测试]
+        component [质量保证]
+    }
+
+    component "DevOps工程师" as DevOps {
+        component [持续集成]
+        component [部署自动化]
+        component [基础设施]
+    }
+
+    component "全栈开发" as FullStack {
+        component [前后端开发]
+        component [端到端测试]
+        component [问题解决]
+    }
+}
+
+package "团队特征" {
+    component [自组织\nSelf-organizing] as selforg
+    component [跨职能\nCross-functional] as crossfunc
+    component [协作\nCollaborative] as collab
+    component [持续学习\nContinuous Learning] as learning
+}
+
+package "外部支持" {
+    actor "利益相关者\nStakeholders" as Stakeholder
+    actor "用户\nUsers" as User
+    component [产品经理] as PM
+    component [技术负责人] as TechLead
+}
+
+' 角色关系
+PO --> team_pkg
+SM --> team_pkg
+
+PO <--> SM : 协作
+PO <--> Stakeholder : 沟通需求
+SM <--> team_pkg : 服务和支持
+
+team_pkg --> User : 交付价值
+
+' 团队内部协作
+FE <--> BE : 协作
+FE <--> QA : 协作
+BE <--> QA : 协作
+FullStack <--> FE : 协作
+FullStack <--> BE : 协作
+DevOps --> FE : 支持
+DevOps --> BE : 支持
+DevOps --> QA : 支持
+
+' 团队特征
+team_pkg --> selforg
+team_pkg --> crossfunc
+team_pkg --> collab
+team_pkg --> learning
+
+' 外部支持关系
+PM --> PO : 支持
+TechLead --> team_pkg : 技术指导
+Stakeholder --> PO : 提供需求
+
+note right of PO
+  产品负责人
+  - 单一决策者
+  - 管理 Product Backlog
+  - 代表利益相关者
+end note
+
+note right of SM
+  Scrum Master
+  - 团队教练
+  - 移除障碍
+  - 促进 Scrum 流程
+end note
+
+note right of team_pkg
+  开发团队特征：
+  - 自组织：自主决策如何工作
+  - 跨职能：具备完成工作所需的所有技能
+  - 协作：共同承担责任
+  - 持续学习：不断改进和成长
+end note
+
+note bottom of team_pkg
+  团队大小：
+  - 3-9 人为宜
+  - 太少：技能不足
+  - 太多：沟通复杂
+end note
+
+@enduml
+

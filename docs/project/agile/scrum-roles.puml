@@ -1,0 +1,79 @@
+@startuml
+title Scrum 角色职责图
+
+skinparam componentStyle rectangle
+skinparam packageStyle rectangle
+skinparam linetype ortho
+
+actor "产品负责人\nProduct Owner" as po #lightgreen
+actor "Scrum Master" as sm #lightyellow
+component "开发团队\nDevelopment Team" as team #lightblue
+
+package "产品负责人职责" {
+    component [管理 Product Backlog] as po1
+    component [确定优先级] as po2
+    component [澄清需求] as po3
+    component [接受或拒绝工作成果] as po4
+    component [与利益相关者沟通] as po5
+}
+
+package "Scrum Master 职责" {
+    component [促进 Scrum 流程] as sm1
+    component [移除障碍] as sm2
+    component [保护团队] as sm3
+    component [指导团队] as sm4
+    component [促进改进] as sm5
+}
+
+package "开发团队职责" {
+    component [交付增量] as t1
+    component [自我组织] as t2
+    component [跨职能协作] as t3
+    component [估算工作] as t4
+    component [持续改进] as t5
+}
+
+' 角色到职责的关系
+po --> po1
+po --> po2
+po --> po3
+po --> po4
+po --> po5
+
+sm --> sm1
+sm --> sm2
+sm --> sm3
+sm --> sm4
+sm --> sm5
+
+team --> t1
+team --> t2
+team --> t3
+team --> t4
+team --> t5
+
+' 角色之间的关系
+po <--> sm : 协作
+sm <--> team : 服务和支持
+po <--> team : 沟通需求
+
+note right of po
+  产品负责人是产品的单一决策者
+  对产品的成功负责
+  代表利益相关者的利益
+end note
+
+note right of sm
+  Scrum Master 是团队的教练
+  确保 Scrum 正确实施
+  帮助团队遵循 Scrum 规则
+end note
+
+note right of team
+  开发团队负责交付可工作的产品增量
+  通常 3-9 人
+  自组织、跨职能
+end note
+
+@enduml
+
