@@ -1,7 +1,7 @@
 @startuml
-!include ./c4-plantuml/C4_Context.puml
-!include ./c4-plantuml//C4_Container.puml
-!include ./c4-plantuml//C4_Component.puml
+!include ../c4-plantuml/C4_Context.puml
+!include ../c4-plantuml/C4_Container.puml
+!include ../c4-plantuml/C4_Component.puml
 
 LAYOUT_WITH_LEGEND()
 
