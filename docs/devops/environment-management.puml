@@ -1,0 +1,115 @@
+@startuml
+title 环境管理图
+
+skinparam component {
+    BackgroundColor lightyellow
+    BorderColor darkblue
+    FontSize 12
+}
+
+skinparam rectangle {
+    BackgroundColor lightblue
+    BorderColor darkblue
+}
+
+package "环境配置管理" {
+    rectangle "开发环境 (Development)" as DevEnv {
+        component "本地开发" as LocalDev
+        component "环境变量" as DevVars
+    }
+    
+    rectangle "测试环境 (Testing)" as TestEnv {
+        component "Vercel 测试部署" as VercelTest
+        component "环境变量" as TestVars
+    }
+    
+    rectangle "生产环境 (Production)" as ProdEnv {
+        component "Vercel 生产部署" as VercelProd
+        component "AWS Lambda 生产" as LambdaProd
+        component "环境变量" as ProdVars
+    }
+}
+
+note right of DevVars
+  开发环境变量：
+  • MONGODB_URI (本地)
+  • NODE_ENV=development
+  • JWT_SECRET (开发密钥)
+end note
+
+note right of TestVars
+  测试环境变量：
+  • MONGODB_URI (Atlas Test)
+  • NODE_ENV=test
+  • JWT_SECRET (测试密钥)
+  • API_URL (测试URL)
+end note
+
+note right of ProdVars
+  生产环境变量：
+  • MONGODB_URI (Atlas Prod)
+  • NODE_ENV=production
+  • JWT_SECRET (生产密钥)
+  • API_URL (生产URL)
+end note
+
+package "环境变量管理" {
+    component ".env.local" as EnvLocal
+    component ".env.example" as EnvExample
+    component "Vercel 环境变量" as VercelVars
+    component "AWS Lambda 环境变量" as LambdaVars
+    component "GitHub Secrets" as GitHubSecrets
+}
+
+package "数据管理" {
+    database "开发数据库" as DevDB
+    database "测试数据库" as TestDB
+    database "生产数据库" as ProdDB
+}
+
+' 环境变量流向
+EnvExample --> EnvLocal : 复制模板
+EnvLocal --> LocalDev : 本地使用
+GitHubSecrets --> VercelVars : CI/CD 注入
+GitHubSecrets --> LambdaVars : CI/CD 注入
+VercelVars --> VercelTest : 测试环境
+VercelVars --> VercelProd : 生产环境
+LambdaVars --> LambdaProd : 生产环境
+
+' 数据库连接
+LocalDev --> DevDB : 本地连接
+VercelTest --> TestDB : Atlas 连接
+VercelProd --> ProdDB : Atlas 连接
+LambdaProd --> ProdDB : Atlas 连接
+
+' 环境间关系
+DevEnv ..> TestEnv : 代码部署
+TestEnv ..> ProdEnv : 代码部署
+TestEnv ..> ProdEnv : 配置验证
+
+note right of DevEnv
+  开发环境特点：
+  - 本地运行
+  - 快速迭代
+  - 调试友好
+  - 使用本地数据库
+end note
+
+note right of TestEnv
+  测试环境特点：
+  - 模拟生产环境
+  - 自动化测试
+  - 集成测试
+  - 使用测试数据库
+end note
+
+note right of ProdEnv
+  生产环境特点：
+  - 高可用性
+  - 性能优化
+  - 安全加固
+  - 使用生产数据库
+end note
+
+@enduml
+

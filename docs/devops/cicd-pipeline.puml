@@ -1,0 +1,119 @@
+@startuml
+title CI/CD 流水线流程图
+
+skinparam activity {
+    BackgroundColor lightblue
+    BorderColor darkblue
+    FontSize 12
+}
+
+skinparam arrow {
+    Color darkblue
+}
+
+start
+
+:开发者提交代码;
+note right
+  提交到功能分支
+  feature/*, fix/*, etc.
+end note
+
+:推送到 GitHub;
+
+:触发 GitHub Actions;
+
+partition "代码检查阶段" {
+    :检出代码;
+    :设置 Node.js 环境;
+    :设置 PNPM 环境;
+    :安装依赖;
+    note right
+      使用 PNPM workspace
+      安装所有包依赖
+    end note
+}
+
+partition "构建阶段" {
+    :构建共享包 (packages/shared);
+    :构建 UI 包 (packages/ui);
+    :构建 API 应用 (apps/api);
+    :构建 Web 应用 (apps/web);
+    note right
+      使用 Turborepo
+      并行构建
+      远程缓存优化
+    end note
+}
+
+partition "测试阶段" {
+    :运行单元测试;
+    :运行集成测试;
+    :生成测试覆盖率报告;
+    note right
+      使用 Vitest
+      测试所有应用
+    end note
+}
+
+if (测试是否通过?) then (是)
+    if (分支类型?) then (feature/fix)
+        :代码审查;
+        note right
+          创建 Pull Request
+          等待审查批准
+        end note
+        if (审查是否通过?) then (是)
+            :合并到 develop 分支;
+            :触发测试环境部署;
+        else (否)
+            :返回修改;
+            stop
+        endif
+    elseif (develop 分支) then
+        :触发测试环境部署;
+    elseif (release 分支) then
+        :触发生产环境部署;
+    elseif (main 分支) then
+        :触发生产环境部署;
+    endif
+else (否)
+    :通知开发者;
+    :停止流水线;
+    stop
+endif
+
+partition "部署阶段" {
+    if (部署环境?) then (测试环境)
+        :部署到 Vercel 测试环境;
+        :部署 API 到测试环境;
+        note right
+          使用 Vercel Serverless Functions
+          或 AWS Lambda (test stage)
+        end note
+    elseif (生产环境) then
+        :部署到 Vercel 生产环境;
+        :部署 API 到生产环境;
+        note right
+          使用 Vercel Serverless Functions
+          或 AWS Lambda (prod stage)
+        end note
+        :配置 CDN;
+        :配置 SSL 证书;
+    endif
+}
+
+:运行部署后测试;
+
+if (部署是否成功?) then (是)
+    :发送部署成功通知;
+    :更新部署状态;
+    stop
+else (否)
+    :发送部署失败通知;
+    :触发回滚流程;
+    stop
+endif
+
+@enduml
+

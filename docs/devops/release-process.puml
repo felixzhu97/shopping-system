@@ -1,0 +1,132 @@
+@startuml
+title 发布流程图
+
+skinparam activity {
+    BackgroundColor lightblue
+    BorderColor darkblue
+    FontSize 12
+}
+
+skinparam arrow {
+    Color darkblue
+}
+
+start
+
+:功能开发开始;
+
+:从 master 创建功能分支;
+note right
+  分支命名规范：
+  - feature/xxx
+  - fix/xxx
+  - docs/xxx
+end note
+
+:本地开发和测试;
+
+:提交代码到功能分支;
+
+:推送到 GitHub;
+
+:创建 Pull Request;
+
+partition "代码审查阶段" {
+    :自动运行 CI 检查;
+    note right
+      - 代码格式检查
+      - 单元测试
+      - 构建验证
+    end note
+    
+    if (CI 是否通过?) then (是)
+        :等待代码审查;
+        if (审查是否通过?) then (是)
+            :批准合并;
+        else (否)
+            :返回修改;
+            stop
+        endif
+    else (否)
+        :修复问题;
+        stop
+    endif
+}
+
+if (目标分支?) then (feature)
+    :合并到 feature 分支;
+    :触发测试环境部署;
+elseif (master)
+    :合并到 master 分支;
+    :触发生产环境部署;
+endif
+
+partition "测试环境验证" {
+    :部署到测试环境;
+    :运行集成测试;
+    :运行端到端测试;
+    :性能测试;
+    :安全扫描;
+    
+    if (测试是否通过?) then (是)
+        :标记为可发布;
+    else (否)
+        :修复问题;
+        :重新测试;
+        stop
+    endif
+}
+
+partition "发布准备" {
+    if (发布类型?) then (常规发布)
+        :创建 release 分支;
+        :更新版本号;
+        :更新 CHANGELOG;
+        :创建 Release Tag;
+    elseif (热修复)
+        :从 master 创建 hotfix 分支;
+        :修复问题;
+        :更新版本号;
+        :创建 Hotfix Tag;
+    endif
+}
+
+partition "生产环境部署" {
+    :部署到生产环境;
+    :运行冒烟测试;
+    :监控系统状态;
+    
+    if (部署是否成功?) then (是)
+        :验证功能;
+        if (功能是否正常?) then (是)
+            :发布完成;
+            :发送通知;
+            stop
+        else (否)
+            :触发回滚;
+        endif
+    else (否)
+        :触发回滚;
+    endif
+}
+
+partition "回滚流程" {
+    :停止当前部署;
+    :回滚到上一个稳定版本;
+    :验证回滚成功;
+    :通知团队;
+    :记录问题;
+    :分析失败原因;
+    stop
+}
+
+partition "发布后" {
+    :监控生产环境;
+    :收集用户反馈;
+    :更新文档;
+    :归档发布记录;
+    stop
+}
+
+@enduml
+

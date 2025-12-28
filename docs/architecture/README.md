@@ -63,6 +63,7 @@ TOGAF（The Open Group Architecture Framework）是一种企业架构框架，�
 沃德利地图通过两个维度来描述系统：
 
 - **价值流（X轴）**: 从用户需求到基础设施的价值链
+
   - 用户需求：购买商品、管理账户等核心需求
   - 用户界面：Web应用、移动应用
   - 业务逻辑：订单处理、支付处理、商品管理
@@ -80,6 +81,7 @@ TOGAF（The Open Group Architecture Framework）是一种企业架构框架，�
 地图中包含两类组件：
 
 1. **业务能力组件**：
+
    - 用户认证与授权
    - 商品管理
    - 购物车管理
@@ -124,6 +126,3 @@ TOGAF（The Open Group Architecture Framework）是一种企业架构框架，�
 - [系统架构文档](../architecture/system-architecture.md) - 系统架构的详细说明
 - [产品愿景](../architecture/product-vision.md) - 产品目标和愿景
 - [API文档](../api/api-documentation.md) - API接口文档
-
-
-
