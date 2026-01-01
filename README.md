@@ -8,7 +8,7 @@
 shopping-system/
 ├── apps/
 │   ├── web/           # Next.js Web 前端应用
-│   ├── mobile/        # Flutter 移动应用
+│   ├── mobile/        # React Native 移动应用
 │   └── api/           # Express.js 后端 API 服务
 ├── packages/
 │   ├── ui/            # UI 组件库
@@ -40,11 +40,12 @@ shopping-system/
 - [PostHog](https://posthog.com/) - 产品分析
 
 ### 移动应用
-- [Flutter](https://flutter.dev/) - 跨平台移动应用框架
-- [Dart](https://dart.dev/) - 编程语言
-- [Provider](https://pub.dev/packages/provider) - 状态管理
-- [Dio](https://pub.dev/packages/dio) - HTTP 客户端
-- [Cached Network Image](https://pub.dev/packages/cached_network_image) - 图片缓存
+- [React Native](https://reactnative.dev/) - 跨平台移动应用框架
+- [Expo](https://expo.dev/) - React Native 开发平台
+- [TypeScript](https://www.typescriptlang.org/) - 类型系统
+- [Zustand](https://zustand-demo.pmnd.rs/) - 状态管理
+- [Axios](https://axios-http.com/) - HTTP 客户端
+- [Expo Router](https://docs.expo.dev/router/introduction/) - 文件系统路由
 
 ### 后端 API
 - [Express.js](https://expressjs.com/) - Node.js Web 框架
@@ -210,10 +211,10 @@ shopping-system/
 - PNPM >= 8.0.0
 
 #### 移动应用
-- Flutter SDK >= 3.8.0
-- Dart SDK >= 3.8.0
-- Android Studio / VS Code（推荐）
-- iOS 开发需要 macOS 和 Xcode
+- Node.js >= 18.0.0
+- PNPM >= 8.0.0
+- Expo CLI（通过 npm/yarn 全局安装）
+- Android Studio / Xcode（用于原生开发，可选）
 
 #### 后端 API
 - Node.js >= 18.0.0
@@ -238,8 +239,10 @@ pnpm install
 #### 仅安装移动应用依赖
 
 ```bash
-cd apps/mobile
-flutter pub get
+cd apps/react-native-app
+yarn install
+# 或
+pnpm install
 ```
 
 #### 仅安装后端 API 依赖
@@ -268,12 +271,12 @@ pnpm dev
 #### 仅启动移动应用
 
 ```bash
-cd apps/mobile
-flutter run
-# 或指定设备
-flutter run -d chrome  # Web
-flutter run -d ios     # iOS
-flutter run -d android # Android
+cd apps/react-native-app
+yarn start
+# 或指定平台
+yarn ios      # iOS
+yarn android  # Android
+yarn web      # Web
 ```
 
 #### 仅启动后端 API
@@ -302,10 +305,11 @@ pnpm build
 #### 构建移动应用
 
 ```bash
-cd apps/mobile
-flutter build apk        # Android APK
-flutter build ios        # iOS
-flutter build web        # Web
+cd apps/react-native-app
+# 使用 Expo 构建
+expo build:android    # Android APK
+expo build:ios      # iOS
+expo build:web         # Web
 ```
 
 #### 构建后端 API
@@ -335,9 +339,10 @@ pnpm test:coverage   # 覆盖率报告
 #### 运行移动应用测试
 
 ```bash
-cd apps/mobile
-flutter test
-flutter test --coverage  # 覆盖率报告
+cd apps/react-native-app
+yarn test
+yarn test:coverage   # 覆盖率报告
+yarn test:watchAll   # 监听模式
 ```
 
 #### 运行后端 API 测试
@@ -369,8 +374,8 @@ pnpm lint
 #### 检查移动应用代码
 
 ```bash
-cd apps/mobile
-flutter analyze
+cd apps/react-native-app
+yarn lint
 ```
 
 #### 检查后端 API 代码
@@ -480,7 +485,7 @@ ADMIN_SECRET=your_admin_secret_here
 
 ### 移动应用环境变量
 
-移动应用的环境变量通常在代码中配置，或通过构建时传入。详细配置请参考 [apps/mobile/README.md](apps/mobile/README.md)。
+移动应用的环境变量在 `apps/react-native-app/src/constants/config.ts` 中配置。详细配置请参考 [apps/react-native-app/README.md](apps/react-native-app/README.md)。
 
 **注意**: 
 - 所有敏感信息（如密钥、密码）不应提交到版本控制系统
@@ -491,7 +496,7 @@ ADMIN_SECRET=your_admin_secret_here
 
 - **Web 应用**: https://felixzhu.shop
 - **API 文档**: 访问后端 API 的 `/api-docs` 端点查看 Swagger 文档
-- **移动应用**: 通过 Flutter 构建后安装到设备或使用模拟器运行
+- **移动应用**: 通过 Expo 构建后安装到设备或使用 Expo Go 应用运行
 
 ## 贡献指南
 

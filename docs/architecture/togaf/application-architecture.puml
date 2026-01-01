@@ -23,9 +23,10 @@ package "Web前端应用系统" {
 
 ' 移动应用系统
 package "移动应用系统" {
-    component [移动应用\nFlutter] as mobile_frontend
-    component [移动服务层\nDart Services] as mobile_services
-    component [API客户端\nHTTP Client] as mobile_api_client
+    component [移动应用\nReact Native] as mobile_frontend
+    component [移动服务层\nTypeScript Services] as mobile_services
+    component [API客户端\nAxios] as mobile_api_client
+    component [状态管理\nZustand] as mobile_state_mgmt
 }
 
 ' API后端服务系统
@@ -79,6 +80,7 @@ auth_pages --> api_client : 使用
 ' 移动应用系统内部关系
 mobile_frontend --> mobile_services : 使用
 mobile_frontend --> mobile_api_client : 使用
+mobile_frontend --> mobile_state_mgmt : 使用
 
 ' API客户端到接口层
 api_client --> rest_api : 调用
@@ -124,7 +126,8 @@ end note
 
 note right of mobile_frontend
   移动应用系统
-  基于Flutter框架
+  基于React Native框架
+  使用Expo开发平台
   提供移动用户界面
 end note
 

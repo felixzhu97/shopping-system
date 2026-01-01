@@ -91,7 +91,7 @@ TOGAF（The Open Group Architecture Framework）是一种企业架构框架，�
 
 2. **技术栈组件**：
    - Next.js（Web框架）
-   - Flutter（移动框架）
+   - React Native（移动框架）
    - Express.js（API框架）
    - MongoDB（数据库）
    - Vercel（部署平台）

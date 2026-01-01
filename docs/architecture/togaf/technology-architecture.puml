@@ -21,8 +21,9 @@ package "后端技术平台" {
 }
 
 package "移动端技术平台" {
-    component [Flutter\n移动框架\n跨平台移动应用开发] as flutter
-    component [Dart\n编程语言\nFlutter开发语言] as dart
+    component [React Native\n移动框架\n跨平台移动应用开发] as react_native
+    component [Expo\n开发平台\nReact Native开发工具链] as expo
+    component [TypeScript\n类型系统\n类型安全、代码提示] as typescript_mobile
 }
 
 package "数据库技术平台" {
@@ -83,7 +84,8 @@ express --> typescript_api : 使用
 express --> mongoose : 使用
 mongoose --> mongodb : 连接
 
-flutter --> dart : 使用
+react_native --> expo : 使用
+react_native --> typescript_mobile : 使用
 
 mongodb_atlas --> mongodb : 提供
 

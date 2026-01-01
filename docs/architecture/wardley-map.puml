@@ -27,7 +27,7 @@ package "Custom-built（定制构建）" #LightGreen {
 ' Product（产品化阶段）- 可购买的产品和服务
 package "Product（产品化）" #LightYellow {
     component [Web前端应用\nNext.js + React] as web_app
-    component [移动应用\nFlutter] as mobile_app
+    component [移动应用\nReact Native] as mobile_app
     component [MongoDB数据库\n文档数据库] as mongodb
     component [Vercel部署平台\n无服务器部署] as vercel
     component [支付网关集成\n第三方支付服务] as payment_gateway
@@ -90,7 +90,7 @@ vercel --> cicd : 集成
 web_app --> ui_library : 使用
 web_app --> state_mgmt : 使用
 web_app --> typescript : 使用
-mobile_app --> typescript : 使用（Dart类似）
+mobile_app --> typescript : 使用
 api_layer --> typescript : 使用
 api_layer --> nodejs : 运行在
 api_layer --> http : 使用
