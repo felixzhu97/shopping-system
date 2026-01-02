@@ -7,13 +7,14 @@ import {
   ActivityIndicator,
   Alert,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { ThemedView, ThemedText, CartItem } from "@/src/components";
 import { useCartStore } from "@/src/store";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { Colors, Spacing, Shadow } from "@/src/theme";
 
 export default function CartScreen() {
+  const insets = useSafeAreaInsets();
   const {
     items,
     isLoading,
@@ -129,7 +130,10 @@ export default function CartScreen() {
               />
             )}
             keyExtractor={(item) => item.productId}
-            contentContainerStyle={styles.listContent}
+            contentContainerStyle={[
+              styles.listContent,
+              { paddingBottom: 20 }
+            ]}
           />
 
           <View style={styles.summary}>
@@ -210,6 +214,7 @@ const styles = StyleSheet.create({
   summary: {
     backgroundColor: "#fff",
     padding: Spacing.medium,
+    paddingBottom: Spacing.medium,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     ...Shadow.medium,

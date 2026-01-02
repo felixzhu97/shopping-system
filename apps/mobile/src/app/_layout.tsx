@@ -36,21 +36,16 @@ export default function RootLayout() {
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
       <StatusBar style="auto" translucent />
-      <SafeAreaView style={{ flex: 1 }} edges={["right", "bottom", "left"]}>
-        <BlurView
-          intensity={80}
-          tint={colorScheme === "dark" ? "dark" : "light"}
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            right: 0,
-            height: 100,
-            zIndex: 1000,
-          }}
-        />
+      <SafeAreaView style={{ flex: 1 }} edges={[]}>
         <Stack initialRouteName="(tabs)">
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen 
+            name="product/[id]" 
+            options={{ 
+              headerShown: false,
+              presentation: "card",
+            }} 
+          />
           <Stack.Screen name="+not-found" />
         </Stack>
       </SafeAreaView>

@@ -50,7 +50,7 @@ export function CategorySelector({
             >
               <MaterialIcons
                 name={category.icon as any}
-                size={32}
+                size={28}
                 color={isSelected ? "#fff" : category.color}
               />
               <ThemedText
@@ -71,27 +71,30 @@ export function CategorySelector({
 
 const styles = StyleSheet.create({
   container: {
-    height: 120,
-    paddingVertical: Spacing.medium,
+    paddingVertical: Spacing.small,
   },
   content: {
     paddingHorizontal: Spacing.medium,
-    gap: Spacing.small,
+    gap: Spacing.medium,
+    paddingVertical: Spacing.small,
   },
   categoryCard: {
-    width: 100,
+    width: 90,
+    minHeight: 100,
     backgroundColor: "#fff",
-    borderRadius: BorderRadius.large,
+    borderRadius: 16,
     alignItems: "center",
     justifyContent: "center",
     paddingVertical: Spacing.medium,
+    paddingHorizontal: Spacing.small,
     ...Shadow.small,
   },
   categoryName: {
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: "500",
     marginTop: Spacing.small,
     textAlign: "center",
+    lineHeight: 18,
   },
 });
 

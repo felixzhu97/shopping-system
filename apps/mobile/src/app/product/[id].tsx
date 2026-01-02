@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
 import {
   View,
   ScrollView,
@@ -6,9 +6,9 @@ import {
   ActivityIndicator,
   TouchableOpacity,
   Alert,
-} from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { useLocalSearchParams, useRouter } from "expo-router";
+} from 'react-native';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import {
   ThemedView,
   ThemedText,
@@ -16,24 +16,24 @@ import {
   QuantitySelector,
   PriceDisplay,
   ProductCard,
-} from "@/src/components";
-import { useProductStore, useCartStore } from "@/src/store";
-import { Product, ProductHelpers } from "@/src/types";
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import { Colors, Spacing, Shadow, BorderRadius } from "@/src/theme";
+} from '@/src/components';
+import { useProductStore, useCartStore } from '@/src/store';
+import { Product, ProductHelpers } from '@/src/types';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { Colors, Spacing, Shadow, BorderRadius } from '@/src/theme';
 
 export default function ProductDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const [product, setProduct] = useState<Product | null>(null);
   const [quantity, setQuantity] = useState(1);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
-  const [activeTab, setActiveTab] = useState<"details" | "shipping" | "reviews">("details");
+  const [activeTab, setActiveTab] = useState<'details' | 'shipping' | 'reviews'>('details');
   const [isAddToCartLoading, setIsAddToCartLoading] = useState(false);
   const [addedToCart, setAddedToCart] = useState(false);
 
-  const { fetchProductById, recommendedProducts, fetchRecommendedProducts } =
-    useProductStore();
+  const { fetchProductById, recommendedProducts, fetchRecommendedProducts } = useProductStore();
   const { addToCart } = useCartStore();
 
   useEffect(() => {
@@ -48,9 +48,7 @@ export default function ProductDetailScreen() {
       // 加载相关产品
       await fetchRecommendedProducts();
     } else {
-      Alert.alert("错误", "产品不存在", [
-        { text: "确定", onPress: () => router.back() },
-      ]);
+      Alert.alert('错误', '产品不存在', [{ text: '确定', onPress: () => router.back() }]);
     }
   };
 
@@ -61,28 +59,28 @@ export default function ProductDetailScreen() {
     try {
       await addToCart(product, quantity);
       setAddedToCart(true);
-      Alert.alert("成功", `${product.name} × ${quantity} 已添加到购物车`, [
-        { text: "继续购物" },
+      Alert.alert('成功', `${product.name} × ${quantity} 已添加到购物车`, [
+        { text: '继续购物' },
         {
-          text: "查看购物车",
-          onPress: () => router.push("/(tabs)/cart"),
+          text: '查看购物车',
+          onPress: () => router.push('/(tabs)/cart'),
         },
       ]);
       setTimeout(() => setAddedToCart(false), 2000);
     } catch (error) {
-      Alert.alert("错误", `添加到购物车失败: ${error}`);
+      Alert.alert('错误', `添加到购物车失败: ${error}`);
     } finally {
       setIsAddToCartLoading(false);
     }
   };
 
   const handleBuyNow = () => {
-    Alert.alert("提示", "立即购买功能开发中...");
+    Alert.alert('提示', '立即购买功能开发中...');
   };
 
   if (!product) {
     return (
-      <SafeAreaView style={styles.container} edges={["top"]}>
+      <SafeAreaView style={styles.container} edges={['top']}>
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={Colors.light.primary} />
         </View>
@@ -91,12 +89,10 @@ export default function ProductDetailScreen() {
   }
 
   const images = ProductHelpers.getAllImages(product);
-  const relatedProducts = recommendedProducts
-    .filter((p) => p.id !== product.id)
-    .slice(0, 4);
+  const relatedProducts = recommendedProducts.filter(p => p.id !== product.id).slice(0, 4);
 
   return (
-    <SafeAreaView style={styles.container} edges={["top"]}>
+    <SafeAreaView style={styles.container} edges={['top']}>
       <ThemedView style={styles.header}>
         <TouchableOpacity onPress={() => router.back()}>
           <MaterialIcons name="arrow-back" size={24} color={Colors.light.text} />
@@ -107,16 +103,16 @@ export default function ProductDetailScreen() {
             <MaterialIcons name="share" size={24} color={Colors.light.text} />
           </TouchableOpacity>
           <TouchableOpacity>
-            <MaterialIcons
-              name="favorite-border"
-              size={24}
-              color={Colors.light.text}
-            />
+            <MaterialIcons name="favorite-border" size={24} color={Colors.light.text} />
           </TouchableOpacity>
         </View>
       </ThemedView>
 
-      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        style={styles.scrollView}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={[styles.scrollContent, { paddingBottom: 120 + insets.bottom }]}
+      >
         <ProductImageCarousel product={product} />
 
         <View style={styles.content}>
@@ -124,9 +120,7 @@ export default function ProductDetailScreen() {
           <View style={styles.productHeader}>
             {product.category && (
               <View style={styles.categoryTag}>
-                <ThemedText style={styles.categoryText}>
-                  {product.category}
-                </ThemedText>
+                <ThemedText style={styles.categoryText}>{product.category}</ThemedText>
               </View>
             )}
             <ThemedText type="title" style={styles.productName}>
@@ -137,9 +131,9 @@ export default function ProductDetailScreen() {
                 {Array.from({ length: 5 }).map((_, i) => (
                   <MaterialIcons
                     key={i}
-                    name={i < Math.floor(product.rating!) ? "star" : "star-border"}
+                    name={i < Math.floor(product.rating!) ? 'star' : 'star-border'}
                     size={16}
-                    color={i < Math.floor(product.rating!) ? "#FFD700" : "#ccc"}
+                    color={i < Math.floor(product.rating!) ? '#FFD700' : '#ccc'}
                   />
                 ))}
                 <ThemedText style={styles.ratingText}>
@@ -159,11 +153,8 @@ export default function ProductDetailScreen() {
             {ProductHelpers.discountPercentage(product) && (
               <View style={styles.discountTag}>
                 <ThemedText style={styles.discountText}>
-                  节省 ¥
-                  {(
-                    (product.originalPrice ?? 0) - product.price
-                  ).toFixed(2)}{" "}
-                  ({ProductHelpers.discountPercentage(product)}% 折扣)
+                  节省 ¥{((product.originalPrice ?? 0) - product.price).toFixed(2)} (
+                  {ProductHelpers.discountPercentage(product)}% 折扣)
                 </ThemedText>
               </View>
             )}
@@ -176,25 +167,21 @@ export default function ProductDetailScreen() {
                 style={[
                   styles.stockIndicator,
                   {
-                    backgroundColor: ProductHelpers.hasStock(product)
-                      ? "#34C759"
-                      : "#FF3B30",
+                    backgroundColor: ProductHelpers.hasStock(product) ? '#34C759' : '#FF3B30',
                   },
                 ]}
               />
               <ThemedText
                 style={{
-                  color: ProductHelpers.hasStock(product) ? "#34C759" : "#FF3B30",
+                  color: ProductHelpers.hasStock(product) ? '#34C759' : '#FF3B30',
                 }}
               >
-                {ProductHelpers.hasStock(product) ? "有库存" : "缺货"}
+                {ProductHelpers.hasStock(product) ? '有库存' : '缺货'}
               </ThemedText>
             </View>
             <View style={styles.shippingRow}>
               <MaterialIcons name="local-shipping" size={16} color="#34C759" />
-              <ThemedText style={styles.shippingText}>
-                满¥200包邮，预计1-3天送达
-              </ThemedText>
+              <ThemedText style={styles.shippingText}>满¥200包邮，预计1-3天送达</ThemedText>
             </View>
           </View>
 
@@ -204,127 +191,51 @@ export default function ProductDetailScreen() {
             <QuantitySelector
               quantity={quantity}
               max={product.stock ?? 99}
-              onIncrease={() =>
-                setQuantity((prev) =>
-                  Math.min(prev + 1, product.stock ?? 99)
-                )
-              }
-              onDecrease={() => setQuantity((prev) => Math.max(prev - 1, 1))}
+              onIncrease={() => setQuantity(prev => Math.min(prev + 1, product.stock ?? 99))}
+              onDecrease={() => setQuantity(prev => Math.max(prev - 1, 1))}
             />
-          </View>
-
-          {/* 操作按钮 */}
-          <View style={styles.actionButtons}>
-            <TouchableOpacity
-              style={[
-                styles.addToCartButton,
-                (!ProductHelpers.hasStock(product) ||
-                  isAddToCartLoading) &&
-                  styles.buttonDisabled,
-                addedToCart && styles.addedButton,
-              ]}
-              onPress={handleAddToCart}
-              disabled={
-                !ProductHelpers.hasStock(product) || isAddToCartLoading
-              }
-            >
-              {isAddToCartLoading ? (
-                <ActivityIndicator color="#fff" />
-              ) : addedToCart ? (
-                <>
-                  <MaterialIcons name="check" size={20} color="#fff" />
-                  <ThemedText
-                    style={styles.buttonText}
-                    lightColor="#fff"
-                    darkColor="#fff"
-                  >
-                    已添加到购物车
-                  </ThemedText>
-                </>
-              ) : (
-                <>
-                  <MaterialIcons name="shopping-cart" size={20} color="#fff" />
-                  <ThemedText
-                    style={styles.buttonText}
-                    lightColor="#fff"
-                    darkColor="#fff"
-                  >
-                    添加到购物车
-                  </ThemedText>
-                </>
-              )}
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[
-                styles.buyNowButton,
-                !ProductHelpers.hasStock(product) && styles.buttonDisabled,
-              ]}
-              onPress={handleBuyNow}
-              disabled={!ProductHelpers.hasStock(product)}
-            >
-              <ThemedText style={styles.buyNowButtonText}>立即购买</ThemedText>
-            </TouchableOpacity>
           </View>
 
           {/* 详情选项卡 */}
           <View style={styles.tabs}>
             <View style={styles.tabHeader}>
-              {(["details", "shipping", "reviews"] as const).map((tab) => (
+              {(['details', 'shipping', 'reviews'] as const).map(tab => (
                 <TouchableOpacity
                   key={tab}
-                  style={[
-                    styles.tab,
-                    activeTab === tab && styles.tabActive,
-                  ]}
+                  style={[styles.tab, activeTab === tab && styles.tabActive]}
                   onPress={() => setActiveTab(tab)}
                 >
-                  <ThemedText
-                    style={[
-                      styles.tabText,
-                      activeTab === tab && styles.tabTextActive,
-                    ]}
-                  >
-                    {tab === "details"
-                      ? "详情"
-                      : tab === "shipping"
-                      ? "配送"
-                      : "评价"}
+                  <ThemedText style={[styles.tabText, activeTab === tab && styles.tabTextActive]}>
+                    {tab === 'details' ? '详情' : tab === 'shipping' ? '配送' : '评价'}
                   </ThemedText>
                 </TouchableOpacity>
               ))}
             </View>
 
             <View style={styles.tabContent}>
-              {activeTab === "details" && (
+              {activeTab === 'details' && (
                 <View>
                   {product.description && (
                     <>
                       <ThemedText type="subtitle" style={styles.sectionTitle}>
                         产品描述
                       </ThemedText>
-                      <ThemedText style={styles.description}>
-                        {product.description}
-                      </ThemedText>
+                      <ThemedText style={styles.description}>{product.description}</ThemedText>
                     </>
                   )}
                   <ThemedText type="subtitle" style={styles.sectionTitle}>
                     产品特性
                   </ThemedText>
-                  {["高品质材料", "精美设计", "多功能", "环保材质"].map(
-                    (feature, i) => (
-                      <View key={i} style={styles.featureItem}>
-                        <MaterialIcons name="check" size={16} color="#007AFF" />
-                        <ThemedText style={styles.featureText}>
-                          {feature}
-                        </ThemedText>
-                      </View>
-                    )
-                  )}
+                  {['高品质材料', '精美设计', '多功能', '环保材质'].map((feature, i) => (
+                    <View key={i} style={styles.featureItem}>
+                      <MaterialIcons name="check" size={16} color="#007AFF" />
+                      <ThemedText style={styles.featureText}>{feature}</ThemedText>
+                    </View>
+                  ))}
                 </View>
               )}
 
-              {activeTab === "shipping" && (
+              {activeTab === 'shipping' && (
                 <View>
                   <ThemedText type="subtitle" style={styles.sectionTitle}>
                     配送信息
@@ -341,50 +252,47 @@ export default function ProductDetailScreen() {
                 </View>
               )}
 
-              {activeTab === "reviews" && (
+              {activeTab === 'reviews' && (
                 <View>
                   {[
                     {
-                      name: "张先生",
+                      name: '张先生',
                       rating: 5,
-                      date: "2023年12月15日",
-                      comment: "非常满意的购物体验，产品质量超出预期，快递很快，包装也很好，会继续支持！",
+                      date: '2023年12月15日',
+                      comment:
+                        '非常满意的购物体验，产品质量超出预期，快递很快，包装也很好，会继续支持！',
                     },
                     {
-                      name: "李女士",
+                      name: '李女士',
                       rating: 4,
-                      date: "2023年11月28日",
-                      comment: "整体不错，使用了一周感觉质量可靠，就是价格稍贵了点，希望有更多优惠活动。",
+                      date: '2023年11月28日',
+                      comment:
+                        '整体不错，使用了一周感觉质量可靠，就是价格稍贵了点，希望有更多优惠活动。',
                     },
                     {
-                      name: "王先生",
+                      name: '王先生',
                       rating: 5,
-                      date: "2023年10月17日",
-                      comment: "朋友推荐购买的，确实名不虚传，各方面都很好，尤其是做工和质感，非常推荐！",
+                      date: '2023年10月17日',
+                      comment:
+                        '朋友推荐购买的，确实名不虚传，各方面都很好，尤其是做工和质感，非常推荐！',
                     },
                   ].map((review, i) => (
                     <View key={i} style={styles.reviewItem}>
                       <View style={styles.reviewHeader}>
-                        <ThemedText style={styles.reviewName}>
-                          {review.name}
-                        </ThemedText>
-                        <ThemedText style={styles.reviewDate}>
-                          {review.date}
-                        </ThemedText>
+                        <ThemedText style={styles.reviewName}>{review.name}</ThemedText>
+                        <ThemedText style={styles.reviewDate}>{review.date}</ThemedText>
                       </View>
                       <View style={styles.reviewRating}>
                         {Array.from({ length: 5 }).map((_, j) => (
                           <MaterialIcons
                             key={j}
-                            name={j < review.rating ? "star" : "star-border"}
+                            name={j < review.rating ? 'star' : 'star-border'}
                             size={16}
-                            color={j < review.rating ? "#FFD700" : "#ccc"}
+                            color={j < review.rating ? '#FFD700' : '#ccc'}
                           />
                         ))}
                       </View>
-                      <ThemedText style={styles.reviewComment}>
-                        {review.comment}
-                      </ThemedText>
+                      <ThemedText style={styles.reviewComment}>{review.comment}</ThemedText>
                     </View>
                   ))}
                 </View>
@@ -403,7 +311,7 @@ export default function ProductDetailScreen() {
                 showsHorizontalScrollIndicator={false}
                 contentContainerStyle={styles.relatedProducts}
               >
-                {relatedProducts.map((relatedProduct) => (
+                {relatedProducts.map(relatedProduct => (
                   <View key={relatedProduct.id} style={styles.relatedProduct}>
                     <ProductCard product={relatedProduct} variant="dual" />
                   </View>
@@ -413,6 +321,45 @@ export default function ProductDetailScreen() {
           )}
         </View>
       </ScrollView>
+
+      {/* 固定在底部的操作按钮 */}
+      <View style={[styles.fixedActionButtons, { paddingBottom: insets.bottom }]}>
+        <TouchableOpacity
+          style={[
+            styles.addToCartButton,
+            (!ProductHelpers.hasStock(product) || isAddToCartLoading) && styles.buttonDisabled,
+            addedToCart && styles.addedButton,
+          ]}
+          onPress={handleAddToCart}
+          disabled={!ProductHelpers.hasStock(product) || isAddToCartLoading}
+        >
+          {isAddToCartLoading ? (
+            <ActivityIndicator color="#fff" />
+          ) : addedToCart ? (
+            <>
+              <MaterialIcons name="check" size={20} color="#fff" />
+              <ThemedText style={styles.buttonText} lightColor="#fff" darkColor="#fff">
+                已添加到购物车
+              </ThemedText>
+            </>
+          ) : (
+            <>
+              <MaterialIcons name="shopping-cart" size={20} color="#fff" />
+              <ThemedText style={styles.buttonText} lightColor="#fff" darkColor="#fff">
+                添加到购物车
+              </ThemedText>
+            </>
+          )}
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[styles.buyNowButton, !ProductHelpers.hasStock(product) && styles.buttonDisabled]}
+          onPress={handleBuyNow}
+          disabled={!ProductHelpers.hasStock(product)}
+        >
+          <ThemedText style={styles.buyNowButtonText}>立即购买</ThemedText>
+        </TouchableOpacity>
+      </View>
     </SafeAreaView>
   );
 }
@@ -423,23 +370,28 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.light.background,
   },
   header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     paddingHorizontal: Spacing.medium,
     paddingVertical: Spacing.small,
+    backgroundColor: Colors.light.background,
+    zIndex: 1001,
   },
   headerActions: {
-    flexDirection: "row",
+    flexDirection: 'row',
     gap: Spacing.small,
   },
   loadingContainer: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   scrollView: {
     flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
   },
   content: {
     padding: Spacing.medium,
@@ -448,8 +400,8 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.medium,
   },
   categoryTag: {
-    alignSelf: "flex-start",
-    backgroundColor: "#E3F2FD",
+    alignSelf: 'flex-start',
+    backgroundColor: '#E3F2FD',
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 12,
@@ -457,18 +409,18 @@ const styles = StyleSheet.create({
   },
   categoryText: {
     fontSize: 12,
-    fontWeight: "500",
-    color: "#1976D2",
+    fontWeight: '500',
+    color: '#1976D2',
   },
   productName: {
     fontSize: 24,
-    fontWeight: "bold",
-    color: "#1D1D1F",
+    fontWeight: 'bold',
+    color: '#1D1D1F',
     marginBottom: Spacing.small,
   },
   rating: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 8,
   },
   ratingText: {
@@ -479,8 +431,8 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.medium,
   },
   discountTag: {
-    alignSelf: "flex-start",
-    backgroundColor: "#FFEBEE",
+    alignSelf: 'flex-start',
+    backgroundColor: '#FFEBEE',
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 12,
@@ -488,15 +440,15 @@ const styles = StyleSheet.create({
   },
   discountText: {
     fontSize: 12,
-    fontWeight: "500",
-    color: "#C62828",
+    fontWeight: '500',
+    color: '#C62828',
   },
   stockSection: {
     marginBottom: Spacing.medium,
   },
   stockRow: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 8,
     marginBottom: Spacing.small,
   },
@@ -506,64 +458,79 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   shippingRow: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 8,
   },
   shippingText: {
     fontSize: 14,
-    color: "#34C759",
+    color: '#34C759',
   },
   quantitySection: {
     marginBottom: Spacing.large,
   },
   quantityLabel: {
     fontSize: 16,
-    fontWeight: "500",
+    fontWeight: '500',
     marginBottom: Spacing.small,
   },
-  actionButtons: {
-    marginBottom: Spacing.large,
+  fixedActionButtons: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: Colors.light.background,
+    paddingHorizontal: Spacing.medium,
+    paddingTop: Spacing.medium,
+    borderTopWidth: 1,
+    borderTopColor: Colors.light.border,
+    flexDirection: 'row',
+    gap: Spacing.medium,
+    ...Shadow.medium,
   },
   addToCartButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
     gap: 8,
-    backgroundColor: "#007AFF",
+    backgroundColor: '#007AFF',
     paddingVertical: Spacing.medium,
     borderRadius: 24,
-    marginBottom: Spacing.small,
+    minHeight: 48,
   },
   addedButton: {
-    backgroundColor: "#34C759",
+    backgroundColor: '#34C759',
   },
   buttonDisabled: {
     opacity: 0.5,
   },
   buttonText: {
-    color: "#fff",
+    color: '#fff',
     fontSize: 16,
-    fontWeight: "500",
+    fontWeight: '500',
   },
   buyNowButton: {
+    flex: 1,
     borderWidth: 2,
-    borderColor: "#007AFF",
+    borderColor: '#007AFF',
     paddingVertical: Spacing.medium,
     borderRadius: 24,
-    alignItems: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 48,
   },
   buyNowButtonText: {
     fontSize: 16,
-    fontWeight: "500",
-    color: "#007AFF",
+    fontWeight: '500',
+    color: '#007AFF',
   },
   tabs: {
     marginBottom: Spacing.large,
   },
   tabHeader: {
-    flexDirection: "row",
-    backgroundColor: "#F5F5F7",
+    flexDirection: 'row',
+    backgroundColor: '#F5F5F7',
     borderRadius: 24,
     padding: 4,
     marginBottom: Spacing.medium,
@@ -571,11 +538,11 @@ const styles = StyleSheet.create({
   tab: {
     flex: 1,
     paddingVertical: Spacing.small,
-    alignItems: "center",
+    alignItems: 'center',
     borderRadius: 20,
   },
   tabActive: {
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     ...Shadow.small,
   },
   tabText: {
@@ -584,14 +551,14 @@ const styles = StyleSheet.create({
   },
   tabTextActive: {
     color: Colors.light.text,
-    fontWeight: "500",
+    fontWeight: '500',
   },
   tabContent: {
     minHeight: 200,
   },
   sectionTitle: {
     fontSize: 18,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     marginBottom: Spacing.small,
   },
   description: {
@@ -601,8 +568,8 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.medium,
   },
   featureItem: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 12,
     marginBottom: 4,
   },
@@ -610,25 +577,25 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   reviewItem: {
-    backgroundColor: "#F5F5F7",
+    backgroundColor: '#F5F5F7',
     padding: Spacing.medium,
     borderRadius: 12,
     marginBottom: Spacing.medium,
   },
   reviewHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     marginBottom: Spacing.small,
   },
   reviewName: {
-    fontWeight: "500",
+    fontWeight: '500',
   },
   reviewDate: {
     fontSize: 12,
     color: Colors.light.tabIconDefault,
   },
   reviewRating: {
-    flexDirection: "row",
+    flexDirection: 'row',
     marginBottom: Spacing.small,
   },
   reviewComment: {
@@ -646,4 +613,3 @@ const styles = StyleSheet.create({
     width: 150,
   },
 });
-

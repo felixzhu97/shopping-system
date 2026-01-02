@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   Alert,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { ThemedView, ThemedText, CategorySelector, ProductCard } from "@/src/components";
 import { useProductStore } from "@/src/store";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
@@ -55,6 +55,7 @@ const categories: Category[] = [
 type SortOption = "featured" | "price-asc" | "price-desc" | "rating";
 
 export default function CategoriesScreen() {
+  const insets = useSafeAreaInsets();
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [sortBy, setSortBy] = useState<SortOption>("featured");
   const { products, isLoading, error, fetchProducts, clearError } =
@@ -149,7 +150,10 @@ export default function CategoriesScreen() {
           )}
           keyExtractor={(item) => item.id ?? `product-${item.name}`}
           numColumns={2}
-          contentContainerStyle={styles.listContent}
+          contentContainerStyle={[
+            styles.listContent,
+            { paddingBottom: 80 + insets.bottom }
+          ]}
           columnWrapperStyle={styles.row}
         />
       ) : (

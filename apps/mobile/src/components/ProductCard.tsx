@@ -89,7 +89,7 @@ export function ProductCard({ product, variant = "dual" }: ProductCardProps) {
         <View style={styles.dualContent}>
           <ThemedText style={styles.dualTitle}>{product.name}</ThemedText>
           {product.description && (
-            <ThemedText style={styles.dualDescription}>
+            <ThemedText style={styles.dualDescription} numberOfLines={2}>
               {product.description}
             </ThemedText>
           )}
@@ -117,79 +117,94 @@ const styles = StyleSheet.create({
     ...Shadow.medium,
   },
   heroContent: {
-    padding: 24,
+    padding: Spacing.large,
   },
   heroTitle: {
-    fontSize: 32,
-    fontWeight: "500",
+    fontSize: 28,
+    fontWeight: "600",
     textAlign: "center",
     color: "#fff",
+    lineHeight: 34,
   },
   heroDescription: {
-    fontSize: 18,
+    fontSize: 16,
     textAlign: "center",
-    marginTop: 8,
-    color: "rgba(255,255,255,0.7)",
+    marginTop: Spacing.small,
+    color: "rgba(255,255,255,0.8)",
+    lineHeight: 22,
   },
   heroButtons: {
     flexDirection: "row",
     justifyContent: "center",
-    marginTop: 24,
-    gap: 16,
+    marginTop: Spacing.large,
+    gap: Spacing.medium,
   },
   heroButtonSecondary: {
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    borderRadius: 25,
-    borderWidth: 1,
+    paddingHorizontal: Spacing.large,
+    paddingVertical: Spacing.medium,
+    borderRadius: 24,
+    borderWidth: 1.5,
     borderColor: "#fff",
+    minHeight: 44,
+    justifyContent: "center",
+    alignItems: "center",
   },
   heroButtonPrimary: {
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    borderRadius: 25,
+    paddingHorizontal: Spacing.large,
+    paddingVertical: Spacing.medium,
+    borderRadius: 24,
     backgroundColor: "#fff",
+    minHeight: 44,
+    justifyContent: "center",
+    alignItems: "center",
   },
   heroButtonText: {
     fontSize: 16,
-    fontWeight: "500",
+    fontWeight: "600",
   },
   heroImage: {
     width: "100%",
-    height: 200,
+    height: 220,
   },
   dualCard: {
-    backgroundColor: "#FAFAFA",
-    borderRadius: 28,
+    backgroundColor: "#fff",
+    borderRadius: 20,
     overflow: "hidden",
-    ...Shadow.medium,
+    ...Shadow.small,
   },
   dualContent: {
-    padding: 20,
+    padding: Spacing.medium,
   },
   dualTitle: {
-    fontSize: 24,
-    fontWeight: "500",
+    fontSize: 18,
+    fontWeight: "600",
     textAlign: "center",
     color: "#1D1D1F",
+    lineHeight: 24,
+    marginBottom: Spacing.small,
   },
   dualDescription: {
-    fontSize: 14,
+    fontSize: 13,
     textAlign: "center",
-    marginTop: 8,
-    color: "#1D1D1F",
+    marginTop: Spacing.small,
+    color: "#6E6E73",
+    lineHeight: 18,
   },
   dualButton: {
-    marginTop: 16,
+    marginTop: Spacing.medium,
+    minHeight: 32,
+    justifyContent: "center",
+    alignItems: "center",
   },
   dualButtonText: {
     fontSize: 14,
+    fontWeight: "500",
     color: "#007AFF",
     textAlign: "center",
   },
   dualImage: {
     width: "100%",
-    height: 150,
+    height: 160,
   },
 });
 

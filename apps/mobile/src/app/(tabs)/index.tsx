@@ -9,7 +9,7 @@ import {
   TouchableOpacity,
   Image,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { ThemedView, ThemedText, Carousel, ProductCard } from "@/src/components";
 import { useProductStore } from "@/src/store";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
@@ -63,6 +63,7 @@ const quickActions = [
 ];
 
 export default function HomeScreen() {
+  const insets = useSafeAreaInsets();
   const {
     recommendedProducts,
     isLoading,
@@ -108,6 +109,10 @@ export default function HomeScreen() {
 
       <ScrollView
         style={styles.scrollView}
+        contentContainerStyle={[
+          styles.scrollContent,
+          { paddingBottom: 80 + insets.bottom }
+        ]}
         refreshControl={
           <RefreshControl refreshing={isLoading} onRefresh={handleRefresh} />
         }
@@ -253,6 +258,9 @@ const styles = StyleSheet.create({
   scrollView: {
     flex: 1,
   },
+  scrollContent: {
+    flexGrow: 1,
+  },
   headline: {
     backgroundColor: "#F5F5F7",
     paddingVertical: 40,
@@ -326,16 +334,16 @@ const styles = StyleSheet.create({
   },
   quickActionsSection: {
     padding: Spacing.medium,
-    paddingBottom: Spacing.xlarge,
   },
   quickActionsGrid: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: Spacing.medium,
+    justifyContent: "space-between",
   },
   quickActionItem: {
-    width: "22%",
+    width: "23%",
     alignItems: "center",
+    marginBottom: Spacing.medium,
   },
   quickActionIcon: {
     width: 50,

@@ -12,6 +12,10 @@ export default function Layout() {
         headerShown: false,
         tabBarActiveTintColor: "#007AFF",
         tabBarInactiveTintColor: "#8E8E93",
+        tabBarStyle: {
+          borderTopWidth: 0.5,
+          borderTopColor: "rgba(0,0,0,0.1)",
+        },
       }}
     >
       <Tabs.Screen
