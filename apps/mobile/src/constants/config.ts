@@ -1,13 +1,15 @@
 // 应用配置
 export const AppConfig = {
-  // 开发环境配置
-  devApiUrl: 'http://192.168.3.18:3001',
+  // 开发环境配置 - 从环境变量 EXPO_PUBLIC_API_URL 读取，如果未设置则使用默认值
+  devApiUrl: process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3001',
 
-  // 生产环境配置
-  prodApiUrl: 'https://your-api-domain.com',
+  // 生产环境配置 - 从环境变量 EXPO_PUBLIC_API_URL 读取，如果未设置则使用默认值
+  prodApiUrl: process.env.EXPO_PUBLIC_API_URL || 'https://api.example.com',
 
-  // 当前环境
-  isProduction: false,
+  // 当前环境 - 根据 NODE_ENV 自动判断
+  get isProduction(): boolean {
+    return process.env.NODE_ENV === 'production';
+  },
 
   // 获取当前环境的 API URL
   get apiUrl(): string {
@@ -26,4 +28,3 @@ export const AppConfig = {
   cacheMaxAge: 300, // 5分钟
   maxCacheSize: 50, // 最大缓存条目数
 };
-

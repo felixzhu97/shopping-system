@@ -42,6 +42,22 @@ JWT_EXPIRES_IN=7d
 CORS_ORIGIN=http://localhost:3000
 ```
 
+## 移动应用环境变量 (apps/mobile)
+
+在 `apps/mobile` 目录下创建 `.env` 文件：
+
+```env
+# API配置
+EXPO_PUBLIC_API_URL=http://localhost:3001
+```
+
+**注意**：
+- Expo SDK 49+ 使用 `EXPO_PUBLIC_` 前缀的环境变量
+- 这些变量会在构建时注入，运行时通过 `process.env.EXPO_PUBLIC_*` 访问
+- 支持 `.env`、`.env.local`、`.env.production` 等文件
+- 开发环境默认使用 `http://localhost:3001`
+- 生产环境需要设置对应的生产 API URL
+
 ## Turborepo 远程缓存配置
 
 在项目根目录创建 `.env` 文件：
@@ -75,6 +91,10 @@ TURBO_TEAM=your-team-id
 - `JWT_SECRET`: JWT 令牌签名密钥
 - `JWT_EXPIRES_IN`: JWT 令牌过期时间
 - `CORS_ORIGIN`: 允许的跨域来源
+
+### 移动应用环境变量
+
+- `EXPO_PUBLIC_API_URL`: 后端 API 的基础 URL（开发环境默认：`http://localhost:3001`）
 
 ### Turborepo 环境变量
 
