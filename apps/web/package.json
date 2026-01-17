@@ -70,6 +70,7 @@
     "recharts": "2.15.0",
     "shared": "workspace:*",
     "sonner": "^1.7.1",
+    "utils": "workspace:*",
     "tailwind-merge": "^2.5.5",
     "tailwindcss-animate": "^1.0.7",
     "ui": "file:../../packages/ui",

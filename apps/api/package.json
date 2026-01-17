@@ -34,6 +34,7 @@
     "serverless-http": "^3.2.0",
     "shared": "workspace:*",
     "swagger-jsdoc": "^6.2.8",
+    "utils": "workspace:*",
     "swagger-ui-express": "^5.0.1"
   },
   "devDependencies": {
