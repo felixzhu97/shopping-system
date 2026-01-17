@@ -13,6 +13,9 @@ package "数据实体" {
     database "Order\n订单实体\n存储订单信息、订单项、订单状态" as order
     database "Cart\n购物车实体\n存储购物车信息、购物车项" as cart
     database "Payment\n支付实体\n存储支付信息、支付方式、支付状态" as payment
+    database "UserBehavior\n用户行为实体\n存储用户浏览、点击、购买等行为数据" as user_behavior
+    database "RecommendationCache\n推荐结果缓存\n存储推荐结果缓存数据" as recommendation_cache
+    database "OAuthToken\nOAuth令牌实体\n存储OAuth令牌和刷新令牌" as oauth_token
 }
 
 ' 数据属性详细视图
@@ -49,12 +52,43 @@ package "Cart实体属性" {
     component [更新时间\nDate\n最后更新时间] as cart_updatedAt
 }
 
+package "UserBehavior实体属性" {
+    component [行为ID\nObjectId\n唯一标识] as behavior_id
+    component [用户ID\nObjectId\n关联用户] as behavior_userId
+    component [商品ID\nObjectId\n关联商品] as behavior_productId
+    component [行为类型\nEnum\nview/click/purchase/cart] as behavior_type
+    component [行为时间\nDate\n行为发生时间] as behavior_timestamp
+    component [行为数据\nObject\n额外行为数据] as behavior_data
+}
+
+package "RecommendationCache实体属性" {
+    component [缓存ID\nObjectId\n唯一标识] as cache_id
+    component [用户ID\nObjectId\n关联用户] as cache_userId
+    component [推荐结果\nArray\n推荐商品列表] as cache_results
+    component [算法类型\nString\n使用的推荐算法] as cache_algorithm
+    component [过期时间\nDate\n缓存过期时间] as cache_expiresAt
+}
+
+package "OAuthToken实体属性" {
+    component [令牌ID\nObjectId\n唯一标识] as token_id
+    component [用户ID\nObjectId\n关联用户] as token_userId
+    component [提供者\nString\nOAuth提供者名称] as token_provider
+    component [访问令牌\nString\nOAuth访问令牌] as token_accessToken
+    component [刷新令牌\nString\nOAuth刷新令牌] as token_refreshToken
+    component [过期时间\nDate\n令牌过期时间] as token_expiresAt
+}
+
 ' 数据关系
 user --> cart : 1:1 拥有
 user --> order : 1:N 创建
 user --> payment : 1:N 支付
+user --> user_behavior : 1:N 产生
+user --> recommendation_cache : 1:N 拥有
+user --> oauth_token : 1:N 拥有
 product --> order : N:M 被订购\n(通过OrderItem)
 product --> cart : N:M 被添加\n(通过CartItem)
+product --> user_behavior : 1:N 被操作
+product --> recommendation_cache : N:M 被推荐\n(通过推荐结果)
 order --> payment : 1:1 关联
 
 ' 数据存储层
@@ -66,6 +100,9 @@ package "数据集合" {
     component [orders集合\nMongoDB Collection\n订单数据] as orders_collection
     component [carts集合\nMongoDB Collection\n购物车数据] as carts_collection
     component [payments集合\nMongoDB Collection\n支付数据] as payments_collection
+    component [userBehaviors集合\nMongoDB Collection\n用户行为数据] as user_behaviors_collection
+    component [recommendationCaches集合\nMongoDB Collection\n推荐结果缓存] as recommendation_caches_collection
+    component [oauthTokens集合\nMongoDB Collection\nOAuth令牌数据] as oauth_tokens_collection
 }
 
 ' 数据访问层
@@ -74,6 +111,9 @@ package "数据访问模式" {
     component [商品数据访问\nRepository Pattern\n商品CRUD操作] as product_repository
     component [订单数据访问\nRepository Pattern\n订单CRUD操作] as order_repository
     component [购物车数据访问\nRepository Pattern\n购物车CRUD操作] as cart_repository
+    component [用户行为数据访问\nRepository Pattern\n用户行为CRUD操作] as user_behavior_repository
+    component [推荐缓存数据访问\nRepository Pattern\n推荐缓存CRUD操作] as recommendation_cache_repository
+    component [OAuth令牌数据访问\nRepository Pattern\nOAuth令牌CRUD操作] as oauth_token_repository
 }
 
 ' 数据流
@@ -89,24 +129,37 @@ product --> products_collection : 存储于
 order --> orders_collection : 存储于
 cart --> carts_collection : 存储于
 payment --> payments_collection : 存储于
+user_behavior --> user_behaviors_collection : 存储于
+recommendation_cache --> recommendation_caches_collection : 存储于
+oauth_token --> oauth_tokens_collection : 存储于
 
 users_collection --> mongodb : 位于
 products_collection --> mongodb : 位于
 orders_collection --> mongodb : 位于
 carts_collection --> mongodb : 位于
 payments_collection --> mongodb : 位于
+user_behaviors_collection --> mongodb : 位于
+recommendation_caches_collection --> mongodb : 位于
+oauth_tokens_collection --> mongodb : 位于
 
 user_repository --> users_collection : 访问
 product_repository --> products_collection : 访问
 order_repository --> orders_collection : 访问
 cart_repository --> carts_collection : 访问
+user_behavior_repository --> user_behaviors_collection : 访问
+recommendation_cache_repository --> recommendation_caches_collection : 访问
+oauth_token_repository --> oauth_tokens_collection : 访问
 
 user_repository --> data_validation : 使用
 product_repository --> data_validation : 使用
 order_repository --> data_validation : 使用
 cart_repository --> data_validation : 使用
+user_behavior_repository --> data_validation : 使用
+recommendation_cache_repository --> data_validation : 使用
+oauth_token_repository --> data_validation : 使用
 
 user_repository --> data_encryption : 使用
+oauth_token_repository --> data_encryption : 使用
 mongodb --> data_indexing : 使用
 
 note right of mongodb
@@ -120,6 +173,24 @@ note right of user_repository
   数据访问层
   使用Repository模式
   提供CRUD操作接口
+end note
+
+note right of user_behavior
+  用户行为数据
+  用于推荐系统分析
+  记录用户浏览、点击、购买等行为
+end note
+
+note right of recommendation_cache
+  推荐结果缓存
+  提高推荐系统性能
+  减少重复计算
+end note
+
+note right of oauth_token
+  OAuth令牌存储
+  支持多种OAuth提供者
+  管理访问令牌和刷新令牌
 end note
 
 @enduml

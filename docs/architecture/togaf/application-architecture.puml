@@ -9,7 +9,7 @@ skinparam linetype ortho
 package "Web前端应用系统" {
     component [Web前端应用\nNext.js] as web_frontend
     component [UI组件库\nReact Components] as ui_library
-    component [状态管理\nReact Hooks + Context] as state_mgmt
+    component [状态管理\nZustand] as state_mgmt
     component [API客户端\nFetch/Axios] as api_client
     
     ' Web前端应用组件
@@ -19,6 +19,8 @@ package "Web前端应用系统" {
     component [订单页面] as orders_page
     component [账户页面] as account_page
     component [认证页面] as auth_pages
+    component [推荐页面\n商品推荐展示] as recommendation_page
+    component [OAuth组件\n第三方登录组件] as oauth_components
 }
 
 ' 移动应用系统
@@ -43,16 +45,25 @@ package "API后端服务系统" {
     component [商品路由] as products_route
     component [订单路由] as orders_route
     component [购物车路由] as cart_route
+    component [推荐路由] as recommendation_route
+    component [支付路由] as payment_route
+    component [OAuth路由] as oauth_route
     
     component [用户控制器] as user_controller
     component [商品控制器] as product_controller
     component [订单控制器] as order_controller
     component [购物车控制器] as cart_controller
+    component [推荐控制器] as recommendation_controller
+    component [支付控制器] as payment_controller
+    component [OAuth控制器] as oauth_controller
     
     component [用户服务] as user_service
     component [商品服务] as product_service
     component [订单服务] as order_service
     component [购物车服务] as cart_service
+    component [推荐服务] as recommendation_service
+    component [支付服务] as payment_service
+    component [OAuth服务] as oauth_service
 }
 
 ' 应用接口层
@@ -60,6 +71,17 @@ package "应用接口层" {
     interface "RESTful API\nHTTP/HTTPS" as rest_api
     interface "认证接口\nJWT" as auth_api
     interface "数据同步接口\nWebSocket/HTTP" as data_sync_api
+}
+
+' 共享包层
+package "共享包层" {
+    component [@packages/recommendation\n推荐引擎\n内容推荐、协同过滤、混合推荐] as pkg_recommendation
+    component [@packages/payment-integration\n支付集成\nAlipay、WeChat、Credit Card] as pkg_payment
+    component [@packages/auth\n认证包\nOAuth提供者、令牌管理] as pkg_auth
+    component [@packages/utils\n工具包\n定价、验证、格式化、库存] as pkg_utils
+    component [@packages/ui\nUI组件库\n可复用UI组件] as pkg_ui
+    component [@packages/shared\n共享类型\n共享类型定义和工具] as pkg_shared
+    component [@packages/test-utils\n测试工具\n测试辅助函数、Fixtures] as pkg_test_utils
 }
 
 ' 外部系统集成
@@ -70,17 +92,29 @@ cloud "邮件服务\n邮件通知服务" as email_service
 web_frontend --> ui_library : 使用
 web_frontend --> state_mgmt : 使用
 web_frontend --> api_client : 使用
+web_frontend --> pkg_ui : 使用
+web_frontend --> pkg_auth : 使用
+web_frontend --> pkg_utils : 使用
+web_frontend --> pkg_shared : 使用
 products_page --> api_client : 使用
+products_page --> pkg_recommendation : 使用
 cart_page --> api_client : 使用
 checkout_page --> api_client : 使用
+checkout_page --> pkg_payment : 使用
 orders_page --> api_client : 使用
 account_page --> api_client : 使用
 auth_pages --> api_client : 使用
+auth_pages --> pkg_auth : 使用
+recommendation_page --> api_client : 使用
+recommendation_page --> pkg_recommendation : 使用
+oauth_components --> pkg_auth : 使用
 
 ' 移动应用系统内部关系
 mobile_frontend --> mobile_services : 使用
 mobile_frontend --> mobile_api_client : 使用
 mobile_frontend --> mobile_state_mgmt : 使用
+mobile_frontend --> pkg_shared : 使用
+mobile_services --> pkg_utils : 使用
 
 ' API客户端到接口层
 api_client --> rest_api : 调用
@@ -101,14 +135,30 @@ users_route --> user_controller : 路由到
 products_route --> product_controller : 路由到
 orders_route --> order_controller : 路由到
 cart_route --> cart_controller : 路由到
+recommendation_route --> recommendation_controller : 路由到
+payment_route --> payment_controller : 路由到
+oauth_route --> oauth_controller : 路由到
 
 ' 控制器到服务
 user_controller --> user_service : 调用
 product_controller --> product_service : 调用
 order_controller --> order_service : 调用
 cart_controller --> cart_service : 调用
+recommendation_controller --> recommendation_service : 调用
+payment_controller --> payment_service : 调用
+oauth_controller --> oauth_service : 调用
+
+' 服务层使用共享包
+recommendation_service --> pkg_recommendation : 使用
+payment_service --> pkg_payment : 使用
+oauth_service --> pkg_auth : 使用
+order_service --> pkg_utils : 使用
+product_service --> pkg_utils : 使用
+user_service --> pkg_utils : 使用
+cart_service --> pkg_utils : 使用
 
 ' 外部系统集成
+payment_service --> payment_gateway : 集成
 order_service --> payment_gateway : 集成
 user_service --> email_service : 集成
 
@@ -116,12 +166,14 @@ note right of web_frontend
   Web前端应用系统
   基于Next.js框架
   提供Web用户界面
+  使用Zustand状态管理
 end note
 
 note right of api_server
   API后端服务系统
   基于Express.js框架
   处理HTTP请求和业务逻辑
+  支持Serverless部署
 end note
 
 note right of mobile_frontend
@@ -129,6 +181,33 @@ note right of mobile_frontend
   基于React Native框架
   使用Expo开发平台
   提供移动用户界面
+end note
+
+note right of pkg_recommendation
+  推荐引擎包
+  支持多种推荐算法：
+  - 内容推荐
+  - 协同过滤
+  - 混合推荐
+end note
+
+note right of pkg_payment
+  支付集成包
+  支持多种支付网关：
+  - Alipay
+  - WeChat Pay
+  - Credit Card
+end note
+
+note right of pkg_auth
+  认证包
+  支持多种OAuth提供者：
+  - Google
+  - Facebook
+  - GitHub
+  - Apple
+  - WeChat
+  - Alipay
 end note
 
 @enduml
