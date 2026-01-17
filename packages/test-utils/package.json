@@ -1,0 +1,31 @@
+{
+  "name": "@shopping-system/test-utils",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "license": "MIT",
+  "scripts": {
+    "lint": "eslint \"src/**/*.ts\" \"src/**/*.tsx\"",
+    "build": "tsc && pnpm run bundle",
+    "bundle": "esbuild src/index.ts --bundle --format=cjs --platform=node --outfile=dist/index.bundle.js",
+    "dev": "tsc --watch",
+    "clean": "rm -rf dist && rm -rf node_modules"
+  },
+  "dependencies": {
+    "shared": "workspace:*"
+  },
+  "peerDependencies": {
+    "vitest": "^1.4.0",
+    "@testing-library/react": "^16.0.0"
+  },
+  "devDependencies": {
+    "@testing-library/react": "^16.0.0",
+    "@types/react": "^19",
+    "esbuild": "^0.20.2",
+    "eslint": "^8.48.0",
+    "react": "^19",
+    "typescript": "^5.2.2",
+    "vitest": "^1.4.0"
+  }
+}
