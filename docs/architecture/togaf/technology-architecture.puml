@@ -1,0 +1,210 @@
+@startuml
+title TOGAF 技术架构图 - 购物系统
+
+skinparam componentStyle rectangle
+skinparam linetype ortho
+
+' 技术平台层
+package "前端技术平台" {
+    component [Next.js\nReact框架\n服务端渲染、路由、API路由] as nextjs
+    component [React\nUI库\n组件化开发、虚拟DOM] as react
+    component [TypeScript\n类型系统\n类型安全、代码提示] as typescript_web
+    component [Tailwind CSS\nCSS框架\n实用优先的CSS框架] as tailwind
+    component [Vercel Edge Network\nCDN\n全球内容分发] as vercel_edge
+    component [Zustand\n状态管理\n轻量级状态管理库] as zustand
+    component [React Hook Form\n表单处理\n高性能表单库] as react_hook_form
+    component [i18next\n国际化\n多语言支持框架] as i18next
+    component [Datadog RUM\n真实用户监控\n前端性能监控和会话重放] as datadog_rum
+    component [Radix UI\nUI组件库\n无样式可访问组件] as radix_ui
+    component [Framer Motion\n动画库\nReact动画框架] as framer_motion
+    component [Recharts\n图表库\nReact图表组件] as recharts
+}
+
+package "后端技术平台" {
+    component [Express.js\nWeb框架\nHTTP服务器、路由、中间件] as express
+    component [Node.js\n运行时\nJavaScript运行时环境] as nodejs
+    component [TypeScript\n类型系统\n类型安全、代码提示] as typescript_api
+    component [Mongoose\nODM\nMongoDB对象文档映射] as mongoose
+    component [Serverless Framework\n无服务器框架\n无服务器应用部署] as serverless
+    component [Swagger\nAPI文档\nAPI文档生成工具] as swagger
+    component [AWS Lambda\n无服务器计算\n云函数服务] as aws_lambda
+    component [Datadog APM\n应用性能监控\n后端性能追踪和日志关联] as datadog_apm
+    component [Datadog Lambda\nLambda监控\n无服务器函数监控] as datadog_lambda
+}
+
+package "移动端技术平台" {
+    component [React Native\n移动框架\n跨平台移动应用开发] as react_native
+    component [Expo\n开发平台\nReact Native开发工具链] as expo
+    component [TypeScript\n类型系统\n类型安全、代码提示] as typescript_mobile
+}
+
+package "数据库技术平台" {
+    database [MongoDB\n数据库\nNoSQL文档数据库] as mongodb
+    cloud [MongoDB Atlas\n云数据库\n托管MongoDB服务] as mongodb_atlas
+}
+
+' 基础设施层
+package "部署基础设施" {
+    cloud [Vercel平台\n部署平台\n前端和API部署] as vercel_platform
+    cloud [Vercel CDN\n内容分发\n静态资源CDN] as vercel_cdn
+    cloud [AWS Lambda\n无服务器计算\n云函数服务] as aws_lambda_platform
+    cloud [Datadog平台\n监控平台\nAPM、RUM、日志和指标] as datadog_platform
+    component [GitHub Actions\nCI/CD\n持续集成和部署] as github_actions
+}
+
+' 开发工具链
+package "开发工具" {
+    component [Turborepo\n构建系统\nMonorepo构建和缓存] as turborepo
+    component [PNPM\n包管理器\n高效的包管理] as pnpm
+    component [Git\n版本控制\n代码版本管理] as git
+    component [Vitest\n测试框架\n单元测试和集成测试] as vitest
+    component [Storybook\nUI组件开发\n组件开发环境] as storybook
+    component [Testing Library\nReact测试工具\n组件测试库] as testing_library
+    component [ESLint\n代码检查\n代码质量工具] as eslint
+    component [Prettier\n代码格式化\n代码格式化工具] as prettier
+}
+
+' 技术标准
+package "技术标准" {
+    interface "RESTful API\nAPI标准\nREST架构风格" as rest_api_std
+    interface "JWT认证\n认证标准\nJSON Web Token认证" as jwt_auth
+    interface "HTTPS\n安全协议\n加密传输协议" as https_protocol
+    interface "OpenAPI\nAPI文档\nAPI规范文档" as openapi
+}
+
+' 部署架构
+package "开发环境" {
+    component [本地开发环境\n开发环境\n开发者本地机器] as dev_local
+    component [Git仓库\n代码仓库\nGitHub代码托管] as dev_git
+}
+
+package "CI/CD流程" {
+    component [自动化测试\nCI阶段\n运行测试套件] as ci_test
+    component [构建\nCI阶段\n编译和打包] as ci_build
+    component [部署\nCD阶段\n自动部署到生产环境] as ci_deploy
+}
+
+package "生产环境" {
+    cloud [Web前端\n生产环境\nVercel部署的Next.js应用] as prod_web
+    cloud [API服务\n生产环境\nVercel/AWS Lambda部署的Express API] as prod_api
+    cloud [数据库\n生产环境\nMongoDB Atlas云数据库] as prod_db
+    cloud [CDN\n生产环境\nVercel Edge Network] as prod_cdn
+    cloud [Lambda函数\n生产环境\nAWS Lambda无服务器函数] as prod_lambda
+}
+
+' 关系定义
+nextjs --> react : 基于
+nextjs --> typescript_web : 使用
+nextjs --> tailwind : 使用
+nextjs --> vercel_edge : 部署到
+nextjs --> zustand : 使用
+nextjs --> react_hook_form : 使用
+nextjs --> i18next : 使用
+nextjs --> datadog_rum : 使用
+nextjs --> radix_ui : 使用
+nextjs --> framer_motion : 使用
+nextjs --> recharts : 使用
+
+express --> nodejs : 运行于
+express --> typescript_api : 使用
+express --> mongoose : 使用
+express --> swagger : 使用
+express --> datadog_apm : 使用
+mongoose --> mongodb : 连接
+serverless --> aws_lambda : 部署到
+aws_lambda --> datadog_lambda : 监控
+
+react_native --> expo : 使用
+react_native --> typescript_mobile : 使用
+
+mongodb_atlas --> mongodb : 提供
+
+prod_web --> vercel_platform : 部署于
+prod_api --> vercel_platform : 部署于
+prod_api --> aws_lambda_platform : 部署于
+prod_lambda --> aws_lambda_platform : 运行于
+prod_db --> mongodb_atlas : 运行于
+prod_cdn --> vercel_cdn : 使用
+prod_web --> datadog_platform : 监控
+prod_api --> datadog_platform : 监控
+prod_lambda --> datadog_platform : 监控
+
+dev_local --> dev_git : 推送代码
+dev_git --> github_actions : 触发
+github_actions --> ci_test : 执行
+ci_test --> ci_build : 通过后
+ci_build --> ci_deploy : 成功后
+ci_deploy --> prod_web : 部署到
+ci_deploy --> prod_api : 部署到
+ci_deploy --> prod_lambda : 部署到
+
+turborepo --> pnpm : 使用
+turborepo --> github_actions : 集成
+vitest --> testing_library : 使用
+
+express ..> rest_api_std : 遵循
+express ..> jwt_auth : 使用
+express ..> https_protocol : 使用
+express ..> openapi : 生成
+swagger ..> openapi : 生成
+
+prod_web --> prod_api : 调用
+prod_web --> prod_lambda : 调用
+prod_api --> prod_db : 连接
+prod_lambda --> prod_db : 连接
+prod_web --> prod_cdn : 使用
+
+note right of nextjs
+  前端技术栈
+  - Next.js框架
+  - React UI库
+  - TypeScript类型系统
+  - Tailwind CSS样式
+  - Zustand状态管理
+  - React Hook Form表单
+  - i18next国际化
+  - Datadog RUM监控
+  - Radix UI组件库
+end note
+
+note right of express
+  后端技术栈
+  - Express.js框架
+  - Node.js运行时
+  - TypeScript类型系统
+  - Mongoose ODM
+  - Serverless Framework
+  - Swagger API文档
+  - AWS Lambda支持
+  - Datadog APM监控
+end note
+
+note right of vercel_platform
+  部署基础设施
+  - Vercel平台部署
+  - AWS Lambda无服务器
+  - CDN内容分发
+  - GitHub Actions CI/CD
+  - Datadog统一监控
+end note
+
+note right of datadog_platform
+  Datadog监控平台
+  - APM应用性能监控
+  - RUM真实用户监控
+  - 日志收集和关联
+  - 指标监控和告警
+  - Lambda函数监控
+end note
+
+note right of vitest
+  开发工具
+  - Vitest测试框架
+  - Storybook组件开发
+  - Testing Library测试工具
+  - ESLint代码检查
+  - Prettier代码格式化
+end note
+
+@enduml
+

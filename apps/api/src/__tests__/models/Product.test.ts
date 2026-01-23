@@ -19,7 +19,7 @@ describe('Product Model', () => {
 
   beforeEach(async () => {
     // Import mocked modules
-    const { default: Product } = await import('../../models/Product');
+    const { default: Product } = await import('../../models/Product.js');
     mockProduct = Product;
 
     // Reset mocks

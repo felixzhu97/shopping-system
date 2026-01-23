@@ -1,0 +1,122 @@
+@startuml
+title 看板实施流程图
+
+skinparam componentStyle rectangle
+skinparam packageStyle rectangle
+skinparam linetype ortho
+
+package "实施阶段" {
+    component [阶段1：可视化当前工作] as stage1 #lightgreen
+    component [阶段2：限制在制品] as stage2 #lightyellow
+    component [阶段3：管理流动] as stage3 #lightblue
+    component [阶段4：明确流程政策] as stage4 #orange
+    component [阶段5：实施反馈循环] as stage5 #lightsalmon
+    component [阶段6：协作式改进] as stage6 #lightpink
+}
+
+package "阶段1 活动" {
+    component [绘制价值流图] as v1
+    component [识别工作类型] as v2
+    component [创建看板板] as v3
+    component [映射当前流程] as v4
+}
+
+package "阶段2 活动" {
+    component [分析当前容量] as w1
+    component [设置 WIP 限制] as w2
+    component [应用限制规则] as w3
+    component [监控限制违反] as w4
+}
+
+package "阶段3 活动" {
+    component [测量前置时间] as f1
+    component [测量周期时间] as f2
+    component [识别瓶颈] as f3
+    component [优化流动] as f4
+}
+
+package "阶段4 活动" {
+    component [定义完成标准] as p1
+    component [定义服务级别] as p2
+    component [定义优先级规则] as p3
+    component [记录政策] as p4
+}
+
+package "阶段5 活动" {
+    component [定期回顾会议] as r1
+    component [收集指标数据] as r2
+    component [分析趋势] as r3
+    component [调整流程] as r4
+}
+
+package "阶段6 活动" {
+    component [实验和试点] as i1
+    component [评估改进效果] as i2
+    component [标准化成功实践] as i3
+    component [持续优化] as i4
+}
+
+' 阶段关系
+stage1 --> stage2 : 完成可视化后
+stage2 --> stage3 : 建立限制后
+stage3 --> stage4 : 理解流动后
+stage4 --> stage5 : 明确政策后
+stage5 --> stage6 : 建立反馈后
+stage6 --> stage1 : 持续改进循环
+
+' 阶段1 细节
+stage1 --> v1
+stage1 --> v2
+stage1 --> v3
+stage1 --> v4
+
+' 阶段2 细节
+stage2 --> w1
+stage2 --> w2
+stage2 --> w3
+stage2 --> w4
+
+' 阶段3 细节
+stage3 --> f1
+stage3 --> f2
+stage3 --> f3
+stage3 --> f4
+
+' 阶段4 细节
+stage4 --> p1
+stage4 --> p2
+stage4 --> p3
+stage4 --> p4
+
+' 阶段5 细节
+stage5 --> r1
+stage5 --> r2
+stage5 --> r3
+stage5 --> r4
+
+' 阶段6 细节
+stage6 --> i1
+stage6 --> i2
+stage6 --> i3
+stage6 --> i4
+
+note right of stage1
+  第一步：可视化
+  让工作流可见
+  理解当前状态
+end note
+
+note right of stage2
+  第二步：限制 WIP
+  防止过度承诺
+  暴露瓶颈问题
+end note
+
+note right of stage3
+  第三步：管理流动
+  优化工作流
+  减少等待时间
+end note
+
+@enduml
+

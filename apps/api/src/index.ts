@@ -1,3 +1,7 @@
+// Initialize Datadog APM before any other imports
+import { initDatadogAPM } from 'monitoring';
+initDatadogAPM();
+
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
@@ -80,9 +84,10 @@ mongoose
   })
   .then(() => {
     console.log('数据库连接成功');
-    // 启动服务器
-    const server = app.listen(PORT, () => {
-      console.log(`后端API服务运行在 http://localhost:${PORT}`);
+    // 启动服务器 - 绑定到所有网络接口
+    const server = app.listen(PORT, '0.0.0.0', () => {
+      console.log(`后端API服务运行在 http://0.0.0.0:${PORT}`);
+      console.log(`局域网访问地址: http://192.168.3.18:${PORT}`);
     });
 
     // 优雅关闭

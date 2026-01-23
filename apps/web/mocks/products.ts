@@ -1,4 +1,4 @@
-import { Product } from 'shared';
+import { Product } from 'types';
 
 // 构建时的模拟产品数据
 export const MOCK_PRODUCTS: Product[] = [

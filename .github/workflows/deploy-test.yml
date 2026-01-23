@@ -1,83 +1,113 @@
-name: 部署到测试环境
+name: Deploy to Test
+
+# Unified version management
+env:
+  NODE_VERSION: '20'
+  PNPM_VERSION: '10.1.0'
 
 on:
   push:
     branches: [test]
     paths:
       - 'apps/api/**'
-      - 'packages/shared/**'
+      - 'packages/types/**'
+      - 'packages/monitoring/**'
       - '.github/workflows/deploy-test.yml'
+      - 'pnpm-lock.yaml'
+      - 'package.json'
   workflow_dispatch:
 
 jobs:
   test:
-    name: 运行单元测试
+    name: Run Tests
     runs-on: ubuntu-latest
     steps:
-      - name: 检出代码
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: 设置Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-
-      - name: 设置PNPM
+      - name: Setup PNPM
         uses: pnpm/action-setup@v2
         with:
-          version: 8
-          run_install: false
+          version: ${{ env.PNPM_VERSION }}
 
-      - name: 安装依赖
-        run: pnpm install --no-frozen-lockfile
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
 
-      - name: 构建shared包
-        run: cd packages/shared && pnpm build
+      - name: Verify lockfile exists
+        run: |
+          if [ ! -f "pnpm-lock.yaml" ]; then
+            echo "Error: pnpm-lock.yaml not found!"
+            exit 1
+          fi
+          echo "✓ pnpm-lock.yaml found"
+          head -5 pnpm-lock.yaml
 
-      - name: 运行API单元测试
-        run: cd apps/api && pnpm test
+      - name: Verify pnpm version
+        run: pnpm --version
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build dependencies
+        run: pnpm build --filter=types --filter=monitoring
+
+      - name: Run tests
+        run: pnpm test --filter=api
         env:
           NODE_ENV: test
 
-  deploy-test:
-    name: 部署到测试环境
+  deploy:
+    name: Deploy to Test Environment
     runs-on: ubuntu-latest
     needs: test
     steps:
-      - name: 检出代码
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: 设置Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-
-      - name: 设置PNPM
+      - name: Setup PNPM
         uses: pnpm/action-setup@v2
         with:
-          version: 8
-          run_install: false
+          version: ${{ env.PNPM_VERSION }}
 
-      - name: 安装依赖
-        run: pnpm install --no-frozen-lockfile
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
 
-      - name: 构建shared包
-        run: cd packages/shared && pnpm build
+      - name: Verify lockfile exists
+        run: |
+          if [ ! -f "pnpm-lock.yaml" ]; then
+            echo "Error: pnpm-lock.yaml not found!"
+            exit 1
+          fi
+          echo "✓ pnpm-lock.yaml found"
+          head -5 pnpm-lock.yaml
 
-      - name: 构建API包
-        run: cd apps/api && pnpm build
+      - name: Verify pnpm version
+        run: pnpm --version
 
-      - name: 配置AWS凭证
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build
+        run: pnpm build --filter=types --filter=monitoring --filter=api
+
+      - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-east-1
 
-      - name: 部署到AWS Lambda测试环境
+      - name: Deploy to AWS Lambda
         run: cd apps/api && pnpm run deploy:lambda:test
         env:
           MONGODB_URI_test: ${{ secrets.MONGODB_URI_TEST }}
           JWT_SECRET_test: ${{ secrets.JWT_SECRET_TEST }}
           CORS_ORIGINS_test: ${{ secrets.CORS_ORIGINS_TEST }}
-          ADMIN_SECRET_test: ${{ secrets.ADMIN_SECRET_TEST }}
+          DD_API_KEY: ${{ secrets.DD_API_KEY }}
+          DD_SITE: ${{ secrets.DD_SITE || 'datadoghq.com' }}

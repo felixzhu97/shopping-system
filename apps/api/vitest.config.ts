@@ -34,6 +34,7 @@ export default defineConfig({
       '@controllers': resolve(__dirname, './src/controllers'),
       '@routes': resolve(__dirname, './src/routes'),
       '@utils': resolve(__dirname, './src/utils'),
+      'monitoring': resolve(__dirname, '../../packages/monitoring/src'),
     },
   },
 });

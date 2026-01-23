@@ -1,0 +1,87 @@
+@startuml
+title 极限编程（XP）实践关系图
+
+skinparam componentStyle rectangle
+skinparam packageStyle rectangle
+skinparam linetype ortho
+
+component "极限编程核心实践" as xp #lightblue
+
+package "编码实践" as coding_pkg {
+    component [测试驱动开发\nTDD] as tdd #lightgreen
+    component [结对编程\nPair Programming] as pair #lightyellow
+    component [简单设计\nSimple Design] as simple #lightcyan
+    component [重构\nRefactoring] as refactor #lightpink
+    component [编码标准\nCoding Standards] as standards #lightsalmon
+    component [集体代码所有权\nCollective Ownership] as ownership #lightgray
+}
+
+package "团队实践" as team_pkg {
+    component [持续集成\nContinuous Integration] as ci #lightgreen
+    component [小型发布\nSmall Releases] as releases #lightyellow
+    component [隐喻\nMetaphor] as metaphor #lightcyan
+    component [可持续节奏\nSustainable Pace] as pace #lightpink
+}
+
+package "客户实践" as customer_pkg {
+    component [现场客户\nOn-site Customer] as customer #lightgreen
+    component [用户故事\nUser Stories] as stories #lightyellow
+    component [计划游戏\nPlanning Game] as planning #lightcyan
+    component [验收测试\nAcceptance Tests] as tests #lightpink
+}
+
+' 编码实践之间的关系
+tdd --> pair : 支持
+pair --> simple : 促进
+simple --> refactor : 需要
+refactor --> standards : 遵循
+standards --> ownership : 实现
+ownership --> tdd : 支持
+
+' 团队实践之间的关系
+ci --> releases : 支持
+releases --> metaphor : 使用
+metaphor --> pace : 保持
+pace --> ci : 实现
+
+' 客户实践之间的关系
+customer --> stories : 提供
+stories --> planning : 输入
+planning --> tests : 产出
+tests --> customer : 验证
+
+' 实践组之间的关系
+coding_pkg --> team_pkg : 支持
+customer_pkg --> coding_pkg : 指导
+customer_pkg --> team_pkg : 驱动
+
+xp --> coding_pkg
+xp --> team_pkg
+xp --> customer_pkg
+
+note right of tdd
+  测试驱动开发
+  先写测试，再写代码
+  确保代码质量
+end note
+
+note right of pair
+  结对编程
+  两人共同编程
+  知识共享和代码审查
+end note
+
+note right of ci
+  持续集成
+  频繁集成代码
+  快速发现问题
+end note
+
+note right of customer
+  现场客户
+  客户参与团队
+  及时澄清需求
+end note
+
+@enduml
+

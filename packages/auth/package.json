@@ -1,0 +1,33 @@
+{
+  "name": "auth",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "license": "MIT",
+  "scripts": {
+    "lint": "eslint \"src/**/*.{ts,tsx}\"",
+    "build": "tsc && pnpm run bundle",
+    "bundle": "esbuild src/index.ts --bundle --format=esm --platform=browser --outfile=dist/index.bundle.js --external:crypto",
+    "dev": "tsc --watch",
+    "clean": "rm -rf dist && rm -rf node_modules",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
+  },
+  "dependencies": {
+    "types": "workspace:*",
+    "typescript": "^5.2.2"
+  },
+  "peerDependencies": {
+    "react": "^18.0.0 || ^19.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19",
+    "@vitest/coverage-v8": "^1.6.1",
+    "esbuild": "^0.20.2",
+    "eslint": "^8.48.0",
+    "react": "^19",
+    "vitest": "^1.4.0"
+  }
+}

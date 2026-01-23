@@ -1,0 +1,25 @@
+@startuml
+!include ../c4-plantuml/C4_Context.puml
+!include ../c4-plantuml/C4_Container.puml
+!include ../c4-plantuml/C4_Component.puml
+
+LAYOUT_WITH_LEGEND()
+
+' 系统上下文图
+System_Boundary(system, "购物系统") {
+    Person(customer, "顾客", "使用系统进行购物的用户")
+    Person(admin, "管理员", "管理商品和订单的管理员")
+
+    System(web_app, "Web应用", "基于Next.js的前端应用")
+    System(api, "API服务", "基于Express.js的后端API服务")
+    SystemDb(db, "MongoDB数据库", "存储系统数据")
+    System_Ext(payment_gateway, "支付网关", "处理支付交易")
+}
+
+Rel(customer, web_app, "使用", "HTTPS")
+Rel(admin, web_app, "管理", "HTTPS")
+Rel(web_app, api, "调用", "HTTPS")
+Rel(api, db, "读写", "MongoDB")
+Rel(api, payment_gateway, "处理支付", "HTTPS")
+
+@enduml

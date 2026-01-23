@@ -1,0 +1,95 @@
+@startuml
+title 敏捷宣言和原则
+
+skinparam componentStyle rectangle
+skinparam packageStyle rectangle
+skinparam linetype ortho
+
+package "敏捷宣言" as manifesto_pkg {
+    component "我们正在通过实践\n和帮助他人实践\n来揭示更好的软件开发方法" as manifesto #lightblue
+    
+    card "我们重视" as values #lightgreen {
+        component [个体和互动] as v1
+        component [工作的软件] as v2
+        component [客户合作] as v3
+        component [响应变化] as v4
+    }
+    
+    card "胜过" as over #lightyellow {
+        component [流程和工具] as o1
+        component [详尽文档] as o2
+        component [合同谈判] as o3
+        component [遵循计划] as o4
+    }
+    
+    component "虽然右边的项也有价值\n但我们更重视左边的项" as note1
+}
+
+package "敏捷12原则" as principles_pkg {
+    card "客户满意度" {
+        component [1. 尽早持续交付\n有价值的软件] as p1
+        component [2. 欢迎需求变化\n利用变化获得竞争优势] as p2
+    }
+    
+    card "频繁交付" {
+        component [3. 频繁交付可工作软件\n从几周到几个月] as p3
+        component [4. 业务人员和开发人员\n必须密切合作] as p4
+    }
+    
+    card "人员和环境" {
+        component [5. 围绕有动力的个体\n构建项目并提供支持] as p5
+        component [6. 面对面交流是\n最有效的沟通方式] as p6
+    }
+    
+    card "工作软件" {
+        component [7. 可工作软件是\n衡量进展的主要指标] as p7
+        component [8. 敏捷过程促进可持续开发\n赞助商、开发者和用户\n应能无限期保持稳定节奏] as p8
+    }
+    
+    card "技术卓越" {
+        component [9. 持续关注技术卓越\n和良好设计能增强敏捷性] as p9
+        component [10. 简单性——最大化\n未完成工作量的艺术——至关重要] as p10
+    }
+    
+    card "自组织和持续改进" {
+        component [11. 最好的架构、需求和设计\n来自自组织团队] as p11
+        component [12. 团队定期反思如何\n变得更高效并相应调整] as p12
+    }
+}
+
+manifesto --> values
+manifesto --> over
+values --> note1
+over --> note1
+
+values --> v1
+values --> v2
+values --> v3
+values --> v4
+
+over --> o1
+over --> o2
+over --> o3
+over --> o4
+
+v1 --> o1 : 胜过
+v2 --> o2 : 胜过
+v3 --> o3 : 胜过
+v4 --> o4 : 胜过
+
+manifesto --> principles_pkg
+
+note right of values
+  核心价值观
+  指导所有敏捷实践
+  的基石
+end note
+
+note right of principles_pkg
+  12条原则
+  将价值观转化为
+  具体实践指南
+end note
+
+@enduml
+
