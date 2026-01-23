@@ -70,6 +70,7 @@ EXPO_PUBLIC_API_URL=http://localhost:3001
 ```
 
 **注意**：
+
 - Expo SDK 49+ 使用 `EXPO_PUBLIC_` 前缀的环境变量
 - 这些变量会在构建时注入，运行时通过 `process.env.EXPO_PUBLIC_*` 访问
 - 支持 `.env`、`.env.local`、`.env.production` 等文件

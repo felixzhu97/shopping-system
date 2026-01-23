@@ -79,8 +79,9 @@ package "共享包层" {
     component [@packages/payment-integration\n支付集成\nAlipay、WeChat、Credit Card] as pkg_payment
     component [@packages/auth\n认证包\nOAuth提供者、令牌管理] as pkg_auth
     component [@packages/utils\n工具包\n定价、验证、格式化、库存] as pkg_utils
-    component [@packages/components\nUI组件库\n可复用UI组件] as pkg_ui
-    component [@packages/types\n类型定义\n类型定义定义和工具] as pkg_shared
+    component [@packages/components\nUI组件库\n可复用UI组件] as pkg_components
+    component [@packages/types\n类型定义\n共享类型定义] as pkg_types
+    component [@packages/monitoring\n监控包\nDatadog APM和RUM] as pkg_monitoring
     component [@packages/test-utils\n测试工具\n测试辅助函数、Fixtures] as pkg_test_utils
 }
 
@@ -92,10 +93,11 @@ cloud "邮件服务\n邮件通知服务" as email_service
 web_frontend --> ui_library : 使用
 web_frontend --> state_mgmt : 使用
 web_frontend --> api_client : 使用
-web_frontend --> pkg_ui : 使用
+web_frontend --> pkg_components : 使用
 web_frontend --> pkg_auth : 使用
 web_frontend --> pkg_utils : 使用
-web_frontend --> pkg_shared : 使用
+web_frontend --> pkg_types : 使用
+web_frontend --> pkg_monitoring : 使用
 products_page --> api_client : 使用
 products_page --> pkg_recommendation : 使用
 cart_page --> api_client : 使用
@@ -113,7 +115,7 @@ oauth_components --> pkg_auth : 使用
 mobile_frontend --> mobile_services : 使用
 mobile_frontend --> mobile_api_client : 使用
 mobile_frontend --> mobile_state_mgmt : 使用
-mobile_frontend --> pkg_shared : 使用
+mobile_frontend --> pkg_types : 使用
 mobile_services --> pkg_utils : 使用
 
 ' API客户端到接口层
@@ -125,6 +127,7 @@ mobile_api_client --> auth_api : 调用
 ' API后端系统内部关系
 rest_api --> api_server : 提供
 api_server --> routes_layer : 路由
+api_server --> pkg_monitoring : 使用
 routes_layer --> middleware_layer : 通过
 middleware_layer --> controllers_layer : 调用
 controllers_layer --> services_layer : 调用
@@ -153,9 +156,13 @@ recommendation_service --> pkg_recommendation : 使用
 payment_service --> pkg_payment : 使用
 oauth_service --> pkg_auth : 使用
 order_service --> pkg_utils : 使用
+order_service --> pkg_types : 使用
 product_service --> pkg_utils : 使用
+product_service --> pkg_types : 使用
 user_service --> pkg_utils : 使用
+user_service --> pkg_types : 使用
 cart_service --> pkg_utils : 使用
+cart_service --> pkg_types : 使用
 
 ' 外部系统集成
 payment_service --> payment_gateway : 集成

@@ -14,7 +14,7 @@ package "前端技术平台" {
     component [Zustand\n状态管理\n轻量级状态管理库] as zustand
     component [React Hook Form\n表单处理\n高性能表单库] as react_hook_form
     component [i18next\n国际化\n多语言支持框架] as i18next
-    component [PostHog\n产品分析\n用户行为分析工具] as posthog
+    component [Datadog RUM\n真实用户监控\n前端性能监控和会话重放] as datadog_rum
     component [Radix UI\nUI组件库\n无样式可访问组件] as radix_ui
     component [Framer Motion\n动画库\nReact动画框架] as framer_motion
     component [Recharts\n图表库\nReact图表组件] as recharts
@@ -28,6 +28,8 @@ package "后端技术平台" {
     component [Serverless Framework\n无服务器框架\n无服务器应用部署] as serverless
     component [Swagger\nAPI文档\nAPI文档生成工具] as swagger
     component [AWS Lambda\n无服务器计算\n云函数服务] as aws_lambda
+    component [Datadog APM\n应用性能监控\n后端性能追踪和日志关联] as datadog_apm
+    component [Datadog Lambda\nLambda监控\n无服务器函数监控] as datadog_lambda
 }
 
 package "移动端技术平台" {
@@ -46,8 +48,7 @@ package "部署基础设施" {
     cloud [Vercel平台\n部署平台\n前端和API部署] as vercel_platform
     cloud [Vercel CDN\n内容分发\n静态资源CDN] as vercel_cdn
     cloud [AWS Lambda\n无服务器计算\n云函数服务] as aws_lambda_platform
-    cloud [Vercel Analytics\n分析工具\n性能分析] as vercel_analytics
-    cloud [Vercel Speed Insights\n性能监控\n性能监控工具] as vercel_speed_insights
+    cloud [Datadog平台\n监控平台\nAPM、RUM、日志和指标] as datadog_platform
     component [GitHub Actions\nCI/CD\n持续集成和部署] as github_actions
 }
 
@@ -99,7 +100,7 @@ nextjs --> vercel_edge : 部署到
 nextjs --> zustand : 使用
 nextjs --> react_hook_form : 使用
 nextjs --> i18next : 使用
-nextjs --> posthog : 使用
+nextjs --> datadog_rum : 使用
 nextjs --> radix_ui : 使用
 nextjs --> framer_motion : 使用
 nextjs --> recharts : 使用
@@ -108,8 +109,10 @@ express --> nodejs : 运行于
 express --> typescript_api : 使用
 express --> mongoose : 使用
 express --> swagger : 使用
+express --> datadog_apm : 使用
 mongoose --> mongodb : 连接
 serverless --> aws_lambda : 部署到
+aws_lambda --> datadog_lambda : 监控
 
 react_native --> expo : 使用
 react_native --> typescript_mobile : 使用
@@ -122,8 +125,9 @@ prod_api --> aws_lambda_platform : 部署于
 prod_lambda --> aws_lambda_platform : 运行于
 prod_db --> mongodb_atlas : 运行于
 prod_cdn --> vercel_cdn : 使用
-prod_web --> vercel_analytics : 使用
-prod_web --> vercel_speed_insights : 使用
+prod_web --> datadog_platform : 监控
+prod_api --> datadog_platform : 监控
+prod_lambda --> datadog_platform : 监控
 
 dev_local --> dev_git : 推送代码
 dev_git --> github_actions : 触发
@@ -159,7 +163,7 @@ note right of nextjs
   - Zustand状态管理
   - React Hook Form表单
   - i18next国际化
-  - PostHog产品分析
+  - Datadog RUM监控
   - Radix UI组件库
 end note
 
@@ -172,6 +176,7 @@ note right of express
   - Serverless Framework
   - Swagger API文档
   - AWS Lambda支持
+  - Datadog APM监控
 end note
 
 note right of vercel_platform
@@ -180,8 +185,16 @@ note right of vercel_platform
   - AWS Lambda无服务器
   - CDN内容分发
   - GitHub Actions CI/CD
-  - Vercel Analytics分析
-  - Vercel Speed Insights监控
+  - Datadog统一监控
+end note
+
+note right of datadog_platform
+  Datadog监控平台
+  - APM应用性能监控
+  - RUM真实用户监控
+  - 日志收集和关联
+  - 指标监控和告警
+  - Lambda函数监控
 end note
 
 note right of vitest
