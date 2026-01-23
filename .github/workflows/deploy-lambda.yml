@@ -116,7 +116,7 @@ jobs:
         run: cd apps/api && pnpm run deploy:lambda:prod
         env:
           MONGODB_URI: ${{ secrets.MONGODB_URI }}
-          JWT_SECRET_: ${{ secrets.JWT_SECRET }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
           CORS_ORIGINS: ${{ secrets.CORS_ORIGINS }}
           DD_API_KEY: ${{ secrets.DD_API_KEY }}
           DD_SITE: ${{ secrets.DD_SITE || 'datadoghq.com' }}
