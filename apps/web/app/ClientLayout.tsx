@@ -5,7 +5,7 @@ import { Toaster } from '@/components/ui/toaster';
 import { usePathname, useRouter } from 'next/navigation';
 import { useToken } from '@/lib/store/userStore';
 import Loading from '@/components/Loading';
-import { initDatadogRUM } from 'monitoring';
+import { initDatadogRUM } from 'monitoring/client';
 
 // 只在客户端导入 i18n
 import '../i18n';

@@ -147,7 +147,9 @@ export function aesDecrypt(
     // 转换为字符串
     const decryptedText = decrypted.toString(CryptoJS.enc.Utf8);
 
-    if (!decryptedText) {
+    // 允许空字符串（空字符串是有效的解密结果）
+    // 只有当 decryptedText 为 undefined 或 null 时才抛出错误
+    if (decryptedText === undefined || decryptedText === null) {
       throw new Error('解密失败：无法解析解密后的数据');
     }
 

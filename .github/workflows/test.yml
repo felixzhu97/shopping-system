@@ -1,4 +1,4 @@
-name: 单元测试
+name: Test
 
 on:
   push:
@@ -15,151 +15,41 @@ on:
       - '.github/workflows/test.yml'
 
 jobs:
-  test-api:
-    name: API单元测试
+  test:
+    name: Run Tests
     runs-on: ubuntu-latest
     steps:
-      - name: 检出代码
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: 设置Node.js
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18'
 
-      - name: 设置PNPM
+      - name: Setup PNPM
         uses: pnpm/action-setup@v2
         with:
           version: 8
-          run_install: false
 
-      - name: 获取pnpm store目录
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
-
-      - name: 设置pnpm缓存
-        uses: actions/cache@v3
-        with:
-          path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-store-
-
-      - name: 安装依赖
+      - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: 构建shared包
-        run: cd packages/types && pnpm build
+      - name: Build dependencies
+        run: pnpm build --filter=types --filter=monitoring
 
-      - name: 运行API单元测试
-        run: cd apps/api && pnpm test
+      - name: Run tests
+        run: pnpm test
         env:
           NODE_ENV: test
 
-      - name: 生成API测试覆盖率报告
-        run: cd apps/api && pnpm test:coverage
-        env:
-          NODE_ENV: test
-
-      - name: 上传API覆盖率到Codecov
+      - name: Upload coverage
         uses: codecov/codecov-action@v3
         with:
-          files: ./apps/api/coverage/lcov.info
-          flags: api
-          name: api-coverage
+          files: |
+            ./apps/api/coverage/lcov.info
+            ./apps/web/coverage/lcov.info
+          flags: |
+            api
+            web
           fail_ci_if_error: false
-
-  test-web:
-    name: Web单元测试
-    runs-on: ubuntu-latest
-    steps:
-      - name: 检出代码
-        uses: actions/checkout@v4
-
-      - name: 设置Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-
-      - name: 设置PNPM
-        uses: pnpm/action-setup@v2
-        with:
-          version: 8
-          run_install: false
-
-      - name: 获取pnpm store目录
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
-
-      - name: 设置pnpm缓存
-        uses: actions/cache@v3
-        with:
-          path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-store-
-
-      - name: 安装依赖
-        run: pnpm install --frozen-lockfile
-
-      - name: 构建shared包
-        run: cd packages/types && pnpm build
-
-      - name: 运行Web单元测试
-        run: cd apps/web && pnpm test
-        env:
-          NODE_ENV: test
-
-      - name: 生成Web测试覆盖率报告
-        run: cd apps/web && pnpm test:coverage
-        env:
-          NODE_ENV: test
-
-      - name: 上传Web覆盖率到Codecov
-        uses: codecov/codecov-action@v3
-        with:
-          files: ./apps/web/coverage/lcov.info
-          flags: web
-          name: web-coverage
-          fail_ci_if_error: false
-
-  test-packages:
-    name: 包单元测试
-    runs-on: ubuntu-latest
-    steps:
-      - name: 检出代码
-        uses: actions/checkout@v4
-
-      - name: 设置Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-
-      - name: 设置PNPM
-        uses: pnpm/action-setup@v2
-        with:
-          version: 8
-          run_install: false
-
-      - name: 获取pnpm store目录
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
-
-      - name: 设置pnpm缓存
-        uses: actions/cache@v3
-        with:
-          path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-store-
-
-      - name: 安装依赖
-        run: pnpm install --frozen-lockfile
-
-      - name: 运行所有包的测试
-        run: pnpm test --filter "./packages/*"
-        env:
-          NODE_ENV: test

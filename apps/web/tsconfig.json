@@ -21,6 +21,7 @@
     "paths": {
       "@/*": ["./*"],
       "monitoring": ["../../packages/monitoring/src"],
+      "monitoring/*": ["../../packages/monitoring/src/*"],
       "types": ["../../packages/types/src"]
     }
   },
