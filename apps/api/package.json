@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "nodemon src/index.ts",
     "build": "tsc --skipLibCheck && pnpm run bundle",
-    "bundle": "esbuild src/lambda.ts --bundle --platform=node --target=node18 --outfile=dist/lambda.js --external:aws-sdk",
+    "bundle": "node scripts/build.js",
     "start": "node dist/lambda.js",
     "lint": "eslint src/**/*.ts",
     "test": "vitest run",
