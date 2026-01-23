@@ -28,7 +28,7 @@ export function renderHookWithProviders<TProps, TResult>(
   if (providers.length > 0) {
     wrapper = ({ children }: { children: ReactNode }) => {
       let wrapped = children as ReactElement;
-      providers.forEach((Provider) => {
+      providers.forEach(Provider => {
         wrapped = <Provider>{wrapped}</Provider>;
       });
       return wrapped;
@@ -44,9 +44,7 @@ export function renderHookWithProviders<TProps, TResult>(
 /**
  * 创建 Hook 渲染器（带默认 Provider）
  */
-export function createHookRenderer(
-  defaultOptions?: RenderHookWithProvidersOptions<any>
-) {
+export function createHookRenderer(defaultOptions?: RenderHookWithProvidersOptions<any>) {
   return <TProps, TResult>(
     hook: (props: TProps) => TResult,
     options?: RenderHookWithProvidersOptions<TProps>

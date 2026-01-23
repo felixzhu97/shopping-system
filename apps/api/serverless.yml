@@ -2,7 +2,7 @@ service: shopping-api
 
 provider:
   name: aws
-  runtime: nodejs18.x
+  runtime: nodejs20.x
   region: ap-east-1 # 香港区域
   stage: ${opt:stage, 'dev'} # 默认为dev环境
   memorySize: 512 # Lambda函数内存大小
@@ -38,8 +38,8 @@ functions:
     handler: dist/lambda.handler # Lambda处理函数
     name: shopping-api-${self:provider.stage} # 根据环境生成函数名
     layers:
-      # Datadog Lambda Layer for Node.js 18.x in ap-east-1
-      - arn:aws:lambda:ap-east-1:464622532012:layer:Datadog-Node18-x:${env:DD_LAYER_VERSION, '119'}
+      # Datadog Lambda Layer for Node.js 20.x in ap-east-1
+      - arn:aws:lambda:ap-east-1:464622532012:layer:Datadog-Node20-x:${env:DD_LAYER_VERSION, '132'}
     events:
       - http:
           path: /{proxy+} # 捕获所有路径
