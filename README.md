@@ -467,10 +467,6 @@ NEXTAUTH_URL=http://localhost:3000
 
 # API address
 NEXT_PUBLIC_API_URL=http://localhost:3001
-
-# PostHog analytics (optional)
-NEXT_PUBLIC_POSTHOG_KEY=your_posthog_key
-NEXT_PUBLIC_POSTHOG_HOST=https://app.posthog.com
 ```
 
 ### Backend API Environment Variables

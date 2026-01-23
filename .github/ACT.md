@@ -79,6 +79,7 @@ act push -W .github/workflows/test.yml -e NODE_ENV=test
 ## Common Commands
 
 ### Run Test Workflow
+
 ```bash
 # Using act directly
 act push -W .github/workflows/test.yml
@@ -88,21 +89,25 @@ act push -W .github/workflows/test.yml
 ```
 
 ### Run Deploy Test Workflow
+
 ```bash
 act push -W .github/workflows/deploy-test.yml --secret-file .secrets
 ```
 
 ### Run with Verbose Output
+
 ```bash
 act push -W .github/workflows/test.yml -v
 ```
 
 ### Dry Run (List steps without executing)
+
 ```bash
 act push -W .github/workflows/test.yml --dryrun
 ```
 
 ### Use Specific Event
+
 ```bash
 act workflow_dispatch -W .github/workflows/deploy-lambda.yml
 ```
@@ -117,22 +122,59 @@ act workflow_dispatch -W .github/workflows/deploy-lambda.yml
 ## Troubleshooting
 
 ### Docker Issues
+
 Make sure Docker is running:
+
 ```bash
 docker ps
 ```
 
 ### Permission Issues
+
 If you encounter permission issues, try:
+
 ```bash
 act push -W .github/workflows/test.yml --container-options "--privileged"
 ```
 
 ### Cache Issues
+
 Clear act cache if needed:
+
 ```bash
 act cache rm
 ```
+
+### Lockfile Compatibility Issues
+
+If you see "Ignoring not compatible lockfile" warnings when using `act`:
+
+1. **This is often a false positive**: The warning may appear even when the lockfile is valid. The workflow should still work if pnpm is correctly set up.
+
+2. **Verify pnpm version in container**: The `pnpm/action-setup@v2` action should install the correct pnpm version (10.1.0) as specified in the workflow.
+
+3. **If installation fails with `--frozen-lockfile`**:
+   - Check that `pnpm-lock.yaml` is committed to the repository
+   - Verify the lockfile format is correct: `head -5 pnpm-lock.yaml` should show `lockfileVersion: '6.0'`
+   - Ensure pnpm version matches: The workflow uses pnpm 10.1.0, which supports lockfile version 6.0
+
+4. **Workaround for act testing**: If you need to test locally and encounter issues, you can temporarily use `--no-frozen-lockfile` in the workflow for local testing only (not recommended for CI):
+
+   ```yaml
+   - name: Install dependencies
+     run: pnpm install --no-frozen-lockfile
+   ```
+
+   **Note**: Never commit this change to the repository. It's only for local testing with act.
+
+5. **Regenerate lockfile if needed**: If the lockfile is truly corrupted:
+
+   ```bash
+   rm pnpm-lock.yaml
+   pnpm install
+   git add pnpm-lock.yaml
+   git commit -m "chore: regenerate pnpm-lock.yaml"
+   ```
 
 ## More Information
 
