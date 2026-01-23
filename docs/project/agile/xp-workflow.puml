@@ -1,0 +1,109 @@
+@startuml
+title 极限编程（XP）工作流程图
+
+skinparam activity {
+    BackgroundColor lightcyan
+    BorderColor darkcyan
+    FontSize 12
+}
+
+skinparam arrow {
+    Color darkcyan
+}
+
+start
+
+:客户提供需求\n(用户故事);
+
+partition "计划阶段" {
+    :估算用户故事;
+    note right
+      使用故事点
+      或理想小时
+    end note
+    
+    :客户选择故事\n(计划游戏);
+    note right
+      基于业务价值
+      和技术风险
+    end note
+    
+    :确定迭代范围;
+    :创建迭代计划;
+}
+
+partition "开发迭代（1-3周）" {
+    partition "每天" {
+        :选择用户故事;
+        
+        :编写验收测试;
+        note right
+          先写测试
+          TDD 实践
+        end note
+        
+        :结对编程实现;
+        note right
+          两人共同编码
+          知识共享
+        end note
+        
+        :运行所有测试;
+        
+        if (测试通过?) then (是)
+            :重构代码;
+            note right
+              改进代码质量
+              保持简单设计
+            end note
+            
+            :持续集成;
+            note right
+              频繁提交代码
+              自动构建和测试
+            end note
+        else (否)
+            :修复问题;
+            :重新运行测试;
+        endif
+        
+        :代码审查\n(集体所有权);
+    }
+}
+
+partition "交付阶段" {
+    :客户验收测试;
+    
+    if (验收通过?) then (是)
+        :小型发布;
+        note right
+          尽早交付价值
+          快速获得反馈
+        end note
+        
+        :收集反馈;
+        
+        :回顾和改进;
+    else (否)
+        :调整和修复;
+    endif
+}
+
+partition "持续实践" {
+    :保持可持续节奏;
+    note right
+      避免加班
+      保持长期生产力
+    end note
+    
+    :持续改进;
+    note right
+      回顾和调整
+      优化实践
+    end note
+}
+
+stop
+
+@enduml
+

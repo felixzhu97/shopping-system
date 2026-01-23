@@ -22,7 +22,7 @@ import { cn } from '@/lib/utils/utils';
 import { useCheckoutStore } from '@/lib/store/checkoutStore';
 import { CheckoutFormData } from '@/lib/store/checkoutStore';
 import { paymentMethods } from '@/components/payment-method';
-import { PaymentMethod } from 'shared';
+import { PaymentMethod } from 'types';
 
 // 基础弹出层组件
 interface BaseModalProps {

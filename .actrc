@@ -1,0 +1,9 @@
+# Act configuration file
+# Default platform image to use
+-P ubuntu-latest=catthehacker/ubuntu:act-latest
+
+# Container options
+--container-architecture linux/amd64
+
+# Enable verbose output for debugging
+-v

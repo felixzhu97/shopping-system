@@ -19,7 +19,7 @@ describe('User Model', () => {
 
   beforeEach(async () => {
     // Import mocked modules
-    const { default: User } = await import('../../models/User');
+    const { default: User } = await import('../../models/User.js');
     mockUser = User;
 
     // Reset mocks

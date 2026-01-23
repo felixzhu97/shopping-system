@@ -1,4 +1,4 @@
-import { ApiResponse, ErrorResponse } from 'shared';
+import { ApiResponse, ErrorResponse } from 'types';
 import { getTokenFromStore } from '../store/userStore';
 
 export const API_CONFIG = {

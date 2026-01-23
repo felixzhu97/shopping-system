@@ -31,9 +31,9 @@ describe('Cart Model', () => {
 
   beforeEach(async () => {
     // Import mocked modules
-    const { default: Cart } = await import('../../models/Cart');
-    const { default: User } = await import('../../models/User');
-    const { default: Product } = await import('../../models/Product');
+    const { default: Cart } = await import('../../models/Cart.js');
+    const { default: User } = await import('../../models/User.js');
+    const { default: Product } = await import('../../models/Product.js');
 
     mockCart = Cart;
     mockUser = User;

@@ -1,3 +1,7 @@
+// Initialize Datadog APM before any other imports
+import { initDatadogAPM } from 'monitoring';
+initDatadogAPM();
+
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';

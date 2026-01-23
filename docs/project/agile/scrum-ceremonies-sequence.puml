@@ -1,0 +1,69 @@
+@startuml
+title Scrum 仪式时序图
+
+skinparam sequenceArrowThickness 2
+skinparam roundcorner 10
+skinparam maxmessagesize 60
+
+actor "产品负责人" as PO
+actor "Scrum Master" as SM
+participant "开发团队" as Team
+participant "利益相关者" as Stakeholder
+
+== Sprint 规划会议 ==
+PO -> Team: 介绍 Product Backlog
+PO -> Team: 说明 Sprint 目标
+Team -> PO: 提问和澄清
+Team -> Team: 估算和选择任务
+Team -> PO: 创建 Sprint Backlog
+Team -> PO: 确认 Sprint 目标
+
+== Sprint 执行期间（每日）==
+loop 每天（最多15分钟）
+    Team -> Team: 每日站会
+    Team -> Team: 昨天完成了什么？
+    Team -> Team: 今天计划做什么？
+    Team -> Team: 有什么阻碍？
+    SM -> Team: 记录障碍并协助解决
+end
+
+== Sprint 评审会议 ==
+Team -> Stakeholder: 演示完成的功能
+Team -> Stakeholder: 展示产品增量
+Stakeholder -> Team: 提供反馈
+PO -> Stakeholder: 讨论 Product Backlog 优先级
+Stakeholder -> PO: 新的需求建议
+
+== Sprint 回顾会议 ==
+SM -> Team: 回顾 Sprint 过程
+Team -> Team: 什么做得好？
+Team -> Team: 什么可以改进？
+Team -> Team: 制定改进计划
+SM -> Team: 记录行动项
+
+note right of PO
+  Sprint 规划会议
+  时长：最多8小时（2周Sprint）
+  频率：每个Sprint开始
+end note
+
+note right of Team
+  每日站会
+  时长：最多15分钟
+  频率：每天同一时间
+end note
+
+note right of Stakeholder
+  Sprint 评审会议
+  时长：最多4小时（2周Sprint）
+  频率：每个Sprint结束
+end note
+
+note right of SM
+  Sprint 回顾会议
+  时长：最多3小时（2周Sprint）
+  频率：每个Sprint结束
+end note
+
+@enduml
+

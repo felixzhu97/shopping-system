@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { Product as SharedProduct } from 'shared';
+import { Product as SharedProduct } from 'types';
 import Product from '../models/Product';
 
 // 获取所有产品

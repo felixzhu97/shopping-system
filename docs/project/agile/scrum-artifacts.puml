@@ -1,0 +1,81 @@
+@startuml
+title Scrum 工件关系图
+
+skinparam componentStyle rectangle
+skinparam packageStyle rectangle
+skinparam linetype ortho
+
+package "Scrum 工件" {
+    component [产品待办事项列表\nProduct Backlog] as pbl #lightgreen
+    component [Sprint 待办事项列表\nSprint Backlog] as sbl #lightyellow
+    component [产品增量\nIncrement] as increment #lightblue
+}
+
+package "Product Backlog 属性" {
+    component [待办事项项\n(用户故事、功能、缺陷)] as pbi
+    component [优先级\n(由产品负责人决定)] as priority
+    component [估算\n(故事点、理想小时)] as estimate
+    component [验收标准] as criteria
+}
+
+package "Sprint Backlog 属性" {
+    component [Sprint 目标] as goal
+    component [选定的待办事项项] as selected
+    component [任务分解] as tasks
+    component [每日进度更新] as progress
+}
+
+package "增量属性" {
+    component [完成的功能] as features
+    component [质量标准\n(完成定义)] as quality
+    component [可发布状态] as releasable
+}
+
+' Product Backlog 组成部分
+pbl --> pbi
+pbl --> priority
+pbl --> estimate
+pbl --> criteria
+
+' Sprint Backlog 组成部分
+sbl --> goal
+sbl --> selected
+sbl --> tasks
+sbl --> progress
+
+' 增量组成部分
+increment --> features
+increment --> quality
+increment --> releasable
+
+' 工件之间的关系
+pbl --> sbl : 选择项目创建
+sbl --> increment : 完成交付
+increment ..> pbl : 可能产生新需求
+
+note right of pbl
+  产品待办事项列表
+  - 动态更新
+  - 持续细化
+  - 按优先级排序
+  - 包含所有产品需求
+end note
+
+note right of sbl
+  Sprint 待办事项列表
+  - Sprint 期间的计划
+  - 由开发团队拥有
+  - 每日更新
+  - 可见和透明
+end note
+
+note right of increment
+  产品增量
+  - 可工作的产品功能
+  - 符合完成定义
+  - 可随时发布
+  - 累积所有之前的增量
+end note
+
+@enduml
+

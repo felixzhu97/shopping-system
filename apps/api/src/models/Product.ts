@@ -1,5 +1,5 @@
 import mongoose, { Schema, Document } from 'mongoose';
-import { Product as SharedProduct } from 'shared';
+import { Product as SharedProduct } from 'types';
 
 // 使用shared包中的Product类型，但不包含id字段，因为MongoDB会自动生成_id
 export type ProductType = Omit<SharedProduct, 'id'>;

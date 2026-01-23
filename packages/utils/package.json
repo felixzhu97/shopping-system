@@ -1,0 +1,29 @@
+{
+  "name": "utils",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "license": "MIT",
+  "scripts": {
+    "lint": "eslint \"src/**/*.ts\"",
+    "build": "tsc && pnpm run bundle",
+    "bundle": "esbuild src/index.ts --bundle --format=cjs --platform=node --outfile=dist/index.bundle.js",
+    "dev": "tsc --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "clean": "rm -rf dist && rm -rf node_modules"
+  },
+  "dependencies": {
+    "types": "workspace:*",
+    "typescript": "^5.2.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.17.30",
+    "@vitest/coverage-v8": "^1.6.1",
+    "esbuild": "^0.20.2",
+    "eslint": "^8.48.0",
+    "vitest": "^1.4.0"
+  }
+}

@@ -1,58 +1,113 @@
-# 购物系统 Monorepo
+# Shopping System Monorepo
 
-基于 Turborepo 的购物系统 monorepo 项目。
+A shopping system monorepo project based on Turborepo, including Web frontend, mobile application, and backend API services.
 
-## 项目结构
+## Project Structure
 
 ```
 shopping-system/
 ├── apps/
-│   ├── web/           # Next.js 前端应用
-│   └── api/           # Express.js 后端API服务
+│   ├── web/           # Next.js Web frontend application
+│   ├── mobile/        # React Native mobile application
+│   └── api/           # Express.js backend API service
 ├── packages/
-│   ├── ui/            # UI组件库
-│   └── shared/        # 共享工具和类型
-├── docs/              # 项目文档
-│   ├── COMMIT_CONVENTION.md    # 提交规范
-│   ├── VERSIONING.md          # 版本管理
-│   └── ENVIRONMENT.md         # 环境变量配置
+│   ├── ui/            # UI component library
+│   └── shared/        # Shared utilities and types
+├── docs/              # Project documentation
+│   ├── api/           # API documentation
+│   ├── architecture/ # Architecture documentation
+│   ├── development/   # Development documentation
+│   ├── operations/    # Operations documentation
+│   └── project/       # Project documentation
+└── scripts/           # Utility scripts
 ```
 
-## 使用技术
+## Technology Stack
 
-- [Turborepo](https://turbo.build/repo) - Monorepo 构建系统
-- [Next.js](https://nextjs.org/) - React 框架
-- [Express.js](https://expressjs.com/) - Node.js Web 框架
-- [MongoDB](https://www.mongodb.com/) - 文档数据库
+### Core Frameworks
+
+- [Turborepo](https://turbo.build/repo) - Monorepo build system
+- [PNPM](https://pnpm.io/) - Package manager
+- [TypeScript](https://www.typescriptlang.org/) - Type system
+
+### Web Frontend
+
+- [Next.js](https://nextjs.org/) - React framework
+- [React](https://react.dev/) - UI library
+- [Tailwind CSS](https://tailwindcss.com/) - CSS framework
+- [Radix UI](https://www.radix-ui.com/) - Unstyled UI components
+- [Zustand](https://zustand-demo.pmnd.rs/) - State management
+- [React Hook Form](https://react-hook-form.com/) - Form handling
+- [i18next](https://www.i18next.com/) - Internationalization
+- [PostHog](https://posthog.com/) - Product analytics
+
+### Mobile Application
+
+- [React Native](https://reactnative.dev/) - Cross-platform mobile application framework
+- [Expo](https://expo.dev/) - React Native development platform
+- [TypeScript](https://www.typescriptlang.org/) - Type system
+- [Zustand](https://zustand-demo.pmnd.rs/) - State management
+- [Axios](https://axios-http.com/) - HTTP client
+- [Expo Router](https://docs.expo.dev/router/introduction/) - File system routing
+
+### Backend API
+
+- [Express.js](https://expressjs.com/) - Node.js web framework
+- [MongoDB](https://www.mongodb.com/) - Document database
 - [Mongoose](https://mongoosejs.com/) - MongoDB ODM
-- [TypeScript](https://www.typescriptlang.org/) - 类型系统
-- [PNPM](https://pnpm.io/) - 包管理器
-- [Storybook](https://storybook.js.org/) - UI 组件开发环境
-- [Vercel](https://vercel.com/) - 部署平台
-- [Vercel Speed Insights](https://vercel.com/docs/speed-insights) - 性能监控和分析
-- [Vitest](https://vitest.dev/) - 测试框架
-- [Testing Library](https://testing-library.com/) - React 组件测试工具
+- [Serverless Framework](https://www.serverless.com/) - Serverless deployment
+- [Swagger](https://swagger.io/) - API documentation
 
-## 主要功能
+### Development Tools
 
-### 前端功能
+- [Vitest](https://vitest.dev/) - Testing framework
+- [Testing Library](https://testing-library.com/) - React component testing utilities
+- [Storybook](https://storybook.js.org/) - UI component development environment
+- [ESLint](https://eslint.org/) - Code linting
+- [Prettier](https://prettier.io/) - Code formatting
 
-- 响应式导航栏，支持移动端和桌面端
-- 商品分类浏览和搜索
-- 购物车管理
-- 用户账户管理
-- 商品详情页
-- 订单管理
+### Deployment & Monitoring
 
-### 后端功能
+- [Vercel](https://vercel.com/) - Web application deployment platform
+- [Vercel Analytics](https://vercel.com/docs/analytics) - Analytics tool
+- [Vercel Speed Insights](https://vercel.com/docs/speed-insights) - Performance monitoring
 
-- RESTful API 接口
-- 用户认证和授权
-- 商品管理
-- 订单处理
-- 数据验证和错误处理
+## Key Features
 
-## 项目架构
+### Web Frontend Features
+
+- Responsive design supporting mobile and desktop
+- Product category browsing and search
+- Shopping cart management
+- User registration, login, and account management
+- Product detail pages
+- Order management and history
+- Multi-language support (internationalization)
+- Dark mode support
+- Payment integration
+
+### Mobile Application Features
+
+- Homepage carousel and recommended products
+- Product category browsing and filtering
+- Shopping cart management
+- User account management
+- Order history viewing
+- Local data caching
+- Responsive UI design
+
+### Backend API Features
+
+- RESTful API endpoints
+- User authentication and authorization (JWT)
+- Product management (CRUD operations)
+- Shopping cart management
+- Order processing and status management
+- Data validation and error handling
+- Swagger API documentation
+- Admin permission control
+
+## Project Architecture
 
 ### C4-Context
 
@@ -70,15 +125,15 @@ shopping-system/
 
 ![c4-context.svg](docs/svgs/c4-code.svg)
 
-## 数据库关系
+## Database Relationships
 
 ![ER-model.svg](docs/svgs/ER-model.svg)
 
-## 配置说明
+## Configuration
 
-### Turborepo 配置
+### Turborepo Configuration
 
-项目使用 Turborepo 进行构建管理，主要配置在 `turbo.json` 文件中：
+The project uses Turborepo for build management, with main configuration in the `turbo.json` file:
 
 ```json
 {
@@ -111,32 +166,32 @@ shopping-system/
 }
 ```
 
-配置说明：
+Configuration notes:
 
-- `globalDependencies`: 全局依赖文件，环境变量文件变化会触发所有任务重新运行
-- `remoteCache`: 启用 Turborepo 远程缓存功能
-- `pipeline.build`: 构建命令，依赖于所有上游包的构建完成
-- `pipeline.dev`: 开发命令，禁用缓存并设为持久运行
-- `pipeline.clean`: 清理命令，禁用缓存
-- `pipeline.start`: 启动命令，依赖于构建完成
-- `pipeline.test`: 测试命令，依赖于构建完成
+- `globalDependencies`: Global dependency files, changes to environment variable files will trigger all tasks to rerun
+- `remoteCache`: Enable Turborepo remote cache functionality
+- `pipeline.build`: Build command, depends on all upstream package builds completing
+- `pipeline.dev`: Development command, cache disabled and set as persistent
+- `pipeline.clean`: Clean command, cache disabled
+- `pipeline.start`: Start command, depends on build completion
+- `pipeline.test`: Test command, depends on build completion
 
-### GitHub Actions 配置
+### GitHub Actions Configuration
 
-项目使用 GitHub Actions 进行 CI/CD，配置文件位于 `.github/workflows/ci.yml`。主要功能：
+The project uses GitHub Actions for CI/CD, with configuration file located at `.github/workflows/ci.yml`. Main features:
 
-- 自动运行测试和构建
-- 集成 Turborepo 远程缓存
-- PNPM 依赖缓存优化
+- Automatically run tests and builds
+- Integrate Turborepo remote cache
+- PNPM dependency cache optimization
 
-要启用 Turborepo 远程缓存，需要配置以下环境变量：
+To enable Turborepo remote cache, configure the following environment variables:
 
-1. `TURBO_TOKEN`: 从 [Vercel 账户设置](https://vercel.com/account/tokens) 获取
-2. `TURBO_TEAM`: 从 Vercel 团队设置中获取团队 ID
+1. `TURBO_TOKEN`: Obtain from [Vercel account settings](https://vercel.com/account/tokens)
+2. `TURBO_TEAM`: Get team ID from Vercel team settings
 
-### Vercel 部署配置
+### Vercel Deployment Configuration
 
-项目使用 Vercel 进行部署，配置文件位于 `vercel.json`：
+The project uses Vercel for deployment, with configuration file located at `vercel.json`:
 
 ```json
 {
@@ -148,109 +203,424 @@ shopping-system/
 }
 ```
 
-## 开发指南
+## Development Guide
 
-### 环境要求
+### Environment Requirements
 
-- Node.js >= 18.0.0
+#### General Requirements
+
+- Node.js >= 20.0.0
 - PNPM >= 8.0.0
 - MongoDB >= 6.0
 
-### 安装依赖
+#### Web Frontend
+
+- Node.js >= 20.0.0
+- PNPM >= 8.0.0
+
+#### Mobile Application
+
+- Node.js >= 20.0.0
+- PNPM >= 8.0.0
+- Expo CLI (install globally via npm/yarn)
+- Android Studio / Xcode (for native development, optional)
+
+#### Backend API
+
+- Node.js >= 20.0.0
+- MongoDB >= 6.0
+- AWS CLI (for Serverless deployment)
+
+### Installing Dependencies
+
+#### Install All Dependencies
 
 ```bash
 pnpm install
 ```
 
-### 开发模式
+#### Install Web Frontend Dependencies Only
+
+```bash
+cd apps/web
+pnpm install
+```
+
+#### Install Mobile Application Dependencies Only
+
+```bash
+cd apps/react-native-app
+yarn install
+# or
+pnpm install
+```
+
+#### Install Backend API Dependencies Only
+
+```bash
+cd apps/api
+pnpm install
+```
+
+### Development Mode
+
+#### Start All Services
 
 ```bash
 pnpm dev
 ```
 
-### 构建项目
+#### Start Web Frontend Only
+
+```bash
+cd apps/web
+pnpm dev
+# Access at http://localhost:3000
+```
+
+#### Start Mobile Application Only
+
+```bash
+cd apps/react-native-app
+yarn start
+# or specify platform
+yarn ios      # iOS
+yarn android  # Android
+yarn web      # Web
+```
+
+#### Start Backend API Only
+
+```bash
+cd apps/api
+pnpm dev
+# Access at http://localhost:3001
+```
+
+### Building the Project
+
+#### Build All Projects
 
 ```bash
 pnpm build
 ```
 
-### 运行测试
+#### Build Web Frontend
+
+```bash
+cd apps/web
+pnpm build
+```
+
+#### Build Mobile Application
+
+```bash
+cd apps/react-native-app
+# Build using Expo
+expo build:android    # Android APK
+expo build:ios      # iOS
+expo build:web         # Web
+```
+
+#### Build Backend API
+
+```bash
+cd apps/api
+pnpm build
+```
+
+### Running Tests
+
+#### Run All Tests
 
 ```bash
 pnpm test
 ```
 
-### 代码规范检查
+#### Run Web Frontend Tests
+
+```bash
+cd apps/web
+pnpm test
+pnpm test:watch      # Watch mode
+pnpm test:coverage   # Coverage report
+```
+
+#### Run Mobile Application Tests
+
+```bash
+cd apps/react-native-app
+yarn test
+yarn test:coverage   # Coverage report
+yarn test:watchAll   # Watch mode
+```
+
+#### Run Backend API Tests
+
+```bash
+cd apps/api
+pnpm test
+pnpm test:watch      # Watch mode
+pnpm test:coverage   # Coverage report
+```
+
+### Code Quality Checks
+
+#### Check All Code
 
 ```bash
 pnpm lint
+pnpm lint:fix        # Auto-fix
+pnpm format          # Format code
 ```
 
-## 测试说明
-
-项目使用 Vitest 和 Testing Library 进行测试：
-
-- 组件测试：使用 Testing Library 进行 React 组件测试
-- API 测试：使用 Vitest 进行后端 API 测试
-- 集成测试：使用 Vitest 进行端到端测试
-
-测试文件位于各包的 `tests` 目录下，遵循以下命名规范：
-
-- 组件测试：`*.test.tsx`
-- API 测试：`*.test.ts`
-- 集成测试：`*.integration.test.ts`
-
-## API 文档
-
-项目提供完整的 OpenAPI 规范文档和 Postman 集合：
-
-- [API 文档](docs/api/api-documentation.md)
-- [OpenAPI 规范](docs/api/openapi.json)
-- [Postman 集合](docs/api/postman_collection.json)
-
-## 数据库初始化
-
-项目提供多种数据库种子脚本：
+#### Check Web Frontend Code
 
 ```bash
-# 使用200个商品数据初始化数据库
-pnpm seed:products200
-
-# 使用完整商品数据初始化数据库
-pnpm seed:products
+cd apps/web
+pnpm lint
 ```
 
-## 系统架构
+#### Check Mobile Application Code
 
-项目架构文档和图表位于 `docs/architecture/` 目录：
-
-- [系统架构图](docs/architecture/system-architecture.md)
-- [ER 模型图](docs/architecture/ER-model.puml)
-- [C4 模型图](docs/architecture/c4-model.puml)
-
-## 环境变量配置
-
-复制 `.env.example` 文件并重命名为 `.env.local`，然后配置以下变量：
-
+```bash
+cd apps/react-native-app
+yarn lint
 ```
-MONGODB_URI=mongodb://localhost:27017/shopping-system-public
-JWT_SECRET=your_jwt_secret_here
+
+#### Check Backend API Code
+
+```bash
+cd apps/api
+pnpm lint
+```
+
+## Testing
+
+The project uses Vitest and Testing Library for testing:
+
+- Component testing: Use Testing Library for React component testing
+- API testing: Use Vitest for backend API testing
+- Integration testing: Use Vitest for end-to-end testing
+
+Test files are located in the `tests` directory of each package, following these naming conventions:
+
+- Component tests: `*.test.tsx`
+- API tests: `*.test.ts`
+- Integration tests: `*.integration.test.ts`
+
+## API Documentation
+
+The project provides complete OpenAPI specification documentation and Postman collection:
+
+- [API Documentation](docs/api/api-documentation.md)
+- [OpenAPI Specification](docs/api/openapi.json)
+- [Postman Collection](docs/api/postman_collection.json)
+
+## Database Initialization
+
+The backend API provides various database seed scripts:
+
+```bash
+cd apps/api
+
+# Initialize database with 200 products (development environment)
+pnpm seed:products200:dev
+
+# Initialize database with 200 products (test environment)
+pnpm seed:products200:test
+
+# Initialize database with 200 products (production environment)
+pnpm seed:products200:prod
+```
+
+**Note**: Ensure that the corresponding environment variable files (`.env.local`, `.env.test`, or `.env.prod`) are properly configured before running seed scripts.
+
+## System Architecture
+
+Project architecture documentation and diagrams are located in the `docs/architecture/` directory:
+
+### C4 Model
+
+- [C4 Context Diagram](docs/architecture/c4-context.puml) - System context
+- [C4 Container Diagram](docs/architecture/c4-container.puml) - Container architecture
+- [C4 Component Diagram](docs/architecture/c4-component.puml) - Component architecture
+- [C4 Code Diagram](docs/architecture/c4-code.puml) - Code architecture
+
+### TOGAF Architecture
+
+- [Business Architecture](docs/architecture/togaf/business-architecture.puml)
+- [Application Architecture](docs/architecture/togaf/application-architecture.puml)
+- [Data Architecture](docs/architecture/togaf/data-architecture.puml)
+- [Technology Architecture](docs/architecture/togaf/technology-architecture.puml)
+
+## Environment Variable Configuration
+
+### Web Frontend Environment Variables
+
+Create a `.env.local` file in the `apps/web` directory:
+
+```env
+# Next.js configuration
 NEXTAUTH_SECRET=your_nextauth_secret_here
 NEXTAUTH_URL=http://localhost:3000
+
+# API address
+NEXT_PUBLIC_API_URL=http://localhost:3001
 ```
 
-## 项目访问链接
+### Backend API Environment Variables
 
-https://felixzhu.shop
+Create a `.env.local` file in the `apps/api` directory:
 
-## 贡献指南
+```env
+# Database configuration
+MONGODB_URI=mongodb://localhost:27017/shopping-system-public
 
-1. Fork 项目
-2. 创建特性分支 (`git checkout -b feature/AmazingFeature`)
-3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
-4. 推送到分支 (`git push origin feature/AmazingFeature`)
-5. 创建 Pull Request
+# Server configuration
+PORT=3001
+NODE_ENV=development
 
-## 许可证
+# JWT configuration
+JWT_SECRET=your_jwt_secret_here
+
+# CORS configuration
+CORS_ORIGINS=http://localhost:3000,http://localhost:8000
+
+# Admin configuration
+ADMIN_SECRET=your_admin_secret_here
+```
+
+### Mobile Application Environment Variables
+
+Mobile application environment variables are configured in `apps/react-native-app/src/constants/config.ts`. For detailed configuration, please refer to [apps/react-native-app/README.md](apps/react-native-app/README.md).
+
+**Note**:
+
+- All sensitive information (such as keys, passwords) should not be committed to version control
+- Production environments should use environment variable management services (such as Vercel, AWS Secrets Manager)
+- For detailed environment variable descriptions, please refer to [docs/development/ENVIRONMENT.md](docs/development/ENVIRONMENT.md)
+
+## Project Access Links
+
+- **Web Application**: https://felixzhu.shop
+- **API Documentation**: Visit the `/api-docs` endpoint of the backend API to view Swagger documentation
+- **Mobile Application**: Install to device after building with Expo or run using the Expo Go app
+
+## Contributing
+
+We welcome all forms of contributions! Please follow these steps:
+
+### Development Workflow
+
+1. **Fork the project** to your GitHub account
+
+2. **Create a new branch from the protected branch**
+
+   ```bash
+   git checkout master
+   git pull origin master
+   git checkout -b feat/your-feature-name
+   ```
+
+3. **Develop**
+
+   - Follow project code standards
+   - Write necessary tests
+   - Update relevant documentation
+
+4. **Commit changes**
+
+   ```bash
+   git add .
+   git commit -m "feat: add your feature description"
+   ```
+
+   - Commit messages should follow [Commit Convention](docs/development/COMMIT_CONVENTION.md)
+
+5. **Push to branch**
+
+   ```bash
+   git push origin feat/your-feature-name
+   ```
+
+6. **Create Pull Request**
+   - Submit to `feature` branch (new features) or `master` branch (other changes)
+   - Use the project's PR template
+   - Ensure all CI checks pass
+   - Wait for Code Review
+
+### Branch Naming Convention
+
+- `feat/xxx` - New feature
+- `fix/xxx` - Bug fix
+- `docs/xxx` - Documentation update
+- `refactor/xxx` - Code refactoring
+- `style/xxx` - Style changes
+- `test/xxx` - Test related
+- `chore/xxx` - Build/tool related
+
+For detailed specifications, please refer to the Git specification document in the project root directory.
+
+### Code Standards
+
+- Use ESLint and Prettier to maintain consistent code style
+- Follow TypeScript best practices
+- Write clear comments and documentation
+- Ensure test coverage
+
+### Documentation
+
+- Update relevant README files
+- Update API documentation (if applicable)
+- Add changelog entries
+
+For more information, please refer to:
+
+- [Development Guide](docs/development/onboarding-guide.md)
+- [Testing Guide](docs/development/testing-guide.md)
+- [Commit Convention](docs/development/COMMIT_CONVENTION.md)
+
+## Related Documentation
+
+### Development Documentation
+
+- [Development Guide](docs/development/onboarding-guide.md) - New member onboarding guide
+- [Testing Guide](docs/development/testing-guide.md) - Testing related instructions
+- [Commit Convention](docs/development/COMMIT_CONVENTION.md) - Git commit convention
+- [Version Management](docs/development/VERSIONING.md) - Version number management specification
+- [Environment Configuration](docs/development/ENVIRONMENT.md) - Detailed environment variable descriptions
+
+### API Documentation
+
+- [API Documentation](docs/api/api-documentation.md) - Complete API description
+- [OpenAPI Specification](docs/api/openapi.json) - OpenAPI 3.0 specification file
+- [Postman Collection](docs/api/postman_collection.json) - Postman test collection
+
+### Architecture Documentation
+
+- [Architecture Overview](docs/architecture/) - System architecture related documentation
+- [C4 Model](docs/architecture/c4-model.puml) - System architecture model
+
+### Operations Documentation
+
+- [Deployment Guide](docs/development/deployment-guide.md) - Deployment related instructions
+- [Operations Manual](docs/operations/operations-manual.md) - Operations manual
+- [Change Log](docs/operations/change-log.md) - Version change records
+
+### Project Documentation
+
+- [Documentation Overview](docs/project/documentation-overview.md) - Documentation structure description
+- [Glossary](docs/project/glossary.md) - Project terminology definitions
+
+## License
 
 MIT License
+
+## Contact
+
+For questions or suggestions, please contact us through:
+
+- Submit a [GitHub Issue](https://github.com/your-repo/issues)
+- Create a Pull Request
+- Check project documentation for more information

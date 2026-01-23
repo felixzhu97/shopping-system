@@ -1,0 +1,134 @@
+@startuml
+title 基础设施架构图
+
+skinparam component {
+    BackgroundColor lightyellow
+    BorderColor darkblue
+    FontSize 12
+}
+
+skinparam node {
+    BackgroundColor lightgreen
+    BorderColor darkgreen
+    FontSize 12
+}
+
+skinparam database {
+    BackgroundColor lightcoral
+    BorderColor darkred
+    FontSize 12
+}
+
+skinparam cloud {
+    BackgroundColor lightblue
+    BorderColor darkblue
+}
+
+' 用户层
+actor "用户" as User
+actor "管理员" as Admin
+
+' CDN 和边缘网络
+cloud "Vercel Edge Network" as Edge {
+    node "全球 CDN 节点" as CDN
+    node "边缘函数" as EdgeFunctions
+}
+
+' 前端应用层
+cloud "Vercel Platform" as Vercel {
+    component "Next.js 应用" as NextApp {
+        component "静态页面" as StaticPages
+        component "服务端渲染" as SSR
+        component "API 路由" as APIRoutes
+    }
+    component "Serverless Functions" as VercelFunctions
+}
+
+' 后端服务层
+cloud "AWS Cloud" as AWS {
+    component "API Gateway" as APIGateway
+    component "Lambda Functions" as Lambda {
+        component "API 处理函数" as APILambda
+        component "业务逻辑函数" as BusinessLambda
+    }
+    component "CloudWatch" as CloudWatch {
+        component "日志服务" as Logs
+        component "监控指标" as Metrics
+        component "告警" as Alarms
+    }
+}
+
+' 数据库层
+cloud "MongoDB Atlas" as Atlas {
+    database "主集群" as PrimaryCluster {
+        component "副本集" as ReplicaSet
+        component "分片" as Shards
+    }
+    database "备份集群" as BackupCluster
+    component "Atlas 监控" as AtlasMonitoring
+}
+
+' 开发工具链
+cloud "GitHub" as GitHub {
+    component "代码仓库" as Repo
+    component "GitHub Actions" as Actions {
+        component "CI/CD 流水线" as Pipeline
+        component "自动化测试" as AutoTest
+        component "自动化部署" as AutoDeploy
+    }
+}
+
+' 构建工具
+component "Turborepo" as Turbo {
+    component "构建缓存" as BuildCache
+    component "远程缓存" as RemoteCache
+}
+
+' 用户访问流程
+User --> CDN : HTTPS
+CDN --> EdgeFunctions : 边缘计算
+EdgeFunctions --> NextApp : 请求
+Admin --> NextApp : 管理界面
+
+' 前端到后端
+NextApp --> VercelFunctions : API 调用
+NextApp --> APIGateway : API 调用
+VercelFunctions --> APILambda : 转发
+APIGateway --> APILambda : 路由
+
+' 后端到数据库
+APILambda --> PrimaryCluster : MongoDB 连接
+BusinessLambda --> PrimaryCluster : MongoDB 连接
+PrimaryCluster --> BackupCluster : 数据同步
+
+' 监控和日志
+APILambda --> CloudWatch : 日志
+BusinessLambda --> CloudWatch : 日志
+VercelFunctions --> CloudWatch : 日志
+PrimaryCluster --> AtlasMonitoring : 监控数据
+CloudWatch --> Alarms : 告警触发
+
+' CI/CD 流程
+Repo --> Actions : 代码推送
+Actions --> Pipeline : 触发流水线
+Pipeline --> AutoTest : 运行测试
+AutoTest --> AutoDeploy : 测试通过
+AutoDeploy --> Vercel : 部署前端
+AutoDeploy --> AWS : 部署后端
+Pipeline --> Turbo : 使用缓存
+Turbo --> BuildCache : 本地缓存
+Turbo --> RemoteCache : 远程缓存
+
+' 数据备份
+PrimaryCluster --> BackupCluster : 自动备份
+
+legend right
+    |<#lightblue> 前端服务 |
+    |<#lightgreen> 后端服务 |
+    |<#lightcoral> 数据存储 |
+    |<#lightyellow> 云平台 |
+    |<#lightgray> 工具链 |
+endlegend
+
+@enduml
+

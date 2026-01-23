@@ -1,5 +1,5 @@
 import mongoose, { Schema, Document } from 'mongoose';
-import { Order as OrderType } from 'shared';
+import { Order as OrderType } from 'types';
 
 export interface CartItemType {
   productId: string;

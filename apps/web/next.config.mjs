@@ -1,3 +1,9 @@
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 let userConfig = undefined;
 try {
   // try to import ESM first
@@ -13,15 +19,15 @@ try {
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
   typescript: {
     ignoreBuildErrors: true,
   },
   images: {
-    domains: ['localhost'],
     remotePatterns: [
+      {
+        protocol: 'http',
+        hostname: 'localhost',
+      },
       {
         protocol: 'https',
         hostname: '**',
@@ -33,20 +39,61 @@ const nextConfig = {
     parallelServerBuildTraces: true,
     parallelServerCompiles: true,
   },
-  async rewrites() {
-    return [
-      {
-        source: '/ingest/static/:path*',
-        destination: 'https://us-assets.i.posthog.com/static/:path*',
-      },
-      {
-        source: '/ingest/:path*',
-        destination: 'https://us.i.posthog.com/:path*',
-      },
-    ];
+  turbopack: {
+    root: path.resolve(__dirname, '../..'),
+    resolveAlias: {
+      // Use relative path from project root (set above)
+      'monitoring/client': './packages/monitoring/src/client.ts',
+    },
   },
-  // This is required to support PostHog trailing slash API requests
-  skipTrailingSlashRedirect: true,
+  webpack: (config, { isServer, webpack }) => {
+    // Configure module resolution for workspace packages
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      'monitoring/client': path.resolve(__dirname, '../../packages/monitoring/src/client.ts'),
+    };
+
+    // Exclude Node.js modules from client-side bundle
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+        net: false,
+        tls: false,
+        crypto: false,
+        os: false,
+        path: false,
+        stream: false,
+        util: false,
+      };
+
+      // Ignore dd-trace and related packages in client bundle
+      config.plugins.push(
+        new webpack.IgnorePlugin({
+          resourceRegExp: /^(dd-trace|@datadog\/libdatadog)$/,
+        })
+      );
+
+      // Exclude dd-trace and related packages from client bundle
+      const originalExternals = config.externals || [];
+      config.externals = [
+        ...(Array.isArray(originalExternals) ? originalExternals : [originalExternals]),
+        ({ request }, callback) => {
+          // Exclude dd-trace and related Node.js-only packages
+          if (
+            request === 'dd-trace' ||
+            request === '@datadog/libdatadog' ||
+            request?.startsWith('dd-trace/') ||
+            request?.startsWith('@datadog/libdatadog/')
+          ) {
+            return callback(null, `commonjs ${request}`);
+          }
+          callback();
+        },
+      ];
+    }
+    return config;
+  },
 };
 
 if (userConfig) {

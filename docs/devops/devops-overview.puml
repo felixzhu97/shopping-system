@@ -1,0 +1,164 @@
+@startuml
+title DevOps 工具链和流程概览
+
+skinparam component {
+    BackgroundColor lightyellow
+    BorderColor darkblue
+    FontSize 12
+}
+
+skinparam rectangle {
+    BackgroundColor lightblue
+    BorderColor darkblue
+}
+
+package "开发阶段" {
+    rectangle "代码开发" {
+        component "VS Code / Cursor" as IDE
+        component "Git" as Git
+        component "本地测试" as LocalTest
+    }
+    
+    rectangle "版本控制" {
+        component "GitHub" as GitHub
+        component "分支管理" as BranchMgmt
+        component "Pull Request" as PR
+    }
+}
+
+package "CI/CD 阶段" {
+    rectangle "持续集成" {
+        component "GitHub Actions" as Actions
+        component "自动化测试" as AutoTest
+        component "代码质量检查" as CodeQuality
+        component "构建" as Build
+    }
+    
+    rectangle "构建工具" {
+        component "Turborepo" as Turbo
+        component "PNPM Workspace" as PNPM
+        component "远程缓存" as Cache
+    }
+    
+    rectangle "持续部署" {
+        component "自动部署" as AutoDeploy
+        component "环境管理" as EnvMgmt
+        component "配置管理" as ConfigMgmt
+    }
+}
+
+package "部署阶段" {
+    rectangle "前端部署" {
+        component "Vercel" as Vercel
+        component "Next.js 构建" as NextBuild
+        component "CDN 分发" as CDN
+    }
+    
+    rectangle "后端部署" {
+        component "Vercel Serverless" as VercelAPI
+        component "AWS Lambda" as Lambda
+        component "API Gateway" as APIGateway
+    }
+    
+    rectangle "数据库" {
+        component "MongoDB Atlas" as Atlas
+        component "数据备份" as Backup
+        component "数据迁移" as Migration
+    }
+}
+
+package "监控和运维" {
+    rectangle "监控" {
+        component "Vercel Analytics" as VercelAnalytics
+        component "CloudWatch" as CloudWatch
+        component "MongoDB Monitoring" as MongoMonitor
+    }
+    
+    rectangle "日志" {
+        component "应用日志" as AppLogs
+        component "错误追踪" as ErrorTracking
+        component "性能分析" as PerfAnalysis
+    }
+    
+    rectangle "告警" {
+        component "系统告警" as Alerts
+        component "性能告警" as PerfAlerts
+        component "错误告警" as ErrorAlerts
+    }
+}
+
+package "安全" {
+    rectangle "安全措施" {
+        component "依赖扫描" as DepScan
+        component "代码扫描" as CodeScan
+        component "密钥管理" as SecretMgmt
+        component "访问控制" as AccessControl
+    }
+}
+
+' 开发流程
+IDE --> Git : 代码提交
+Git --> GitHub : 推送代码
+GitHub --> BranchMgmt : 分支管理
+BranchMgmt --> PR : 创建 PR
+
+' CI/CD 流程
+PR --> Actions : 触发 CI
+Actions --> AutoTest : 运行测试
+Actions --> CodeQuality : 代码检查
+Actions --> Build : 构建应用
+Build --> Turbo : 使用 Turborepo
+Turbo --> PNPM : 包管理
+Turbo --> Cache : 缓存优化
+
+' 部署流程
+AutoTest --> AutoDeploy : 测试通过
+AutoDeploy --> EnvMgmt : 环境选择
+AutoDeploy --> ConfigMgmt : 配置注入
+AutoDeploy --> Vercel : 部署前端
+AutoDeploy --> VercelAPI : 部署 API
+AutoDeploy --> Lambda : 部署 Lambda
+
+' 构建流程
+Build --> NextBuild : 构建 Next.js
+NextBuild --> Vercel : 部署
+Vercel --> CDN : CDN 分发
+
+' 数据库连接
+VercelAPI --> Atlas : 连接数据库
+Lambda --> Atlas : 连接数据库
+Atlas --> Backup : 自动备份
+Atlas --> Migration : 数据迁移
+
+' 监控流程
+Vercel --> VercelAnalytics : 性能数据
+VercelAPI --> CloudWatch : 日志
+Lambda --> CloudWatch : 日志
+Atlas --> MongoMonitor : 监控数据
+CloudWatch --> Alerts : 触发告警
+MongoMonitor --> Alerts : 触发告警
+
+' 安全流程
+Actions --> DepScan : 依赖扫描
+Actions --> CodeScan : 代码扫描
+ConfigMgmt --> SecretMgmt : 密钥管理
+SecretMgmt --> AccessControl : 访问控制
+
+' 日志和错误
+VercelAPI --> AppLogs : 应用日志
+Lambda --> AppLogs : 应用日志
+AppLogs --> ErrorTracking : 错误追踪
+AppLogs --> PerfAnalysis : 性能分析
+ErrorTracking --> ErrorAlerts : 错误告警
+PerfAnalysis --> PerfAlerts : 性能告警
+
+legend right
+    |<#lightblue> 开发工具 |
+    |<#lightgreen> CI/CD 工具 |
+    |<#lightyellow> 部署平台 |
+    |<#lightcoral> 数据存储 |
+    |<#lightgray> 监控运维 |
+endlegend
+
+@enduml
+
