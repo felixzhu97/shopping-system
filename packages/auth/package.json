@@ -8,7 +8,7 @@
   "scripts": {
     "lint": "eslint \"src/**/*.{ts,tsx}\"",
     "build": "tsc && pnpm run bundle",
-    "bundle": "esbuild src/index.ts --bundle --format=esm --platform=browser --outfile=dist/index.bundle.js",
+    "bundle": "esbuild src/index.ts --bundle --format=esm --platform=browser --outfile=dist/index.bundle.js --external:crypto",
     "dev": "tsc --watch",
     "clean": "rm -rf dist && rm -rf node_modules",
     "test": "vitest run",

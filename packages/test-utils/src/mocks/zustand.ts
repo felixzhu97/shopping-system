@@ -18,7 +18,7 @@ export function mockZustandStore<T>(
   const mockStore = vi.fn(() => ({
     ...initialState,
     ...actions,
-  }));
+  })) as ReturnType<typeof vi.fn>;
 
   vi.mock(storeName, () => ({
     [storeName]: mockStore,

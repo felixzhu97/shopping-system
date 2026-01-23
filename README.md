@@ -25,11 +25,13 @@ shopping-system/
 ## Technology Stack
 
 ### Core Frameworks
+
 - [Turborepo](https://turbo.build/repo) - Monorepo build system
 - [PNPM](https://pnpm.io/) - Package manager
 - [TypeScript](https://www.typescriptlang.org/) - Type system
 
 ### Web Frontend
+
 - [Next.js](https://nextjs.org/) - React framework
 - [React](https://react.dev/) - UI library
 - [Tailwind CSS](https://tailwindcss.com/) - CSS framework
@@ -40,6 +42,7 @@ shopping-system/
 - [PostHog](https://posthog.com/) - Product analytics
 
 ### Mobile Application
+
 - [React Native](https://reactnative.dev/) - Cross-platform mobile application framework
 - [Expo](https://expo.dev/) - React Native development platform
 - [TypeScript](https://www.typescriptlang.org/) - Type system
@@ -48,6 +51,7 @@ shopping-system/
 - [Expo Router](https://docs.expo.dev/router/introduction/) - File system routing
 
 ### Backend API
+
 - [Express.js](https://expressjs.com/) - Node.js web framework
 - [MongoDB](https://www.mongodb.com/) - Document database
 - [Mongoose](https://mongoosejs.com/) - MongoDB ODM
@@ -55,6 +59,7 @@ shopping-system/
 - [Swagger](https://swagger.io/) - API documentation
 
 ### Development Tools
+
 - [Vitest](https://vitest.dev/) - Testing framework
 - [Testing Library](https://testing-library.com/) - React component testing utilities
 - [Storybook](https://storybook.js.org/) - UI component development environment
@@ -62,6 +67,7 @@ shopping-system/
 - [Prettier](https://prettier.io/) - Code formatting
 
 ### Deployment & Monitoring
+
 - [Vercel](https://vercel.com/) - Web application deployment platform
 - [Vercel Analytics](https://vercel.com/docs/analytics) - Analytics tool
 - [Vercel Speed Insights](https://vercel.com/docs/speed-insights) - Performance monitoring
@@ -202,21 +208,25 @@ The project uses Vercel for deployment, with configuration file located at `verc
 ### Environment Requirements
 
 #### General Requirements
+
 - Node.js >= 20.0.0
 - PNPM >= 8.0.0
 - MongoDB >= 6.0
 
 #### Web Frontend
+
 - Node.js >= 20.0.0
 - PNPM >= 8.0.0
 
 #### Mobile Application
+
 - Node.js >= 20.0.0
 - PNPM >= 8.0.0
 - Expo CLI (install globally via npm/yarn)
 - Android Studio / Xcode (for native development, optional)
 
 #### Backend API
+
 - Node.js >= 20.0.0
 - MongoDB >= 6.0
 - AWS CLI (for Serverless deployment)
@@ -431,12 +441,14 @@ pnpm seed:products200:prod
 Project architecture documentation and diagrams are located in the `docs/architecture/` directory:
 
 ### C4 Model
+
 - [C4 Context Diagram](docs/architecture/c4-context.puml) - System context
 - [C4 Container Diagram](docs/architecture/c4-container.puml) - Container architecture
 - [C4 Component Diagram](docs/architecture/c4-component.puml) - Component architecture
 - [C4 Code Diagram](docs/architecture/c4-code.puml) - Code architecture
 
 ### TOGAF Architecture
+
 - [Business Architecture](docs/architecture/togaf/business-architecture.puml)
 - [Application Architecture](docs/architecture/togaf/application-architecture.puml)
 - [Data Architecture](docs/architecture/togaf/data-architecture.puml)
@@ -487,7 +499,8 @@ ADMIN_SECRET=your_admin_secret_here
 
 Mobile application environment variables are configured in `apps/react-native-app/src/constants/config.ts`. For detailed configuration, please refer to [apps/react-native-app/README.md](apps/react-native-app/README.md).
 
-**Note**: 
+**Note**:
+
 - All sensitive information (such as keys, passwords) should not be committed to version control
 - Production environments should use environment variable management services (such as Vercel, AWS Secrets Manager)
 - For detailed environment variable descriptions, please refer to [docs/development/ENVIRONMENT.md](docs/development/ENVIRONMENT.md)
@@ -507,6 +520,7 @@ We welcome all forms of contributions! Please follow these steps:
 1. **Fork the project** to your GitHub account
 
 2. **Create a new branch from the protected branch**
+
    ```bash
    git checkout master
    git pull origin master
@@ -514,18 +528,22 @@ We welcome all forms of contributions! Please follow these steps:
    ```
 
 3. **Develop**
+
    - Follow project code standards
    - Write necessary tests
    - Update relevant documentation
 
 4. **Commit changes**
+
    ```bash
    git add .
    git commit -m "feat: add your feature description"
    ```
+
    - Commit messages should follow [Commit Convention](docs/development/COMMIT_CONVENTION.md)
 
 5. **Push to branch**
+
    ```bash
    git push origin feat/your-feature-name
    ```
@@ -562,6 +580,7 @@ For detailed specifications, please refer to the Git specification document in t
 - Add changelog entries
 
 For more information, please refer to:
+
 - [Development Guide](docs/development/onboarding-guide.md)
 - [Testing Guide](docs/development/testing-guide.md)
 - [Commit Convention](docs/development/COMMIT_CONVENTION.md)
@@ -569,6 +588,7 @@ For more information, please refer to:
 ## Related Documentation
 
 ### Development Documentation
+
 - [Development Guide](docs/development/onboarding-guide.md) - New member onboarding guide
 - [Testing Guide](docs/development/testing-guide.md) - Testing related instructions
 - [Commit Convention](docs/development/COMMIT_CONVENTION.md) - Git commit convention
@@ -576,20 +596,24 @@ For more information, please refer to:
 - [Environment Configuration](docs/development/ENVIRONMENT.md) - Detailed environment variable descriptions
 
 ### API Documentation
+
 - [API Documentation](docs/api/api-documentation.md) - Complete API description
 - [OpenAPI Specification](docs/api/openapi.json) - OpenAPI 3.0 specification file
 - [Postman Collection](docs/api/postman_collection.json) - Postman test collection
 
 ### Architecture Documentation
+
 - [Architecture Overview](docs/architecture/) - System architecture related documentation
 - [C4 Model](docs/architecture/c4-model.puml) - System architecture model
 
 ### Operations Documentation
+
 - [Deployment Guide](docs/development/deployment-guide.md) - Deployment related instructions
 - [Operations Manual](docs/operations/operations-manual.md) - Operations manual
 - [Change Log](docs/operations/change-log.md) - Version change records
 
 ### Project Documentation
+
 - [Documentation Overview](docs/project/documentation-overview.md) - Documentation structure description
 - [Glossary](docs/project/glossary.md) - Project terminology definitions
 
@@ -604,4 +628,3 @@ For questions or suggestions, please contact us through:
 - Submit a [GitHub Issue](https://github.com/your-repo/issues)
 - Create a Pull Request
 - Check project documentation for more information
-

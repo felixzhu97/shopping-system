@@ -70,82 +70,82 @@ export function createMockRequest(options: MockRequestOptions = {}): Partial<Req
  * 创建 Mock Express 响应对象
  */
 export function createMockResponse(options: MockResponseOptions = {}): Partial<Response> {
-  const response = {
+  const response: any = {
     statusCode: options.status || 200,
     headers: options.headers || {},
     locals: {},
-    status: vi.fn(function (code: number) {
+    status: vi.fn(function (this: any, code: number) {
       this.statusCode = code;
       return this;
     }),
-    send: vi.fn(function (body?: any) {
+    send: vi.fn(function (this: any, body?: any) {
       this.body = body;
       return this;
     }),
-    json: vi.fn(function (body?: any) {
+    json: vi.fn(function (this: any, body?: any) {
       this.body = body;
       return this;
     }),
-    sendStatus: vi.fn(function (code: number) {
+    sendStatus: vi.fn(function (this: any, code: number) {
       this.statusCode = code;
       return this;
     }),
-    cookie: vi.fn(function () {
+    cookie: vi.fn(function (this: any) {
       return this;
     }),
-    clearCookie: vi.fn(function () {
+    clearCookie: vi.fn(function (this: any) {
       return this;
     }),
-    redirect: vi.fn(function () {
+    redirect: vi.fn(function (this: any) {
       return this;
     }),
-    render: vi.fn(function () {
+    render: vi.fn(function (this: any) {
       return this;
     }),
-    sendFile: vi.fn(function () {
+    sendFile: vi.fn(function (this: any) {
       return this;
     }),
-    download: vi.fn(function () {
+    download: vi.fn(function (this: any) {
       return this;
     }),
-    end: vi.fn(function () {
+    end: vi.fn(function (this: any) {
       return this;
     }),
-    format: vi.fn(function () {
+    format: vi.fn(function (this: any) {
       return this;
     }),
     get: vi.fn((header: string) => response.headers[header.toLowerCase()]),
-    set: vi.fn(function (header: string, value?: any) {
+    set: vi.fn(function (this: any, header: string, value?: any) {
       if (typeof header === 'string') {
         response.headers[header.toLowerCase()] = value || '';
       }
       return this;
     }),
-    header: vi.fn(function (header: string, value?: any) {
+    header: vi.fn(function (this: any, header: string, value?: any) {
       if (typeof header === 'string') {
         response.headers[header.toLowerCase()] = value || '';
       }
       return this;
     }),
-    type: vi.fn(function () {
+    type: vi.fn(function (this: any) {
       return this;
     }),
-    vary: vi.fn(function () {
+    vary: vi.fn(function (this: any) {
       return this;
     }),
-    append: vi.fn(function () {
+    append: vi.fn(function (this: any) {
       return this;
     }),
-    location: vi.fn(function () {
+    location: vi.fn(function (this: any) {
       return this;
     }),
-    links: vi.fn(function () {
+    links: vi.fn(function (this: any) {
       return this;
     }),
-    jsonp: vi.fn(function () {
+    jsonp: vi.fn(function (this: any) {
       return this;
     }),
-  } as any;
+  };
 
   if (options.json) {
     response.json(options.json);

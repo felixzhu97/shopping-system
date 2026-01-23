@@ -42,11 +42,11 @@ export function mockI18next(options: I18nextMockOptions = {}) {
   };
 
   vi.mock('react-i18next', () => ({
-    useTranslation: () => ({
+    useTranslation: vi.fn(() => ({
       t,
       i18n: mockI18nInstance,
       ready: true,
-    }),
+    })),
     Trans: ({ children }: { children: ReactNode }) => children,
     initReactI18next: {
       type: '3rdParty' as const,
@@ -54,11 +54,6 @@ export function mockI18next(options: I18nextMockOptions = {}) {
     },
     I18nextProvider: ({ children }: { children: ReactNode }) => children,
     withTranslation: (component: any) => component,
-    useTranslation: vi.fn(() => ({
-      t,
-      i18n: mockI18nInstance,
-      ready: true,
-    })),
   }));
 
   return { t, i18n: mockI18nInstance, changeLanguage };

@@ -8,7 +8,7 @@ export function expectToHaveProperties<T extends object>(
   properties: (keyof T)[]
 ): void {
   properties.forEach((prop) => {
-    expect(obj).toHaveProperty(prop);
+    expect(obj).toHaveProperty(prop as string);
   });
 }
 

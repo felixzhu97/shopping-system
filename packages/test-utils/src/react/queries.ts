@@ -1,12 +1,12 @@
 import { screen, waitFor, waitForElementToBeRemoved, within } from '@testing-library/react';
-import { Matcher, MatcherOptions } from '@testing-library/react';
+import type { ByRoleMatcher, ByRoleOptions } from '@testing-library/react';
 
 /**
  * 查询元素（带重试）
  */
 export async function queryElement(
-  matcher: Matcher,
-  options?: MatcherOptions,
+  matcher: ByRoleMatcher,
+  options?: ByRoleOptions,
   timeout?: number
 ) {
   return await waitFor(() => screen.queryByRole(matcher, options), { timeout });
@@ -16,8 +16,8 @@ export async function queryElement(
  * 获取元素（带重试）
  */
 export async function getElement(
-  matcher: Matcher,
-  options?: MatcherOptions,
+  matcher: ByRoleMatcher,
+  options?: ByRoleOptions,
   timeout?: number
 ) {
   return await waitFor(() => screen.getByRole(matcher, options), { timeout });
@@ -27,8 +27,8 @@ export async function getElement(
  * 查找元素（带重试）
  */
 export async function findElement(
-  matcher: Matcher,
-  options?: MatcherOptions,
+  matcher: ByRoleMatcher,
+  options?: ByRoleOptions,
   timeout?: number
 ) {
   return await waitFor(() => screen.findByRole(matcher, options), { timeout });
@@ -49,8 +49,8 @@ export async function waitForElementRemoval(
  */
 export function queryWithin(
   container: HTMLElement,
-  matcher: Matcher,
-  options?: MatcherOptions
+  matcher: ByRoleMatcher,
+  options?: ByRoleOptions
 ) {
   return within(container).queryByRole(matcher, options);
 }
@@ -60,8 +60,8 @@ export function queryWithin(
  */
 export function getWithin(
   container: HTMLElement,
-  matcher: Matcher,
-  options?: MatcherOptions
+  matcher: ByRoleMatcher,
+  options?: ByRoleOptions
 ) {
   return within(container).getByRole(matcher, options);
 }
@@ -70,8 +70,8 @@ export function getWithin(
  * 查询所有元素（带重试）
  */
 export async function queryAllElements(
-  matcher: Matcher,
-  options?: MatcherOptions,
+  matcher: ByRoleMatcher,
+  options?: ByRoleOptions,
   timeout?: number
 ) {
   return await waitFor(() => screen.queryAllByRole(matcher, options), { timeout });
