@@ -47,3 +47,6 @@ Thumbs.db
 
 # 测试覆盖率
 coverage
+
+# 密钥文件
+.secrets
