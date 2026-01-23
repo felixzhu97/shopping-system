@@ -115,9 +115,9 @@ jobs:
       - name: Deploy to AWS Lambda
         run: cd apps/api && pnpm run deploy:lambda:prod
         env:
-          MONGODB_URI_prod: ${{ secrets.MONGODB_URI_PROD }}
-          JWT_SECRET_prod: ${{ secrets.JWT_SECRET_PROD }}
-          CORS_ORIGINS_prod: ${{ secrets.CORS_ORIGINS_PROD }}
+          MONGODB_URI: ${{ secrets.MONGODB_URI }}
+          JWT_SECRET_: ${{ secrets.JWT_SECRET }}
+          CORS_ORIGINS: ${{ secrets.CORS_ORIGINS }}
           DD_API_KEY: ${{ secrets.DD_API_KEY }}
           DD_SITE: ${{ secrets.DD_SITE || 'datadoghq.com' }}
           DD_LAYER_VERSION: ${{ secrets.DD_LAYER_VERSION || '119' }}
