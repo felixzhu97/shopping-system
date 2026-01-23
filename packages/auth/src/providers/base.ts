@@ -67,12 +67,23 @@ export abstract class BaseOAuthProvider {
    * 构建 Token 交换请求体
    */
   protected buildTokenExchangeBody(
-    params: TokenExchangeParams
+    params: Partial<TokenExchangeParams> & Record<string, string | undefined>
   ): URLSearchParams {
     const body = new URLSearchParams();
+    // Map camelCase to snake_case for OAuth standard
+    const keyMap: Record<string, string> = {
+      clientId: 'client_id',
+      clientSecret: 'client_secret',
+      redirectUri: 'redirect_uri',
+      grantType: 'grant_type',
+      codeVerifier: 'code_verifier',
+      refreshToken: 'refresh_token',
+    };
+    
     Object.entries(params).forEach(([key, value]) => {
       if (value !== undefined && value !== null) {
-        body.append(key, value);
+        const oauthKey = keyMap[key] || key;
+        body.append(oauthKey, value);
       }
     });
     return body;

@@ -4,6 +4,7 @@
 
 import { generalizeArray } from './generalization';
 import type { GeneralizationRule, KAnonymityOptions } from '../types';
+import { GeneralizationLevel } from '../types';
 
 /**
  * 计算准标识符的组合值（用于分组）
@@ -82,7 +83,7 @@ export function kAnonymize(
       for (const field of quasiIdentifiers) {
         const rule: GeneralizationRule = {
           field,
-          level: 'partial',
+          level: GeneralizationLevel.PARTIAL,
         };
         remaining = generalizeArray(remaining, [rule]);
       }

@@ -57,16 +57,16 @@ export function depseudonymize(
   prefix = '',
   suffix = ''
 ): string {
-  try {
-    // 移除前缀和后缀
-    let clean = pseudonym;
-    if (prefix && clean.startsWith(prefix)) {
-      clean = clean.substring(prefix.length);
-    }
-    if (suffix && clean.endsWith(suffix)) {
-      clean = clean.substring(0, clean.length - suffix.length);
-    }
+  // 移除前缀和后缀
+  let clean = pseudonym;
+  if (prefix && clean.startsWith(prefix)) {
+    clean = clean.substring(prefix.length);
+  }
+  if (suffix && clean.endsWith(suffix)) {
+    clean = clean.substring(0, clean.length - suffix.length);
+  }
 
+  try {
     // 尝试还原 Base64 编码
     // 注意：这里简化处理，实际可能需要更复杂的逻辑
     const base64 = clean;

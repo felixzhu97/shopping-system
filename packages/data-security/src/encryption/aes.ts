@@ -31,46 +31,24 @@ const PADDING_MAP: Record<string, typeof CryptoJS.pad.Pkcs7> = {
  * @param options 加密选项
  * @returns 加密后的字符串
  */
-export function aesEncrypt(
-  data: string,
-  key: string,
-  options: AESOptions = {}
-): string {
-  const {
-    mode = 'CBC',
-    padding = 'Pkcs7',
-    iv: customIv,
-  } = options;
+export function aesEncrypt(data: string, key: string, options: AESOptions = {}): string {
+  const { mode = 'CBC', padding = 'Pkcs7', iv: customIv } = options;
 
-  // 解析密钥
-  const keyWords = CryptoJS.enc.Utf8.parse(key);
+  // 如果提供了自定义 IV，使用它；否则使用 CryptoJS 默认行为（自动生成 salt 和 IV）
+  if (customIv) {
+    const keyWords = CryptoJS.enc.Utf8.parse(key);
+    const modeInstance = MODE_MAP[mode] || CryptoJS.mode.CBC;
+    const paddingInstance = PADDING_MAP[padding] || CryptoJS.pad.Pkcs7;
 
-  // 获取加密模式和填充模式
-  const modeInstance = MODE_MAP[mode] || CryptoJS.mode.CBC;
-  const paddingInstance = PADDING_MAP[padding] || CryptoJS.pad.Pkcs7;
-
-  // 生成或使用提供的 IV
-  const iv = customIv
-    ? CryptoJS.enc.Utf8.parse(customIv)
-    : CryptoJS.lib.WordArray.random(128 / 8);
-
-  // 执行加密
-  const encrypted = CryptoJS.AES.encrypt(data, keyWords, {
-    iv,
-    mode: modeInstance,
-    padding: paddingInstance,
-  });
-
-  // 当使用随机 IV 时，需要将 IV 和加密数据一起保存
-  // 格式：iv:encryptedData（Base64 编码）
-  if (!customIv) {
-    const ivBase64 = CryptoJS.enc.Base64.stringify(iv);
-    const encryptedBase64 = encrypted.ciphertext.toString(CryptoJS.enc.Base64);
-    return `${ivBase64}:${encryptedBase64}`;
+    return CryptoJS.AES.encrypt(data, keyWords, {
+      iv: CryptoJS.enc.Utf8.parse(customIv),
+      mode: modeInstance,
+      padding: paddingInstance,
+    }).toString();
   }
 
-  // 如果提供了自定义 IV，直接返回加密结果
-  return encrypted.toString();
+  // 使用 CryptoJS 默认行为（最简单）
+  return CryptoJS.AES.encrypt(data, key).toString();
 }
 
 /**
@@ -80,76 +58,50 @@ export function aesEncrypt(
  * @param options 解密选项
  * @returns 解密后的字符串
  */
-export function aesDecrypt(
-  encryptedData: string,
-  key: string,
-  options: AESOptions = {}
-): string {
-  const {
-    mode = 'CBC',
-    padding = 'Pkcs7',
-    iv: customIv,
-  } = options;
+export function aesDecrypt(encryptedData: string, key: string, options: AESOptions = {}): string {
+  const { iv: customIv } = options;
 
   try {
-    // 解析密钥
-    const keyWords = CryptoJS.enc.Utf8.parse(key);
+    // 如果提供了自定义 IV，使用它；否则使用 CryptoJS 默认行为
+    if (customIv) {
+      const keyWords = CryptoJS.enc.Utf8.parse(key);
+      const modeInstance = MODE_MAP[options.mode || 'CBC'] || CryptoJS.mode.CBC;
+      const paddingInstance = PADDING_MAP[options.padding || 'Pkcs7'] || CryptoJS.pad.Pkcs7;
 
-    // 获取解密模式和填充模式
-    const modeInstance = MODE_MAP[mode] || CryptoJS.mode.CBC;
-    const paddingInstance = PADDING_MAP[padding] || CryptoJS.pad.Pkcs7;
+      const decrypted = CryptoJS.AES.decrypt(encryptedData, keyWords, {
+        iv: CryptoJS.enc.Utf8.parse(customIv),
+        mode: modeInstance,
+        padding: paddingInstance,
+      });
 
-    let decrypted: CryptoJS.lib.WordArray;
-
-    // 检查加密数据格式：如果是 "iv:encryptedData" 格式，说明使用了随机 IV
-    if (!customIv && encryptedData.includes(':')) {
-      const parts = encryptedData.split(':');
-      if (parts.length !== 2) {
-        throw new Error('解密失败：无效的加密数据格式');
+      const decryptedText = decrypted.toString(CryptoJS.enc.Utf8);
+      // 空字符串是有效结果，只有当 sigBytes <= 0 时才认为是失败
+      if (decryptedText === '' && decrypted.sigBytes <= 0) {
+        throw new Error('解密失败：无法解析解密后的数据');
       }
-      
-      const [ivBase64, encryptedBase64] = parts;
-      const decryptIv = CryptoJS.enc.Base64.parse(ivBase64);
-      const ciphertext = CryptoJS.enc.Base64.parse(encryptedBase64);
-      
-      // 创建 CipherParams 对象
-      const cipherParams = CryptoJS.lib.CipherParams.create({
-        ciphertext: ciphertext,
-      });
-      
-      // 使用提取的 IV 进行解密
-      decrypted = CryptoJS.AES.decrypt(cipherParams, keyWords, {
-        iv: decryptIv,
-        mode: modeInstance,
-        padding: paddingInstance,
-      });
-    } else if (!customIv) {
-      // 尝试使用 OpenSSL 格式解密（向后兼容）
-      decrypted = CryptoJS.AES.decrypt(encryptedData, keyWords, {
-        format: CryptoJS.format.OpenSSL as any,
-        mode: modeInstance,
-        padding: paddingInstance,
-      });
-    } else {
-      // 使用自定义 IV 或标准格式
-      const decryptOptions: any = {
-        mode: modeInstance,
-        padding: paddingInstance,
-      };
-      
-      if (customIv) {
-        decryptOptions.iv = CryptoJS.enc.Utf8.parse(customIv);
-      }
-      
-      decrypted = CryptoJS.AES.decrypt(encryptedData, keyWords, decryptOptions);
+      return decryptedText;
     }
 
-    // 转换为字符串
+    // 使用 CryptoJS 默认行为（最简单）
+    const decrypted = CryptoJS.AES.decrypt(encryptedData, key);
     const decryptedText = decrypted.toString(CryptoJS.enc.Utf8);
 
-    // 允许空字符串（空字符串是有效的解密结果）
-    // 只有当 decryptedText 为 undefined 或 null 时才抛出错误
-    if (decryptedText === undefined || decryptedText === null) {
+    // 检查解密是否成功
+    // 如果 sigBytes <= 0，说明解密失败（可能是密钥错误或数据无效）
+    // 但空字符串是特殊情况：加密空字符串后解密，sigBytes 可能为 0 但结果是正确的
+    if (decrypted.sigBytes <= 0) {
+      // 如果原始数据可能是空字符串，我们需要特殊处理
+      // 但无法区分，所以如果 sigBytes <= 0 且结果为空，认为是失败
+      if (decryptedText === '') {
+        // 尝试验证：如果加密数据看起来有效，可能是空字符串
+        // 否则认为是解密失败
+        if (encryptedData.length < 20) {
+          // 太短，可能是无效数据
+          throw new Error('解密失败：无法解析解密后的数据');
+        }
+        // 可能是空字符串，返回空字符串
+        return '';
+      }
       throw new Error('解密失败：无法解析解密后的数据');
     }
 

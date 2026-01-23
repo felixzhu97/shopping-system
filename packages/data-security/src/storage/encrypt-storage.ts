@@ -41,10 +41,14 @@ export function createEncryptedStorage(
 
         // 解密数据
         const decrypted = aesDecrypt(encrypted, encryptionKey, encryptionOptions);
+        // 空字符串是有效结果
         return decrypted;
       } catch (error) {
         // 如果解密失败，可能是旧数据格式或损坏的数据
-        console.warn(`解密存储项 "${key}" 失败:`, error);
+        // 静默返回 null，不打印警告（避免测试输出噪音）
+        if (process.env.NODE_ENV !== 'test') {
+          console.warn(`解密存储项 "${key}" 失败:`, error);
+        }
         return null;
       }
     },

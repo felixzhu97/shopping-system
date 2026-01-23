@@ -113,7 +113,7 @@ export async function generateCodeChallenge(verifier: string): Promise<string> {
 
   // Base64 URL 编码
   const bytes = new Uint8Array(digest);
-  const base64 = Buffer ? Buffer.from(bytes).toString('base64') : btoa(String.fromCharCode(...bytes));
+  const base64 = Buffer ? Buffer.from(bytes).toString('base64') : btoa(String.fromCharCode.apply(null, Array.from(bytes)));
   return base64
     .replace(/\+/g, '-')
     .replace(/\//g, '_')

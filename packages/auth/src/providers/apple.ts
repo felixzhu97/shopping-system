@@ -44,11 +44,11 @@ export class AppleProvider extends BaseOAuthProvider {
     // 这里简化处理，实际使用时需要生成 JWT
     const body = this.buildTokenExchangeBody({
       code,
-      client_id: this.config.clientId,
-      client_secret: this.config.clientSecret,
-      redirect_uri: this.config.redirectUri,
-      grant_type: 'authorization_code',
-      ...(codeVerifier && { code_verifier: codeVerifier }),
+      clientId: this.config.clientId,
+      clientSecret: this.config.clientSecret,
+      redirectUri: this.config.redirectUri,
+      grantType: 'authorization_code',
+      ...(codeVerifier && { codeVerifier }),
     });
 
     const response = await fetch(this.tokenUrl, {
@@ -118,10 +118,10 @@ export class AppleProvider extends BaseOAuthProvider {
 
   async refreshToken(refreshToken: string): Promise<OAuthToken> {
     const body = this.buildTokenExchangeBody({
-      client_id: this.config.clientId,
-      client_secret: this.config.clientSecret,
-      refresh_token: refreshToken,
-      grant_type: 'refresh_token',
+      clientId: this.config.clientId,
+      clientSecret: this.config.clientSecret,
+      refreshToken,
+      grantType: 'refresh_token',
     });
 
     const response = await fetch(this.tokenUrl, {

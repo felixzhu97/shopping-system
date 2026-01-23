@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { BasePaymentGateway } from '../../gateways/base';
-import type { GatewayConfig, PaymentRequest } from '../../types';
+import type { GatewayConfig, PaymentRequest, PaymentStatus } from '../../types';
 
 // 创建一个测试用的网关实现
 class TestGateway extends BasePaymentGateway {
@@ -15,7 +15,7 @@ class TestGateway extends BasePaymentGateway {
     return {
       paymentId: this.generatePaymentId(request.orderId),
       orderId: request.orderId,
-      status: 'pending',
+      status: 'pending' as PaymentStatus,
       amount: request.amount,
       currency: request.currency || 'CNY',
     };
@@ -36,7 +36,7 @@ class TestGateway extends BasePaymentGateway {
     return {
       paymentId,
       orderId: orderId || '',
-      status: 'pending',
+      status: 'pending' as PaymentStatus,
       amount: 0,
     };
   }
@@ -47,7 +47,7 @@ class TestGateway extends BasePaymentGateway {
       paymentId: request.paymentId,
       orderId: request.orderId,
       amount: request.amount || 0,
-      status: 'processing',
+      status: 'processing' as PaymentStatus,
     };
   }
 
@@ -57,7 +57,7 @@ class TestGateway extends BasePaymentGateway {
       paymentId: '',
       orderId: '',
       amount: 0,
-      status: 'processing',
+      status: 'processing' as PaymentStatus,
     };
   }
 }

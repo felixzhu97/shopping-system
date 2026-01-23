@@ -36,7 +36,7 @@ describe('PaymentUtils', () => {
         const methods = ['alipay', 'wechat', 'credit-card'] as const;
 
         // When & Then
-        methods.forEach((method) => {
+        methods.forEach(method => {
           const request: PaymentRequest = {
             orderId: 'ORDER123',
             amount: 100.0,
@@ -99,8 +99,8 @@ describe('PaymentUtils', () => {
         const request = {
           orderId: 'ORDER123',
           amount: 100.0,
-          paymentMethod: '',
-        } as PaymentRequest;
+          // paymentMethod is intentionally omitted
+        } as unknown as PaymentRequest;
 
         // When
         const errors = validatePaymentRequest(request);
@@ -122,7 +122,7 @@ describe('PaymentUtils', () => {
 
         // Then
         expect(errors.length).toBeGreaterThan(0);
-        expect(errors.some((e) => e.includes('支付方式无效'))).toBe(true);
+        expect(errors.some(e => e.includes('支付方式无效'))).toBe(true);
       });
     });
   });
@@ -261,7 +261,7 @@ describe('PaymentUtils', () => {
       const finalStatuses: PaymentStatus[] = ['success', 'failed', 'cancelled', 'refunded'];
 
       // When & Then
-      finalStatuses.forEach((status) => {
+      finalStatuses.forEach(status => {
         expect(isFinalPaymentStatus(status)).toBe(true);
       });
     });
@@ -271,7 +271,7 @@ describe('PaymentUtils', () => {
       const nonFinalStatuses: PaymentStatus[] = ['pending', 'processing'];
 
       // When & Then
-      nonFinalStatuses.forEach((status) => {
+      nonFinalStatuses.forEach(status => {
         expect(isFinalPaymentStatus(status)).toBe(false);
       });
     });
@@ -300,7 +300,7 @@ describe('PaymentUtils', () => {
       ];
 
       // When & Then
-      nonSuccessStatuses.forEach((status) => {
+      nonSuccessStatuses.forEach(status => {
         expect(isSuccessPaymentStatus(status)).toBe(false);
       });
     });

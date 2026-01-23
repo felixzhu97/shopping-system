@@ -51,10 +51,10 @@ export class AuditLogger {
     const fullEntry: AuditLogEntry = {
       id: `audit_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`,
       timestamp: Date.now(),
+      ...entry,
       userId: entry.userId || this.defaultUserId || 'unknown',
       ipAddress: entry.ipAddress || this.defaultIpAddress,
       userAgent: entry.userAgent || this.defaultUserAgent,
-      ...entry,
     };
 
     await this.storage.save(fullEntry);

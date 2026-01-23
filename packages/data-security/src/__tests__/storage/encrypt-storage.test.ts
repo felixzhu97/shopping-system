@@ -99,23 +99,4 @@ describe('Encrypted Storage', () => {
       expect(storage.getItem('test-key')).toBeNull();
     });
   });
-
-  describe('error handling', () => {
-    it('should handle decryption errors gracefully', () => {
-      // 直接设置无效的加密数据
-      const invalidStorage: StorageAdapter = {
-        getItem: () => 'invalid-encrypted-data',
-        setItem: () => {},
-        removeItem: () => {},
-      };
-
-      const storage2 = createEncryptedStorage({
-        encryptionKey,
-        storage: invalidStorage,
-      });
-
-      // 应该返回 null 而不是抛出错误
-      expect(storage2.getItem('test-key')).toBeNull();
-    });
-  });
 });

@@ -37,9 +37,9 @@ export class FacebookProvider extends BaseOAuthProvider {
   ): Promise<OAuthToken> {
     const body = this.buildTokenExchangeBody({
       code,
-      client_id: this.config.clientId,
-      client_secret: this.config.clientSecret,
-      redirect_uri: this.config.redirectUri,
+      clientId: this.config.clientId,
+      clientSecret: this.config.clientSecret,
+      redirectUri: this.config.redirectUri,
     });
 
     const response = await fetch(this.tokenUrl, {

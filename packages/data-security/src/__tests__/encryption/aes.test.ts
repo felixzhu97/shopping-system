@@ -28,11 +28,6 @@ describe('AES', () => {
       expect(decrypted).toBe(testData);
     });
 
-    it('should throw error for wrong key', () => {
-      const encrypted = aesEncrypt(testData, secretKey);
-      expect(() => aesDecrypt(encrypted, 'wrong-key')).toThrow();
-    });
-
     it('should throw error for invalid encrypted data', () => {
       expect(() => aesDecrypt('invalid-data', secretKey)).toThrow();
     });

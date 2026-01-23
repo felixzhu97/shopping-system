@@ -81,7 +81,10 @@ export class MemoryAuditLogStorage implements AuditLogStorageAdapter {
       }
 
       if (aValue === bValue) return 0;
-      const comparison = aValue < bValue ? -1 : 1;
+      // Type-safe comparison for sortable values
+      const a = typeof aValue === 'number' ? aValue : String(aValue);
+      const b = typeof bValue === 'number' ? bValue : String(bValue);
+      const comparison = a < b ? -1 : 1;
       return sortOrder === 'asc' ? comparison : -comparison;
     });
 
