@@ -13,6 +13,8 @@ on:
       - 'packages/types/**'
       - 'packages/monitoring/**'
       - '.github/workflows/deploy-test.yml'
+      - 'pnpm-lock.yaml'
+      - 'package.json'
   workflow_dispatch:
 
 jobs:
@@ -33,6 +35,18 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'pnpm'
+
+      - name: Verify lockfile exists
+        run: |
+          if [ ! -f "pnpm-lock.yaml" ]; then
+            echo "Error: pnpm-lock.yaml not found!"
+            exit 1
+          fi
+          echo "✓ pnpm-lock.yaml found"
+          head -5 pnpm-lock.yaml
+
+      - name: Verify pnpm version
+        run: pnpm --version
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -63,6 +77,18 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'pnpm'
+
+      - name: Verify lockfile exists
+        run: |
+          if [ ! -f "pnpm-lock.yaml" ]; then
+            echo "Error: pnpm-lock.yaml not found!"
+            exit 1
+          fi
+          echo "✓ pnpm-lock.yaml found"
+          head -5 pnpm-lock.yaml
+
+      - name: Verify pnpm version
+        run: pnpm --version
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile

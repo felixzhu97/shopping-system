@@ -17,6 +17,9 @@ out
 .env.production.local
 .env*
 
+# Act secrets (local testing)
+.secrets
+
 # 调试
 npm-debug.log*
 yarn-debug.log*

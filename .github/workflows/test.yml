@@ -12,12 +12,16 @@ on:
       - 'apps/**'
       - 'packages/**'
       - '.github/workflows/test.yml'
+      - 'pnpm-lock.yaml'
+      - 'package.json'
   pull_request:
     branches: [main, dev, test]
     paths:
       - 'apps/**'
       - 'packages/**'
       - '.github/workflows/test.yml'
+      - 'pnpm-lock.yaml'
+      - 'package.json'
 
 jobs:
   test:
@@ -37,6 +41,18 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'pnpm'
+
+      - name: Verify lockfile exists
+        run: |
+          if [ ! -f "pnpm-lock.yaml" ]; then
+            echo "Error: pnpm-lock.yaml not found!"
+            exit 1
+          fi
+          echo "✓ pnpm-lock.yaml found"
+          head -5 pnpm-lock.yaml
+
+      - name: Verify pnpm version
+        run: pnpm --version
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
