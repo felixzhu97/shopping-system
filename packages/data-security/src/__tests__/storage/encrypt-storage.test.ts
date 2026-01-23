@@ -21,7 +21,7 @@ describe('Encrypted Storage', () => {
         delete memoryStore[key];
       },
       clear: () => {
-        Object.keys(memoryStore).forEach((key) => delete memoryStore[key]);
+        Object.keys(memoryStore).forEach(key => delete memoryStore[key]);
       },
       get length() {
         return Object.keys(memoryStore).length;
@@ -65,7 +65,7 @@ describe('Encrypted Storage', () => {
       const rawValue = memoryStorage.getItem('test-key');
       expect(rawValue).toBeTruthy();
       expect(rawValue).not.toBe(testValue);
-      
+
       // 验证通过加密存储可以正确解密
       const retrieved = storage.getItem('test-key');
       expect(retrieved).toBe(testValue);
