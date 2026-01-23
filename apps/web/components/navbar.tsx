@@ -13,17 +13,17 @@ import {
   X,
 } from 'lucide-react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { useTranslation } from 'react-i18next';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Badge } from '@/components/ui/badge';
-import { useCartStore } from '@/lib/store/cartStore';
+
 import PanelDropdown from '@/components/ui/panel-dropdown';
 import Image from '@/components/ui/image';
-import { useUserStore } from '@/lib/store/userStore';
-import { getToken } from '@/lib/store/userStore';
-
+import { clearUserStore, useToken } from '@/lib/store/userStore';
+import { useCartItems } from '@/lib/store/cartStore';
 // 定义快捷链接数据
 const quickLinks = [
   { title: '智能设备', path: '/products?category=electronics' },
@@ -35,7 +35,7 @@ const quickLinks = [
 // 将购物车项组件提取出来并使用 memo 包装
 const CartItem = memo(({ item }: { item: any }) => (
   <div className="flex items-center mb-4 last:mb-0">
-    <div className="w-10 h-10 rounded-lg bg-gray-100 mr-4 border overflow-hidden">
+    <div className="w-10 h-10 rounded-lg bg-gray-100 mr-4 border overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 ease-out">
       <Image
         src={item.product?.image || ''}
         alt={item.product?.name || ''}
@@ -61,34 +61,36 @@ const CartDropdown = memo(
     onClose,
     items,
     router,
-    logout,
   }: {
     open: boolean;
     onClose: () => void;
     items: any[];
     router: any;
-    logout: () => void;
   }) => {
-    const [token, setToken] = useState<string | null>(null);
-
-    useEffect(() => {
-      setToken(getToken());
-    }, []);
+    const { t } = useTranslation();
+    const [token, setToken] = useState('');
+    const userToken = useToken();
 
     const handleLogout = useCallback(
       (e: React.MouseEvent) => {
         e.preventDefault();
-        logout();
-        router.push('/login');
-        onClose();
+        router.replace('/login');
+        setTimeout(() => {
+          clearUserStore();
+          onClose();
+        }, 500);
       },
-      [logout, router, onClose]
+      [router, onClose]
     );
 
     const handleCartClick = useCallback(() => {
       router.push('/cart');
       onClose();
     }, [router, onClose]);
+
+    useEffect(() => {
+      setToken(userToken || '');
+    }, [userToken]);
 
     return (
       <PanelDropdown
@@ -99,10 +101,10 @@ const CartDropdown = memo(
       >
         <div className="w-full flex justify-center">
           <div className="w-full max-w-[600px] px-10 py-12">
-            <div className="font-bold text-2xl mb-8">购物袋</div>
+            <div className="font-bold text-2xl mb-8">{t('common.cart')}</div>
             <div className="mb-8">
               {items.length === 0 ? (
-                <div className="text-gray-500 text-sm py-8">您的购物袋是空的</div>
+                <div className="text-gray-500 text-sm py-8">{t('common.your_cart_is_empty')}</div>
               ) : (
                 <>
                   {items.slice(0, 3).map((item, idx) => (
@@ -110,7 +112,7 @@ const CartDropdown = memo(
                   ))}
                   {items.length > 3 && (
                     <div className="text-xs text-gray-500 mt-2">
-                      还有 {items.length - 3} 件商品在购物袋中
+                      {t('common.there_are')} {items.length - 3} {t('common.items_in_cart')}
                     </div>
                   )}
                 </>
@@ -121,10 +123,10 @@ const CartDropdown = memo(
                 className="bg-blue-600 text-white rounded-lg px-8 h-11 text-base font-medium hover:bg-blue-700 transition w-full"
                 onClick={handleCartClick}
               >
-                查看购物袋
+                {t('common.view_cart')}
               </Button>
             </div>
-            <div className="text-xs text-gray-500 font-semibold mb-2">我的账户</div>
+            <div className="text-xs text-gray-500 font-semibold mb-2">{t('common.my_account')}</div>
             <ul className="text-gray-700 text-sm space-y-1">
               <li>
                 <Link
@@ -133,7 +135,7 @@ const CartDropdown = memo(
                   onClick={onClose}
                 >
                   <Box className="w-4 h-4" />
-                  我的订单
+                  {t('common.my_orders')}
                 </Link>
               </li>
               <li>
@@ -143,7 +145,7 @@ const CartDropdown = memo(
                   onClick={onClose}
                 >
                   <Cog className="w-4 h-4" />
-                  账户设置
+                  {t('common.account_settings')}
                 </Link>
               </li>
               <li>
@@ -153,7 +155,7 @@ const CartDropdown = memo(
                     className="hover:underline flex items-center gap-2 text-left w-full"
                   >
                     <CircleUserRound className="w-4 h-4" />
-                    退出登录
+                    {t('common.logout')}
                   </button>
                 ) : (
                   <Link
@@ -162,7 +164,7 @@ const CartDropdown = memo(
                     onClick={onClose}
                   >
                     <CircleUserRound className="w-4 h-4" />
-                    登录
+                    {t('common.login')}
                   </Link>
                 )}
               </li>
@@ -202,6 +204,7 @@ NavLink.displayName = 'NavLink';
 
 // 提取出使用 useSearchParams 的客户端组件
 function NavbarClient() {
+  const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
   const [isScrolled, setIsScrolled] = useState(false);
   const [cartBadgeAnimate, setCartBadgeAnimate] = useState(false);
@@ -211,8 +214,7 @@ function NavbarClient() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const router = useRouter();
-  const { items } = useCartStore();
-  const logout = useUserStore(state => state.logout);
+  const items = useCartItems();
 
   // 使用 useCallback 优化事件处理函数
   const handleSearch = useCallback(
@@ -272,7 +274,7 @@ function NavbarClient() {
   return (
     <div className="relative">
       <header
-        className={`sticky top-0 z-50 w-full bg-[rgba(251,251,253,0.8)] backdrop-blur-md transition-all duration-300 ${
+        className={`fixed top-0 left-0 right-0 z-50 w-full bg-[rgba(251,251,253,0.8)] backdrop-blur-md transition-all duration-300 ${
           isScrolled ? 'shadow-sm' : ''
         }`}
       >
@@ -287,13 +289,13 @@ function NavbarClient() {
                 className="md:hidden text-gray-800 p-0 hover:bg-transparent"
               >
                 <Menu className="h-5 w-5" />
-                <span className="sr-only">菜单</span>
+                <span className="sr-only">{t('common.menu')}</span>
               </Button>
             </SheetTrigger>
             <SheetContent side="left" className="w-[85%] sm:w-[350px]">
               <div className="mt-4 mb-8">
                 <Link href="/" className="text-xl font-medium">
-                  购物系统
+                  {t('common.shopping_system')}
                 </Link>
               </div>
               <nav className="flex flex-col gap-4">
@@ -301,7 +303,7 @@ function NavbarClient() {
                   href="/"
                   className={`text-lg ${pathname === '/' ? 'text-blue-500' : 'text-gray-800'}`}
                 >
-                  首页
+                  {t('common.home')}
                 </Link>
                 <Link
                   href="/products"
@@ -309,7 +311,7 @@ function NavbarClient() {
                     pathname === '/products' && !currentCategory ? 'text-blue-500' : 'text-gray-800'
                   }`}
                 >
-                  全部商品
+                  {t('common.all_products')}
                 </Link>
                 <Link
                   href="/products?category=electronics"
@@ -317,7 +319,7 @@ function NavbarClient() {
                     currentCategory === 'electronics' ? 'text-blue-500' : 'text-gray-800'
                   }`}
                 >
-                  电子产品
+                  {t('common.electronics')}
                 </Link>
                 <Link
                   href="/products?category=clothing"
@@ -325,7 +327,7 @@ function NavbarClient() {
                     currentCategory === 'clothing' ? 'text-blue-500' : 'text-gray-800'
                   }`}
                 >
-                  服装
+                  {t('common.clothing')}
                 </Link>
                 <Link
                   href="/products?category=home-kitchen"
@@ -333,7 +335,7 @@ function NavbarClient() {
                     currentCategory === 'home-kitchen' ? 'text-blue-500' : 'text-gray-800'
                   }`}
                 >
-                  家居厨房
+                  {t('common.home_kitchen')}
                 </Link>
                 <Link
                   href="/products?category=books"
@@ -341,7 +343,7 @@ function NavbarClient() {
                     currentCategory === 'books' ? 'text-blue-500' : 'text-gray-800'
                   }`}
                 >
-                  图书
+                  {t('common.books')}
                 </Link>
               </nav>
             </SheetContent>
@@ -369,7 +371,7 @@ function NavbarClient() {
                   pathname === '/' ? 'text-blue-500' : 'text-gray-600 hover:text-gray-900'
                 }`}
               >
-                首页
+                {t('common.home')}
               </Link>
               <Link
                 href="/products"
@@ -379,7 +381,7 @@ function NavbarClient() {
                     : 'text-gray-600 hover:text-gray-900'
                 }`}
               >
-                全部商品
+                {t('common.all_products')}
               </Link>
               <Link
                 href="/products?category=electronics"
@@ -389,7 +391,7 @@ function NavbarClient() {
                     : 'text-gray-600 hover:text-gray-900'
                 }`}
               >
-                电子产品
+                {t('common.electronics')}
               </Link>
               <Link
                 href="/products?category=clothing"
@@ -399,7 +401,7 @@ function NavbarClient() {
                     : 'text-gray-600 hover:text-gray-900'
                 }`}
               >
-                服装
+                {t('common.clothing')}
               </Link>
               <Link
                 href="/products?category=home-kitchen"
@@ -409,7 +411,7 @@ function NavbarClient() {
                     : 'text-gray-600 hover:text-gray-900'
                 }`}
               >
-                家居厨房
+                {t('common.home_kitchen')}
               </Link>
               <Link
                 href="/products?category=books"
@@ -419,7 +421,7 @@ function NavbarClient() {
                     : 'text-gray-600 hover:text-gray-900'
                 }`}
               >
-                图书
+                {t('common.books')}
               </Link>
             </div>
           </nav>
@@ -434,7 +436,7 @@ function NavbarClient() {
               className="text-gray-800 p-1 mr-1 hover:bg-transparent"
             >
               <Search className="h-[17px] w-[17px]" />
-              <span className="sr-only">搜索</span>
+              <span className="sr-only">{t('common.search')}</span>
             </Button>
 
             {/* 购物车按钮 */}
@@ -444,27 +446,25 @@ function NavbarClient() {
                 size="icon"
                 className="relative text-gray-800 p-1 hover:bg-transparent"
                 onClick={() => setShowCart(v => !v)}
-                aria-label="购物车"
+                aria-label={t('common.cart')}
               >
                 <ShoppingCart className="h-[17px] w-[17px]" />
                 {itemCount > 0 && (
                   <Badge
-                    variant="destructive"
-                    className={`absolute -top-1 -right-1 h-[14px] w-[14px] p-0 flex items-center justify-center rounded-full text-[10px] ${
+                    className={`absolute bottom-[6px] right-[2px] h-[14px] w-[14px] p-0 flex items-center justify-center rounded-full text-[10px] ${
                       cartBadgeAnimate ? 'animate-bounce' : ''
                     }`}
                   >
                     {itemCount}
                   </Badge>
                 )}
-                <span className="sr-only">购物车</span>
+                <span className="sr-only">{t('common.cart')}</span>
               </Button>
               <CartDropdown
                 open={showCart}
                 onClose={() => setShowCart(false)}
                 items={items}
                 router={router}
-                logout={logout}
               />
             </div>
           </div>
@@ -477,18 +477,19 @@ function NavbarClient() {
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
                 type="search"
-                placeholder="搜索 产品"
+                placeholder={t('common.search_products')}
                 className="w-full pl-8 text-sm"
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
               />
             </div>
             <Button type="submit" variant="ghost" size="sm" className="ml-2">
-              搜索
+              {t('common.search')}
             </Button>
           </form>
         </div>
       </header>
+      <div className="h-12 md:h-12"></div>
 
       {/* 搜索栏 - 类似Apple官网的悬浮展开效果 */}
       <PanelDropdown
@@ -504,7 +505,7 @@ function NavbarClient() {
                 <Input
                   ref={searchInputRef}
                   type="search"
-                  placeholder="搜索 产品"
+                  placeholder={t('common.search_products')}
                   className="pl-10 pr-10 h-11 bg-[#f5f5f7] border-none shadow-none focus-visible:ring-0 rounded-lg"
                   value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
@@ -522,7 +523,9 @@ function NavbarClient() {
             </form>
             {/* 快捷链接 */}
             <div className="mt-4 flex-1 overflow-hidden">
-              <div className="text-xs uppercase text-gray-500 font-medium mb-2">快捷链接</div>
+              <div className="text-xs uppercase text-gray-500 font-medium mb-2">
+                {t('common.quick_links')}
+              </div>
               <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-x-4 gap-y-2">
                 {quickLinks.map((link, index) => (
                   <li key={index}>

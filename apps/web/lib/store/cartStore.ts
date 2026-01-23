@@ -2,8 +2,9 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
 import type { CartItem, Product } from '../types';
+import { encryptedStorage } from '@/lib/utils/crypto';
 
-const CART_STORAGE_KEY = 'shopping-cart';
+const CART_STORAGE_KEY = 'ss-c';
 
 interface CartStore {
   items: CartItem[];
@@ -136,9 +137,30 @@ export const useCartStore = create<CartStore>()(
     }),
     {
       name: CART_STORAGE_KEY,
+      storage: {
+        getItem: name => {
+          const str = encryptedStorage.getItem(name);
+          return str ? JSON.parse(str) : null;
+        },
+        setItem: (name, value) => {
+          encryptedStorage.setItem(name, JSON.stringify(value));
+        },
+        removeItem: encryptedStorage.removeItem,
+      },
       partialize: state => ({
-        items: state.items,
+        ...state,
       }),
     }
   )
 );
+export const useCartItems = () => useCartStore(state => state.items);
+export const useCartSubtotal = () => useCartStore(state => state.subtotal);
+export const useCartShipping = () => useCartStore(state => state.shipping);
+export const useCartTax = () => useCartStore(state => state.tax);
+export const useCartTotal = () => useCartStore(state => state.total);
+export const useCartIsLoading = () => useCartStore(state => state.isLoading);
+export const useCartError = () => useCartStore(state => state.error);
+export const useCartAddToCart = () => useCartStore(state => state.addToCart);
+export const useCartUpdateQuantity = () => useCartStore(state => state.updateQuantity);
+export const useCartRemoveFromCart = () => useCartStore(state => state.removeFromCart);
+export const useCartClearCart = () => useCartStore(state => state.clearCart);

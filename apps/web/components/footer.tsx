@@ -1,57 +1,63 @@
+'use client';
+
 import Link from 'next/link';
+import { LanguageSwitcher } from './language-switcher';
+import { useTranslation } from 'react-i18next';
 
 // 扩展导航区域组件
 function ExtendedNavigation() {
+  const { t } = useTranslation();
+
   const navItems = [
     {
-      title: '商品与服务',
+      title: t('common.products_and_services'),
       links: [
-        { name: '全部商品', href: '/products' },
-        { name: '电子产品', href: '/products?category=electronics' },
-        { name: '服装', href: '/products?category=clothing' },
-        { name: '家居厨房', href: '/products?category=home-kitchen' },
-        { name: '图书', href: '/products?category=books' },
-        { name: '配件', href: '/products?category=accessories' },
-        { name: '礼品卡', href: '/gift-cards' },
+        { name: t('common.all_products'), href: '/products' },
+        { name: t('common.electronics'), href: '/products?category=electronics' },
+        { name: t('common.clothing'), href: '/products?category=clothing' },
+        { name: t('common.home_kitchen'), href: '/products?category=home-kitchen' },
+        { name: t('common.books'), href: '/products?category=books' },
+        { name: t('common.accessories'), href: '/products?category=accessories' },
+        { name: t('common.gift_cards'), href: '/gift-cards' },
       ],
     },
     {
-      title: '账户',
+      title: t('common.account'),
       links: [
-        { name: '管理您的账户', href: '/account' },
-        { name: '会员账户', href: '/account/membership' },
-        { name: '我的订单', href: '/orders' },
-        { name: '我的收藏', href: '/account/saved' },
+        { name: t('common.manage_your_account'), href: '/account' },
+        { name: t('common.membership_account'), href: '/account/membership' },
+        { name: t('common.my_orders'), href: '/orders' },
+        { name: t('common.my_favorites'), href: '/account/saved' },
       ],
     },
     {
-      title: '购物指南',
+      title: t('common.shopping_guide'),
       links: [
-        { name: '查找门店', href: '/stores' },
-        { name: '今日优惠', href: '/promotions' },
-        { name: '购物帮助', href: '/help' },
-        { name: '配送政策', href: '/shipping' },
-        { name: '退换货政策', href: '/returns' },
-        { name: '支付方式', href: '/payment' },
+        { name: t('common.find_stores'), href: '/stores' },
+        { name: t('common.today_promotions'), href: '/promotions' },
+        { name: t('common.shopping_help'), href: '/help' },
+        { name: t('common.shipping_policy'), href: '/shipping' },
+        { name: t('common.return_policy'), href: '/returns' },
+        { name: t('common.payment_methods'), href: '/payment' },
       ],
     },
     {
-      title: '关于我们',
+      title: t('common.about_us'),
       links: [
-        { name: '公司简介', href: '/about' },
-        { name: '新闻中心', href: '/news' },
-        { name: '招贤纳士', href: '/careers' },
-        { name: '企业责任', href: '/responsibility' },
-        { name: '联系我们', href: '/contact' },
+        { name: t('common.company_profile'), href: '/about' },
+        { name: t('common.news_center'), href: '/news' },
+        { name: t('common.recruitment'), href: '/careers' },
+        { name: t('common.corporate_responsibility'), href: '/responsibility' },
+        { name: t('common.contact_us'), href: '/contact' },
       ],
     },
     {
-      title: '商务合作',
+      title: t('common.business_cooperation'),
       links: [
-        { name: '商务购买', href: '/business' },
-        { name: '教育优惠', href: '/education' },
-        { name: '供应商合作', href: '/suppliers' },
-        { name: '广告服务', href: '/advertising' },
+        { name: t('common.business_purchase'), href: '/business' },
+        { name: t('common.education_discount'), href: '/education' },
+        { name: t('common.supplier_cooperation'), href: '/suppliers' },
+        { name: t('common.advertising_service'), href: '/advertising' },
       ],
     },
   ];
@@ -84,30 +90,40 @@ function ExtendedNavigation() {
 }
 
 export function Footer() {
+  const { t } = useTranslation();
+
   return (
     <footer className="text-gray-600 bg-[#f5f5f7]">
       {/* Extended Navigation */}
       <ExtendedNavigation />
       <div className="container mx-auto px-4">
         <div className="border-t border-gray-200 py-8">
-          <div className="md:flex md:items-center md:justify-between text-xs text-gray-500">
-            <p>Copyright © 2025 购物系统. 版权所有.</p>
-            <div className="flex flex-wrap mt-4 md:mt-0 gap-x-6">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 text-xs text-gray-500">
+            {/* left: copyright */}
+            <p>Copyright {t('common.copyright')}</p>
+
+            {/* middle: policy links */}
+            <div className="flex flex-wrap gap-x-6">
               <Link href="/privacy" className="hover:underline">
-                隐私政策
+                {t('common.privacy_policy')}
               </Link>
               <Link href="/terms" className="hover:underline">
-                使用条款
+                {t('common.terms_of_service')}
               </Link>
               <Link href="/sales" className="hover:underline">
-                销售政策
+                {t('common.sales_policy')}
               </Link>
               <Link href="/legal" className="hover:underline">
-                法律信息
+                {t('common.legal_information')}
               </Link>
               <Link href="/sitemap" className="hover:underline">
-                网站地图
+                {t('common.sitemap')}
               </Link>
+            </div>
+
+            {/* right: language switcher */}
+            <div className="flex items-center">
+              <LanguageSwitcher />
             </div>
           </div>
         </div>

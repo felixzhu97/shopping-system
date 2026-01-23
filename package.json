@@ -8,17 +8,38 @@
   ],
   "scripts": {
     "build": "turbo run build",
-    "dev": "turbo run dev",
+    "build:api": "turbo run build --filter=api",
+    "build:web": "turbo run build --filter=web",
+    "build:mobile": "turbo run build --filter=react-native-app",
+    "dev": "turbo run dev --concurrency=12",
+    "dev:api": "turbo run dev --filter=api",
+    "dev:web": "turbo run dev --filter=web",
+    "dev:mobile": "turbo run start --filter=react-native-app",
+    "dev:api-web": "turbo run dev --filter=api --filter=web --concurrency=3",
+    "dev:web:storybook": "turbo run storybook --filter=web",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
+    "lint:api": "turbo run lint --filter=api",
+    "lint:web": "turbo run lint --filter=web",
+    "lint:mobile": "turbo run lint --filter=react-native-app",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,css,scss,md}\"",
     "start": "turbo run start",
+    "start:api": "turbo run start --filter=api",
+    "start:web": "turbo run start --filter=web",
     "clean": "turbo run clean && rm -rf node_modules",
+    "clean:api": "turbo run clean --filter=api",
+    "clean:web": "turbo run clean --filter=web",
+    "clean:mobile": "turbo run clean --filter=react-native-app",
+    "test": "turbo run test",
+    "test:api": "turbo run test --filter=api",
+    "test:web": "turbo run test --filter=web",
+    "test:mobile": "turbo run test --filter=react-native-app",
+    "test:watch": "turbo run test:watch",
+    "test:coverage": "turbo run test:coverage",
+    "seed:api": "turbo run seed:products200:dev --filter=api",
     "changeset": "changeset",
     "version": "changeset version",
-    "publish": "turbo run build && changeset publish",
-    "test": "turbo run test",
-    "test:watch": "turbo run test:watch"
+    "publish": "turbo run build && changeset publish"
   },
   "devDependencies": {
     "@changesets/cli": "^2.29.1",
@@ -32,7 +53,7 @@
     "eslint-plugin-react-hooks": "^5.2.0",
     "lint-staged": "^15.5.1",
     "prettier": "^3.5.3",
-    "turbo": "^1.12.4",
+    "turbo": "^2.7.5",
     "typescript": "^5",
     "vitest": "^1.4.0"
   },
@@ -44,8 +65,6 @@
   "dependencies": {
     "@modelcontextprotocol/sdk": "1.10.1",
     "@octokit/rest": "21.1.1",
-    "@smithery/sdk": "1.0.4",
-    "@vercel/analytics": "1.5.0",
-    "@vercel/speed-insights": "1.2.0"
+    "@smithery/sdk": "1.0.4"
   }
 }

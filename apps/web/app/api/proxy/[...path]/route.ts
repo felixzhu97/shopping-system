@@ -11,6 +11,35 @@ function setCorsHeaders(response: NextResponse) {
   return response;
 }
 
+const handleError = async (response: Response) => {
+  // 兼容后端返回非JSON（如HTML错误页）
+  let errorText = '';
+  let errorJson: any = null;
+  const contentType = response.headers.get('Content-Type') || '';
+  if (contentType.includes('application/json')) {
+    try {
+      errorJson = await response.json();
+    } catch {
+      errorJson = null;
+    }
+  } else {
+    errorText = await response.text();
+  }
+  throw new Error(errorJson?.message || errorText || '请求失败', {
+    cause: { status: response.status },
+  });
+};
+
+const setErrorResponse = (error: any) => {
+  const errorResponse = NextResponse.json(
+    {
+      message: error.message,
+    },
+    { status: error?.cause?.status || 500 }
+  );
+  return setCorsHeaders(errorResponse);
+};
+
 // 处理OPTIONS预检请求
 export async function OPTIONS() {
   const response = new NextResponse(null, { status: 204 });
@@ -38,6 +67,7 @@ export async function GET(request: NextRequest, { params }: { params: { path: st
       headers: {
         Accept: 'application/json',
         Origin: '*',
+        Authorization: request.headers.get('authorization') || '',
       },
       // 增加请求超时
       signal: AbortSignal.timeout(10000), // 10秒超时
@@ -64,12 +94,8 @@ export async function GET(request: NextRequest, { params }: { params: { path: st
       return setCorsHeaders(textResponse);
     }
   } catch (error: any) {
-    console.error('代理请求失败:', error);
-    const errorResponse = NextResponse.json(
-      { error: '请求失败', details: error.message },
-      { status: 500 }
-    );
-    return setCorsHeaders(errorResponse);
+    console.error('代理GET请求失败:', error);
+    return setErrorResponse(error);
   }
 }
 
@@ -106,28 +132,14 @@ export async function POST(
       headers: {
         'Content-Type': contentType,
         Origin: '*',
+        Authorization: request.headers.get('authorization') || '',
       },
       body: typeof body === 'string' ? body : JSON.stringify(body),
       signal: AbortSignal.timeout(10000), // 10秒超时
     });
 
     if (!response.ok) {
-      // 兼容后端返回非JSON（如HTML错误页）
-      let errorText = '';
-      let errorJson: any = null;
-      const contentType = response.headers.get('Content-Type') || '';
-      if (contentType.includes('application/json')) {
-        try {
-          errorJson = await response.json();
-        } catch {
-          errorJson = null;
-        }
-      } else {
-        errorText = await response.text();
-      }
-      throw new Error(errorJson?.message || errorText || '请求失败', {
-        cause: { status: response.status },
-      });
+      await handleError(response);
     }
 
     try {
@@ -146,13 +158,7 @@ export async function POST(
     }
   } catch (error: any) {
     console.error('代理POST请求失败:', error);
-    const errorResponse = NextResponse.json(
-      {
-        details: error.message,
-      },
-      error.cause ? { status: error.cause.status } : { status: 500 }
-    );
-    return setCorsHeaders(errorResponse);
+    return setErrorResponse(error);
   }
 }
 
@@ -178,13 +184,14 @@ export async function PUT(request: NextRequest, { params }: { params: { path: st
       headers: {
         'Content-Type': contentType,
         Origin: '*',
+        Authorization: request.headers.get('authorization') || '',
       },
       body: typeof body === 'string' ? body : JSON.stringify(body),
       signal: AbortSignal.timeout(10000), // 10秒超时
     });
 
     if (!response.ok) {
-      throw new Error(`API 请求失败: ${response.status}`);
+      await handleError(response);
     }
 
     try {
@@ -203,11 +210,7 @@ export async function PUT(request: NextRequest, { params }: { params: { path: st
     }
   } catch (error: any) {
     console.error('代理PUT请求失败:', error);
-    const errorResponse = NextResponse.json(
-      { error: '请求失败', details: error.message },
-      { status: 500 }
-    );
-    return setCorsHeaders(errorResponse);
+    return setErrorResponse(error);
   }
 }
 
@@ -223,12 +226,13 @@ export async function DELETE(request: NextRequest, { params }: { params: { path:
       headers: {
         Accept: 'application/json',
         Origin: '*',
+        Authorization: request.headers.get('authorization') || '',
       },
       signal: AbortSignal.timeout(10000), // 10秒超时
     });
 
     if (!response.ok) {
-      throw new Error(`API 请求失败: ${response.status}`);
+      await handleError(response);
     }
 
     try {
@@ -247,10 +251,6 @@ export async function DELETE(request: NextRequest, { params }: { params: { path:
     }
   } catch (error: any) {
     console.error('代理DELETE请求失败:', error);
-    const errorResponse = NextResponse.json(
-      { error: '请求失败', details: error.message },
-      { status: 500 }
-    );
-    return setCorsHeaders(errorResponse);
+    return setErrorResponse(error);
   }
 }

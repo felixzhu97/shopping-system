@@ -1,0 +1,21 @@
+{
+  "name": "types",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "license": "MIT",
+  "scripts": {
+    "lint": "eslint \"src/**/*.ts\"",
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "clean": "rm -rf dist && rm -rf node_modules"
+  },
+  "dependencies": {
+    "typescript": "^5.2.2"
+  },
+  "devDependencies": {
+    "esbuild": "^0.20.2",
+    "eslint": "^8.48.0"
+  }
+}

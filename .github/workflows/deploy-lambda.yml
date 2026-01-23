@@ -1,16 +1,17 @@
-name: 部署到AWS Lambda
+name: Deploy to Production
 
 on:
   push:
     branches: [release]
     paths:
       - 'apps/api/**'
-      - 'packages/shared/**'
+      - 'packages/types/**'
+      - 'packages/monitoring/**'
       - '.github/workflows/deploy-lambda.yml'
   workflow_dispatch:
     inputs:
       environment:
-        description: '部署环境'
+        description: 'Deployment environment'
         required: true
         default: 'production'
         type: choice
@@ -20,127 +21,77 @@ on:
 
 jobs:
   build:
+    name: Build
     runs-on: ubuntu-latest
     steps:
-      - name: 检出代码
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: 安装 pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: 8
-          run_install: false
-
-      - name: 设置Node.js
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18'
           cache: 'pnpm'
-          cache-dependency-path: '**/package.json'
 
-      - name: 安装依赖
-        run: pnpm install --no-frozen-lockfile
+      - name: Setup PNPM
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
 
-      - name: 安装构建工具
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build
+        run: pnpm build --filter=types --filter=monitoring --filter=api
+
+      - name: Verify build output
         run: |
-          pnpm add -Dw esbuild@0.20.2
-          cd apps/api && pnpm add -D @types/swagger-jsdoc @types/swagger-ui-express
-          cd ../../packages/shared && pnpm add -D esbuild@0.20.2
-          cd ../ui && pnpm add -D esbuild@0.20.2
-
-      - name: 构建shared包
-        run: cd packages/shared && pnpm build
-
-      - name: 检查shared包输出
-        run: ls -la packages/shared/dist
-
-      - name: 尝试构建UI包
-        run: cd packages/ui && ls && pnpm build || echo "UI包构建失败，但继续执行"
-        continue-on-error: true
-
-      - name: 构建API包
-        run: cd apps/api && pnpm build
-
-      - name: 检查API包输出
-        run: ls -la apps/api/dist
+          ls -la packages/types/dist
+          ls -la apps/api/dist
 
   deploy:
+    name: Deploy to Production
     needs: build
-    # 修改：只在release分支或手动触发时部署
-    # if: github.ref == 'refs/heads/release' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
-      - name: 检出代码
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: 安装 pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: 8
-          run_install: false
-
-      - name: 设置Node.js
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18'
           cache: 'pnpm'
-          cache-dependency-path: '**/package.json'
 
-      - name: 安装依赖
-        run: pnpm install --no-frozen-lockfile
+      - name: Setup PNPM
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
 
-      - name: 安装构建工具
-        run: |
-          pnpm add -Dw esbuild@0.20.2
-          cd apps/api && pnpm add -D @types/swagger-jsdoc @types/swagger-ui-express
-          cd ../../packages/shared && pnpm add -D esbuild@0.20.2
-          cd ../ui && pnpm add -D esbuild@0.20.2
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
 
-      - name: 列出UI包的源文件
-        run: |
-          echo "检查UI包源文件结构："
-          ls -la packages/ui/src || echo "UI包src目录不存在"
+      - name: Build
+        run: pnpm build --filter=types --filter=monitoring --filter=api
 
-      - name: 构建shared包
-        run: cd packages/shared && pnpm build
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-east-1
 
-      - name: 检查shared包输出
-        run: ls -la packages/shared/dist
-
-      - name: 尝试构建UI包
-        run: cd packages/ui && ls && pnpm build || echo "UI包构建失败，但继续执行"
-        continue-on-error: true
-
-      - name: 构建API包
-        run: cd apps/api && pnpm build
-
-      - name: 检查API包输出
-        run: ls -la apps/api/dist
-
-      - name: 创建环境变量文件
-        run: |
-          cd apps/api
-          echo "NODE_ENV=production" > .env.prod
-          echo "MONGODB_URI=${{ secrets.MONGODB_URI }}" >> .env.prod
-          echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env.prod
-          echo "已创建部署环境变量文件："
-          cat .env.prod
-
-      - name: 添加环境变量到serverless.yml
-        run: |
-          cd apps/api
-          echo "正在确保serverless.yml中包含所有需要的环境变量"
-          grep -q "JWT_SECRET:" serverless.yml || sed -i '/environment:/a\    JWT_SECRET: ${env:JWT_SECRET}' serverless.yml
-
-      - name: 部署到AWS Lambda
-        run: cd apps/api && cp .env.prod .env && pnpm dlx serverless@3 deploy
+      - name: Deploy to AWS Lambda
+        run: cd apps/api && pnpm run deploy:lambda:prod
         env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          MONGODB_URI: ${{ secrets.MONGODB_URI }}
-          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          MONGODB_URI_prod: ${{ secrets.MONGODB_URI_PROD }}
+          JWT_SECRET_prod: ${{ secrets.JWT_SECRET_PROD }}
+          CORS_ORIGINS_prod: ${{ secrets.CORS_ORIGINS_PROD }}
+          DD_API_KEY: ${{ secrets.DD_API_KEY }}
+          DD_SITE: ${{ secrets.DD_SITE || 'datadoghq.com' }}
+          DD_LAYER_VERSION: ${{ secrets.DD_LAYER_VERSION || '119' }}
 
-      - name: 部署完成通知
+      - name: Deployment notification
         run: |
-          echo "Lambda函数已成功部署到AWS!"
-          echo "部署时间: $(date)"
+          echo "✅ Lambda function deployed successfully!"
+          echo "Deployment time: $(date)"

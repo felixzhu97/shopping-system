@@ -1,0 +1,43 @@
+{
+  "name": "payment-integration",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "license": "MIT",
+  "scripts": {
+    "lint": "eslint \"src/**/*.ts\"",
+    "build": "tsc && pnpm run bundle",
+    "bundle": "esbuild src/index.ts --bundle --format=cjs --platform=node --outfile=dist/index.bundle.js",
+    "dev": "tsc --watch",
+    "clean": "rm -rf dist && rm -rf node_modules",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
+  },
+  "dependencies": {
+    "types": "workspace:*",
+    "typescript": "^5.2.2"
+  },
+  "devDependencies": {
+    "esbuild": "^0.20.2",
+    "eslint": "^8.48.0",
+    "vitest": "^1.4.0"
+  },
+  "peerDependencies": {
+    "alipay-sdk": "*",
+    "wechatpay-node-v3": "*",
+    "stripe": "*"
+  },
+  "peerDependenciesMeta": {
+    "alipay-sdk": {
+      "optional": true
+    },
+    "wechatpay-node-v3": {
+      "optional": true
+    },
+    "stripe": {
+      "optional": true
+    }
+  }
+}

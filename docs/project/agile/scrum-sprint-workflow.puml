@@ -1,0 +1,85 @@
+@startuml
+title Scrum Sprint 工作流程图
+
+skinparam activity {
+    BackgroundColor lightblue
+    BorderColor darkblue
+    FontSize 12
+}
+
+skinparam arrow {
+    Color darkblue
+}
+
+' Sprint 开始
+start
+
+:Sprint 规划会议\n(Sprint Planning);
+note right
+  时长：最多 8 小时（2周 Sprint）
+  参与者：整个 Scrum 团队
+  产出：Sprint 目标和 Sprint 待办事项
+end note
+
+:选择 Product Backlog 项目;
+
+:确定 Sprint 目标;
+
+:创建 Sprint Backlog;
+
+:开始 Sprint\n(2-4周周期);
+
+partition "Sprint 执行期间" {
+    :每日站会\n(Daily Scrum);
+    note right
+      时长：最多 15 分钟
+      参与者：开发团队
+      内容：昨天做了什么、今天要做什么、有什么阻碍
+    end note
+    
+    :开发工作;
+    note right
+      包括：
+      - 设计
+      - 编码
+      - 测试
+      - 集成
+    end note
+    
+    :持续集成和测试;
+    
+    :产品负责人协作;
+    note right
+      澄清需求
+      回答疑问
+    end note
+}
+
+:Sprint 评审会议\n(Sprint Review);
+note right
+  时长：最多 4 小时（2周 Sprint）
+  参与者：Scrum 团队 + 利益相关者
+  产出：可工作的产品增量演示
+end note
+
+:演示完成的增量;
+
+:收集反馈;
+
+:Sprint 回顾会议\n(Sprint Retrospective);
+note right
+  时长：最多 3 小时（2周 Sprint）
+  参与者：Scrum 团队
+  产出：改进计划
+end note
+
+:识别改进点;
+
+:制定改进计划;
+
+:发布产品增量;
+
+stop
+
+@enduml
+

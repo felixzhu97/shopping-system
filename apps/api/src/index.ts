@@ -1,9 +1,14 @@
+// Initialize Datadog APM before any other imports
+import { initDatadogAPM } from 'monitoring';
+initDatadogAPM();
+
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import swaggerUi from 'swagger-ui-express';
 import swaggerSpecs from './swagger';
+import { expressjwt } from 'express-jwt';
 
 // 路由导入
 import productRoutes from './routes/products';
@@ -18,14 +23,43 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/shopping-system';
 
+export const getJwtSecret = () => {
+  return process.env.JWT_SECRET || 'your_jwt_secret';
+};
+const jwtSecret = getJwtSecret();
+
+// JWT 鉴权中间件
+const jwtAuth = expressjwt({
+  secret: jwtSecret,
+  algorithms: ['HS256'],
+}).unless({
+  path: [
+    '/api/users/register',
+    '/api/users/login',
+    '/api/users/reset-password',
+    '/health',
+    /^\/api\/products.*/,
+    /^\/api\/cart.*/,
+  ],
+});
+
 // 中间件
+const allowedOrigins = process.env.CORS_ORIGINS ? process.env.CORS_ORIGINS.split(',') : [];
 app.use(
   cors({
-    origin: process.env.CORS_ORIGINS ? process.env.CORS_ORIGINS.split(',') : ['*'],
+    origin: allowedOrigins,
     credentials: true,
   })
 );
 app.use(express.json());
+app.use(jwtAuth);
+app.use((err, req, res, next) => {
+  if (err.name === 'UnauthorizedError') {
+    // express-jwt 校验失败
+    return res.status(401).json({ status: 'error', message: 'Token无效或已过期' });
+  }
+  next(err);
+});
 
 // 健康检查端点
 app.get('/health', (req, res) => {
@@ -50,9 +84,10 @@ mongoose
   })
   .then(() => {
     console.log('数据库连接成功');
-    // 启动服务器
-    const server = app.listen(PORT, () => {
-      console.log(`后端API服务运行在 http://localhost:${PORT}`);
+    // 启动服务器 - 绑定到所有网络接口
+    const server = app.listen(PORT, '0.0.0.0', () => {
+      console.log(`后端API服务运行在 http://0.0.0.0:${PORT}`);
+      console.log(`局域网访问地址: http://192.168.3.18:${PORT}`);
     });
 
     // 优雅关闭

@@ -43,3 +43,7 @@ Thumbs.db
 **/tsconfig.tsbuildinfo
 **/AWSCLIV2.pkg
 **/.serverless
+
+
+# 测试覆盖率
+coverage

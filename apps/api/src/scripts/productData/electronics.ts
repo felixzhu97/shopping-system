@@ -1,5 +1,5 @@
 // 不使用类型定义，避免类型错误
-// import { Product as SharedProduct } from 'shared';
+// import { Product as SharedProduct } from 'types';
 
 export const electronicsProducts = [
   // 电子产品 - 手机
@@ -195,7 +195,7 @@ export const electronicsProducts = [
       '轻薄商务本，英特尔酷睿 i7 处理器，16GB 内存，512GB SSD，14 英寸 2.2K 防眩光屏幕，军标级耐用性，指纹识别。',
     price: 9999.0,
     originalPrice: 10999.0,
-    image: 'https://images.unsplash.com/photo-1612815270581-3cced49d8f0a?q=80&w=1000',
+    image: 'https://images.unsplash.com/photo-1611078489935-0cb964de46d6?q=80&w=2574',
     category: 'Electronics',
     stock: 50,
     rating: 4.6,
@@ -208,7 +208,7 @@ export const electronicsProducts = [
       '游戏本，AMD Ryzen 9 处理器，RTX 4070 显卡，32GB DDR5 内存，1TB PCIe 4.0 SSD，16 英寸 165Hz 屏幕，RGB 键盘。',
     price: 11999.0,
     originalPrice: 12999.0,
-    image: 'https://images.unsplash.com/photo-1603302576837-37561b2e2302?q=80&w=1000',
+    image: 'https://images.unsplash.com/photo-1652194928910-5bd06fc43435?q=80&w=1226',
     category: 'Electronics',
     stock: 30,
     rating: 4.9,
@@ -383,7 +383,7 @@ export const electronicsProducts = [
       '7 英寸智能显示屏，Google 助手，睡眠感应功能，家庭互动媒体屏幕，智能家居控制，视频通话，照片展示。',
     price: 599.0,
     originalPrice: 699.0,
-    image: 'https://images.unsplash.com/photo-1558002038-1055e2fae82f?q=80&w=1000',
+    image: 'https://images.unsplash.com/photo-1650682009477-52fd77302b78?q=80&w=2670',
     category: 'Electronics',
     stock: 65,
     rating: 4.4,
@@ -396,7 +396,7 @@ export const electronicsProducts = [
       '1600 万种颜色，白光到暖光调节，语音控制兼容，定时设置，智能场景，手机 App 控制，兼容多种智能家居系统。',
     price: 799.0,
     originalPrice: 899.0,
-    image: 'https://images.unsplash.com/photo-1560170412-0f438cce21fc?q=80&w=1000',
+    image: 'https://images.unsplash.com/photo-1590845947698-8924d7409b56?q=80&w=1287',
     category: 'Electronics',
     stock: 85,
     rating: 4.6,
@@ -463,7 +463,7 @@ export const electronicsProducts = [
       '4K 超清相机，三轴机械增稳云台，长达 25 分钟飞行时间，8 公里图传距离，智能跟随，自动返航，便携折叠设计。',
     price: 3499.0,
     originalPrice: 3899.0,
-    image: 'https://images.unsplash.com/photo-1508444845599-5c89863b1c44?q=80&w=1000',
+    image: 'https://images.unsplash.com/photo-1631052941807-33b175775535?q=80&w=2670',
     category: 'Electronics',
     stock: 40,
     rating: 4.5,

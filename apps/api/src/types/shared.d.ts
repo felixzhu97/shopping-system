@@ -28,12 +28,31 @@ declare module 'shared' {
 
   export interface User {
     id: string;
-    fullName: string;
     email: string;
     role: 'user' | 'admin';
     firstName: string;
     lastName: string;
     phone: string;
+    // 收货地址
+    address: string;
+    city: string;
+    province: string;
+    postalCode: string;
+    // 支付信息
+    paymentMethod: 'alipay' | 'wechat' | 'credit-card';
+  }
+
+  export interface UserLogin {
+    emailOrPhone: string;
+    password: string;
+  }
+
+  export interface UserRegister
+    extends Pick<User, 'email' | 'password' | 'firstName' | 'lastName' | 'phone'> {}
+
+  export interface UserResetPassword {
+    emailOrPhone: string;
+    newPassword: string;
   }
 
   export interface Order {
@@ -56,8 +75,10 @@ declare module 'shared' {
     province: string;
     postalCode: string;
     paymentMethod: 'alipay' | 'wechat' | 'credit-card';
-    cardNumber: string;
-    expiration: string;
-    cvv: string;
   }
+}
+
+export interface ErrorResponse {
+  message: string;
+  field?: string;
 }

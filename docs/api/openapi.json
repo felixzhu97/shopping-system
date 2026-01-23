@@ -1125,19 +1125,7 @@
           "paymentMethod": {
             "type": "string",
             "description": "支付方式",
-            "enum": ["credit-card", "alipay", "wechat"]
-          },
-          "cardNumber": {
-            "type": "string",
-            "description": "卡号"
-          },
-          "expiration": {
-            "type": "string",
-            "description": "到期日"
-          },
-          "cvv": {
-            "type": "string",
-            "description": "CVV码"
+            "enum": ["alipay", "wechat"]
           }
         }
       }

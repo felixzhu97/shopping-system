@@ -79,3 +79,50 @@ cp .env.example .env
 - `GET /api/orders/user/:userId` - 获取用户订单列表
 - `GET /api/orders/:id` - 获取订单详情
 - `PUT /api/orders/:id/status` - 更新订单状态
+
+## 环境变量配置
+
+在运行此API服务之前，请确保设置以下环境变量：
+
+```
+# 数据库配置
+MONGODB_URI=mongodb://localhost:27017/shopping-system
+
+# 服务器配置
+PORT=3001
+NODE_ENV=development
+
+# JWT配置
+JWT_SECRET=your_jwt_secret
+
+# CORS配置
+CORS_ORIGINS=http://localhost:3000,http://localhost:8000
+
+# 管理员配置
+ADMIN_SECRET=your_admin_secret_here
+```
+
+**重要**: `ADMIN_SECRET` 用于产品的增删改操作，确保在生产环境中使用一个强密码。
+
+## 管理员API使用说明
+
+当进行产品的增加、修改或删除操作时，需要在请求头中添加 `admin-secret` 字段，其值必须与环境变量 `ADMIN_SECRET` 一致。
+
+示例请求：
+
+```
+POST /api/products
+Headers:
+  Content-Type: application/json
+  admin-secret: your_admin_secret_here
+
+Body:
+{
+  "name": "产品名称",
+  "price": 99.99,
+  "description": "产品描述",
+  ...
+}
+```
+
+如果没有提供正确的 `admin-secret`，操作将被拒绝并返回 403 错误。

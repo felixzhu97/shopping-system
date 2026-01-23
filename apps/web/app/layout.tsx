@@ -3,7 +3,12 @@ import { Inter } from 'next/font/google';
 import './globals.css';
 import ClientLayout from './ClientLayout';
 
-const inter = Inter({ subsets: ['latin'] });
+const inter = Inter({
+  subsets: ['latin'],
+  display: 'swap',
+  fallback: ['system-ui', 'arial'],
+  adjustFontFallback: true,
+});
 
 export const metadata: Metadata = {
   title: '购物系统',

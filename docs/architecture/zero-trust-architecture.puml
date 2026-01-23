@@ -1,0 +1,299 @@
+@startuml
+title 零信任架构图 - 购物系统
+
+skinparam componentStyle rectangle
+skinparam linetype ortho
+
+' 用户和设备层
+actor "用户" as User
+actor "管理员" as Admin
+node "用户设备\n（浏览器/移动设备）" as UserDevice
+node "管理员设备\n（管理终端）" as AdminDevice
+
+' 零信任控制平面
+package "零信任控制平面" {
+    component "身份提供商\n(Identity Provider)" as IdP {
+        component "用户身份验证" as UserAuth
+        component "设备身份验证" as DeviceAuth
+        component "多因素认证\n(MFA)" as MFA
+        component "单点登录\n(SSO)" as SSO
+    }
+
+    component "策略引擎\n(Policy Engine)" as PolicyEngine {
+        component "访问决策" as AccessDecision
+        component "风险评估" as RiskAssessment
+        component "策略评估" as PolicyEvaluation
+    }
+
+    component "策略管理点\n(Policy Administration Point)" as PAP {
+        component "策略配置" as PolicyConfig
+        component "权限管理" as PermissionMgmt
+        component "角色管理" as RoleMgmt
+    }
+
+    component "设备信任评估\n(Device Trust Assessment)" as DeviceTrust {
+        component "设备健康检查" as DeviceHealth
+        component "合规性验证" as ComplianceCheck
+        component "威胁检测" as ThreatDetection
+    }
+
+    component "安全信息与事件管理\n(SIEM)" as SIEM {
+        component "日志聚合" as LogAggregation
+        component "行为分析" as BehaviorAnalysis
+        component "异常检测" as AnomalyDetection
+    }
+}
+
+' 零信任数据平面 - 安全网关层
+package "零信任数据平面 - 安全网关" {
+    cloud "零信任网关\n(Zero Trust Gateway)" as ZTGateway {
+        component "API网关" as APIGateway
+        component "反向代理" as ReverseProxy
+        component "TLS终止" as TLSTermination
+        component "访问控制" as GatewayAccessControl
+    }
+
+    component "网络分段\n(Network Segmentation)" as NetworkSeg {
+        component "微隔离" as MicroSegmentation
+        component "VPC隔离" as VPCIsolation
+        component "服务网格" as ServiceMesh
+    }
+}
+
+' 应用层 - 与现有系统集成
+package "应用层 - 前端" {
+    cloud "Vercel Platform" as Vercel {
+        component "Next.js 应用" as NextApp {
+            component "静态页面" as StaticPages
+            component "服务端渲染" as SSR
+            component "API 路由" as APIRoutes
+        }
+        component "Serverless Functions" as VercelFunctions
+    }
+}
+
+package "应用层 - 后端API" {
+    cloud "AWS Cloud" as AWS {
+        component "API Gateway" as AWSAPIGateway
+        component "Lambda Functions" as Lambda {
+            component "API 处理函数" as APILambda
+            component "业务逻辑函数" as BusinessLambda
+            component "认证中间件" as AuthMiddleware
+            component "授权中间件" as AuthzMiddleware
+        }
+        component "Express API 服务" as ExpressAPI {
+            component "路由层" as RoutesLayer
+            component "认证层" as AuthLayer
+            component "授权层" as AuthzLayer
+        }
+    }
+}
+
+' 数据层
+package "数据层" {
+    cloud "MongoDB Atlas" as Atlas {
+        database "主集群" as PrimaryCluster {
+            component "数据加密\n(静态加密)" as DataEncryption
+            component "访问控制\n(RBAC)" as DBAC
+            component "审计日志" as AuditLogs
+        }
+        database "备份集群" as BackupCluster
+        component "Atlas 监控" as AtlasMonitoring
+    }
+
+    component "密钥管理\n(Key Management)" as KeyMgmt {
+        component "加密密钥" as EncryptionKeys
+        component "密钥轮换" as KeyRotation
+    }
+}
+
+' CI/CD 安全
+package "CI/CD 安全" {
+    cloud "GitHub" as GitHub {
+        component "代码仓库" as Repo
+        component "GitHub Actions" as Actions {
+            component "安全扫描" as SecurityScan
+            component "依赖检查" as DepCheck
+            component "代码签名" as CodeSigning
+            component "零信任部署验证" as ZTDeployVerify
+        }
+    }
+}
+
+' 监控和日志
+package "监控和日志" {
+    component "CloudWatch" as CloudWatch {
+        component "日志服务" as Logs
+        component "监控指标" as Metrics
+        component "告警" as Alarms
+    }
+
+    component "安全监控" as SecurityMonitoring {
+        component "访问日志" as AccessLogs
+        component "异常行为检测" as AnomalyBehavior
+        component "威胁情报" as ThreatIntel
+    }
+}
+
+' ========== 零信任原则 1: 显式验证 (Verify Explicitly) ==========
+' 用户和设备身份验证流程
+User --> UserDevice : 使用设备
+Admin --> AdminDevice : 使用设备
+UserDevice --> IdP : 1. 身份验证请求
+AdminDevice --> IdP : 1. 身份验证请求
+IdP --> UserAuth : 验证用户身份
+IdP --> DeviceAuth : 验证设备身份
+IdP --> MFA : 多因素认证
+IdP --> SSO : 单点登录
+UserAuth --> PolicyEngine : 2. 身份信息
+DeviceAuth --> PolicyEngine : 2. 设备信息
+
+' ========== 零信任原则 2: 最小权限 (Least Privilege Access) ==========
+' 策略引擎评估和授权
+PolicyEngine --> AccessDecision : 访问决策
+PolicyEngine --> RiskAssessment : 风险评估
+PolicyEngine --> PolicyEvaluation : 策略评估
+PolicyEngine --> PAP : 查询策略
+PAP --> PolicyConfig : 策略配置
+PAP --> PermissionMgmt : 权限管理
+PAP --> RoleMgmt : 角色管理
+PolicyEngine --> ZTGateway : 3. 授权决策
+
+' ========== 零信任原则 3: 假设违规 (Assume Breach) ==========
+' 设备信任评估
+DeviceTrust --> DeviceHealth : 设备健康检查
+DeviceTrust --> ComplianceCheck : 合规性验证
+DeviceTrust --> ThreatDetection : 威胁检测
+DeviceTrust --> PolicyEngine : 设备信任状态
+UserDevice --> DeviceTrust : 设备信息
+AdminDevice --> DeviceTrust : 设备信息
+
+' 网络分段和微隔离
+NetworkSeg --> MicroSegmentation : 微隔离
+NetworkSeg --> VPCIsolation : VPC隔离
+NetworkSeg --> ServiceMesh : 服务网格
+ZTGateway --> NetworkSeg : 网络分段
+
+' ========== 零信任原则 4: 持续验证 (Continuous Verification) ==========
+' 持续监控和验证
+SIEM --> LogAggregation : 日志聚合
+SIEM --> BehaviorAnalysis : 行为分析
+SIEM --> AnomalyDetection : 异常检测
+SIEM --> PolicyEngine : 安全事件反馈
+
+' 安全网关访问控制
+ZTGateway --> APIGateway : API网关
+ZTGateway --> ReverseProxy : 反向代理
+ZTGateway --> TLSTermination : TLS终止
+ZTGateway --> GatewayAccessControl : 访问控制
+PolicyEngine --> GatewayAccessControl : 授权策略
+
+' 用户请求流程（显式验证 + 最小权限）
+UserDevice --> ZTGateway : 4. HTTPS请求
+ZTGateway --> GatewayAccessControl : 检查授权
+GatewayAccessControl --> NextApp : 5. 允许访问
+NextApp --> VercelFunctions : API调用
+VercelFunctions --> AWSAPIGateway : 转发请求
+AWSAPIGateway --> APILambda : 路由到Lambda
+
+' 后端API安全（持续验证）
+APILambda --> AuthMiddleware : 认证中间件
+APILambda --> AuthzMiddleware : 授权中间件
+AuthMiddleware --> PolicyEngine : 验证身份
+AuthzMiddleware --> PolicyEngine : 检查权限
+APILambda --> ExpressAPI : 调用Express服务
+ExpressAPI --> AuthLayer : 认证层
+ExpressAPI --> AuthzLayer : 授权层
+AuthLayer --> PolicyEngine : 持续验证
+AuthzLayer --> PolicyEngine : 权限检查
+
+' 数据访问安全（最小权限 + 假设违规）
+ExpressAPI --> PrimaryCluster : 6. 数据库访问
+APILambda --> PrimaryCluster : 数据库访问
+BusinessLambda --> PrimaryCluster : 数据库访问
+PrimaryCluster --> DBAC : 访问控制
+PrimaryCluster --> DataEncryption : 数据加密
+PrimaryCluster --> AuditLogs : 审计日志
+KeyMgmt --> DataEncryption : 提供密钥
+KeyMgmt --> EncryptionKeys : 密钥管理
+KeyMgmt --> KeyRotation : 密钥轮换
+
+' 监控和日志（持续验证）
+APILambda --> CloudWatch : 应用日志
+BusinessLambda --> CloudWatch : 应用日志
+ExpressAPI --> CloudWatch : 应用日志
+PrimaryCluster --> AtlasMonitoring : 数据库监控
+PrimaryCluster --> AuditLogs : 审计日志
+AuditLogs --> SecurityMonitoring : 安全日志
+CloudWatch --> Logs : 日志存储
+CloudWatch --> Metrics : 监控指标
+CloudWatch --> Alarms : 告警
+SecurityMonitoring --> AccessLogs : 访问日志
+SecurityMonitoring --> AnomalyBehavior : 异常检测
+SecurityMonitoring --> ThreatIntel : 威胁情报
+SecurityMonitoring --> SIEM : 安全事件
+
+' CI/CD 零信任验证
+Repo --> Actions : 代码推送
+Actions --> SecurityScan : 安全扫描
+Actions --> DepCheck : 依赖检查
+Actions --> CodeSigning : 代码签名
+Actions --> ZTDeployVerify : 零信任部署验证
+ZTDeployVerify --> PolicyEngine : 验证部署权限
+ZTDeployVerify --> DeviceTrust : 验证部署环境
+
+' 数据备份
+PrimaryCluster --> BackupCluster : 加密备份
+
+' 管理员访问流程
+AdminDevice --> ZTGateway : 管理请求
+ZTGateway --> GatewayAccessControl : 检查授权
+GatewayAccessControl --> NextApp : 允许访问
+NextApp --> ExpressAPI : 管理API调用
+ExpressAPI --> AuthzLayer : 管理员权限检查
+
+legend right
+    |<#lightblue> 零信任控制平面 |
+    |<#lightgreen> 零信任数据平面 |
+    |<#lightyellow> 应用层 |
+    |<#lightcoral> 数据层 |
+    |<#lightgray> 安全监控 |
+
+    == 零信任原则 ==
+    | ✓ 显式验证 |
+    | ✓ 最小权限 |
+    | ✓ 假设违规 |
+    | ✓ 持续验证 |
+endlegend
+
+note right of PolicyEngine
+  **零信任核心**
+
+  所有访问请求都必须：
+  1. 验证身份（用户+设备）
+  2. 评估风险
+  3. 检查策略
+  4. 授予最小权限
+  5. 持续监控
+end note
+
+note right of ZTGateway
+  **安全网关**
+
+  - TLS加密传输
+  - 访问控制
+  - 网络分段
+  - 流量监控
+end note
+
+note right of PrimaryCluster
+  **数据保护**
+
+  - 静态加密
+  - 传输加密
+  - 访问控制
+  - 审计日志
+end note
+
+@enduml
+

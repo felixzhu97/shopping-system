@@ -1,0 +1,72 @@
+@startuml
+title 看板工作流程图
+
+skinparam activity {
+    BackgroundColor lightcyan
+    BorderColor darkcyan
+    FontSize 12
+}
+
+skinparam arrow {
+    Color darkcyan
+}
+
+start
+
+:工作项进入\n待办队列;
+
+partition "待办 (Backlog)" #lightgreen {
+    :新工作项
+    :优先级排序
+}
+
+partition "进行中 (In Progress)" #lightyellow {
+    :WIP 限制：5
+    note right
+      WIP（在制品）限制
+      防止过度承诺
+      暴露瓶颈问题
+    end note
+    :工作项A
+    :工作项B
+    :工作项C
+}
+
+partition "评审中 (Review)" #FFA500 {
+    :WIP 限制：3
+    :代码审查
+    :质量检查
+}
+
+partition "测试中 (Testing)" #FFA07A {
+    :WIP 限制：3
+    :功能测试
+    :集成测试
+}
+
+partition "完成 (Done)" #lightgray {
+    :已完成工作项
+    :可交付成果
+}
+
+note right
+  拉动式系统
+  只有当下游有空位时
+  才从上游拉动工作
+end note
+
+partition "看板原则" {
+    :可视化工作流;
+    :限制在制品(WIP);
+    :管理流动;
+    :明确流程政策;
+    :实施反馈循环;
+    :协作式改进;
+}
+
+:持续监控指标\n(前置时间、周期时间、吞吐量);
+
+stop
+
+@enduml
+

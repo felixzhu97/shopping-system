@@ -1,154 +1,200 @@
+'use client';
+
 import Link from 'next/link';
 import Image from '@/components/ui/image';
 import { Product } from '@/lib/types';
 import * as api from '@/lib/api';
+import { Button } from '@/components/ui/button';
+import { useState } from 'react';
+import { useEffect } from 'react';
+import { LoadingSpinner } from '@/components/ui/loading-spinner';
+import { useTranslation } from 'react-i18next';
 
-// 商品卡片组件
-const ProductCard = ({ item }: { item: Product }) => (
-  <div className="rounded-2xl overflow-hidden bg-white shadow-sm hover:shadow-md transition-shadow">
-    <Link href={`/products/${item.id}`} className="block h-full">
-      <div className="p-4">
-        <div className="h-36 w-full overflow-hidden rounded-xl mb-3">
+// 大型展示卡片组件
+const HeroCard = ({
+  product,
+  color = 'bg-black',
+  textColor = 'text-white',
+}: {
+  product: Product;
+  color?: string;
+  textColor?: string;
+}) => {
+  const { t } = useTranslation();
+  return (
+    <div
+      className={`${color} rounded-[28px] overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300 ease-out hover:scale-[1.01]`}
+    >
+      <div className="block relative">
+        <div className="pt-12 px-8 text-center">
+          <h2 className={`text-[40px] font-medium ${textColor} mb-1`}>{product?.name}</h2>
+          <p className={`text-[21px] ${textColor}/90 mb-3`}>{product?.description}</p>
+          <div className="flex justify-center gap-4 text-[17px]">
+            <Button
+              asChild
+              variant="default"
+              size="lg"
+              className="rounded-full px-8 py-6 bg-white text-black hover:bg-white/90 text-base"
+            >
+              <Link href={`/products/${product?.id}`}>{t('common.learn_more')}</Link>
+            </Button>
+            <Button
+              asChild
+              variant="outline"
+              size="lg"
+              className="rounded-full px-8 py-6 bg-black text-white hover: text-base"
+            >
+              <Link href={`/products/${product?.id}`}>{t('common.buy')}</Link>
+            </Button>
+          </div>
+        </div>
+        <div className="mt-8 flex justify-center">
           <Image
-            src={item.image}
-            alt={item.name}
-            className="h-full w-full object-cover transition-transform hover:scale-105"
+            src={product?.image}
+            alt={product?.name}
+            className="w-full h-auto object-cover"
             loading="lazy"
-            width={144}
-            height={144}
           />
         </div>
-        <h4 className="text-sm font-medium line-clamp-1">{item.name}</h4>
-        <p className="text-sm text-gray-600 mt-1">¥{item.price.toFixed(2)}</p>
       </div>
-    </Link>
-  </div>
-);
+    </div>
+  );
+};
 
-// 类别展示卡片组件
-const CategoryCard = ({ category }: { category: any }) => (
-  <div
-    className={`rounded-2xl overflow-hidden ${category.color} hover:shadow-md transition-shadow`}
-  >
-    <Link href={`/products?category=${category.id}`} className="block h-full">
-      <div className="p-6 flex flex-col h-full">
-        <h4 className="text-2xl font-semibold mb-3">{category.name}</h4>
-        <p className="text-sm text-gray-600 mb-6">{category.description}</p>
-        <div className="mt-auto">
-          <div className="h-40 w-full overflow-hidden rounded-xl mb-4">
-            <Image
-              src={category.image}
-              alt={category.name}
-              className="h-full w-full object-cover"
-              loading="lazy"
-              width={160}
-              height={160}
-            />
-          </div>
-          <div
-            className={`${category.titleColor.replace('text-', 'text-')} hover:underline text-sm font-medium`}
-          >
-            了解更多 &gt;
+// 双列展示卡片组件
+const DualCard = ({ product, color = 'bg-white' }: { product: Product; color?: string }) => {
+  const { t } = useTranslation();
+  return (
+    <div
+      className={`${color} rounded-[28px] overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 ease-out hover:scale-[1.01]`}
+    >
+      <div className="block relative">
+        <div className="pt-8 px-6 text-center">
+          <h2 className="text-[32px] font-medium text-[#1d1d1f] mb-1">{product?.name}</h2>
+          <p className="text-[17px] text-[#1d1d1f]/90 mb-3">{product?.description}</p>
+          <div className="flex justify-center gap-4 text-[14px]">
+            <Link href={`/products/${product?.id}`} className="text-blue-500 hover:underline">
+              {t('common.learn_more')} <span className="ml-1">→</span>
+            </Link>
           </div>
         </div>
-      </div>
-    </Link>
-  </div>
-);
-
-// 查看更多卡片组件
-const ViewMoreCard = ({ category }: { category: any }) => (
-  <div className="rounded-2xl overflow-hidden bg-gradient-to-br from-white to-gray-100 shadow-sm hover:shadow-md transition-shadow">
-    <Link href={`/products?category=${category.id}`} className="block h-full">
-      <div className="p-6 flex flex-col items-center justify-center h-full text-center">
-        <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center mb-4">
-          <span className={`text-xl ${category.titleColor}`}>&gt;</span>
+        <div className="mt-6 flex justify-center">
+          <Image
+            src={product?.image}
+            alt={product?.name}
+            className="w-full h-auto object-cover"
+            loading="lazy"
+          />
         </div>
-        <h4 className="text-lg font-medium mb-2">查看所有</h4>
-        <p className="text-sm text-gray-600">{category.name}</p>
       </div>
-    </Link>
-  </div>
-);
+    </div>
+  );
+};
 
-// 类别展示区组件
-async function CategoryShowcase() {
-  try {
-    // 并行获取所有类别数据
-    const [electronics, clothing, homeKitchen, books] = await Promise.all([
-      api.getProducts('electronics'),
-      api.getProducts('clothing'),
-      api.getProducts('home-kitchen'),
-      api.getProducts('books'),
-    ]);
-
-    const categories = [
-      {
-        id: 'electronics',
-        name: '电子产品',
-        description: '探索最新科技产品，体验科技带来的便利与乐趣',
-        items: electronics.slice(0, 8),
-        image: '/electronics.jpg',
-        color: 'bg-blue-50',
-        titleColor: 'text-blue-600',
-      },
-      {
-        id: 'clothing',
-        name: '服装',
-        description: '时尚穿搭，展现个性，彰显您的独特魅力',
-        items: clothing.slice(0, 8),
-        image: '/clothing.jpg',
-        color: 'bg-purple-50',
-        titleColor: 'text-purple-600',
-      },
-      {
-        id: 'home-kitchen',
-        name: '家居厨房',
-        description: '打造舒适生活空间，让家更有温度',
-        items: homeKitchen.slice(0, 8),
-        image: '/home-kitchen.jpg',
-        color: 'bg-amber-50',
-        titleColor: 'text-amber-600',
-      },
-      {
-        id: 'books',
-        name: '图书',
-        description: '知识的海洋，尽在掌握，开启智慧之门',
-        items: books.slice(0, 8),
-        image: '/books.jpg',
-        color: 'bg-green-50',
-        titleColor: 'text-green-600',
-      },
-    ];
-
-    return (
-      <div className="space-y-24">
-        {categories.map(category => (
-          <div key={category.id} className="mb-16">
-            <div className="container max-w-[1040px] mx-auto">
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                <CategoryCard category={category} />
-
-                {category.items.slice(0, 6).map((item: Product) => (
-                  <ProductCard key={item.id} item={item} />
-                ))}
-
-                <ViewMoreCard category={category} />
-              </div>
-            </div>
+// 促销卡片组件
+const PromoCard = ({
+  title,
+  description,
+  image,
+  link,
+  color = 'bg-white',
+}: {
+  title: string;
+  description: string;
+  image: string;
+  link: string;
+  color?: string;
+}) => {
+  const { t } = useTranslation();
+  return (
+    <div
+      className={`${color} rounded-[28px] overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 ease-out hover:scale-[1.01]`}
+    >
+      <div className="block relative">
+        <div className="pt-8 px-6 text-center">
+          <h2 className="text-[32px] font-medium text-[#1d1d1f] mb-1">{title}</h2>
+          <p className="text-[17px] text-[#1d1d1f]/90 mb-3">{description}</p>
+          <div className="flex justify-center gap-4 text-[14px]">
+            <Link href={link} className="text-blue-500 hover:underline">
+              {t('common.buy_now')} <span className="ml-1">→</span>
+            </Link>
           </div>
-        ))}
+        </div>
+        <div className="mt-6 flex justify-center">
+          <Image src={image} alt={title} className="w-full h-auto object-cover" loading="lazy" />
+        </div>
       </div>
-    );
-  } catch (error) {
-    console.error('获取类别产品数据时出错:', error);
+    </div>
+  );
+};
+
+// 主页展示组件
+const CategoryShowcase = () => {
+  const { t } = useTranslation();
+  const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchElectronics = async () => {
+      try {
+        const products = await api.getProducts('electronics');
+        const featuredProducts = products.filter(Boolean).slice(0, 3);
+
+        setFeaturedProducts(featuredProducts);
+        setLoading(false);
+      } catch (error) {
+        console.error('获取产品数据时出错:', error);
+        setLoading(false);
+      }
+    };
+    fetchElectronics();
+  }, []);
+
+  if (loading) {
+    return <LoadingSpinner />;
+  }
+
+  if (featuredProducts.length < 3) {
     return (
       <div className="text-center py-8">
-        <h3 className="text-lg font-medium mb-2">无法加载类别数据</h3>
-        <p className="text-gray-500">请稍后再试</p>
+        <h3 className="text-lg font-medium mb-2">{t('common.no_products_found')}</h3>
+        <p className="text-gray-500">{t('common.please_try_again')}</p>
       </div>
     );
   }
-}
+
+  return (
+    <div className="space-y-4 px-6">
+      {/* 主要产品展示 */}
+      <div className="container max-w-[1040px] mx-auto">
+        <HeroCard product={featuredProducts[0]} color="bg-black" textColor="text-white" />
+      </div>
+
+      {/* 双列产品展示 */}
+      <div className="container max-w-[1040px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-4">
+        <DualCard product={featuredProducts[1]} color="bg-[#fafafa]" />
+        <DualCard product={featuredProducts[2]} color="bg-[#fafafa]" />
+      </div>
+
+      {/* 促销活动展示 */}
+      <div className="container max-w-[1040px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-4">
+        <PromoCard
+          title={t('common.mothers_day_gift')}
+          description={t('common.choose_the_perfect_gift_for_your_mother')}
+          image="/mothers-day.png"
+          link="/products"
+          color="bg-[#fafafa]"
+        />
+        <PromoCard
+          title={t('common.trade_in')}
+          description={t('common.get_up_to_95_discount_on_new_devices')}
+          image="/trade-in.jpg"
+          link="/products"
+          color="bg-[#fafafa]"
+        />
+      </div>
+    </div>
+  );
+};
 
 export default CategoryShowcase;

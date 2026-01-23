@@ -1,5 +1,5 @@
 // 不使用类型定义，避免类型错误
-// import { Product as SharedProduct } from 'shared';
+// import { Product as SharedProduct } from 'types';
 
 export const homeKitchenProducts = [
   // 家居厨房 - 原有产品

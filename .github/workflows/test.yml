@@ -1,0 +1,55 @@
+name: Test
+
+on:
+  push:
+    branches: [main, dev, test]
+    paths:
+      - 'apps/**'
+      - 'packages/**'
+      - '.github/workflows/test.yml'
+  pull_request:
+    branches: [main, dev, test]
+    paths:
+      - 'apps/**'
+      - 'packages/**'
+      - '.github/workflows/test.yml'
+
+jobs:
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Setup PNPM
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build dependencies
+        run: pnpm build --filter=types --filter=monitoring
+
+      - name: Run tests
+        run: pnpm test
+        env:
+          NODE_ENV: test
+
+      - name: Upload coverage
+        uses: codecov/codecov-action@v3
+        with:
+          files: |
+            ./apps/api/coverage/lcov.info
+            ./apps/web/coverage/lcov.info
+          flags: |
+            api
+            web
+          fail_ci_if_error: false

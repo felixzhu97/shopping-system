@@ -1,0 +1,84 @@
+@startuml
+title 部署架构图
+
+skinparam component {
+    BackgroundColor lightyellow
+    BorderColor darkblue
+    FontSize 12
+}
+
+skinparam node {
+    BackgroundColor lightgreen
+    BorderColor darkgreen
+    FontSize 12
+}
+
+skinparam database {
+    BackgroundColor lightcoral
+    BorderColor darkred
+    FontSize 12
+}
+
+package "开发环境" {
+    node "开发机器" as DevMachine {
+        component "Next.js Dev Server" as DevWeb
+        component "Express Dev Server" as DevAPI
+    }
+    database "MongoDB Local" as DevDB
+    DevWeb --> DevAPI : HTTP
+    DevAPI --> DevDB : MongoDB
+}
+
+package "测试环境" {
+    cloud "Vercel" as VercelTest {
+        component "Next.js App" as TestWeb
+        component "Serverless Functions" as TestAPI
+    }
+    cloud "MongoDB Atlas" as TestDB {
+        database "Test Cluster" as TestCluster
+    }
+    TestWeb --> TestAPI : HTTPS
+    TestAPI --> TestCluster : MongoDB
+}
+
+package "生产环境" {
+    cloud "Vercel" as VercelProd {
+        component "Next.js App" as ProdWeb
+        component "Serverless Functions" as ProdAPI
+        component "Edge Network" as EdgeCDN
+    }
+    cloud "AWS Lambda" as AWSLambda {
+        component "API Gateway" as APIGateway
+        component "Lambda Functions" as LambdaFunc
+    }
+    cloud "MongoDB Atlas" as ProdDB {
+        database "Production Cluster" as ProdCluster
+    }
+    ProdWeb --> EdgeCDN : CDN
+    EdgeCDN --> ProdWeb : 缓存
+    ProdWeb --> ProdAPI : HTTPS
+    ProdWeb --> APIGateway : HTTPS
+    APIGateway --> LambdaFunc : 调用
+    ProdAPI --> ProdCluster : MongoDB
+    LambdaFunc --> ProdCluster : MongoDB
+}
+
+package "监控和日志" {
+    cloud "Vercel Analytics" as VercelAnalytics
+    cloud "MongoDB Monitoring" as MongoMonitoring
+    cloud "AWS CloudWatch" as CloudWatch
+    ProdWeb --> VercelAnalytics : 性能数据
+    ProdAPI --> VercelAnalytics : 日志
+    LambdaFunc --> CloudWatch : 日志和指标
+    ProdCluster --> MongoMonitoring : 监控数据
+}
+
+legend right
+    |<#lightblue> 前端应用 |
+    |<#lightgreen> 后端服务 |
+    |<#lightcoral> 数据库 |
+    |<#lightyellow> 云服务 |
+endlegend
+
+@enduml
+

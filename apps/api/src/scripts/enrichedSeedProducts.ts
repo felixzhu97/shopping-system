@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import Product from '../models/Product';
-import { Product as SharedProduct } from 'shared';
+import { Product as SharedProduct } from 'types';
 
 // 加载环境变量
 dotenv.config();

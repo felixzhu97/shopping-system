@@ -1,0 +1,36 @@
+{
+  "name": "monitoring",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.js"
+    },
+    "./client": {
+      "types": "./dist/client.d.ts",
+      "import": "./dist/client.js",
+      "require": "./dist/client.js"
+    }
+  },
+  "license": "MIT",
+  "scripts": {
+    "lint": "eslint \"src/**/*.ts\"",
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "clean": "rm -rf dist && rm -rf node_modules"
+  },
+  "dependencies": {
+    "typescript": "^5.2.2"
+  },
+  "peerDependencies": {
+    "dd-trace": "^5.0.0",
+    "@datadog/browser-rum": "^6.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.48.0"
+  }
+}

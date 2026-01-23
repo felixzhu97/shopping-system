@@ -10,7 +10,28 @@ export default defineConfig({
     setupFiles: ['./vitest.setup.ts'],
     include: ['**/*.test.{ts,tsx}'],
     coverage: {
-      reporter: ['text', 'json', 'html'],
+      reporter: ['text', 'json', 'html', 'lcov'],
+      reportsDirectory: './coverage',
+      exclude: [
+        'node_modules/**',
+        '.next/**',
+        'coverage/**',
+        'out/**',
+        '**/*.d.ts',
+        'vitest.config.ts',
+        'next.config.mjs',
+        'tailwind.config.ts',
+        'postcss.config.mjs',
+        '**/*.stories.{ts,tsx}',
+      ],
+      thresholds: {
+        global: {
+          branches: 90,
+          functions: 90,
+          lines: 90,
+          statements: 90,
+        },
+      },
     },
   },
   resolve: {
