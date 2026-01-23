@@ -202,22 +202,22 @@ The project uses Vercel for deployment, with configuration file located at `verc
 ### Environment Requirements
 
 #### General Requirements
-- Node.js >= 18.0.0
+- Node.js >= 20.0.0
 - PNPM >= 8.0.0
 - MongoDB >= 6.0
 
 #### Web Frontend
-- Node.js >= 18.0.0
+- Node.js >= 20.0.0
 - PNPM >= 8.0.0
 
 #### Mobile Application
-- Node.js >= 18.0.0
+- Node.js >= 20.0.0
 - PNPM >= 8.0.0
 - Expo CLI (install globally via npm/yarn)
 - Android Studio / Xcode (for native development, optional)
 
 #### Backend API
-- Node.js >= 18.0.0
+- Node.js >= 20.0.0
 - MongoDB >= 6.0
 - AWS CLI (for Serverless deployment)
 
