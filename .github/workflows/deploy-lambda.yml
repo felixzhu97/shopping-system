@@ -1,5 +1,10 @@
 name: Deploy to Production
 
+# Unified version management
+env:
+  NODE_VERSION: '20'
+  PNPM_VERSION: '10.1.0'
+
 on:
   push:
     branches: [release]
@@ -30,13 +35,13 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: ${{ env.NODE_VERSION }}
           cache: 'pnpm'
 
       - name: Setup PNPM
         uses: pnpm/action-setup@v2
         with:
-          version: 10.1.0
+          version: ${{ env.PNPM_VERSION }}
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -60,13 +65,13 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: ${{ env.NODE_VERSION }}
           cache: 'pnpm'
 
       - name: Setup PNPM
         uses: pnpm/action-setup@v2
         with:
-          version: 10.1.0
+          version: ${{ env.PNPM_VERSION }}
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
