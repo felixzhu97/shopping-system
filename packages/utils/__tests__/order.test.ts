@@ -7,7 +7,7 @@ import {
   getOrderStatusLabel,
   isOrderCompleted,
 } from '../src/order';
-import type { Order, OrderStatus } from 'shared';
+import type { Order, OrderStatus } from 'types';
 
 describe('Order Utils', () => {
   describe('generateOrderNumber()', () => {

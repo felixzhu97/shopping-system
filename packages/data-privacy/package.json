@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "crypto-js": "^4.2.0",
-    "shared": "workspace:*",
+    "types": "workspace:*",
     "typescript": "^5.2.2"
   },
   "devDependencies": {

@@ -5,7 +5,7 @@ import {
   calculateProductSimilarity,
   calculateUserSimilarity,
 } from '../../utils/similarity';
-import { Product } from 'shared';
+import { Product } from 'types';
 
 describe('Similarity Utils', () => {
   describe('jaccardSimilarity()', () => {

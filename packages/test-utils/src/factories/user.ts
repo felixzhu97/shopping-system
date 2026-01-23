@@ -1,4 +1,4 @@
-import { User, UserRole, PaymentMethod } from 'shared';
+import { User, UserRole, PaymentMethod } from 'types';
 
 export interface UserFactoryOptions {
   id?: string;

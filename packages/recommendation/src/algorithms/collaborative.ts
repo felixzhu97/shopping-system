@@ -1,4 +1,4 @@
-import { Product, Order } from 'shared';
+import { Product, Order } from 'types';
 import {
   RecommendationAlgorithm,
   RecommendationOptions,

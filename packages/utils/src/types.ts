@@ -1,4 +1,4 @@
-import type { Product, CartItem, OrderStatus, PaymentMethod } from 'shared';
+import type { Product, CartItem, OrderStatus, PaymentMethod } from 'types';
 
 /**
  * 价格计算选项

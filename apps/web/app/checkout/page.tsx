@@ -32,7 +32,7 @@ import { useUserId } from '@/lib/store/userStore';
 import { getUserById, updateUser } from '@/lib/api/users';
 import { paymentMethods } from '@/components/payment-method';
 import { useCartClearCart, useCartItems } from '@/lib/store/cartStore';
-import { PaymentMethod } from 'shared';
+import { PaymentMethod } from 'types';
 import { useTranslation } from 'react-i18next';
 
 // 订单摘要商品项组件

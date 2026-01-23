@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { checkStock, deductStock, restoreStock, isInStock } from '../src/inventory';
-import type { Product } from 'shared';
+import type { Product } from 'types';
 
 describe('Inventory Utils', () => {
   const mockProduct: Product = {

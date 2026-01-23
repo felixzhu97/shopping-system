@@ -1,4 +1,4 @@
-import type { Order, OrderStatus } from 'shared';
+import type { Order, OrderStatus } from 'types';
 
 /**
  * 订单状态流转顺序

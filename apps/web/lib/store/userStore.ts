@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { User } from 'shared';
+import { User } from 'types';
 import { encryptedStorage } from '../utils/crypto';
 import { z } from 'zod';
 

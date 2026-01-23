@@ -1,4 +1,4 @@
-import type { PaymentMethod } from 'shared';
+import type { PaymentMethod } from 'types';
 
 // -----------Payment Status-----------
 // 支付状态枚举

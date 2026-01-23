@@ -1,5 +1,5 @@
 import mongoose, { Schema, Document } from 'mongoose';
-import { CartItem } from 'shared';
+import { CartItem } from 'types';
 
 export interface CartDocument extends Document {
   userId: mongoose.Types.ObjectId;

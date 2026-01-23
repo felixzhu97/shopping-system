@@ -50,7 +50,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: 构建shared包
-        run: cd packages/shared && pnpm build
+        run: cd packages/types && pnpm build
 
       - name: 运行API单元测试
         run: cd apps/api && pnpm test
@@ -105,7 +105,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: 构建shared包
-        run: cd packages/shared && pnpm build
+        run: cd packages/types && pnpm build
 
       - name: 运行Web单元测试
         run: cd apps/web && pnpm test

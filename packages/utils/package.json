@@ -16,7 +16,7 @@
     "clean": "rm -rf dist && rm -rf node_modules"
   },
   "dependencies": {
-    "shared": "workspace:*",
+    "types": "workspace:*",
     "typescript": "^5.2.2"
   },
   "devDependencies": {

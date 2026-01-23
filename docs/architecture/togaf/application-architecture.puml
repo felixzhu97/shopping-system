@@ -79,8 +79,8 @@ package "共享包层" {
     component [@packages/payment-integration\n支付集成\nAlipay、WeChat、Credit Card] as pkg_payment
     component [@packages/auth\n认证包\nOAuth提供者、令牌管理] as pkg_auth
     component [@packages/utils\n工具包\n定价、验证、格式化、库存] as pkg_utils
-    component [@packages/ui\nUI组件库\n可复用UI组件] as pkg_ui
-    component [@packages/shared\n共享类型\n共享类型定义和工具] as pkg_shared
+    component [@packages/components\nUI组件库\n可复用UI组件] as pkg_ui
+    component [@packages/types\n类型定义\n类型定义定义和工具] as pkg_shared
     component [@packages/test-utils\n测试工具\n测试辅助函数、Fixtures] as pkg_test_utils
 }
 

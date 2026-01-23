@@ -8,7 +8,7 @@ import {
   hasProductRating,
   getProductAverageRating,
 } from '../src/product';
-import type { Product } from 'shared';
+import type { Product } from 'types';
 
 describe('Product Utils', () => {
   const mockProduct: Product = {

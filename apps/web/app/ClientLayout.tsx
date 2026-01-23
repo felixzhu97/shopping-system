@@ -5,6 +5,7 @@ import { Toaster } from '@/components/ui/toaster';
 import { usePathname, useRouter } from 'next/navigation';
 import { useToken } from '@/lib/store/userStore';
 import Loading from '@/components/Loading';
+import { initDatadogRUM } from 'monitoring';
 
 // 只在客户端导入 i18n
 import '../i18n';
@@ -38,6 +39,11 @@ function ProtectedContent({ children }: { children: ReactNode }) {
 }
 
 export default function ClientLayout({ children }: { children: ReactNode }) {
+  // Initialize Datadog RUM on client side
+  useEffect(() => {
+    initDatadogRUM();
+  }, []);
+
   return (
     <>
       <Suspense fallback={<Loading />}>

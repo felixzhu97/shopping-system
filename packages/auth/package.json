@@ -16,7 +16,7 @@
     "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
-    "shared": "workspace:*",
+    "types": "workspace:*",
     "typescript": "^5.2.2"
   },
   "peerDependencies": {

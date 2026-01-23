@@ -1,4 +1,4 @@
-export type { Product, CartItem } from 'shared';
+export type { Product, CartItem } from 'types';
 
 export interface Order {
   id: string;

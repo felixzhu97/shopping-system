@@ -1,4 +1,4 @@
-import { Product } from 'shared';
+import { Product } from 'types';
 import {
   AlgorithmType,
   RecommendationAlgorithm,

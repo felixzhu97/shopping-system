@@ -18,6 +18,14 @@ NEXTAUTH_SECRET=your-secret-key
 SPEED_INSIGHTS_ENABLED=true
 VERCEL_ANALYTICS_ENABLED=true
 
+# Datadog RUM (Real User Monitoring)
+NEXT_PUBLIC_DD_RUM_APPLICATION_ID=your-datadog-rum-application-id
+NEXT_PUBLIC_DD_RUM_CLIENT_TOKEN=your-datadog-rum-client-token
+NEXT_PUBLIC_DD_SITE=datadoghq.com
+NEXT_PUBLIC_DD_SERVICE=shopping-web
+NEXT_PUBLIC_DD_ENV=development
+NEXT_PUBLIC_DD_VERSION=1.0.0
+
 # 其他配置
 NODE_ENV=development
 ```
@@ -40,6 +48,16 @@ JWT_EXPIRES_IN=7d
 
 # 跨域配置
 CORS_ORIGIN=http://localhost:3000
+
+# Datadog APM and Logging
+DD_SERVICE=shopping-api
+DD_ENV=development
+DD_VERSION=1.0.0
+DD_API_KEY=your-datadog-api-key
+DD_SITE=datadoghq.com
+DD_LAYER_VERSION=119
+DD_PROFILING_ENABLED=false
+DD_APPSEC_ENABLED=false
 ```
 
 ## 移动应用环境变量 (apps/mobile)
@@ -83,6 +101,12 @@ TURBO_TEAM=your-team-id
 - `NEXTAUTH_SECRET`: NextAuth.js 用于加密会话的密钥
 - `SPEED_INSIGHTS_ENABLED`: 是否启用 Vercel Speed Insights 性能监控（可选，默认为 false）
 - `VERCEL_ANALYTICS_ENABLED`: 是否启用 Vercel Analytics 访问分析（可选，默认为 false）
+- `NEXT_PUBLIC_DD_RUM_APPLICATION_ID`: Datadog RUM 应用 ID（可选）
+- `NEXT_PUBLIC_DD_RUM_CLIENT_TOKEN`: Datadog RUM 客户端令牌（可选）
+- `NEXT_PUBLIC_DD_SITE`: Datadog 站点（默认：datadoghq.com）
+- `NEXT_PUBLIC_DD_SERVICE`: Datadog 服务名称（默认：shopping-web）
+- `NEXT_PUBLIC_DD_ENV`: Datadog 环境名称（默认：development）
+- `NEXT_PUBLIC_DD_VERSION`: Datadog 版本号（默认：1.0.0）
 
 ### 后端环境变量
 
@@ -91,6 +115,14 @@ TURBO_TEAM=your-team-id
 - `JWT_SECRET`: JWT 令牌签名密钥
 - `JWT_EXPIRES_IN`: JWT 令牌过期时间
 - `CORS_ORIGIN`: 允许的跨域来源
+- `DD_SERVICE`: Datadog 服务名称（默认：shopping-api）
+- `DD_ENV`: Datadog 环境名称（默认：development）
+- `DD_VERSION`: Datadog 版本号（默认：1.0.0）
+- `DD_API_KEY`: Datadog API 密钥（用于 Lambda 函数）
+- `DD_SITE`: Datadog 站点（默认：datadoghq.com）
+- `DD_LAYER_VERSION`: Datadog Lambda Layer 版本号（默认：119）
+- `DD_PROFILING_ENABLED`: 是否启用性能分析（默认：false）
+- `DD_APPSEC_ENABLED`: 是否启用应用安全监控（默认：false）
 
 ### 移动应用环境变量
 

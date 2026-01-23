@@ -1,4 +1,4 @@
-import { ApiResponse, Cart } from 'shared';
+import { ApiResponse, Cart } from 'types';
 import { API_CONFIG, fetchApi } from './config';
 
 export async function getCart(userId: string): Promise<Cart> {

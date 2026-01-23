@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import Product from '../models/Product';
 // 不使用类型定义，避免类型错误
-// import { Product as SharedProduct } from 'shared';
+// import { Product as SharedProduct } from 'types';
 
 // 导入各个类别的产品数据
 import { electronicsProducts } from './productData/electronics';

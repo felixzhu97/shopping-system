@@ -6,7 +6,7 @@ import {
   applyCoupon,
   calculateTotal,
 } from '../src/pricing';
-import type { CartItem, Product } from 'shared';
+import type { CartItem, Product } from 'types';
 import type { Coupon } from '../src/types';
 
 describe('Pricing Utils', () => {

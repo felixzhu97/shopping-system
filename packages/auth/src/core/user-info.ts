@@ -1,5 +1,5 @@
 import type { OAuthUser } from '../types';
-import type { User } from 'shared';
+import type { User } from 'types';
 
 /**
  * 用户信息转换工具

@@ -1,4 +1,4 @@
-import { Product, Order } from 'shared';
+import { Product, Order } from 'types';
 
 /**
  * 推荐算法类型枚举

@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { SimpleRecommendationAlgorithm } from '../../algorithms/simple';
 import { SimpleRecommendationType, RecommendationOptions } from '../../types';
-import { Product } from 'shared';
+import { Product } from 'types';
 
 describe('SimpleRecommendationAlgorithm', () => {
   let products: Product[];

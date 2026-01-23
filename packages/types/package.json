@@ -1,5 +1,5 @@
 {
-  "name": "shared",
+  "name": "types",
   "version": "0.0.0",
   "private": true,
   "main": "./dist/index.js",
@@ -7,8 +7,7 @@
   "license": "MIT",
   "scripts": {
     "lint": "eslint \"src/**/*.ts\"",
-    "build": "tsc && pnpm run bundle",
-    "bundle": "esbuild src/index.ts --bundle --format=cjs --platform=node --outfile=dist/index.bundle.js",
+    "build": "tsc",
     "dev": "tsc --watch",
     "clean": "rm -rf dist && rm -rf node_modules"
   },

@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { ContentBasedRecommendationAlgorithm } from '../../algorithms/content-based';
 import { AlgorithmType, RecommendationOptions, UserBehavior } from '../../types';
-import { Product, Order } from 'shared';
+import { Product, Order } from 'types';
 
 describe('ContentBasedRecommendationAlgorithm', () => {
   let products: Product[];

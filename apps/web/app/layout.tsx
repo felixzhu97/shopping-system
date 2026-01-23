@@ -2,9 +2,6 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import ClientLayout from './ClientLayout';
-import { Analytics } from '@vercel/analytics/react';
-import { SpeedInsights } from '@vercel/speed-insights/react';
-import { PostHogProvider } from '../components/PostHogProvider';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -17,11 +14,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="zh-CN">
       <body className={inter.className} suppressHydrationWarning>
-        <PostHogProvider>
-          <ClientLayout>{children}</ClientLayout>
-          <Analytics />
-          <SpeedInsights />
-        </PostHogProvider>
+        <ClientLayout>{children}</ClientLayout>
       </body>
     </html>
   );

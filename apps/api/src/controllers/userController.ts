@@ -1,4 +1,4 @@
-import { UserLogin, UserResetPassword } from 'shared';
+import { UserLogin, UserResetPassword } from 'types';
 import User from '../models/User';
 import jwt from 'jsonwebtoken';
 import { getJwtSecret } from '../index';

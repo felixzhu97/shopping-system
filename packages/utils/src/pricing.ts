@@ -1,4 +1,4 @@
-import type { CartItem } from 'shared';
+import type { CartItem } from 'types';
 import type { Coupon, PricingOptions, PricingResult } from './types';
 
 /**

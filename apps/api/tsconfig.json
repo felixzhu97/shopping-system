@@ -13,15 +13,20 @@
     "typeRoots": ["./node_modules/@types", "../../node_modules/@types", "./src/types"],
     "paths": {
       "*": ["node_modules/*", "src/types/*"],
-      "shared": ["../../packages/shared/dist"],
-      "shared/*": ["../../packages/shared/dist/*"]
+      "monitoring": ["../../packages/monitoring/dist"],
+      "monitoring/*": ["../../packages/monitoring/dist/*"],
+      "types": ["../../packages/types/dist"],
+      "types/*": ["../../packages/types/dist/*"]
     }
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"],
   "references": [
     {
-      "path": "../../packages/shared"
+      "path": "../../packages/monitoring"
+    },
+    {
+      "path": "../../packages/types"
     }
   ]
 }

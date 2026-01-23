@@ -1,4 +1,4 @@
-import { Product } from 'shared';
+import { Product } from 'types';
 
 export interface ProductFactoryOptions {
   id?: string;

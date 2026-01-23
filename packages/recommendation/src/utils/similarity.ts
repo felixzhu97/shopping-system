@@ -1,4 +1,4 @@
-import { Product } from 'shared';
+import { Product } from 'types';
 
 /**
  * 计算两个集合的 Jaccard 相似度

@@ -26,16 +26,19 @@
   "dependencies": {
     "bcryptjs": "3.0.2",
     "cors": "^2.8.5",
+    "datadog-lambda-js": "12.132.0",
+    "dd-trace": "5.83.0",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
     "express-jwt": "^7.7.8",
     "jsonwebtoken": "^9.0.0",
     "mongoose": "^7.5.0",
     "serverless-http": "^3.2.0",
-    "shared": "workspace:*",
+    "monitoring": "workspace:*",
+    "types": "workspace:*",
     "swagger-jsdoc": "^6.2.8",
-    "utils": "workspace:*",
-    "swagger-ui-express": "^5.0.1"
+    "swagger-ui-express": "^5.0.1",
+    "utils": "workspace:*"
   },
   "devDependencies": {
     "@types/bcryptjs": "3.0.0",

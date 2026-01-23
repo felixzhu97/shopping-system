@@ -20,7 +20,8 @@
     ],
     "paths": {
       "@/*": ["./*"],
-      "shared": ["../../packages/shared/src"]
+      "monitoring": ["../../packages/monitoring/src"],
+      "types": ["../../packages/types/src"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],

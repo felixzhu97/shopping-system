@@ -13,7 +13,7 @@
     "clean": "rm -rf dist && rm -rf node_modules"
   },
   "dependencies": {
-    "shared": "workspace:*"
+    "types": "workspace:*"
   },
   "peerDependencies": {
     "vitest": "^1.4.0",

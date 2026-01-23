@@ -1,4 +1,4 @@
-import { CartItem, Product } from 'shared';
+import { CartItem, Product } from 'types';
 import { createProduct } from './product';
 
 export interface CartItemFactoryOptions {
