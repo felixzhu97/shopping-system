@@ -2,11 +2,7 @@
  * 审计日志存储：内存存储适配器（默认实现）
  */
 
-import type {
-  AuditLogEntry,
-  AuditLogQueryOptions,
-  AuditLogStorageAdapter,
-} from '../types';
+import type { AuditLogEntry, AuditLogQueryOptions, AuditLogStorageAdapter } from '../types';
 
 /**
  * 内存存储适配器（用于测试和简单场景）
@@ -59,7 +55,7 @@ export class MemoryAuditLogStorage implements AuditLogStorageAdapter {
     // 排序
     const sortBy = options.sortBy || 'timestamp';
     const sortOrder = options.sortOrder || 'desc';
-    
+
     results.sort((a, b) => {
       let aValue: unknown;
       let bValue: unknown;

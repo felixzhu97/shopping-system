@@ -45,7 +45,7 @@ describe('User Controller', () => {
     };
 
     // Import the mocked modules
-    const { default: User } = await import('../../models/User');
+    const { default: User } = await import('../../models/User.js');
     const { default: jwt } = await import('jsonwebtoken');
 
     mockUser = User;
