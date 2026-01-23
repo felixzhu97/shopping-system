@@ -19,15 +19,15 @@ try {
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
   typescript: {
     ignoreBuildErrors: true,
   },
   images: {
-    domains: ['localhost'],
     remotePatterns: [
+      {
+        protocol: 'http',
+        hostname: 'localhost',
+      },
       {
         protocol: 'https',
         hostname: '**',
@@ -38,6 +38,13 @@ const nextConfig = {
     webpackBuildWorker: true,
     parallelServerBuildTraces: true,
     parallelServerCompiles: true,
+  },
+  turbopack: {
+    root: path.resolve(__dirname, '../..'),
+    resolveAlias: {
+      // Use relative path from project root (set above)
+      'monitoring/client': './packages/monitoring/src/client.ts',
+    },
   },
   webpack: (config, { isServer, webpack }) => {
     // Configure module resolution for workspace packages
