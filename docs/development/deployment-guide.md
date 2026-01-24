@@ -115,7 +115,7 @@ vercel login
   "framework": "nextjs",
   "buildCommand": "pnpm turbo run build --filter=web...",
   "outputDirectory": "apps/web/.next",
-  "installCommand": "npm install -g pnpm@8.15.0 && pnpm install --no-frozen-lockfile",
+  "installCommand": "npm install -g pnpm@10.1.0 && pnpm install --no-frozen-lockfile",
   "regions": ["hnd1"]
 }
 ```

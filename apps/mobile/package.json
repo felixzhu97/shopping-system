@@ -8,7 +8,7 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "test": "yarn test:coverage",
+    "test": "pnpm test:coverage",
     "test:watchAll": "jest --watchAll",
     "test:coverage": "jest --coverage --silent --passWithNoTests",
     "lint": "eslint . --ext .ts,.tsx --fix --config eslint.config.js"

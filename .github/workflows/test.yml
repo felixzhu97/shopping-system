@@ -1,5 +1,10 @@
 name: Test
 
+# Unified version management
+env:
+  NODE_VERSION: '20'
+  PNPM_VERSION: '10.1.0'
+
 on:
   push:
     branches: [main, dev, test]
@@ -7,12 +12,16 @@ on:
       - 'apps/**'
       - 'packages/**'
       - '.github/workflows/test.yml'
+      - 'pnpm-lock.yaml'
+      - 'package.json'
   pull_request:
     branches: [main, dev, test]
     paths:
       - 'apps/**'
       - 'packages/**'
       - '.github/workflows/test.yml'
+      - 'pnpm-lock.yaml'
+      - 'package.json'
 
 jobs:
   test:
@@ -22,15 +31,28 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
       - name: Setup PNPM
         uses: pnpm/action-setup@v2
         with:
-          version: 8
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Verify lockfile exists
+        run: |
+          if [ ! -f "pnpm-lock.yaml" ]; then
+            echo "Error: pnpm-lock.yaml not found!"
+            exit 1
+          fi
+          echo "✓ pnpm-lock.yaml found"
+          head -5 pnpm-lock.yaml
+
+      - name: Verify pnpm version
+        run: pnpm --version
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile

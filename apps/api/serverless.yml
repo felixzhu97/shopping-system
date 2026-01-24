@@ -39,7 +39,7 @@ functions:
     name: shopping-api-${self:provider.stage} # 根据环境生成函数名
     layers:
       # Datadog Lambda Layer for Node.js 20.x in ap-east-1
-      - arn:aws:lambda:ap-east-1:464622532012:layer:Datadog-Node20-x:${env:DD_LAYER_VERSION, '132'}
+      - arn:aws:lambda:ap-east-1:464622532012:layer:Datadog-Node20-x:${env:DD_LAYER_VERSION, '119'}
     events:
       - http:
           path: /{proxy+} # 捕获所有路径
