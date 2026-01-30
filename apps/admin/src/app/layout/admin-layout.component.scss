@@ -1,0 +1,81 @@
+.layout {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  min-height: 100vh;
+}
+
+.sidebar {
+  background: #0f1733;
+  border-right: 1px solid rgba(231, 234, 243, 0.08);
+  padding: 16px;
+}
+
+.brand {
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  margin-bottom: 16px;
+}
+
+.nav {
+  display: grid;
+  gap: 8px;
+}
+
+.nav a {
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(231, 234, 243, 0.04);
+  border: 1px solid rgba(231, 234, 243, 0.06);
+}
+
+.nav a.active {
+  background: rgba(116, 143, 255, 0.16);
+  border-color: rgba(116, 143, 255, 0.35);
+}
+
+.content {
+  display: grid;
+  grid-template-rows: auto 1fr;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(231, 234, 243, 0.08);
+  background: rgba(15, 23, 51, 0.4);
+  backdrop-filter: blur(10px);
+}
+
+.spacer {
+  flex: 1;
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.email {
+  opacity: 0.9;
+  font-size: 13px;
+}
+
+.btn {
+  background: rgba(231, 234, 243, 0.06);
+  border: 1px solid rgba(231, 234, 243, 0.12);
+  color: #e7eaf3;
+  padding: 8px 10px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background: rgba(231, 234, 243, 0.1);
+}
+
+.main {
+  padding: 16px;
+}
+

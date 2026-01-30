@@ -1,0 +1,21 @@
+{
+  "name": "scripts",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "seed:products200:dev": "dotenv -e ../../services/api/.env.local -- ts-node src/seed/seedProducts200.ts",
+    "seed:products200:test": "dotenv -e ../../services/api/.env.test -- ts-node src/seed/seedProducts200.ts",
+    "seed:products200:prod": "dotenv -e ../../services/api/.env.prod -- ts-node src/seed/seedProducts200.ts"
+  },
+  "dependencies": {
+    "dotenv": "^16.3.1",
+    "mongoose": "^7.5.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.17.30",
+    "dotenv-cli": "8.0.0",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.2.2"
+  }
+}

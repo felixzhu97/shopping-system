@@ -47,3 +47,18 @@ Thumbs.db
 
 # 测试覆盖率
 coverage
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.python-version
+.venv/
+venv/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Data mining outputs
+services/data-mining/data/
+services/data-mining/artifacts/

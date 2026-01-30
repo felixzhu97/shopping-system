@@ -1,0 +1,14 @@
+{
+  "name": "data-mining",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "generate:synthetic": "python3 services/data-mining/generate_synthetic.py",
+    "export:mongo": "python3 services/data-mining/export_mongo.py",
+    "prepare:propensity": "python3 services/data-mining/prepare_propensity_dataset.py",
+    "train:propensity:ml": "python3 services/data-mining/train_propensity_ml.py",
+    "train:propensity:dl": "python3 services/data-mining/train_propensity_dl.py",
+    "train:recommender": "python3 services/data-mining/train_recommender_dl.py",
+    "smoke": "python3 services/data-mining/smoke_test.py"
+  }
+}

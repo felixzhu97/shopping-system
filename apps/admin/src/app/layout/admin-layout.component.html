@@ -1,0 +1,28 @@
+<div class="layout">
+  <aside class="sidebar">
+    <div class="brand">Shopping Admin</div>
+    <nav class="nav">
+      <a routerLink="/products" routerLinkActive="active">Products</a>
+      <a routerLink="/orders" routerLinkActive="active">Orders</a>
+      <a routerLink="/users" routerLinkActive="active">Users</a>
+    </nav>
+  </aside>
+
+  <div class="content">
+    <header class="topbar">
+      <div class="spacer"></div>
+      <div class="meta" *ngIf="email() as e">
+        <span class="email" *ngIf="e">{{ e }}</span>
+        <button class="btn" type="button" (click)="logout()">Logout</button>
+      </div>
+      <div class="meta" *ngIf="!email()">
+        <button class="btn" type="button" (click)="logout()">Logout</button>
+      </div>
+    </header>
+
+    <main class="main">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>
+

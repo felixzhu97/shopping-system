@@ -1,0 +1,68 @@
+<div class="page">
+  <div class="header">
+    <div class="title">Products</div>
+    <div class="actions">
+      <button class="btn" type="button" (click)="refresh()" [disabled]="loading()">Refresh</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Create Product</div>
+    <form class="form" [formGroup]="form" (ngSubmit)="create()">
+      <label class="field">
+        <div class="label">Name</div>
+        <input formControlName="name" />
+      </label>
+      <label class="field">
+        <div class="label">Price</div>
+        <input formControlName="price" type="number" />
+      </label>
+      <label class="field">
+        <div class="label">Category</div>
+        <input formControlName="category" />
+      </label>
+      <label class="field">
+        <div class="label">Stock</div>
+        <input formControlName="stock" type="number" />
+      </label>
+      <button class="btn primary" type="submit" [disabled]="loading() || form.invalid">
+        {{ loading() ? 'Saving...' : 'Create' }}
+      </button>
+    </form>
+    <div class="error" *ngIf="error()">{{ error() }}</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">List</div>
+    <div class="table-wrap">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th class="num">Price</th>
+            <th>Category</th>
+            <th class="num">Stock</th>
+            <th class="actions-col"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let p of products(); trackBy: trackById">
+            <td>{{ p.name }}</td>
+            <td class="num">{{ p.price }}</td>
+            <td>{{ p.category || '-' }}</td>
+            <td class="num">{{ p.stock ?? '-' }}</td>
+            <td class="actions-col">
+              <button class="btn danger" type="button" (click)="remove(p._id)" [disabled]="loading()">
+                Delete
+              </button>
+            </td>
+          </tr>
+          <tr *ngIf="!loading() && products().length === 0">
+            <td colspan="5" class="empty">No products</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+

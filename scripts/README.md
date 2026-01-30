@@ -1,41 +1,68 @@
-# Jira 批量更新脚本
+# Scripts
 
-## batch_update_jira_tasks.py
+## Jira batch update
 
-批量更新 Jira 任务，将它们关联到指定的 Epic。
+### batch_update_jira_tasks.py
 
-### 使用方法
+Batch update Jira issues and link them to an Epic.
 
-1. **设置环境变量**（推荐）:
+#### Usage
+
+1. Set environment variables:
+
 ```bash
 export JIRA_EMAIL=your-email@example.com
 export JIRA_API_TOKEN=your-api-token
 ```
 
-2. **运行脚本**:
+2. Run:
+
 ```bash
 python3 scripts/batch_update_jira_tasks.py
 ```
 
-### 获取 Jira API Token
+#### Jira API token
 
-1. 访问 https://id.atlassian.com/manage-profile/security/api-tokens
-2. 点击 "Create API token"
-3. 复制生成的 token
-4. 设置环境变量 `JIRA_API_TOKEN`
+1. Open `https://id.atlassian.com/manage-profile/security/api-tokens`
+2. Click "Create API token"
+3. Copy the token
+4. Set `JIRA_API_TOKEN`
 
-### 配置说明
+#### Config
 
-- `JIRA_BASE_URL`: Jira 实例的基础 URL（默认: https://luckychat.atlassian.net）
-- `JIRA_EMAIL`: 你的 Jira 邮箱
-- `JIRA_API_TOKEN`: Jira API Token
-- `ISSUE_KEYS`: 要更新的任务键列表
-- `EPIC_KEY`: 目标 Epic 的键
+- `JIRA_BASE_URL`: Jira instance base URL
+- `JIRA_EMAIL`: Jira account email
+- `JIRA_API_TOKEN`: Jira API token
+- `ISSUE_KEYS`: issue keys to update
+- `EPIC_KEY`: target Epic key
 
-### 注意事项
+## Data mining (machine learning + deep learning)
 
-- 确保你有权限修改这些任务
-- 脚本使用 Jira REST API v2
-- 对于 next-gen 项目，使用 `parent` 字段关联任务到 Epic
+The data mining pipeline lives in `services/data-mining/`.
+
+### Generate sample data
+
+```bash
+python3 services/data-mining/generate_synthetic.py
+```
+
+### Build purchase propensity dataset
+
+```bash
+python3 services/data-mining/prepare_propensity_dataset.py
+```
+
+### Train purchase propensity models
+
+```bash
+python3 services/data-mining/train_propensity_ml.py
+python3 services/data-mining/train_propensity_dl.py
+```
+
+### Train recommender model
+
+```bash
+python3 services/data-mining/train_recommender_dl.py
+```
 
 

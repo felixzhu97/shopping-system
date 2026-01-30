@@ -1,0 +1,62 @@
+<div class="page">
+  <div class="header">
+    <div class="title">Orders</div>
+    <div class="actions">
+      <select class="select" [value]="status()" (change)="setStatus(($any($event.target)).value)">
+        <option value="all">all</option>
+        <option value="pending">pending</option>
+        <option value="processing">processing</option>
+        <option value="shipped">shipped</option>
+        <option value="delivered">delivered</option>
+        <option value="cancelled">cancelled</option>
+      </select>
+      <button class="btn" type="button" (click)="refresh()" [disabled]="loading()">Refresh</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="error" *ngIf="error()">{{ error() }}</div>
+
+    <div class="table-wrap">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Id</th>
+            <th>User</th>
+            <th class="num">Total</th>
+            <th>Status</th>
+            <th>Created</th>
+            <th class="actions-col"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let o of orders(); trackBy: trackById">
+            <td class="mono">{{ o._id }}</td>
+            <td class="mono">{{ o.userId | json }}</td>
+            <td class="num">{{ o.totalAmount }}</td>
+            <td>
+              <select
+                class="select"
+                [value]="o.selectedStatus || o.status"
+                (change)="o.selectedStatus = ($any($event.target)).value"
+                [disabled]="loading()"
+              >
+                <option *ngFor="let s of statuses" [value]="s">{{ s }}</option>
+              </select>
+            </td>
+            <td>{{ o.createdAt || '-' }}</td>
+            <td class="actions-col">
+              <button class="btn primary" type="button" (click)="update(o)" [disabled]="loading()">
+                Update
+              </button>
+            </td>
+          </tr>
+          <tr *ngIf="!loading() && orders().length === 0">
+            <td colspan="6" class="empty">No orders</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+

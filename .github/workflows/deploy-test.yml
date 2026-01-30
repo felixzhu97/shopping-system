@@ -4,7 +4,7 @@ on:
   push:
     branches: [test]
     paths:
-      - 'apps/api/**'
+      - 'services/api/**'
       - 'packages/types/**'
       - 'packages/monitoring/**'
       - '.github/workflows/deploy-test.yml'
@@ -71,7 +71,7 @@ jobs:
           aws-region: ap-east-1
 
       - name: Deploy to AWS Lambda
-        run: cd apps/api && pnpm run deploy:lambda:test
+        run: cd services/api && pnpm run deploy:lambda:test
         env:
           MONGODB_URI_test: ${{ secrets.MONGODB_URI_TEST }}
           JWT_SECRET_test: ${{ secrets.JWT_SECRET_TEST }}

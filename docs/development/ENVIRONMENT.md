@@ -30,9 +30,9 @@ NEXT_PUBLIC_DD_VERSION=1.0.0
 NODE_ENV=development
 ```
 
-## 后端环境变量 (apps/api)
+## Backend environment variables (services/api)
 
-在 `apps/api` 目录下创建 `.env` 文件：
+Create `.env` under `services/api`:
 
 ```env
 # 服务器配置

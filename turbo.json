@@ -39,6 +39,18 @@
     "test:watch": {
       "cache": false,
       "persistent": true
+    },
+    "seed:products200:dev": {
+      "cache": false,
+      "outputs": []
+    },
+    "seed:products200:test": {
+      "cache": false,
+      "outputs": []
+    },
+    "seed:products200:prod": {
+      "cache": false,
+      "outputs": []
     }
   }
 }

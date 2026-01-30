@@ -1,0 +1,34 @@
+<div class="page">
+  <div class="card">
+    <div class="title">Admin Login</div>
+
+    <form [formGroup]="form" (ngSubmit)="submit()" class="form">
+      <label class="field">
+        <div class="label">API Base URL</div>
+        <input formControlName="apiBaseUrl" placeholder="http://localhost:3001" />
+      </label>
+
+      <label class="field">
+        <div class="label">Admin Secret</div>
+        <input formControlName="adminSecret" placeholder="ADMIN_SECRET" />
+      </label>
+
+      <label class="field">
+        <div class="label">Email or Phone</div>
+        <input formControlName="emailOrPhone" autocomplete="username" />
+      </label>
+
+      <label class="field">
+        <div class="label">Password</div>
+        <input formControlName="password" type="password" autocomplete="current-password" />
+      </label>
+
+      <button class="btn" type="submit" [disabled]="loading() || form.invalid">
+        {{ loading() ? 'Signing in...' : 'Sign in' }}
+      </button>
+
+      <div class="error" *ngIf="error()">{{ error() }}</div>
+    </form>
+  </div>
+</div>
+

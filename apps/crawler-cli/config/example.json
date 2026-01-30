@@ -1,0 +1,18 @@
+{
+  "outputPath": "apps/crawler/output/products.jsonl",
+  "concurrency": 4,
+  "requestTimeoutMs": 20000,
+  "sources": [
+    {
+      "name": "example-store",
+      "listPages": ["https://example.com/products"],
+      "itemLinkSelector": "a",
+      "itemLinkAttribute": "href",
+      "product": {
+        "title": "h1",
+        "price": ".price",
+        "image": "img"
+      }
+    }
+  ]
+}

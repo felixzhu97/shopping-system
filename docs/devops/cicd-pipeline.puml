@@ -37,7 +37,7 @@ partition "代码检查阶段" {
 partition "构建阶段" {
     :构建共享包 (packages/types);
     :构建 UI 包 (packages/components);
-    :构建 API 应用 (apps/api);
+    :Build API service (services/api);
     :构建 Web 应用 (apps/web);
     note right
       使用 Turborepo

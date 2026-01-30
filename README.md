@@ -9,6 +9,7 @@ shopping-system/
 ├── apps/
 │   ├── web/           # Next.js Web frontend application
 │   ├── mobile/        # React Native mobile application
+├── services/
 │   └── api/           # Express.js backend API service
 ├── packages/
 │   ├── ui/            # UI component library
@@ -258,7 +259,7 @@ pnpm install
 #### Install Backend API Dependencies Only
 
 ```bash
-cd apps/api
+cd services/api
 pnpm install
 ```
 
@@ -292,7 +293,7 @@ yarn web      # Web
 #### Start Backend API Only
 
 ```bash
-cd apps/api
+cd services/api
 pnpm dev
 # Access at http://localhost:3001
 ```
@@ -325,7 +326,7 @@ expo build:web         # Web
 #### Build Backend API
 
 ```bash
-cd apps/api
+cd services/api
 pnpm build
 ```
 
@@ -358,7 +359,7 @@ yarn test:watchAll   # Watch mode
 #### Run Backend API Tests
 
 ```bash
-cd apps/api
+cd services/api
 pnpm test
 pnpm test:watch      # Watch mode
 pnpm test:coverage   # Coverage report
@@ -391,7 +392,7 @@ yarn lint
 #### Check Backend API Code
 
 ```bash
-cd apps/api
+cd services/api
 pnpm lint
 ```
 
@@ -422,7 +423,7 @@ The project provides complete OpenAPI specification documentation and Postman co
 The backend API provides various database seed scripts:
 
 ```bash
-cd apps/api
+cd packages/scripts
 
 # Initialize database with 200 products (development environment)
 pnpm seed:products200:dev
@@ -475,7 +476,7 @@ NEXT_PUBLIC_POSTHOG_HOST=https://app.posthog.com
 
 ### Backend API Environment Variables
 
-Create a `.env.local` file in the `apps/api` directory:
+Create a `.env.local` file in the `services/api` directory:
 
 ```env
 # Database configuration

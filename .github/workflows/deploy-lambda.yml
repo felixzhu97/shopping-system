@@ -4,7 +4,7 @@ on:
   push:
     branches: [release]
     paths:
-      - 'apps/api/**'
+      - 'services/api/**'
       - 'packages/types/**'
       - 'packages/monitoring/**'
       - '.github/workflows/deploy-lambda.yml'
@@ -47,7 +47,7 @@ jobs:
       - name: Verify build output
         run: |
           ls -la packages/types/dist
-          ls -la apps/api/dist
+          ls -la services/api/dist
 
   deploy:
     name: Deploy to Production
@@ -82,7 +82,7 @@ jobs:
           aws-region: ap-east-1
 
       - name: Deploy to AWS Lambda
-        run: cd apps/api && pnpm run deploy:lambda:prod
+        run: cd services/api && pnpm run deploy:lambda:prod
         env:
           MONGODB_URI_prod: ${{ secrets.MONGODB_URI_PROD }}
           JWT_SECRET_prod: ${{ secrets.JWT_SECRET_PROD }}

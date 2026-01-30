@@ -103,7 +103,7 @@ apps/web/
 ### 3.2 后端API结构
 
 ```
-apps/api/
+services/api/
 ├── src/
 │   ├── controllers/       # 控制器
 │   ├── db/                # 数据库配置和仓库

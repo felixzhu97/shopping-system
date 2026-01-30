@@ -4,15 +4,18 @@
   "version": "1.0.0",
   "workspaces": [
     "packages/*",
-    "apps/*"
+    "apps/*",
+    "services/*"
   ],
   "scripts": {
     "build": "turbo run build",
     "build:api": "turbo run build --filter=api",
+    "build:admin": "turbo run build --filter=admin",
     "build:web": "turbo run build --filter=web",
     "build:mobile": "turbo run build --filter=react-native-app",
     "dev": "turbo run dev --concurrency=12",
     "dev:api": "turbo run dev --filter=api",
+    "dev:admin": "turbo run dev --filter=admin",
     "dev:web": "turbo run dev --filter=web",
     "dev:mobile": "turbo run start --filter=react-native-app",
     "dev:api-web": "turbo run dev --filter=api --filter=web --concurrency=3",
@@ -36,7 +39,7 @@
     "test:mobile": "turbo run test --filter=react-native-app",
     "test:watch": "turbo run test:watch",
     "test:coverage": "turbo run test:coverage",
-    "seed:api": "turbo run seed:products200:dev --filter=api",
+    "seed:api": "turbo run seed:products200:dev --filter=scripts",
     "changeset": "changeset",
     "version": "changeset version",
     "publish": "turbo run build && changeset publish"

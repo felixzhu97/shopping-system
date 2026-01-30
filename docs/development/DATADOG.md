@@ -26,9 +26,9 @@
 
 ### 3. 配置环境变量
 
-#### 后端 API (apps/api)
+#### 后端 API (services/api)
 
-在 `apps/api/.env` 文件中添加：
+在 `services/api/.env` 文件中添加：
 
 ```env
 # Datadog APM and Logging
