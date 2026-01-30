@@ -2,6 +2,11 @@
   <div class="header">
     <div class="title">Users</div>
     <div class="actions">
+      <input
+        [value]="search()"
+        (input)="setSearch(($any($event.target)).value)"
+        placeholder="Search users"
+      />
       <button class="btn" type="button" (click)="refresh()" [disabled]="loading()">Refresh</button>
     </div>
   </div>
@@ -21,14 +26,14 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let u of users(); trackBy: trackById">
+          <tr *ngFor="let u of filteredUsers(); trackBy: trackById">
             <td>{{ u.email }}</td>
             <td>{{ u.role || '-' }}</td>
             <td>{{ (u.firstName || '') + ' ' + (u.lastName || '') }}</td>
             <td>{{ u.phone || '-' }}</td>
             <td>{{ u.createdAt || '-' }}</td>
           </tr>
-          <tr *ngIf="!loading() && users().length === 0">
+          <tr *ngIf="!loading() && filteredUsers().length === 0">
             <td colspan="5" class="empty">No users</td>
           </tr>
         </tbody>

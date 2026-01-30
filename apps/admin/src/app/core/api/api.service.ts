@@ -15,7 +15,8 @@ export type LoginResponse = {
 };
 
 export type Product = {
-  _id: string;
+  id: string;
+  _id?: string;
   name: string;
   description?: string;
   price: number;
@@ -25,7 +26,8 @@ export type Product = {
 };
 
 export type Order = {
-  _id: string;
+  id: string;
+  _id?: string;
   userId: unknown;
   status: string;
   totalAmount: number;
@@ -35,7 +37,8 @@ export type Order = {
 };
 
 export type User = {
-  _id: string;
+  id: string;
+  _id?: string;
   email: string;
   role?: string;
   firstName?: string;

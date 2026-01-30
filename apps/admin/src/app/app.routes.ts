@@ -26,6 +26,14 @@ export const routes: Routes = [
         path: 'users',
         loadComponent: () => import('./pages/users/users.page').then(m => m.UsersPage),
       },
+      {
+        path: 'crawler',
+        loadComponent: () => import('./pages/crawler/crawler.page').then(m => m.CrawlerPage),
+      },
+      {
+        path: 'analytics',
+        loadComponent: () => import('./pages/analytics/analytics.page').then(m => m.AnalyticsPage),
+      },
     ],
   },
   { path: '**', redirectTo: '' },

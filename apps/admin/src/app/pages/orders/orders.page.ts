@@ -18,8 +18,19 @@ export class OrdersPage implements OnInit {
   protected readonly error = signal<string>('');
   protected readonly status = signal<string>('all');
   protected readonly orders = signal<OrderRow[]>([]);
+  protected readonly search = signal<string>('');
 
   protected readonly apiBaseUrl = computed(() => this.auth.apiBaseUrl);
+  protected readonly filteredOrders = computed(() => {
+    const q = this.search().trim().toLowerCase();
+    if (!q) return this.orders();
+    return this.orders().filter(o => {
+      const id = this.getId(o);
+      const user = typeof o.userId === 'string' ? o.userId : JSON.stringify(o.userId ?? '');
+      const text = `${id} ${o.status ?? ''} ${user}`.toLowerCase();
+      return text.includes(q);
+    });
+  });
 
   protected readonly statuses = [
     'pending',
@@ -60,11 +71,11 @@ export class OrdersPage implements OnInit {
     if (!nextStatus || nextStatus === order.status || this.loading()) return;
     this.error.set('');
     this.loading.set(true);
-    this.api.updateOrderStatus(this.apiBaseUrl(), order._id, nextStatus).subscribe({
+    this.api.updateOrderStatus(this.apiBaseUrl(), this.getId(order), nextStatus).subscribe({
       next: (updated) => {
         this.orders.set(
           this.orders().map(o =>
-            o._id === updated._id ? { ...o, ...updated, selectedStatus: updated.status } : o
+            this.getId(o) === this.getId(updated) ? { ...o, ...updated, selectedStatus: updated.status } : o
           )
         );
       },
@@ -76,8 +87,14 @@ export class OrdersPage implements OnInit {
     });
   }
 
-  trackById(_: number, item: OrderRow): string {
-    return item._id;
+  protected readonly trackById = (_: number, item: OrderRow): string => this.getId(item);
+
+  protected getId(value: { id?: string; _id?: string }): string {
+    return value.id || value._id || '';
+  }
+
+  protected setSearch(value: string): void {
+    this.search.set(value);
   }
 
   private extractErrorMessage(e: unknown): string {

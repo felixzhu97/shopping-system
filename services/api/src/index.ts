@@ -4,6 +4,8 @@ initDatadogAPM();
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import fs from 'fs';
+import path from 'path';
 import mongoose from 'mongoose';
 import swaggerUi from 'swagger-ui-express';
 import swaggerSpecs from './swagger';
@@ -14,7 +16,14 @@ import cartRoutes from './routes/cart';
 import userRoutes from './routes/users';
 import orderRoutes from './routes/orders';
 
-dotenv.config();
+const envCandidates = [
+  path.resolve(process.cwd(), '.env.local'),
+  path.resolve(process.cwd(), '.env'),
+  path.resolve(__dirname, '..', '.env.local'),
+  path.resolve(__dirname, '..', '.env'),
+];
+const envPath = envCandidates.find(p => fs.existsSync(p));
+dotenv.config(envPath ? { path: envPath } : undefined);
 
 const app = express();
 const PORT = process.env.PORT || 3001;

@@ -20,8 +20,17 @@ export class ProductsPage implements OnInit {
   protected readonly loading = signal<boolean>(false);
   protected readonly error = signal<string>('');
   protected readonly products = signal<Product[]>([]);
+  protected readonly search = signal<string>('');
 
   protected readonly apiBaseUrl = computed(() => this.auth.apiBaseUrl);
+  protected readonly filteredProducts = computed(() => {
+    const q = this.search().trim().toLowerCase();
+    if (!q) return this.products();
+    return this.products().filter(p => {
+      const text = `${p.name ?? ''} ${p.category ?? ''} ${p.description ?? ''}`.toLowerCase();
+      return text.includes(q);
+    });
+  });
 
   protected readonly form = this.fb.nonNullable.group({
     name: ['', [Validators.required]],
@@ -72,7 +81,7 @@ export class ProductsPage implements OnInit {
     this.error.set('');
     this.loading.set(true);
     this.api.deleteProduct(this.apiBaseUrl(), productId).subscribe({
-      next: () => this.products.set(this.products().filter(p => p._id !== productId)),
+      next: () => this.products.set(this.products().filter(p => this.getId(p) !== productId)),
       error: (e: unknown) => {
         this.error.set(this.extractErrorMessage(e) || 'Failed to delete product');
         this.loading.set(false);
@@ -81,8 +90,14 @@ export class ProductsPage implements OnInit {
     });
   }
 
-  trackById(_: number, item: Product): string {
-    return item._id;
+  protected readonly trackById = (_: number, item: Product): string => this.getId(item);
+
+  protected getId(value: { id?: string; _id?: string }): string {
+    return value.id || value._id || '';
+  }
+
+  protected setSearch(value: string): void {
+    this.search.set(value);
   }
 
   private extractErrorMessage(e: unknown): string {

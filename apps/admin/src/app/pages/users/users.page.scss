@@ -10,6 +10,12 @@
   gap: 12px;
 }
 
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 .title {
   font-size: 18px;
   font-weight: 700;
@@ -20,6 +26,14 @@
   border: 1px solid rgba(231, 234, 243, 0.12);
   border-radius: 14px;
   padding: 14px;
+}
+
+input {
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(231, 234, 243, 0.12);
+  background: rgba(231, 234, 243, 0.04);
+  color: #e7eaf3;
 }
 
 .btn {

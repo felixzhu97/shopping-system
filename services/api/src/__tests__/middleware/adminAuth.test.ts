@@ -12,6 +12,8 @@ describe('adminAuth middleware', () => {
 
     mockReq = {
       headers: {},
+      query: {},
+      get: vi.fn((name: string) => mockReq.headers[String(name).toLowerCase()]),
     };
     mockRes = {
       status: vi.fn().mockReturnThis(),
@@ -63,6 +65,28 @@ describe('adminAuth middleware', () => {
   it('should call next if admin-secret is valid', async () => {
     process.env.ADMIN_SECRET = 'test-secret';
     mockReq.headers['admin-secret'] = 'test-secret';
+
+    await adminAuth(mockReq, mockRes, mockNext);
+
+    expect(mockNext).toHaveBeenCalled();
+    expect(mockRes.status).not.toHaveBeenCalled();
+    expect(mockRes.json).not.toHaveBeenCalled();
+  });
+
+  it('should call next if admin-secret query param is valid', async () => {
+    process.env.ADMIN_SECRET = 'test-secret';
+    mockReq.query['admin-secret'] = 'test-secret';
+
+    await adminAuth(mockReq, mockRes, mockNext);
+
+    expect(mockNext).toHaveBeenCalled();
+    expect(mockRes.status).not.toHaveBeenCalled();
+    expect(mockRes.json).not.toHaveBeenCalled();
+  });
+
+  it('should call next if adminSecret query param is valid', async () => {
+    process.env.ADMIN_SECRET = 'test-secret';
+    mockReq.query.adminSecret = 'test-secret';
 
     await adminAuth(mockReq, mockRes, mockNext);
 

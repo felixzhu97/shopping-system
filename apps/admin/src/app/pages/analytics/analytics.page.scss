@@ -1,0 +1,84 @@
+.page {
+  display: grid;
+  gap: 16px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.title {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.card {
+  background: rgba(15, 23, 51, 0.7);
+  border: 1px solid rgba(231, 234, 243, 0.12);
+  border-radius: 14px;
+  padding: 14px;
+}
+
+.error {
+  font-size: 13px;
+  color: #ffb4b4;
+}
+
+.kpis {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.kpi {
+  background: rgba(231, 234, 243, 0.04);
+  border: 1px solid rgba(231, 234, 243, 0.08);
+  border-radius: 12px;
+  padding: 12px;
+}
+
+.kpi-label {
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+.kpi-value {
+  font-size: 20px;
+  font-weight: 800;
+  margin-top: 6px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.section {
+  background: rgba(231, 234, 243, 0.04);
+  border: 1px solid rgba(231, 234, 243, 0.08);
+  border-radius: 12px;
+  padding: 12px;
+}
+
+.section-title {
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.chart {
+  width: 100%;
+  height: 320px;
+}
+
+@media (max-width: 980px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+

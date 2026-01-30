@@ -15,8 +15,17 @@ export class UsersPage implements OnInit {
   protected readonly loading = signal<boolean>(false);
   protected readonly error = signal<string>('');
   protected readonly users = signal<User[]>([]);
+  protected readonly search = signal<string>('');
 
   protected readonly apiBaseUrl = computed(() => this.auth.apiBaseUrl);
+  protected readonly filteredUsers = computed(() => {
+    const q = this.search().trim().toLowerCase();
+    if (!q) return this.users();
+    return this.users().filter(u => {
+      const text = `${u.email ?? ''} ${u.phone ?? ''} ${u.firstName ?? ''} ${u.lastName ?? ''}`.toLowerCase();
+      return text.includes(q);
+    });
+  });
 
   constructor(
     private readonly api: ApiService,
@@ -38,7 +47,11 @@ export class UsersPage implements OnInit {
   }
 
   trackById(_: number, item: User): string {
-    return item._id;
+    return item.id || item._id || '';
+  }
+
+  protected setSearch(value: string): void {
+    this.search.set(value);
   }
 
   private extractErrorMessage(e: unknown): string {

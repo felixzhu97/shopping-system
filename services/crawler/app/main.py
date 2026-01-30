@@ -2,10 +2,12 @@ from __future__ import annotations
 
 import asyncio
 import uuid
+import os
 from typing import Any, Dict
 
 import httpx
 from fastapi import BackgroundTasks, FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 
 from .crawler import crawl
 from .store import JobStore
@@ -14,6 +16,16 @@ from .types import CrawlRequest, JobItemsView, JobView, ScrapedProduct
 
 app = FastAPI()
 store = JobStore()
+
+allowed_origins = os.getenv("CRAWLER_ALLOWED_ORIGINS", "http://localhost:4200")
+origins = [x.strip() for x in allowed_origins.split(",") if x.strip()]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins or ["http://localhost:4200"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.get("/health")

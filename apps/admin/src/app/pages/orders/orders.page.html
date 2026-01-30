@@ -2,6 +2,11 @@
   <div class="header">
     <div class="title">Orders</div>
     <div class="actions">
+      <input
+        [value]="search()"
+        (input)="setSearch(($any($event.target)).value)"
+        placeholder="Search orders"
+      />
       <select class="select" [value]="status()" (change)="setStatus(($any($event.target)).value)">
         <option value="all">all</option>
         <option value="pending">pending</option>
@@ -30,8 +35,8 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let o of orders(); trackBy: trackById">
-            <td class="mono">{{ o._id }}</td>
+          <tr *ngFor="let o of filteredOrders(); trackBy: trackById">
+            <td class="mono">{{ o.id || o._id }}</td>
             <td class="mono">{{ o.userId | json }}</td>
             <td class="num">{{ o.totalAmount }}</td>
             <td>
@@ -51,7 +56,7 @@
               </button>
             </td>
           </tr>
-          <tr *ngIf="!loading() && orders().length === 0">
+          <tr *ngIf="!loading() && filteredOrders().length === 0">
             <td colspan="6" class="empty">No orders</td>
           </tr>
         </tbody>
