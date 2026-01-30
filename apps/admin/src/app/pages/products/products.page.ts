@@ -2,10 +2,11 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AgGridAngular } from 'ag-grid-angular';
-import type { ColDef, GetRowIdParams, ICellRendererParams } from 'ag-grid-community';
+import type { ColDef, GetRowIdParams, GridOptions, ICellRendererParams } from 'ag-grid-community';
 
 import { ApiService, Product } from '../../core/api/api.service';
 import { AuthService } from '../../core/auth/auth.service';
+import { adminGridTheme } from '../../core/ag-grid/ag-grid-theme';
 
 @Component({
   selector: 'app-products-page',
@@ -47,6 +48,12 @@ export class ProductsPage implements OnInit {
     resizable: true,
     flex: 1,
     minWidth: 120,
+  };
+
+  protected readonly gridOptions: GridOptions<Product> = {
+    theme: adminGridTheme,
+    animateRows: true,
+    rowSelection: 'single',
   };
 
   protected readonly columnDefs: ColDef<Product>[] = [

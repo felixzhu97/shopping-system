@@ -16,12 +16,11 @@
 
     <ag-grid-angular
       class="ag-theme-quartz grid"
+      [gridOptions]="gridOptions"
       [rowData]="filteredUsers()"
       [columnDefs]="columnDefs"
       [defaultColDef]="defaultColDef"
       [getRowId]="getRowId"
-      [animateRows]="true"
-      [rowSelection]="'single'"
     />
   </div>
 </div>

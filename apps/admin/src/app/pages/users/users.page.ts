@@ -1,10 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, computed, signal } from '@angular/core';
 import { AgGridAngular } from 'ag-grid-angular';
-import type { ColDef, GetRowIdParams } from 'ag-grid-community';
+import type { ColDef, GetRowIdParams, GridOptions } from 'ag-grid-community';
 
 import { ApiService, User } from '../../core/api/api.service';
 import { AuthService } from '../../core/auth/auth.service';
+import { adminGridTheme } from '../../core/ag-grid/ag-grid-theme';
 
 @Component({
   selector: 'app-users-page',
@@ -35,6 +36,12 @@ export class UsersPage implements OnInit {
     resizable: true,
     flex: 1,
     minWidth: 140,
+  };
+
+  protected readonly gridOptions: GridOptions<User> = {
+    theme: adminGridTheme,
+    animateRows: true,
+    rowSelection: 'single',
   };
 
   protected readonly columnDefs: ColDef<User>[] = [

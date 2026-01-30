@@ -24,12 +24,11 @@
 
     <ag-grid-angular
       class="ag-theme-quartz grid"
+      [gridOptions]="gridOptions"
       [rowData]="filteredOrders()"
       [columnDefs]="columnDefs"
       [defaultColDef]="defaultColDef"
       [getRowId]="getRowId"
-      [animateRows]="true"
-      [stopEditingWhenCellsLoseFocus]="true"
       (cellValueChanged)="onCellValueChanged($event)"
     />
   </div>

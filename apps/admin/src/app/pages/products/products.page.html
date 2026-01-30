@@ -41,12 +41,11 @@
     <div class="card-title">List</div>
     <ag-grid-angular
       class="ag-theme-quartz grid"
+      [gridOptions]="gridOptions"
       [rowData]="filteredProducts()"
       [columnDefs]="columnDefs"
       [defaultColDef]="defaultColDef"
       [getRowId]="getRowId"
-      [animateRows]="true"
-      [rowSelection]="'single'"
     />
   </div>
 </div>
