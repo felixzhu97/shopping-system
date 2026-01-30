@@ -1,6 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AgGridAngular } from 'ag-grid-angular';
+import type { ColDef, GetRowIdParams, ICellRendererParams } from 'ag-grid-community';
 
 import { ApiService, Product } from '../../core/api/api.service';
 import { AuthService } from '../../core/auth/auth.service';
@@ -8,7 +10,7 @@ import { AuthService } from '../../core/auth/auth.service';
 @Component({
   selector: 'app-products-page',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, AgGridAngular],
   templateUrl: './products.page.html',
   styleUrl: './products.page.scss',
 })
@@ -38,6 +40,39 @@ export class ProductsPage implements OnInit {
     category: [''],
     stock: [0, [Validators.min(0)]],
   });
+
+  protected readonly defaultColDef: ColDef<Product> = {
+    sortable: true,
+    filter: true,
+    resizable: true,
+    flex: 1,
+    minWidth: 120,
+  };
+
+  protected readonly columnDefs: ColDef<Product>[] = [
+    { field: 'name', headerName: 'Name', minWidth: 220 },
+    { field: 'price', headerName: 'Price', maxWidth: 140, type: 'rightAligned', valueFormatter: p => String(p.value ?? '') },
+    { field: 'category', headerName: 'Category', minWidth: 180 },
+    { field: 'stock', headerName: 'Stock', maxWidth: 140, type: 'rightAligned', valueFormatter: p => String(p.value ?? '') },
+    {
+      headerName: '',
+      maxWidth: 140,
+      sortable: false,
+      filter: false,
+      resizable: false,
+      cellRenderer: (params: ICellRendererParams<Product>) => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'btn danger';
+        button.textContent = 'Delete';
+        button.addEventListener('click', () => this.remove(this.getId(params.data ?? {})));
+        return button;
+      },
+    },
+  ];
+
+  protected readonly getRowId = (params: GetRowIdParams<Product>): string =>
+    this.getId((params.data ?? {}) as { id?: string; _id?: string });
 
   ngOnInit(): void {
     this.refresh();
@@ -89,8 +124,6 @@ export class ProductsPage implements OnInit {
       complete: () => this.loading.set(false),
     });
   }
-
-  protected readonly trackById = (_: number, item: Product): string => this.getId(item);
 
   protected getId(value: { id?: string; _id?: string }): string {
     return value.id || value._id || '';

@@ -50,32 +50,9 @@ input {
   cursor: not-allowed;
 }
 
-.table-wrap {
-  overflow: auto;
-}
-
-.table {
+.grid {
+  height: 520px;
   width: 100%;
-  border-collapse: collapse;
-}
-
-th,
-td {
-  padding: 10px 8px;
-  border-bottom: 1px solid rgba(231, 234, 243, 0.08);
-  text-align: left;
-  vertical-align: top;
-}
-
-th {
-  font-size: 12px;
-  opacity: 0.85;
-  font-weight: 600;
-}
-
-.empty {
-  text-align: center;
-  opacity: 0.75;
 }
 
 .error {

@@ -14,31 +14,15 @@
   <div class="card">
     <div class="error" *ngIf="error()">{{ error() }}</div>
 
-    <div class="table-wrap">
-      <table class="table">
-        <thead>
-          <tr>
-            <th>Email</th>
-            <th>Role</th>
-            <th>Name</th>
-            <th>Phone</th>
-            <th>Created</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let u of filteredUsers(); trackBy: trackById">
-            <td>{{ u.email }}</td>
-            <td>{{ u.role || '-' }}</td>
-            <td>{{ (u.firstName || '') + ' ' + (u.lastName || '') }}</td>
-            <td>{{ u.phone || '-' }}</td>
-            <td>{{ u.createdAt || '-' }}</td>
-          </tr>
-          <tr *ngIf="!loading() && filteredUsers().length === 0">
-            <td colspan="5" class="empty">No users</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+    <ag-grid-angular
+      class="ag-theme-quartz grid"
+      [rowData]="filteredUsers()"
+      [columnDefs]="columnDefs"
+      [defaultColDef]="defaultColDef"
+      [getRowId]="getRowId"
+      [animateRows]="true"
+      [rowSelection]="'single'"
+    />
   </div>
 </div>
 

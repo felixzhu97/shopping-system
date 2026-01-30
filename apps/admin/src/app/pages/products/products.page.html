@@ -39,35 +39,15 @@
 
   <div class="card">
     <div class="card-title">List</div>
-    <div class="table-wrap">
-      <table class="table">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th class="num">Price</th>
-            <th>Category</th>
-            <th class="num">Stock</th>
-            <th class="actions-col"></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let p of filteredProducts(); trackBy: trackById">
-            <td>{{ p.name }}</td>
-            <td class="num">{{ p.price }}</td>
-            <td>{{ p.category || '-' }}</td>
-            <td class="num">{{ p.stock ?? '-' }}</td>
-            <td class="actions-col">
-              <button class="btn danger" type="button" (click)="remove(getId(p))" [disabled]="loading()">
-                Delete
-              </button>
-            </td>
-          </tr>
-          <tr *ngIf="!loading() && filteredProducts().length === 0">
-            <td colspan="5" class="empty">No products</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+    <ag-grid-angular
+      class="ag-theme-quartz grid"
+      [rowData]="filteredProducts()"
+      [columnDefs]="columnDefs"
+      [defaultColDef]="defaultColDef"
+      [getRowId]="getRowId"
+      [animateRows]="true"
+      [rowSelection]="'single'"
+    />
   </div>
 </div>
 

@@ -1,5 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, computed, signal } from '@angular/core';
+import { AgGridAngular } from 'ag-grid-angular';
+import type { ColDef, GetRowIdParams } from 'ag-grid-community';
 
 import { ApiService, User } from '../../core/api/api.service';
 import { AuthService } from '../../core/auth/auth.service';
@@ -7,7 +9,7 @@ import { AuthService } from '../../core/auth/auth.service';
 @Component({
   selector: 'app-users-page',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, AgGridAngular],
   templateUrl: './users.page.html',
   styleUrl: './users.page.scss',
 })
@@ -27,6 +29,29 @@ export class UsersPage implements OnInit {
     });
   });
 
+  protected readonly defaultColDef: ColDef<User> = {
+    sortable: true,
+    filter: true,
+    resizable: true,
+    flex: 1,
+    minWidth: 140,
+  };
+
+  protected readonly columnDefs: ColDef<User>[] = [
+    { field: 'email', headerName: 'Email', minWidth: 240 },
+    { field: 'role', headerName: 'Role', maxWidth: 140 },
+    {
+      headerName: 'Name',
+      valueGetter: p => `${p.data?.firstName ?? ''} ${p.data?.lastName ?? ''}`.trim(),
+      minWidth: 180,
+    },
+    { field: 'phone', headerName: 'Phone', minWidth: 160 },
+    { field: 'createdAt', headerName: 'Created', minWidth: 200 },
+  ];
+
+  protected readonly getRowId = (params: GetRowIdParams<User>): string =>
+    String((params.data as { id?: string; _id?: string } | undefined)?.id ?? (params.data as any)?._id ?? '');
+
   constructor(
     private readonly api: ApiService,
     private readonly auth: AuthService
@@ -44,10 +69,6 @@ export class UsersPage implements OnInit {
       error: (e: unknown) => this.error.set(this.extractErrorMessage(e) || 'Failed to load users'),
       complete: () => this.loading.set(false),
     });
-  }
-
-  trackById(_: number, item: User): string {
-    return item.id || item._id || '';
   }
 
   protected setSearch(value: string): void {
