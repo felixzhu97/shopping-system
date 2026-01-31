@@ -1,0 +1,73 @@
+<div class="sf-3d-shell">
+    <div class="sf-3d-canvas" #canvasHost></div>
+  
+    <div class="sf-3d-overlay">
+      <div class="d-flex align-items-center justify-content-between mb-2">
+        <div class="h5 mb-0">Products 3D</div>
+        <div class="d-flex align-items-center gap-2">
+          <button class="btn btn-outline-secondary btn-sm" type="button" (click)="refresh()" [disabled]="loading()">
+            {{ loading() ? 'Loading...' : 'Refresh' }}
+          </button>
+        </div>
+      </div>
+  
+      <div class="input-group input-group-sm mb-2">
+        <span class="input-group-text">
+          <i class="bi bi-search"></i>
+        </span>
+        <input
+          class="form-control"
+          [value]="search()"
+          (input)="setSearch(($any($event.target)).value)"
+          placeholder="Search products"
+        />
+      </div>
+  
+      <div class="text-danger small mb-2" *ngIf="modelError()">{{ modelError() }}</div>
+      <div class="text-danger small mb-2" *ngIf="error()">{{ error() }}</div>
+  
+      <div class="sf-3d-panel card">
+        <div class="card-header d-flex align-items-center justify-content-between">
+          <div class="fw-semibold">Selected</div>
+          <div class="small text-secondary" *ngIf="selectedProduct() as p">{{ p.category || 'Uncategorized' }}</div>
+        </div>
+        <div class="card-body" *ngIf="selectedProduct() as p; else emptySelected">
+          <div class="sf-3d-selected-title">{{ p.name }}</div>
+          <div class="small text-secondary mb-2">{{ p.description || 'No description' }}</div>
+          <div class="d-flex align-items-center gap-2">
+            <span class="badge text-bg-primary">${{ p.price }}</span>
+            <span class="badge text-bg-secondary" *ngIf="p.stock !== undefined">Stock: {{ p.stock }}</span>
+          </div>
+        </div>
+        <ng-template #emptySelected>
+          <div class="card-body text-secondary small">Click a model in the 3D scene to select a product.</div>
+        </ng-template>
+        <div class="card-footer text-secondary small d-flex align-items-center justify-content-between">
+          <span>3D model: {{ activeModelLabel() || 'Not loaded' }}</span>
+          <span>{{ activeModelKey() }}</span>
+        </div>
+      </div>
+  
+      <div class="sf-3d-list card">
+        <div class="card-header fw-semibold">Products</div>
+        <div class="list-group list-group-flush">
+          <button
+            type="button"
+            class="list-group-item list-group-item-action"
+            *ngFor="let p of filteredProducts()"
+            [class.active]="selectedProductId() === p.id || selectedProductId() === p._id"
+            (click)="selectById(p.id || p._id || '')"
+          >
+            <div class="d-flex align-items-center justify-content-between">
+              <div class="text-truncate me-2">{{ p.name }}</div>
+              <div class="text-secondary small">${{ p.price }}</div>
+            </div>
+            <div class="text-secondary small text-truncate">{{ p.category || 'Uncategorized' }}</div>
+          </button>
+          <div class="p-3 text-secondary small" *ngIf="filteredProducts().length === 0">No products.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  

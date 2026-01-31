@@ -7,6 +7,7 @@ import type { AlignedGrid, ColDef, GetRowIdParams, GridOptions, ICellRendererPar
 import { ApiService, Product } from '../../core/api/api.service';
 import { AuthService } from '../../core/auth/auth.service';
 import { adminGridTheme } from '../../core/ag-grid/ag-grid-theme';
+import { MODEL_ASSETS } from '../../core/three/model-assets';
 
 @Component({
   selector: 'app-products-page',
@@ -19,6 +20,8 @@ export class ProductsPage implements OnInit {
   private readonly api = inject(ApiService);
   private readonly auth = inject(AuthService);
   private readonly fb = inject(FormBuilder);
+
+  protected readonly modelAssets = MODEL_ASSETS;
 
   protected readonly loading = signal<boolean>(false);
   protected readonly error = signal<string>('');
@@ -39,6 +42,7 @@ export class ProductsPage implements OnInit {
     name: ['', [Validators.required]],
     price: [0, [Validators.required, Validators.min(0)]],
     category: [''],
+    modelKey: [''],
     stock: [0, [Validators.min(0)]],
   });
 
@@ -49,8 +53,8 @@ export class ProductsPage implements OnInit {
     flex: 1,
     minWidth: 120,
     cellStyle: {
-      display: "flex",
-      alignItems: "center", // Vertical center for all cells
+      display: 'flex',
+      alignItems: 'center',
     },
   };
 
@@ -66,6 +70,7 @@ export class ProductsPage implements OnInit {
     { field: 'name', headerName: 'Name', minWidth: 220 },
     { field: 'price', headerName: 'Price', maxWidth: 140,  valueFormatter: p => String(p.value ?? '') },
     { field: 'category', headerName: 'Category', minWidth: 180 },
+    { field: 'modelKey', headerName: 'Model Key', minWidth: 240 },
     { field: 'stock', headerName: 'Stock', maxWidth: 140,  valueFormatter: p => String(p.value ?? '') },
     {
       headerName: '',
@@ -118,11 +123,12 @@ export class ProductsPage implements OnInit {
       name: value.name,
       price: value.price,
       category: value.category || undefined,
+      modelKey: value.modelKey || undefined,
       stock: value.stock ?? undefined,
     }).subscribe({
       next: (created) => {
         this.products.set([created, ...this.products()]);
-        this.form.reset({ name: '', price: 0, category: '', stock: 0 });
+        this.form.reset({ name: '', price: 0, category: '', modelKey: '', stock: 0 });
       },
       error: (e: unknown) => {
         this.error.set(this.extractErrorMessage(e) || 'Failed to create product');

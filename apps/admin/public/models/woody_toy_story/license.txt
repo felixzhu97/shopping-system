@@ -1,0 +1,11 @@
+Model Information:
+* title:	Woody Toy Story
+* source:	https://sketchfab.com/3d-models/woody-toy-story-f88d8092b28d4a5d9e3cc4db99ca3aff
+* author:	Jamessmartguy (https://sketchfab.com/skybaca1985)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Woody Toy Story" (https://sketchfab.com/3d-models/woody-toy-story-f88d8092b28d4a5d9e3cc4db99ca3aff) by Jamessmartguy (https://sketchfab.com/skybaca1985) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

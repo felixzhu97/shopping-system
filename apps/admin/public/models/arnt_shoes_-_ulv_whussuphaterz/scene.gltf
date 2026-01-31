@@ -1,0 +1,411 @@
+{
+  "accessors": [
+    {
+      "bufferView": 2,
+      "componentType": 5126,
+      "count": 1881,
+      "max": [
+        0.17167796194553375,
+        0.11937787383794785,
+        0.27777862548828125
+      ],
+      "min": [
+        0.059306610375642776,
+        -0.0014474298804998398,
+        0.0
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 22572,
+      "componentType": 5126,
+      "count": 1881,
+      "max": [
+        0.9991036057472229,
+        0.9995155334472656,
+        0.9999696016311646
+      ],
+      "min": [
+        -0.9995976090431213,
+        -0.9999959468841553,
+        -0.999687910079956
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 3,
+      "componentType": 5126,
+      "count": 1881,
+      "max": [
+        0.9993581175804138,
+        0.9990888237953186,
+        0.9992803931236267,
+        1.0
+      ],
+      "min": [
+        -0.9993579387664795,
+        -0.9847135543823242,
+        -0.9995250105857849,
+        1.0
+      ],
+      "type": "VEC4"
+    },
+    {
+      "bufferView": 1,
+      "componentType": 5126,
+      "count": 1881,
+      "max": [
+        0.9799410104751587,
+        0.9936019778251648
+      ],
+      "min": [
+        0.0012000000569969416,
+        0.2081490010023117
+      ],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 0,
+      "componentType": 5125,
+      "count": 9309,
+      "type": "SCALAR"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 45144,
+      "componentType": 5126,
+      "count": 1880,
+      "max": [
+        -0.06889469921588898,
+        0.11937787383794785,
+        0.27777862548828125
+      ],
+      "min": [
+        -0.18126605451107025,
+        -0.0014474298804998398,
+        0.0
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 67704,
+      "componentType": 5126,
+      "count": 1880,
+      "max": [
+        0.9995976090431213,
+        0.9996194839477539,
+        0.9999696016311646
+      ],
+      "min": [
+        -0.9991036057472229,
+        -0.9999959468841553,
+        -0.9972113966941833
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 3,
+      "byteOffset": 30096,
+      "componentType": 5126,
+      "count": 1880,
+      "max": [
+        0.9992807507514954,
+        0.998334527015686,
+        0.998625636100769,
+        1.0
+      ],
+      "min": [
+        -0.9995324015617371,
+        -0.9835202097892761,
+        -0.9997639060020447,
+        1.0
+      ],
+      "type": "VEC4"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 15048,
+      "componentType": 5126,
+      "count": 1880,
+      "max": [
+        0.9953240156173706,
+        0.9948970079421997
+      ],
+      "min": [
+        0.011998999863862991,
+        0.005528999958187342
+      ],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 0,
+      "byteOffset": 37236,
+      "componentType": 5125,
+      "count": 9309,
+      "type": "SCALAR"
+    }
+  ],
+  "asset": {
+    "extras": {
+      "author": "Arnt Shoes (https://sketchfab.com/Arntorius)",
+      "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+      "source": "https://sketchfab.com/3d-models/arnt-shoes-ulv-whussuphaterz-28cb4f34566143289ce367ce31dcb90b",
+      "title": "Arnt Shoes - Ulv WhussupHaterz"
+    },
+    "generator": "Sketchfab-12.68.0",
+    "version": "2.0"
+  },
+  "bufferViews": [
+    {
+      "buffer": 0,
+      "byteLength": 74472,
+      "name": "floatBufferViews",
+      "target": 34963
+    },
+    {
+      "buffer": 0,
+      "byteLength": 30088,
+      "byteOffset": 74472,
+      "byteStride": 8,
+      "name": "floatBufferViews",
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 90264,
+      "byteOffset": 104560,
+      "byteStride": 12,
+      "name": "floatBufferViews",
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 60176,
+      "byteOffset": 194824,
+      "byteStride": 16,
+      "name": "floatBufferViews",
+      "target": 34962
+    }
+  ],
+  "buffers": [
+    {
+      "byteLength": 255000,
+      "uri": "scene.bin"
+    }
+  ],
+  "images": [
+    {
+      "uri": "textures/ShoesEtniesCallicut_baseColor.png"
+    },
+    {
+      "uri": "textures/ShoesEtniesCallicut_metallicRoughness.png"
+    },
+    {
+      "uri": "textures/ShoesEtniesCallicut_normal.png"
+    }
+  ],
+  "materials": [
+    {
+      "doubleSided": true,
+      "name": "ShoesEtniesCallicut",
+      "normalTexture": {
+        "index": 2
+      },
+      "pbrMetallicRoughness": {
+        "baseColorTexture": {
+          "index": 0
+        },
+        "metallicFactor": 0.0,
+        "metallicRoughnessTexture": {
+          "index": 1
+        }
+      }
+    }
+  ],
+  "meshes": [
+    {
+      "name": "Etnies_Scan01_Shoe_L_ShoesEtniesCallicut_0",
+      "primitives": [
+        {
+          "attributes": {
+            "NORMAL": 1,
+            "POSITION": 0,
+            "TANGENT": 2,
+            "TEXCOORD_0": 3
+          },
+          "indices": 4,
+          "material": 0,
+          "mode": 4
+        }
+      ]
+    },
+    {
+      "name": "Etnies_Scan01_Shoe_R_ShoesEtniesCallicut_0",
+      "primitives": [
+        {
+          "attributes": {
+            "NORMAL": 6,
+            "POSITION": 5,
+            "TANGENT": 7,
+            "TEXCOORD_0": 8
+          },
+          "indices": 9,
+          "material": 0,
+          "mode": 4
+        }
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "children": [
+        1
+      ],
+      "matrix": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        2.220446049250313e-16,
+        -1.0,
+        0.0,
+        0.0,
+        1.0,
+        2.220446049250313e-16,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "name": "Sketchfab_model"
+    },
+    {
+      "children": [
+        2
+      ],
+      "matrix": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        -1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "name": "981da72b4ffa41e2878805b8e15e1ccd.fbx"
+    },
+    {
+      "children": [
+        3
+      ],
+      "name": "RootNode"
+    },
+    {
+      "children": [
+        4,
+        6
+      ],
+      "name": "MShoesEtniesCallicut"
+    },
+    {
+      "children": [
+        5
+      ],
+      "matrix": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        0.009303591214120388,
+        -0.13224133849143982,
+        1.0
+      ],
+      "name": "Etnies_Scan01_Shoe_L"
+    },
+    {
+      "mesh": 0,
+      "name": "Etnies_Scan01_Shoe_L_ShoesEtniesCallicut_0"
+    },
+    {
+      "children": [
+        7
+      ],
+      "matrix": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        0.00782135222107172,
+        -0.12796664237976074,
+        1.0
+      ],
+      "name": "Etnies_Scan01_Shoe_R"
+    },
+    {
+      "mesh": 1,
+      "name": "Etnies_Scan01_Shoe_R_ShoesEtniesCallicut_0"
+    }
+  ],
+  "samplers": [
+    {
+      "magFilter": 9729,
+      "minFilter": 9987,
+      "wrapS": 10497,
+      "wrapT": 10497
+    }
+  ],
+  "scene": 0,
+  "scenes": [
+    {
+      "name": "Sketchfab_Scene",
+      "nodes": [
+        0
+      ]
+    }
+  ],
+  "textures": [
+    {
+      "sampler": 0,
+      "source": 0
+    },
+    {
+      "sampler": 0,
+      "source": 1
+    },
+    {
+      "sampler": 0,
+      "source": 2
+    }
+  ]
+}

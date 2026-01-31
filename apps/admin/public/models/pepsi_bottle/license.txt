@@ -1,0 +1,11 @@
+Model Information:
+* title:	pepsi bottle
+* source:	https://sketchfab.com/3d-models/pepsi-bottle-95c4a54bd5ec4322a56e08df5631e850
+* author:	moonbrosproductions (https://sketchfab.com/moonbrosproductions)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "pepsi bottle" (https://sketchfab.com/3d-models/pepsi-bottle-95c4a54bd5ec4322a56e08df5631e850) by moonbrosproductions (https://sketchfab.com/moonbrosproductions) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

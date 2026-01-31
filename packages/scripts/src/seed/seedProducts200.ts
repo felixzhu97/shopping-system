@@ -7,6 +7,15 @@ dotenv.config();
 const mongoUri = process.env.MONGODB_URI ?? 'mongodb://localhost:27017/shopping-system';
 
 const categories = ['Electronics', 'Clothing', 'Home & Kitchen', 'Books', 'Sports & Outdoors'] as const;
+const modelKeys = [
+  'arnt_shoes_-_ulv_whussuphaterz',
+  'camera_canon_eos_400d',
+  'desk_lamp',
+  'office_electronics_desk_fan_retro',
+  'pepsi_bottle',
+  'rayban_sunglasses',
+  'woody_toy_story',
+] as const;
 
 function randomInt(minInclusive: number, maxInclusive: number): number {
   return Math.floor(Math.random() * (maxInclusive - minInclusive + 1)) + minInclusive;
@@ -28,6 +37,7 @@ function createProducts(count: number): Product[] {
     const hasDiscount = Math.random() < 0.35;
     const originalPrice = hasDiscount ? randomFloat(price * 1.05, price * 1.35, 2) : undefined;
     const stock = randomInt(0, 200);
+    const modelKey = modelKeys[i % modelKeys.length];
 
     products.push({
       name: `${category} Product ${index}`,
@@ -35,11 +45,12 @@ function createProducts(count: number): Product[] {
       price,
       originalPrice,
       image: 'https://example.com/placeholder.jpg',
+      modelKey,
       category,
       stock,
       rating: randomFloat(3.5, 5, 1),
       reviewCount: randomInt(0, 500),
-      inStock: stock > 0
+      inStock: stock > 0,
     });
   }
 

@@ -1,197 +1,75 @@
 @startuml
-title TOGAF 数据架构图 - 购物系统
+title TOGAF Data Architecture - Shopping System
 
 skinparam componentStyle rectangle
 skinparam packageStyle rectangle
 skinparam databaseStyle rectangle
 skinparam linetype ortho
 
-' 数据实体层
-package "数据实体" {
-    database "User\n用户实体\n存储用户基本信息、认证信息、个人资料" as user
-    database "Product\n商品实体\n存储商品信息、价格、库存、分类" as product
-    database "Order\n订单实体\n存储订单信息、订单项、订单状态" as order
-    database "Cart\n购物车实体\n存储购物车信息、购物车项" as cart
-    database "Payment\n支付实体\n存储支付信息、支付方式、支付状态" as payment
-    database "UserBehavior\n用户行为实体\n存储用户浏览、点击、购买等行为数据" as user_behavior
-    database "RecommendationCache\n推荐结果缓存\n存储推荐结果缓存数据" as recommendation_cache
-    database "OAuthToken\nOAuth令牌实体\n存储OAuth令牌和刷新令牌" as oauth_token
+package "Domain Entities" {
+    database "User" as user
+    database "Product" as product
+    database "Order" as order
+    database "Cart" as cart
+    database "ScrapedProduct (crawler output)" as scraped_product
+    database "CrawlJob (crawler runtime state)" as crawl_job
+    database "Offline Dataset (export files)" as offline_dataset
 }
 
-' 数据属性详细视图
-package "User实体属性" {
-    component [用户ID\nObjectId\n唯一标识] as user_id
-    component [邮箱\nString\n登录邮箱] as user_email
-    component [密码\nString (Hash)\n加密密码] as user_password
-    component [角色\nEnum\ncustomer/admin] as user_role
-    component [个人资料\nObject\n姓名、电话、地址等] as user_profile
+user --> cart : 1:1
+user --> order : 1:N
+product --> order : N:M
+product --> cart : N:M
+
+database "MongoDB" as mongodb
+
+package "MongoDB Collections" {
+    component [users] as users_collection
+    component [products] as products_collection
+    component [orders] as orders_collection
+    component [carts] as carts_collection
 }
 
-package "Product实体属性" {
-    component [商品ID\nObjectId\n唯一标识] as product_id
-    component [商品名称\nString\n商品名称] as product_name
-    component [价格\nNumber\n商品价格] as product_price
-    component [库存\nNumber\n库存数量] as product_stock
-    component [分类\nString\n商品分类] as product_category
-    component [图片\nArray\n商品图片URL] as product_images
+package "Data Access (services/api)" {
+    component [Mongoose Models] as mongoose_models
+    component [Schema Validation] as schema_validation
+    component [Password Hashing (bcrypt)] as password_hashing
 }
 
-package "Order实体属性" {
-    component [订单ID\nObjectId\n唯一标识] as order_id
-    component [用户ID\nObjectId\n关联用户] as order_userId
-    component [订单项\nArray\n订单商品列表] as order_items
-    component [总金额\nNumber\n订单总金额] as order_totalAmount
-    component [订单状态\nEnum\npending/processing/completed/cancelled] as order_status
-    component [创建时间\nDate\n订单创建时间] as order_createdAt
+package "Crawler Data (services/crawler)" {
+    component [In-memory Job Store] as crawler_job_store
+    component [Scrape Results] as crawler_results
 }
 
-package "Cart实体属性" {
-    component [购物车ID\nObjectId\n唯一标识] as cart_id
-    component [用户ID\nObjectId\n关联用户] as cart_userId
-    component [购物车项\nArray\n购物车商品列表] as cart_items
-    component [更新时间\nDate\n最后更新时间] as cart_updatedAt
+package "Offline Data Mining (services/data-mining)" {
+    component [Export Scripts] as export_scripts
+    component [Training Scripts] as training_scripts
 }
 
-package "UserBehavior实体属性" {
-    component [行为ID\nObjectId\n唯一标识] as behavior_id
-    component [用户ID\nObjectId\n关联用户] as behavior_userId
-    component [商品ID\nObjectId\n关联商品] as behavior_productId
-    component [行为类型\nEnum\nview/click/purchase/cart] as behavior_type
-    component [行为时间\nDate\n行为发生时间] as behavior_timestamp
-    component [行为数据\nObject\n额外行为数据] as behavior_data
-}
+user --> users_collection
+product --> products_collection
+order --> orders_collection
+cart --> carts_collection
 
-package "RecommendationCache实体属性" {
-    component [缓存ID\nObjectId\n唯一标识] as cache_id
-    component [用户ID\nObjectId\n关联用户] as cache_userId
-    component [推荐结果\nArray\n推荐商品列表] as cache_results
-    component [算法类型\nString\n使用的推荐算法] as cache_algorithm
-    component [过期时间\nDate\n缓存过期时间] as cache_expiresAt
-}
+users_collection --> mongodb
+products_collection --> mongodb
+orders_collection --> mongodb
+carts_collection --> mongodb
 
-package "OAuthToken实体属性" {
-    component [令牌ID\nObjectId\n唯一标识] as token_id
-    component [用户ID\nObjectId\n关联用户] as token_userId
-    component [提供者\nString\nOAuth提供者名称] as token_provider
-    component [访问令牌\nString\nOAuth访问令牌] as token_accessToken
-    component [刷新令牌\nString\nOAuth刷新令牌] as token_refreshToken
-    component [过期时间\nDate\n令牌过期时间] as token_expiresAt
-}
+mongoose_models --> users_collection
+mongoose_models --> products_collection
+mongoose_models --> orders_collection
+mongoose_models --> carts_collection
 
-' 数据关系
-user --> cart : 1:1 拥有
-user --> order : 1:N 创建
-user --> payment : 1:N 支付
-user --> user_behavior : 1:N 产生
-user --> recommendation_cache : 1:N 拥有
-user --> oauth_token : 1:N 拥有
-product --> order : N:M 被订购\n(通过OrderItem)
-product --> cart : N:M 被添加\n(通过CartItem)
-product --> user_behavior : 1:N 被操作
-product --> recommendation_cache : N:M 被推荐\n(通过推荐结果)
-order --> payment : 1:1 关联
+mongoose_models --> schema_validation
+mongoose_models --> password_hashing
 
-' 数据存储层
-database "MongoDB数据库\n文档数据库\n存储所有业务数据" as mongodb
+crawler_job_store --> crawl_job
+crawler_results --> scraped_product
+scraped_product --> offline_dataset
 
-package "数据集合" {
-    component [users集合\nMongoDB Collection\n用户数据] as users_collection
-    component [products集合\nMongoDB Collection\n商品数据] as products_collection
-    component [orders集合\nMongoDB Collection\n订单数据] as orders_collection
-    component [carts集合\nMongoDB Collection\n购物车数据] as carts_collection
-    component [payments集合\nMongoDB Collection\n支付数据] as payments_collection
-    component [userBehaviors集合\nMongoDB Collection\n用户行为数据] as user_behaviors_collection
-    component [recommendationCaches集合\nMongoDB Collection\n推荐结果缓存] as recommendation_caches_collection
-    component [oauthTokens集合\nMongoDB Collection\nOAuth令牌数据] as oauth_tokens_collection
-}
-
-' 数据访问层
-package "数据访问模式" {
-    component [用户数据访问\nRepository Pattern\n用户CRUD操作] as user_repository
-    component [商品数据访问\nRepository Pattern\n商品CRUD操作] as product_repository
-    component [订单数据访问\nRepository Pattern\n订单CRUD操作] as order_repository
-    component [购物车数据访问\nRepository Pattern\n购物车CRUD操作] as cart_repository
-    component [用户行为数据访问\nRepository Pattern\n用户行为CRUD操作] as user_behavior_repository
-    component [推荐缓存数据访问\nRepository Pattern\n推荐缓存CRUD操作] as recommendation_cache_repository
-    component [OAuth令牌数据访问\nRepository Pattern\nOAuth令牌CRUD操作] as oauth_token_repository
-}
-
-' 数据流
-package "数据流" {
-    component [数据验证\nSchema Validation\nMongoose Schema验证] as data_validation
-    component [数据加密\nbcrypt\n密码加密存储] as data_encryption
-    component [数据索引\nMongoDB Indexes\n查询性能优化] as data_indexing
-}
-
-' 关系定义
-user --> users_collection : 存储于
-product --> products_collection : 存储于
-order --> orders_collection : 存储于
-cart --> carts_collection : 存储于
-payment --> payments_collection : 存储于
-user_behavior --> user_behaviors_collection : 存储于
-recommendation_cache --> recommendation_caches_collection : 存储于
-oauth_token --> oauth_tokens_collection : 存储于
-
-users_collection --> mongodb : 位于
-products_collection --> mongodb : 位于
-orders_collection --> mongodb : 位于
-carts_collection --> mongodb : 位于
-payments_collection --> mongodb : 位于
-user_behaviors_collection --> mongodb : 位于
-recommendation_caches_collection --> mongodb : 位于
-oauth_tokens_collection --> mongodb : 位于
-
-user_repository --> users_collection : 访问
-product_repository --> products_collection : 访问
-order_repository --> orders_collection : 访问
-cart_repository --> carts_collection : 访问
-user_behavior_repository --> user_behaviors_collection : 访问
-recommendation_cache_repository --> recommendation_caches_collection : 访问
-oauth_token_repository --> oauth_tokens_collection : 访问
-
-user_repository --> data_validation : 使用
-product_repository --> data_validation : 使用
-order_repository --> data_validation : 使用
-cart_repository --> data_validation : 使用
-user_behavior_repository --> data_validation : 使用
-recommendation_cache_repository --> data_validation : 使用
-oauth_token_repository --> data_validation : 使用
-
-user_repository --> data_encryption : 使用
-oauth_token_repository --> data_encryption : 使用
-mongodb --> data_indexing : 使用
-
-note right of mongodb
-  MongoDB数据库
-  - 文档数据库
-  - 存储所有业务数据
-  - 支持水平扩展
-end note
-
-note right of user_repository
-  数据访问层
-  使用Repository模式
-  提供CRUD操作接口
-end note
-
-note right of user_behavior
-  用户行为数据
-  用于推荐系统分析
-  记录用户浏览、点击、购买等行为
-end note
-
-note right of recommendation_cache
-  推荐结果缓存
-  提高推荐系统性能
-  减少重复计算
-end note
-
-note right of oauth_token
-  OAuth令牌存储
-  支持多种OAuth提供者
-  管理访问令牌和刷新令牌
-end note
+export_scripts --> mongodb
+export_scripts --> offline_dataset
+training_scripts --> offline_dataset
 
 @enduml
-

@@ -1,0 +1,11 @@
+Model Information:
+* title:	Camera CANON EOS 400D
+* source:	https://sketchfab.com/3d-models/camera-canon-eos-400d-c8c3f307e93f4c829d579d1b369e6b02
+* author:	santy (https://sketchfab.com/Santy)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Camera CANON EOS 400D" (https://sketchfab.com/3d-models/camera-canon-eos-400d-c8c3f307e93f4c829d579d1b369e6b02) by santy (https://sketchfab.com/Santy) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

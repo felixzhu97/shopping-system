@@ -27,15 +27,22 @@
           <label class="form-label">Price</label>
           <input class="form-control form-control-sm" formControlName="price" type="number" />
         </div>
-        <div class="col-6 col-md-3">
+          <div class="col-6 col-md-2">
           <label class="form-label">Category</label>
           <input class="form-control form-control-sm" formControlName="category" />
         </div>
-        <div class="col-6 col-md-2">
+          <div class="col-6 col-md-3">
+            <label class="form-label">Model Key</label>
+            <select class="form-select form-select-sm" formControlName="modelKey">
+              <option value="">Auto</option>
+              <option *ngFor="let a of modelAssets" [value]="a.key">{{ a.label }} ({{ a.key }})</option>
+            </select>
+          </div>
+          <div class="col-6 col-md-1">
           <label class="form-label">Stock</label>
           <input class="form-control form-control-sm" formControlName="stock" type="number" />
         </div>
-        <div class="col-6 col-md-2">
+          <div class="col-6 col-md-1">
           <button class="btn btn-primary btn-sm w-100" type="submit" [disabled]="loading() || form.invalid">
             {{ loading() ? 'Saving...' : 'Create' }}
           </button>

@@ -1,0 +1,11 @@
+Model Information:
+* title:	Desk lamp
+* source:	https://sketchfab.com/3d-models/desk-lamp-9065ba079ded4de29ad178cc4d61edd0
+* author:	GokouFG (https://sketchfab.com/GokouFG)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Desk lamp" (https://sketchfab.com/3d-models/desk-lamp-9065ba079ded4de29ad178cc4d61edd0) by GokouFG (https://sketchfab.com/GokouFG) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

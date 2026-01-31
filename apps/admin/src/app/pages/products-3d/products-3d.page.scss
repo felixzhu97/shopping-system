@@ -1,0 +1,82 @@
+.sf-3d-shell {
+  position: relative;
+  width: 100%;
+  height: calc(100vh - 140px);
+  min-height: 680px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: radial-gradient(900px 600px at 70% 15%, rgba(1, 118, 211, 0.1), rgba(243, 242, 242, 1) 55%);
+  border: 1px solid var(--sf-border);
+}
+
+.sf-3d-canvas {
+  position: absolute;
+  inset: 0;
+}
+
+.sf-3d-overlay {
+  position: absolute;
+  inset: 16px;
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  grid-template-rows: auto auto auto 1fr;
+  gap: 12px;
+  pointer-events: none;
+}
+
+.sf-3d-overlay > * {
+  pointer-events: auto;
+}
+
+.sf-3d-panel {
+  grid-column: 1;
+}
+
+.sf-3d-list {
+  grid-column: 1;
+  grid-row: 4;
+  overflow: hidden;
+}
+
+.sf-3d-list .list-group {
+  max-height: 100%;
+  overflow: auto;
+}
+
+.sf-3d-selected-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+@media (max-width: 1200px) {
+  .sf-3d-shell {
+    height: calc(100vh - 120px);
+    min-height: 620px;
+  }
+
+  .sf-3d-overlay {
+    grid-template-columns: 320px 1fr;
+  }
+}
+
+@media (max-width: 900px) {
+  .sf-3d-shell {
+    height: auto;
+    min-height: 720px;
+  }
+
+  .sf-3d-overlay {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto auto 1fr;
+  }
+
+  .sf-3d-panel {
+    grid-column: 1;
+  }
+
+  .sf-3d-list {
+    grid-column: 1;
+    grid-row: 5;
+  }
+}
+

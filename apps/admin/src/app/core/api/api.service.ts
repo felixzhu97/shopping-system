@@ -21,6 +21,7 @@ export type Product = {
   description?: string;
   price: number;
   image?: string;
+  modelKey?: string;
   category?: string;
   stock?: number;
 };

@@ -1,11 +1,10 @@
-// -----------Product-----------
-// 产品类型
 export interface Product {
   id: string;
   name: string;
   description: string;
   price: number;
   image: string;
+  modelKey?: string;
   category: string;
   stock: number;
   rating?: number;
@@ -14,8 +13,6 @@ export interface Product {
   inStock?: boolean;
 }
 
-// -----------Cart-----------
-// 购物车项目类型
 export interface CartItem {
   productId: string;
   quantity: number;
@@ -26,12 +23,10 @@ export interface CartItem {
   product?: Product;
 }
 
-// 购物车类型
 export interface Cart {
   items: CartItem[];
 }
 
-// -----------User-----------
 export type UserRole = 'user' | 'admin';
 
 export interface User {
@@ -39,17 +34,14 @@ export interface User {
   password?: string;
   role?: UserRole;
   token?: string;
-  // -------用户信息-------
   firstName: string;
   lastName: string;
   phone: string;
   email: string;
-  // -------收货地址-------
   address: string;
   city: string;
   province: string;
   postalCode: string;
-  // -------支付信息-------
   paymentMethod: PaymentMethod;
 }
 
@@ -66,7 +58,6 @@ export interface UserResetPassword {
   newPassword: string;
 }
 
-// -----------Order-----------
 export type OrderStatus = 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
 
 export interface Order {
@@ -79,7 +70,6 @@ export interface Order {
   updatedAt: Date;
 }
 
-// -----------Payment-----------
 export type PaymentMethod = 'alipay' | 'wechat' | 'credit-card';
 
 export interface Payment {
@@ -94,7 +84,6 @@ export interface Payment {
   paymentMethod: PaymentMethod;
 }
 
-// -----------ApiResponse-----------
 export interface ApiResponse<T> {
   data?: T;
   error?: string;

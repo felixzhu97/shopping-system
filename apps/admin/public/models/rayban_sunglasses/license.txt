@@ -1,0 +1,11 @@
+Model Information:
+* title:	Rayban Sunglasses
+* source:	https://sketchfab.com/3d-models/rayban-sunglasses-5594893683184664b166db8a28a55bc0
+* author:	parth.mothrills (https://sketchfab.com/parth.mothrills)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Rayban Sunglasses" (https://sketchfab.com/3d-models/rayban-sunglasses-5594893683184664b166db8a28a55bc0) by parth.mothrills (https://sketchfab.com/parth.mothrills) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
