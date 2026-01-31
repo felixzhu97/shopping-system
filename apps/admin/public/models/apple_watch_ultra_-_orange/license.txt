@@ -1,0 +1,11 @@
+Model Information:
+* title:	Apple Watch Ultra - Orange
+* source:	https://sketchfab.com/3d-models/apple-watch-ultra-orange-4656191de2e94767a8c16003fca1f268
+* author:	alboxer2000_ (https://sketchfab.com/alboxer2000_)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Apple Watch Ultra - Orange" (https://sketchfab.com/3d-models/apple-watch-ultra-orange-4656191de2e94767a8c16003fca1f268) by alboxer2000_ (https://sketchfab.com/alboxer2000_) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

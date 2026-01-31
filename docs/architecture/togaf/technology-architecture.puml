@@ -9,8 +9,10 @@ package "Web (apps/web)" {
     component [React] as web_react
     component [TypeScript] as web_ts
     component [Tailwind CSS] as web_tailwind
+    component [Radix UI] as web_radix
     component [Zustand] as web_zustand
     component [i18next] as web_i18n
+    component [Zod] as web_zod
     component [Datadog RUM] as web_rum
 }
 
@@ -19,6 +21,10 @@ package "Admin (apps/admin)" {
     component [TypeScript] as admin_ts
     component [RxJS] as admin_rxjs
     component [Angular HttpClient] as admin_http
+    component [Bootstrap] as admin_bootstrap
+    component [Chart.js] as admin_chartjs
+    component [ECharts] as admin_echarts
+    component [Three.js] as admin_three
 }
 
 package "Mobile (apps/mobile)" {
@@ -34,6 +40,7 @@ package "API (services/api)" {
     component [Express.js] as api_express
     component [TypeScript] as api_ts
     component [Mongoose] as api_mongoose
+    component [bcryptjs] as api_bcryptjs
     component [serverless-http] as api_serverless_http
     component [datadog-lambda-js] as api_datadog_lambda
     component [swagger-jsdoc] as api_swagger_jsdoc
@@ -46,7 +53,7 @@ package "Crawler (services/crawler)" {
     component [Python] as crawler_python
     component [FastAPI] as crawler_fastapi
     component [httpx] as crawler_httpx
-    component [BeautifulSoup] as crawler_bs4
+    component [BeautifulSoup4] as crawler_bs4
 }
 
 package "Data Mining (services/data-mining)" {
@@ -84,13 +91,19 @@ package "Standards" {
 web_next --> web_react
 web_next --> web_ts
 web_next --> web_tailwind
+web_next --> web_radix
 web_next --> web_zustand
 web_next --> web_i18n
+web_next --> web_zod
 web_next --> web_rum
 
 admin_angular --> admin_ts
 admin_angular --> admin_rxjs
 admin_angular --> admin_http
+admin_angular --> admin_bootstrap
+admin_angular --> admin_chartjs
+admin_angular --> admin_echarts
+admin_angular --> admin_three
 
 mobile_expo --> mobile_rn
 mobile_rn --> mobile_ts
@@ -104,6 +117,7 @@ api_express --> api_express_jwt
 api_express --> api_swagger_jsdoc
 api_express --> api_swagger_ui
 api_express --> api_monitoring_pkg
+api_express --> api_bcryptjs
 api_serverless_http --> aws_lambda
 aws_lambda --> api_datadog_lambda
 api_mongoose --> mongodb

@@ -9,13 +9,15 @@ package "Web App (apps/web)" {
     component [Web App\nNext.js] as web_app
     component [UI Components\npackages/components] as web_ui_components
     component [State Store\nZustand] as web_state_store
-    component [API Client\nFetch/Axios] as web_api_client
+    component [API Client\nfetch (Next.js)] as web_api_client
+    component [API Proxy Route\nNext.js Route Handler] as web_api_proxy
 }
 
 package "Admin App (apps/admin)" {
     component [Admin App\nAngular] as admin_app
     component [Admin API Client\nAngular HttpClient] as admin_api_client
     component [Crawler Client\nAngular HttpClient] as admin_crawler_client
+    component [3D Viewer\nThree.js] as admin_3d_viewer
 }
 
 package "Mobile App (apps/mobile)" {
@@ -32,16 +34,18 @@ package "API Service (services/api)" {
     component [Routes\nproducts, cart, users, orders] as api_routes
     component [Controllers\nTypeScript] as api_controllers
     component [Models\nMongoose] as api_models
+    component [Payment Integration\npackages/payment-integration] as api_payment_pkg
 }
 
 package "Crawler Service (services/crawler)" {
     component [FastAPI App\nFastAPI] as crawler_api
     component [Job Store\nIn-memory] as crawler_store
-    component [Crawler Engine\nhttpx + bs4] as crawler_engine
+    component [Crawler Engine\nhttpx + BeautifulSoup4] as crawler_engine
 }
 
 package "Crawler CLI (apps/crawler-cli)" {
     component [Crawler CLI\nNode.js] as crawler_cli
+    component [HTML Parser\ncheerio] as crawler_cli_parser
 }
 
 package "Data Mining (services/data-mining)" {
@@ -52,6 +56,7 @@ package "Shared Packages (packages/*)" {
     component [Monitoring\npackages/monitoring] as pkg_monitoring
     component [Utils\npackages/utils] as pkg_utils
     component [Types\npackages/types] as pkg_types
+    component [Auth\npackages/auth] as pkg_auth
 }
 
 package "Interfaces" {
@@ -66,12 +71,15 @@ cloud "External Websites" as external_websites
 web_app --> web_ui_components
 web_app --> web_state_store
 web_app --> web_api_client
+web_app --> web_api_proxy
 web_app --> pkg_types
 web_app --> pkg_utils
 web_app --> pkg_monitoring
+web_app --> pkg_auth
 
 admin_app --> admin_api_client
 admin_app --> admin_crawler_client
+admin_app --> admin_3d_viewer
 admin_app --> pkg_types
 
 mobile_app --> mobile_api_client
@@ -81,6 +89,7 @@ mobile_app --> pkg_utils
 
 web_api_client --> rest_api
 web_api_client --> jwt_auth
+web_api_proxy --> rest_api
 admin_api_client --> rest_api
 admin_api_client --> jwt_auth
 mobile_api_client --> rest_api
@@ -92,6 +101,7 @@ api_app --> api_admin_auth
 api_app --> api_routes
 api_routes --> api_controllers
 api_controllers --> api_models
+api_controllers --> api_payment_pkg
 api_models --> mongodb
 api_app --> api_lambda
 
@@ -101,6 +111,7 @@ crawler_api --> crawler_engine
 crawler_engine --> external_websites
 
 crawler_cli --> external_websites
+crawler_cli --> crawler_cli_parser
 
 data_mining --> mongodb
 

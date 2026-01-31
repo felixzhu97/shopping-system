@@ -1,0 +1,11 @@
+Model Information:
+* title:	Nvidia Geforce RTX 3090 - GPU
+* source:	https://sketchfab.com/3d-models/nvidia-geforce-rtx-3090-gpu-22158616a1a44455917ee8e1e8fc4b09
+* author:	Muhammad Kholis (https://sketchfab.com/TissuGalon)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Nvidia Geforce RTX 3090 - GPU" (https://sketchfab.com/3d-models/nvidia-geforce-rtx-3090-gpu-22158616a1a44455917ee8e1e8fc4b09) by Muhammad Kholis (https://sketchfab.com/TissuGalon) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

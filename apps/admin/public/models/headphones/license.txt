@@ -1,0 +1,11 @@
+Model Information:
+* title:	headphones
+* source:	https://sketchfab.com/3d-models/headphones-57a86110023b4327a625d4b8a35a4d4e
+* author:	Azzzzzik (https://sketchfab.com/Azzzzzik)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "headphones" (https://sketchfab.com/3d-models/headphones-57a86110023b4327a625d4b8a35a4d4e) by Azzzzzik (https://sketchfab.com/Azzzzzik) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

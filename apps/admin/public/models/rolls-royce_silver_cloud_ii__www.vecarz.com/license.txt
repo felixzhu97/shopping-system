@@ -1,0 +1,11 @@
+Model Information:
+* title:	Rolls-Royce Silver Cloud II | www.vecarz.com
+* source:	https://sketchfab.com/3d-models/rolls-royce-silver-cloud-ii-wwwvecarzcom-5d284f4923584a618eb3784a1e29d47a
+* author:	vecarz (https://sketchfab.com/heynic)
+
+Model License:
+* license type:	CC-BY-NC-SA-4.0 (http://creativecommons.org/licenses/by-nc-sa/4.0/)
+* requirements:	Author must be credited. No commercial use. Modified versions must have the same license.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Rolls-Royce Silver Cloud II | www.vecarz.com" (https://sketchfab.com/3d-models/rolls-royce-silver-cloud-ii-wwwvecarzcom-5d284f4923584a618eb3784a1e29d47a) by vecarz (https://sketchfab.com/heynic) licensed under CC-BY-NC-SA-4.0 (http://creativecommons.org/licenses/by-nc-sa/4.0/)

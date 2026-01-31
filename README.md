@@ -7,20 +7,30 @@ A shopping system monorepo project based on Turborepo, including Web frontend, m
 ```
 shopping-system/
 ├── apps/
-│   ├── web/           # Next.js Web frontend application
-│   ├── mobile/        # React Native mobile application
+│   ├── admin/
+│   ├── crawler-cli/
+│   ├── mobile/
+│   └── web/
 ├── services/
-│   └── api/           # Express.js backend API service
+│   ├── api/
+│   ├── crawler/
+│   └── data-mining/
 ├── packages/
-│   ├── ui/            # UI component library
-│   └── shared/        # Shared utilities and types
-├── docs/              # Project documentation
-│   ├── api/           # API documentation
-│   ├── architecture/ # Architecture documentation
-│   ├── development/   # Development documentation
-│   ├── operations/    # Operations documentation
-│   └── project/       # Project documentation
-└── scripts/           # Utility scripts
+│   ├── auth/
+│   ├── components/
+│   ├── monitoring/
+│   ├── payment-integration/
+│   ├── scripts/
+│   ├── test-utils/
+│   ├── types/
+│   └── utils/
+├── docs/
+│   ├── api/
+│   ├── architecture/
+│   ├── development/
+│   ├── devops/
+│   └── project/
+└── scripts/
 ```
 
 ## Technology Stack
@@ -126,9 +136,9 @@ shopping-system/
 
 ![c4-context.svg](docs/svgs/c4-code.svg)
 
-## Database Relationships
+## TOGAF Data Architecture
 
-![ER-model.svg](docs/svgs/ER-model.svg)
+![togaf-data-architecture.svg](docs/svgs/togaf-data-architecture.svg)
 
 ## Configuration
 
@@ -250,10 +260,8 @@ pnpm install
 #### Install Mobile Application Dependencies Only
 
 ```bash
-cd apps/react-native-app
 yarn install
-# or
-pnpm install
+cd apps/mobile
 ```
 
 #### Install Backend API Dependencies Only
@@ -276,18 +284,16 @@ pnpm dev
 ```bash
 cd apps/web
 pnpm dev
-# Access at http://localhost:3000
 ```
 
 #### Start Mobile Application Only
 
 ```bash
-cd apps/react-native-app
+cd apps/mobile
 yarn start
-# or specify platform
-yarn ios      # iOS
-yarn android  # Android
-yarn web      # Web
+yarn ios
+yarn android
+yarn web
 ```
 
 #### Start Backend API Only
@@ -295,7 +301,6 @@ yarn web      # Web
 ```bash
 cd services/api
 pnpm dev
-# Access at http://localhost:3001
 ```
 
 ### Building the Project
@@ -316,11 +321,10 @@ pnpm build
 #### Build Mobile Application
 
 ```bash
-cd apps/react-native-app
-# Build using Expo
-expo build:android    # Android APK
-expo build:ios      # iOS
-expo build:web         # Web
+cd apps/mobile
+yarn android
+yarn ios
+yarn web
 ```
 
 #### Build Backend API
@@ -343,17 +347,17 @@ pnpm test
 ```bash
 cd apps/web
 pnpm test
-pnpm test:watch      # Watch mode
-pnpm test:coverage   # Coverage report
+pnpm test:watch
+pnpm test:coverage
 ```
 
 #### Run Mobile Application Tests
 
 ```bash
-cd apps/react-native-app
+cd apps/mobile
 yarn test
-yarn test:coverage   # Coverage report
-yarn test:watchAll   # Watch mode
+yarn test:coverage
+yarn test:watchAll
 ```
 
 #### Run Backend API Tests
@@ -371,8 +375,8 @@ pnpm test:coverage   # Coverage report
 
 ```bash
 pnpm lint
-pnpm lint:fix        # Auto-fix
-pnpm format          # Format code
+pnpm lint:fix
+pnpm format
 ```
 
 #### Check Web Frontend Code
@@ -385,7 +389,7 @@ pnpm lint
 #### Check Mobile Application Code
 
 ```bash
-cd apps/react-native-app
+cd apps/mobile
 yarn lint
 ```
 
@@ -424,18 +428,12 @@ The backend API provides various database seed scripts:
 
 ```bash
 cd packages/scripts
-
-# Initialize database with 200 products (development environment)
 pnpm seed:products200:dev
-
-# Initialize database with 200 products (test environment)
 pnpm seed:products200:test
-
-# Initialize database with 200 products (production environment)
 pnpm seed:products200:prod
 ```
 
-**Note**: Ensure that the corresponding environment variable files (`.env.local`, `.env.test`, or `.env.prod`) are properly configured before running seed scripts.
+Ensure that the corresponding environment variable files (`.env.local`, `.env.test`, or `.env.prod`) are properly configured before running seed scripts.
 
 ## System Architecture
 
@@ -443,10 +441,11 @@ Project architecture documentation and diagrams are located in the `docs/archite
 
 ### C4 Model
 
-- [C4 Context Diagram](docs/architecture/c4-context.puml) - System context
-- [C4 Container Diagram](docs/architecture/c4-container.puml) - Container architecture
-- [C4 Component Diagram](docs/architecture/c4-component.puml) - Component architecture
-- [C4 Code Diagram](docs/architecture/c4-code.puml) - Code architecture
+- [C4 Context Diagram](docs/architecture/c4/diagrams/c4-context.puml)
+- [C4 Container Diagram](docs/architecture/c4/diagrams/c4-container.puml)
+- [C4 Component Diagram](docs/architecture/c4/diagrams/c4-component.puml)
+- [C4 Code Diagram](docs/architecture/c4/diagrams/c4-code.puml)
+- [C4 Model](docs/architecture/c4/diagrams/c4-model.puml)
 
 ### TOGAF Architecture
 
@@ -462,14 +461,11 @@ Project architecture documentation and diagrams are located in the `docs/archite
 Create a `.env.local` file in the `apps/web` directory:
 
 ```env
-# Next.js configuration
 NEXTAUTH_SECRET=your_nextauth_secret_here
 NEXTAUTH_URL=http://localhost:3000
 
-# API address
 NEXT_PUBLIC_API_URL=http://localhost:3001
 
-# PostHog analytics (optional)
 NEXT_PUBLIC_POSTHOG_KEY=your_posthog_key
 NEXT_PUBLIC_POSTHOG_HOST=https://app.posthog.com
 ```
@@ -479,26 +475,21 @@ NEXT_PUBLIC_POSTHOG_HOST=https://app.posthog.com
 Create a `.env.local` file in the `services/api` directory:
 
 ```env
-# Database configuration
 MONGODB_URI=mongodb://localhost:27017/shopping-system-public
 
-# Server configuration
 PORT=3001
 NODE_ENV=development
 
-# JWT configuration
 JWT_SECRET=your_jwt_secret_here
 
-# CORS configuration
 CORS_ORIGINS=http://localhost:3000,http://localhost:8000
 
-# Admin configuration
 ADMIN_SECRET=your_admin_secret_here
 ```
 
 ### Mobile Application Environment Variables
 
-Mobile application environment variables are configured in `apps/react-native-app/src/constants/config.ts`. For detailed configuration, please refer to [apps/react-native-app/README.md](apps/react-native-app/README.md).
+Mobile application environment variables are configured in `apps/mobile/src/constants/config.ts`. For detailed configuration, please refer to [apps/mobile/README.md](apps/mobile/README.md).
 
 **Note**:
 
@@ -523,8 +514,8 @@ We welcome all forms of contributions! Please follow these steps:
 2. **Create a new branch from the protected branch**
 
    ```bash
-   git checkout master
-   git pull origin master
+   git checkout main
+   git pull origin main
    git checkout -b feat/your-feature-name
    ```
 
@@ -605,18 +596,16 @@ For more information, please refer to:
 ### Architecture Documentation
 
 - [Architecture Overview](docs/architecture/) - System architecture related documentation
-- [C4 Model](docs/architecture/c4-model.puml) - System architecture model
+- [C4 Model](docs/architecture/c4/diagrams/c4-model.puml) - System architecture model
 
-### Operations Documentation
+### DevOps Documentation
 
 - [Deployment Guide](docs/development/deployment-guide.md) - Deployment related instructions
-- [Operations Manual](docs/operations/operations-manual.md) - Operations manual
-- [Change Log](docs/operations/change-log.md) - Version change records
+- [DevOps Overview](docs/devops/README.md)
 
 ### Project Documentation
 
-- [Documentation Overview](docs/project/documentation-overview.md) - Documentation structure description
-- [Glossary](docs/project/glossary.md) - Project terminology definitions
+- [User Stories](docs/project/user-stories.md)
 
 ## License
 

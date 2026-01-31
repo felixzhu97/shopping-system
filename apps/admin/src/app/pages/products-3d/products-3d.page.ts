@@ -72,7 +72,6 @@ export class Products3dPage implements OnInit, OnDestroy {
   private readonly pointer = new THREE.Vector2();
 
   private stageGroup: THREE.Group | undefined;
-  private selectionRing: THREE.Mesh | undefined;
 
   private currentVisual: ProductVisual | undefined;
   private readonly modelCache = new Map<string, LoadedModel>();
@@ -126,7 +125,7 @@ export class Products3dPage implements OnInit, OnDestroy {
     });
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1;
+    renderer.toneMappingExposure = 2.5;
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
     renderer.setSize(host.clientWidth, host.clientHeight);
     renderer.shadowMap.enabled = true;
@@ -147,11 +146,11 @@ export class Products3dPage implements OnInit, OnDestroy {
     controls.maxDistance = 16;
     controls.target.set(0, 1.2, 0);
 
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.65);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.9);
     scene.add(ambientLight);
 
-    const keyLight = new THREE.DirectionalLight(0xffffff, 1.1);
-    keyLight.position.set(6, 10, 6);
+    const keyLight = new THREE.DirectionalLight(0xffffff, 1.45);
+    keyLight.position.set(7, 12, 6);
     keyLight.castShadow = true;
     keyLight.shadow.mapSize.width = 2048;
     keyLight.shadow.mapSize.height = 2048;
@@ -160,8 +159,8 @@ export class Products3dPage implements OnInit, OnDestroy {
     keyLight.shadow.radius = 4;
     scene.add(keyLight);
 
-    const fillLight = new THREE.DirectionalLight(0xffffff, 0.25);
-    fillLight.position.set(-6, 5, -4);
+    const fillLight = new THREE.DirectionalLight(0xffffff, 0.55);
+    fillLight.position.set(-7, 8, -5);
     scene.add(fillLight);
 
     const floor = new THREE.Mesh(
@@ -174,21 +173,6 @@ export class Products3dPage implements OnInit, OnDestroy {
 
     const stageGroup = new THREE.Group();
     scene.add(stageGroup);
-
-    const ring = new THREE.Mesh(
-      new THREE.RingGeometry(0.9, 1.15, 80),
-      new THREE.MeshBasicMaterial({
-        color: '#0176d3',
-        transparent: true,
-        opacity: 0.22,
-        depthWrite: false,
-      }),
-    );
-    ring.rotation.x = -Math.PI / 2;
-    ring.position.y = 0.002;
-    ring.visible = false;
-    ring.renderOrder = 2;
-    scene.add(ring);
 
     const onPointerMove = (event: PointerEvent) => this.onPointerMove(event);
     const onPointerDown = (event: PointerEvent) => this.onPointerDown(event);
@@ -206,7 +190,6 @@ export class Products3dPage implements OnInit, OnDestroy {
     this.controls = controls;
     this.resizeObserver = resizeObserver;
     this.stageGroup = stageGroup;
-    this.selectionRing = ring;
 
     this.animate();
   }
@@ -243,7 +226,6 @@ export class Products3dPage implements OnInit, OnDestroy {
     this.renderer = undefined;
     this.resizeObserver = undefined;
     this.stageGroup = undefined;
-    this.selectionRing = undefined;
   }
 
   private animate(): void {
@@ -308,7 +290,6 @@ export class Products3dPage implements OnInit, OnDestroy {
       this.currentVisual = { id: productId, object };
 
       this.focusOnObject(object);
-      this.updateSelectionRing(object);
     } catch {
       if (requestId !== this.modelRequestId) return;
       this.modelError.set(`Failed to load 3D model "${asset.key}". Verify assets under apps/admin/public/models/${asset.key}/`);
@@ -358,21 +339,6 @@ export class Products3dPage implements OnInit, OnDestroy {
     this.focusTarget.copy(center);
     this.focusCameraPosition.copy(center).add(direction.multiplyScalar(fitDist * 2.2));
     this.hasFocus = true;
-  }
-
-  private updateSelectionRing(object: THREE.Object3D): void {
-    const ring = this.selectionRing;
-    if (!ring) return;
-
-    const box = new THREE.Box3().setFromObject(object);
-    const size = box.getSize(new THREE.Vector3());
-    const center = box.getCenter(new THREE.Vector3());
-
-    const r = Math.max(size.x, size.z) * 0.62;
-    ring.position.x = center.x;
-    ring.position.z = center.z;
-    ring.scale.setScalar(Math.max(r, 0.7));
-    ring.visible = true;
   }
 
   private resize(): void {

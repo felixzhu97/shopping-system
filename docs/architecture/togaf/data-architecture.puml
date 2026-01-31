@@ -33,7 +33,7 @@ package "MongoDB Collections" {
 package "Data Access (services/api)" {
     component [Mongoose Models] as mongoose_models
     component [Schema Validation] as schema_validation
-    component [Password Hashing (bcrypt)] as password_hashing
+    component [Password Hashing (bcryptjs)] as password_hashing
 }
 
 package "Crawler Data (services/crawler)" {
