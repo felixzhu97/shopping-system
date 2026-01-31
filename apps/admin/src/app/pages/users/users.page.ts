@@ -41,7 +41,9 @@ export class UsersPage implements OnInit {
   protected readonly gridOptions: GridOptions<User> = {
     theme: adminGridTheme,
     animateRows: true,
-    rowSelection: 'single',
+    rowSelection: { mode: 'singleRow' },
+    rowHeight: 44,
+    headerHeight: 44,
   };
 
   protected readonly columnDefs: ColDef<User>[] = [

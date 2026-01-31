@@ -53,6 +53,8 @@ export class OrdersPage implements OnInit {
     theme: adminGridTheme,
     animateRows: true,
     stopEditingWhenCellsLoseFocus: true,
+    rowHeight: 44,
+    headerHeight: 44,
   };
 
   protected readonly columnDefs: ColDef<Order>[] = [
@@ -65,7 +67,7 @@ export class OrdersPage implements OnInit {
       },
       minWidth: 220,
     },
-    { field: 'totalAmount', headerName: 'Total', maxWidth: 160, type: 'rightAligned', valueFormatter: p => String(p.value ?? '') },
+    { field: 'totalAmount', headerName: 'Total', maxWidth: 160,  valueFormatter: p => String(p.value ?? '') },
     {
       field: 'status',
       headerName: 'Status',

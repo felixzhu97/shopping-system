@@ -22,8 +22,6 @@ export const adminGridTheme = themeQuartz.withParams({
     '"Salesforce Sans", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
   fontSize: 13,
   headerFontSize: 13,
-  headerHeight: 40,
-  rowHeight: 40,
   spacing: 8,
 });
 

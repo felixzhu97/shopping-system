@@ -1,6 +1,6 @@
 <div class="container-fluid">
   <div class="d-flex align-items-center justify-content-between mb-3">
-    <div class="h5 mb-0">Users</div>
+    <div class="h4 mb-0">Users</div>
     <div class="d-flex align-items-center gap-2">
       <input
         class="form-control form-control-sm"
@@ -16,6 +16,7 @@
   </div>
 
   <div class="card">
+    <div class="card-header">List</div>
     <div class="card-body">
       <div class="text-danger small mb-2" *ngIf="error()">{{ error() }}</div>
       <ag-grid-angular

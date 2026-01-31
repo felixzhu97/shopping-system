@@ -1,21 +1,58 @@
 <div class="app-shell">
-  <aside class="sidebar bg-white border-end">
-    <div class="fw-bold mb-3">Shopping Admin</div>
-    <nav class="nav flex-column gap-1">
-      <a class="nav-link px-2" routerLink="/products" routerLinkActive="active">Products</a>
-      <a class="nav-link px-2" routerLink="/orders" routerLinkActive="active">Orders</a>
-      <a class="nav-link px-2" routerLink="/users" routerLinkActive="active">Users</a>
-      <a class="nav-link px-2" routerLink="/crawler" routerLinkActive="active">Crawler</a>
-      <a class="nav-link px-2" routerLink="/analytics" routerLinkActive="active">Analytics</a>
+  <aside class="sf-nav">
+    <div class="sf-nav-brand">
+      <i class="bi bi-cloud-fill"></i>
+    </div>
+    <nav class="sf-nav-items">
+      <a class="sf-nav-item" routerLink="/products" routerLinkActive="active">
+        <i class="bi bi-box-seam"></i>
+        <span>Products</span>
+      </a>
+      <a class="sf-nav-item" routerLink="/orders" routerLinkActive="active">
+        <i class="bi bi-receipt"></i>
+        <span>Orders</span>
+      </a>
+      <a class="sf-nav-item" routerLink="/users" routerLinkActive="active">
+        <i class="bi bi-people"></i>
+        <span>Users</span>
+      </a>
+      <a class="sf-nav-item" routerLink="/crawler" routerLinkActive="active">
+        <i class="bi bi-bug"></i>
+        <span>Crawler</span>
+      </a>
+      <a class="sf-nav-item" routerLink="/analytics" routerLinkActive="active">
+        <i class="bi bi-graph-up"></i>
+        <span>Analytics</span>
+      </a>
     </nav>
+    <div class="sf-nav-footer">
+      <button class="sf-icon-btn" type="button" (click)="logout()" title="Logout">
+        <i class="bi bi-box-arrow-right"></i>
+      </button>
+    </div>
   </aside>
 
   <div class="content">
-    <header class="topbar bg-white border-bottom">
-      <div class="flex-grow-1"></div>
-      <div class="d-flex align-items-center gap-2">
-        <span class="text-muted small" *ngIf="email() as e">{{ e }}</span>
-        <button class="btn btn-outline-secondary btn-sm" type="button" (click)="logout()">Logout</button>
+    <header class="sf-topbar">
+      <div class="sf-topbar-left">
+        <div class="sf-app-name">Shopping Admin</div>
+      </div>
+
+      <div class="sf-topbar-center">
+        <div class="sf-search">
+          <i class="bi bi-search"></i>
+          <input class="form-control form-control-sm" placeholder="Search..." />
+        </div>
+      </div>
+
+      <div class="sf-topbar-right">
+        <button class="sf-icon-btn" type="button" title="New"><i class="bi bi-plus-lg"></i></button>
+        <button class="sf-icon-btn" type="button" title="Help"><i class="bi bi-question-circle"></i></button>
+        <button class="sf-icon-btn" type="button" title="Settings"><i class="bi bi-gear"></i></button>
+        <button class="sf-icon-btn" type="button" title="Notifications"><i class="bi bi-bell"></i></button>
+        <div class="sf-avatar" title="Profile">
+          <i class="bi bi-person-circle"></i>
+        </div>
       </div>
     </header>
 

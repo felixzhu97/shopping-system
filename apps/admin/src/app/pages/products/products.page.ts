@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AgGridAngular } from 'ag-grid-angular';
-import type { ColDef, GetRowIdParams, GridOptions, ICellRendererParams } from 'ag-grid-community';
+import type { AlignedGrid, ColDef, GetRowIdParams, GridOptions, ICellRendererParams } from 'ag-grid-community';
 
 import { ApiService, Product } from '../../core/api/api.service';
 import { AuthService } from '../../core/auth/auth.service';
@@ -48,30 +48,44 @@ export class ProductsPage implements OnInit {
     resizable: true,
     flex: 1,
     minWidth: 120,
+    cellStyle: {
+      display: "flex",
+      alignItems: "center", // Vertical center for all cells
+    },
   };
 
   protected readonly gridOptions: GridOptions<Product> = {
     theme: adminGridTheme,
     animateRows: true,
-    rowSelection: 'single',
+    rowSelection: { mode: 'singleRow' },
+    rowHeight: 44,
+    headerHeight: 44,
   };
 
   protected readonly columnDefs: ColDef<Product>[] = [
     { field: 'name', headerName: 'Name', minWidth: 220 },
-    { field: 'price', headerName: 'Price', maxWidth: 140, type: 'rightAligned', valueFormatter: p => String(p.value ?? '') },
+    { field: 'price', headerName: 'Price', maxWidth: 140,  valueFormatter: p => String(p.value ?? '') },
     { field: 'category', headerName: 'Category', minWidth: 180 },
-    { field: 'stock', headerName: 'Stock', maxWidth: 140, type: 'rightAligned', valueFormatter: p => String(p.value ?? '') },
+    { field: 'stock', headerName: 'Stock', maxWidth: 140,  valueFormatter: p => String(p.value ?? '') },
     {
       headerName: '',
-      maxWidth: 140,
+      minWidth: 72,
+      maxWidth: 72,
+      pinned: 'right',
       sortable: false,
       filter: false,
       resizable: false,
+      cellClass: 'sf-grid-actions-cell',
       cellRenderer: (params: ICellRendererParams<Product>) => {
         const button = document.createElement('button');
         button.type = 'button';
-        button.className = 'btn btn-sm btn-outline-danger';
-        button.textContent = 'Delete';
+        button.className = 'sf-grid-action';
+        button.title = 'Delete';
+
+        const icon = document.createElement('i');
+        icon.className = 'bi bi-trash';
+        button.appendChild(icon);
+
         button.addEventListener('click', () => this.remove(this.getId(params.data ?? {})));
         return button;
       },
