@@ -1,28 +1,25 @@
-<div class="layout">
-  <aside class="sidebar">
-    <div class="brand">Shopping Admin</div>
-    <nav class="nav">
-      <a routerLink="/products" routerLinkActive="active">Products</a>
-      <a routerLink="/orders" routerLinkActive="active">Orders</a>
-      <a routerLink="/users" routerLinkActive="active">Users</a>
-      <a routerLink="/crawler" routerLinkActive="active">Crawler</a>
-      <a routerLink="/analytics" routerLinkActive="active">Analytics</a>
+<div class="app-shell">
+  <aside class="sidebar bg-white border-end">
+    <div class="fw-bold mb-3">Shopping Admin</div>
+    <nav class="nav flex-column gap-1">
+      <a class="nav-link px-2" routerLink="/products" routerLinkActive="active">Products</a>
+      <a class="nav-link px-2" routerLink="/orders" routerLinkActive="active">Orders</a>
+      <a class="nav-link px-2" routerLink="/users" routerLinkActive="active">Users</a>
+      <a class="nav-link px-2" routerLink="/crawler" routerLinkActive="active">Crawler</a>
+      <a class="nav-link px-2" routerLink="/analytics" routerLinkActive="active">Analytics</a>
     </nav>
   </aside>
 
   <div class="content">
-    <header class="topbar">
-      <div class="spacer"></div>
-      <div class="meta" *ngIf="email() as e">
-        <span class="email" *ngIf="e">{{ e }}</span>
-        <button class="btn" type="button" (click)="logout()">Logout</button>
-      </div>
-      <div class="meta" *ngIf="!email()">
-        <button class="btn" type="button" (click)="logout()">Logout</button>
+    <header class="topbar bg-white border-bottom">
+      <div class="flex-grow-1"></div>
+      <div class="d-flex align-items-center gap-2">
+        <span class="text-muted small" *ngIf="email() as e">{{ e }}</span>
+        <button class="btn btn-outline-secondary btn-sm" type="button" (click)="logout()">Logout</button>
       </div>
     </header>
 
-    <main class="main">
+    <main class="p-3">
       <router-outlet></router-outlet>
     </main>
   </div>

@@ -1,52 +1,62 @@
-<div class="page">
-  <div class="header">
-    <div class="title">Crawler</div>
-    <div class="actions">
-      <button class="btn primary" type="button" (click)="createJob()" [disabled]="loading() || form.invalid">
+<div class="container-fluid">
+  <div class="d-flex align-items-center justify-content-between mb-3">
+    <div class="h5 mb-0">Crawler</div>
+    <div class="d-flex flex-wrap gap-2">
+      <button class="btn btn-primary btn-sm" type="button" (click)="createJob()" [disabled]="loading() || form.invalid">
         {{ loading() ? 'Working...' : 'Create job' }}
       </button>
-      <button class="btn" type="button" (click)="refreshJob()" [disabled]="loading() || !form.controls.jobId.value">
+      <button class="btn btn-outline-secondary btn-sm" type="button" (click)="refreshJob()" [disabled]="loading() || !form.controls.jobId.value">
         Refresh status
       </button>
-      <button class="btn" type="button" (click)="fetchItems()" [disabled]="loading() || !form.controls.jobId.value">
+      <button class="btn btn-outline-secondary btn-sm" type="button" (click)="fetchItems()" [disabled]="loading() || !form.controls.jobId.value">
         Fetch items
       </button>
     </div>
   </div>
 
-  <div class="card">
-    <div class="card-title">Connection</div>
-    <div class="row">
-      <label class="field">
-        <div class="label">Crawler base URL</div>
-        <input [formControl]="form.controls.baseUrl" />
-      </label>
-      <label class="field">
-        <div class="label">Job ID</div>
-        <input [formControl]="form.controls.jobId" placeholder="Paste a job id" />
-      </label>
-    </div>
-  </div>
-
-  <div class="grid">
-    <div class="card">
-      <div class="card-title">Request body (JSON)</div>
-      <textarea class="textarea" [formControl]="form.controls.requestBody" spellcheck="false"></textarea>
-    </div>
-
-    <div class="card">
-      <div class="card-title">Response</div>
-      <div class="section">
-        <div class="section-title">Job</div>
-        <pre class="pre">{{ job() | json }}</pre>
-      </div>
-      <div class="section">
-        <div class="section-title">Items</div>
-        <pre class="pre">{{ items() | json }}</pre>
+  <div class="card mb-3">
+    <div class="card-body">
+      <div class="fw-semibold mb-3">Connection</div>
+      <div class="row g-2">
+        <div class="col-12 col-md-6">
+          <label class="form-label">Crawler base URL</label>
+          <input class="form-control form-control-sm" [formControl]="form.controls.baseUrl" />
+        </div>
+        <div class="col-12 col-md-6">
+          <label class="form-label">Job ID</label>
+          <input class="form-control form-control-sm" [formControl]="form.controls.jobId" placeholder="Paste a job id" />
+        </div>
       </div>
     </div>
   </div>
 
-  <div class="error" *ngIf="error()">{{ error() }}</div>
+  <div class="row g-3">
+    <div class="col-12 col-lg-6">
+      <div class="card h-100">
+        <div class="card-body">
+          <div class="fw-semibold mb-3">Request body (JSON)</div>
+          <textarea class="form-control font-monospace textarea" [formControl]="form.controls.requestBody" spellcheck="false"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-lg-6">
+      <div class="card h-100">
+        <div class="card-body">
+          <div class="fw-semibold mb-3">Response</div>
+          <div class="mb-3">
+            <div class="text-muted small mb-1">Job</div>
+            <pre class="border rounded p-2 bg-light pre">{{ job() | json }}</pre>
+          </div>
+          <div>
+            <div class="text-muted small mb-1">Items</div>
+            <pre class="border rounded p-2 bg-light pre">{{ items() | json }}</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="text-danger small mt-3" *ngIf="error()">{{ error() }}</div>
 </div>
 

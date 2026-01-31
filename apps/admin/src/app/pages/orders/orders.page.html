@@ -1,13 +1,15 @@
-<div class="page">
-  <div class="header">
-    <div class="title">Orders</div>
-    <div class="actions">
+<div class="container-fluid">
+  <div class="d-flex align-items-center justify-content-between mb-3">
+    <div class="h5 mb-0">Orders</div>
+    <div class="d-flex align-items-center gap-2">
       <input
+        class="form-control form-control-sm"
+        style="width: 240px;"
         [value]="search()"
         (input)="setSearch(($any($event.target)).value)"
         placeholder="Search orders"
       />
-      <select class="select" [value]="status()" (change)="setStatus(($any($event.target)).value)">
+      <select class="form-select form-select-sm" style="width: 180px;" [value]="status()" (change)="setStatus(($any($event.target)).value)">
         <option value="all">all</option>
         <option value="pending">pending</option>
         <option value="processing">processing</option>
@@ -15,22 +17,23 @@
         <option value="delivered">delivered</option>
         <option value="cancelled">cancelled</option>
       </select>
-      <button class="btn" type="button" (click)="refresh()" [disabled]="loading()">Refresh</button>
+      <button class="btn btn-outline-secondary btn-sm" type="button" (click)="refresh()" [disabled]="loading()">Refresh</button>
     </div>
   </div>
 
   <div class="card">
-    <div class="error" *ngIf="error()">{{ error() }}</div>
-
-    <ag-grid-angular
-      class="ag-theme-quartz grid"
-      [gridOptions]="gridOptions"
-      [rowData]="filteredOrders()"
-      [columnDefs]="columnDefs"
-      [defaultColDef]="defaultColDef"
-      [getRowId]="getRowId"
-      (cellValueChanged)="onCellValueChanged($event)"
-    />
+    <div class="card-body">
+      <div class="text-danger small mb-2" *ngIf="error()">{{ error() }}</div>
+      <ag-grid-angular
+        class="ag-theme-quartz grid"
+        [gridOptions]="gridOptions"
+        [rowData]="filteredOrders()"
+        [columnDefs]="columnDefs"
+        [defaultColDef]="defaultColDef"
+        [getRowId]="getRowId"
+        (cellValueChanged)="onCellValueChanged($event)"
+      />
+    </div>
   </div>
 </div>
 

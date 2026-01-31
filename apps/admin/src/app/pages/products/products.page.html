@@ -1,52 +1,62 @@
-<div class="page">
-  <div class="header">
-    <div class="title">Products</div>
-    <div class="actions">
+<div class="container-fluid">
+  <div class="d-flex align-items-center justify-content-between mb-3">
+    <div class="h5 mb-0">Products</div>
+    <div class="d-flex align-items-center gap-2">
       <input
+        class="form-control form-control-sm"
+        style="width: 240px;"
         [value]="search()"
         (input)="setSearch(($any($event.target)).value)"
         placeholder="Search products"
       />
-      <button class="btn" type="button" (click)="refresh()" [disabled]="loading()">Refresh</button>
+      <button class="btn btn-outline-secondary btn-sm" type="button" (click)="refresh()" [disabled]="loading()">
+        Refresh
+      </button>
+    </div>
+  </div>
+
+  <div class="card mb-3">
+    <div class="card-body">
+      <div class="fw-semibold mb-3">Create Product</div>
+      <form class="row g-2 align-items-end" [formGroup]="form" (ngSubmit)="create()">
+        <div class="col-12 col-md-3">
+          <label class="form-label">Name</label>
+          <input class="form-control form-control-sm" formControlName="name" />
+        </div>
+        <div class="col-6 col-md-2">
+          <label class="form-label">Price</label>
+          <input class="form-control form-control-sm" formControlName="price" type="number" />
+        </div>
+        <div class="col-6 col-md-3">
+          <label class="form-label">Category</label>
+          <input class="form-control form-control-sm" formControlName="category" />
+        </div>
+        <div class="col-6 col-md-2">
+          <label class="form-label">Stock</label>
+          <input class="form-control form-control-sm" formControlName="stock" type="number" />
+        </div>
+        <div class="col-6 col-md-2">
+          <button class="btn btn-primary btn-sm w-100" type="submit" [disabled]="loading() || form.invalid">
+            {{ loading() ? 'Saving...' : 'Create' }}
+          </button>
+        </div>
+      </form>
+      <div class="text-danger small mt-2" *ngIf="error()">{{ error() }}</div>
     </div>
   </div>
 
   <div class="card">
-    <div class="card-title">Create Product</div>
-    <form class="form" [formGroup]="form" (ngSubmit)="create()">
-      <label class="field">
-        <div class="label">Name</div>
-        <input formControlName="name" />
-      </label>
-      <label class="field">
-        <div class="label">Price</div>
-        <input formControlName="price" type="number" />
-      </label>
-      <label class="field">
-        <div class="label">Category</div>
-        <input formControlName="category" />
-      </label>
-      <label class="field">
-        <div class="label">Stock</div>
-        <input formControlName="stock" type="number" />
-      </label>
-      <button class="btn primary" type="submit" [disabled]="loading() || form.invalid">
-        {{ loading() ? 'Saving...' : 'Create' }}
-      </button>
-    </form>
-    <div class="error" *ngIf="error()">{{ error() }}</div>
-  </div>
-
-  <div class="card">
-    <div class="card-title">List</div>
-    <ag-grid-angular
-      class="ag-theme-quartz grid"
-      [gridOptions]="gridOptions"
-      [rowData]="filteredProducts()"
-      [columnDefs]="columnDefs"
-      [defaultColDef]="defaultColDef"
-      [getRowId]="getRowId"
-    />
+    <div class="card-body">
+      <div class="fw-semibold mb-3">List</div>
+      <ag-grid-angular
+        class="ag-theme-quartz grid"
+        [gridOptions]="gridOptions"
+        [rowData]="filteredProducts()"
+        [columnDefs]="columnDefs"
+        [defaultColDef]="defaultColDef"
+        [getRowId]="getRowId"
+      />
+    </div>
   </div>
 </div>
 

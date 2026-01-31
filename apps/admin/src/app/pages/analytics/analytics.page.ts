@@ -111,7 +111,6 @@ export class AnalyticsPage implements OnInit, OnDestroy {
     private readonly api: ApiService,
     private readonly auth: AuthService
   ) {
-    // Keep charts in sync with data changes.
     effect(() => {
       this.renderCharts();
     });
@@ -164,13 +163,20 @@ export class AnalyticsPage implements OnInit, OnDestroy {
 
     const hasData = this.totalOrders() > 0;
 
+    const palette = {
+      text: '#181818',
+      border: '#d8dde6',
+      accent: '#0176d3',
+      accentArea: 'rgba(1, 118, 211, 0.12)',
+    };
+
     this.statusChart.setOption(
       {
         backgroundColor: 'transparent',
         tooltip: { trigger: 'item' },
         legend: {
           top: 0,
-          textStyle: { color: '#e7eaf3' },
+          textStyle: { color: palette.text },
         },
         series: [
           {
@@ -179,7 +185,7 @@ export class AnalyticsPage implements OnInit, OnDestroy {
             radius: ['40%', '70%'],
             center: ['50%', '58%'],
             avoidLabelOverlap: true,
-            label: { color: '#e7eaf3' },
+            label: { color: palette.text },
             emphasis: { label: { fontWeight: 'bold' } },
             data: hasData ? statusData : [{ name: 'No data', value: 1 }],
           },
@@ -197,13 +203,13 @@ export class AnalyticsPage implements OnInit, OnDestroy {
         xAxis: {
           type: 'category',
           data: revenue.days,
-          axisLabel: { color: '#e7eaf3' },
-          axisLine: { lineStyle: { color: 'rgba(231, 234, 243, 0.25)' } },
+          axisLabel: { color: palette.text },
+          axisLine: { lineStyle: { color: palette.border } },
         },
         yAxis: {
           type: 'value',
-          axisLabel: { color: '#e7eaf3' },
-          splitLine: { lineStyle: { color: 'rgba(231, 234, 243, 0.12)' } },
+          axisLabel: { color: palette.text },
+          splitLine: { lineStyle: { color: palette.border } },
         },
         series: [
           {
@@ -211,8 +217,8 @@ export class AnalyticsPage implements OnInit, OnDestroy {
             type: 'line',
             smooth: true,
             showSymbol: false,
-            lineStyle: { width: 3, color: '#748fff' },
-            areaStyle: { color: 'rgba(116, 143, 255, 0.18)' },
+            lineStyle: { width: 3, color: palette.accent },
+            areaStyle: { color: palette.accentArea },
             data: hasData ? revenue.totals : [],
           },
         ],

@@ -1,34 +1,41 @@
-<div class="page">
-  <div class="card">
-    <div class="title">Admin Login</div>
+<div class="min-vh-100 d-flex align-items-center justify-content-center p-3">
+  <div class="card shadow-sm" style="width: 100%; max-width: 420px;">
+    <div class="card-body">
+      <div class="h5 mb-3">Admin Login</div>
 
-    <form [formGroup]="form" (ngSubmit)="submit()" class="form">
-      <label class="field">
-        <div class="label">API Base URL</div>
-        <input formControlName="apiBaseUrl" placeholder="http://localhost:3001" />
-      </label>
+      <form [formGroup]="form" (ngSubmit)="submit()" class="d-grid gap-3">
+        <div>
+          <label class="form-label">API Base URL</label>
+          <input class="form-control" formControlName="apiBaseUrl" placeholder="http://localhost:3001" />
+        </div>
 
-      <label class="field">
-        <div class="label">Admin Secret</div>
-        <input formControlName="adminSecret" placeholder="ADMIN_SECRET" />
-      </label>
+        <div>
+          <label class="form-label">Admin Secret</label>
+          <input class="form-control" formControlName="adminSecret" placeholder="ADMIN_SECRET" />
+        </div>
 
-      <label class="field">
-        <div class="label">Email or Phone</div>
-        <input formControlName="emailOrPhone" autocomplete="username" />
-      </label>
+        <div>
+          <label class="form-label">Email or Phone</label>
+          <input class="form-control" formControlName="emailOrPhone" autocomplete="username" />
+        </div>
 
-      <label class="field">
-        <div class="label">Password</div>
-        <input formControlName="password" type="password" autocomplete="current-password" />
-      </label>
+        <div>
+          <label class="form-label">Password</label>
+          <input
+            class="form-control"
+            formControlName="password"
+            type="password"
+            autocomplete="current-password"
+          />
+        </div>
 
-      <button class="btn" type="submit" [disabled]="loading() || form.invalid">
-        {{ loading() ? 'Signing in...' : 'Sign in' }}
-      </button>
+        <button class="btn btn-primary" type="submit" [disabled]="loading() || form.invalid">
+          {{ loading() ? 'Signing in...' : 'Sign in' }}
+        </button>
 
-      <div class="error" *ngIf="error()">{{ error() }}</div>
-    </form>
+        <div class="text-danger small" *ngIf="error()">{{ error() }}</div>
+      </form>
+    </div>
   </div>
 </div>
 

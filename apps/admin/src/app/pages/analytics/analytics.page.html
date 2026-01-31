@@ -1,34 +1,52 @@
-<div class="page">
-  <div class="header">
-    <div class="title">Analytics</div>
-    <div class="actions">
-      <button class="btn" type="button" (click)="refresh()" [disabled]="loading()">Refresh</button>
-    </div>
+<div class="container-fluid">
+  <div class="d-flex align-items-center justify-content-between mb-3">
+    <div class="h5 mb-0">Analytics</div>
+    <button class="btn btn-outline-secondary btn-sm" type="button" (click)="refresh()" [disabled]="loading()">
+      Refresh
+    </button>
   </div>
 
   <div class="card">
-    <div class="error" *ngIf="error()">{{ error() }}</div>
+    <div class="card-body">
+      <div class="text-danger small mb-2" *ngIf="error()">{{ error() }}</div>
 
-    <div class="kpis">
-      <div class="kpi">
-        <div class="kpi-label">Total orders</div>
-        <div class="kpi-value">{{ totalOrders() }}</div>
+      <div class="row g-2">
+        <div class="col-12 col-md-6">
+          <div class="card bg-light border-0">
+            <div class="card-body">
+              <div class="text-muted small">Total orders</div>
+              <div class="h3 mb-0">{{ totalOrders() }}</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-md-6">
+          <div class="card bg-light border-0">
+            <div class="card-body">
+              <div class="text-muted small">Total revenue</div>
+              <div class="h3 mb-0">{{ totalRevenue() | number : '1.0-2' }}</div>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="kpi">
-        <div class="kpi-label">Total revenue</div>
-        <div class="kpi-value">{{ totalRevenue() | number : '1.0-2' }}</div>
-      </div>
-    </div>
 
-    <div class="grid">
-      <div class="section">
-        <div class="section-title">Orders by status</div>
-        <div class="chart" #statusChart></div>
-      </div>
+      <div class="row g-3 mt-1">
+        <div class="col-12 col-lg-6">
+          <div class="card bg-light border-0 h-100">
+            <div class="card-body">
+              <div class="fw-semibold mb-2">Orders by status</div>
+              <div class="chart" #statusChart></div>
+            </div>
+          </div>
+        </div>
 
-      <div class="section">
-        <div class="section-title">Revenue over time</div>
-        <div class="chart" #revenueChart></div>
+        <div class="col-12 col-lg-6">
+          <div class="card bg-light border-0 h-100">
+            <div class="card-body">
+              <div class="fw-semibold mb-2">Revenue over time</div>
+              <div class="chart" #revenueChart></div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>

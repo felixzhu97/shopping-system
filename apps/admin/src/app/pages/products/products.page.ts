@@ -70,7 +70,7 @@ export class ProductsPage implements OnInit {
       cellRenderer: (params: ICellRendererParams<Product>) => {
         const button = document.createElement('button');
         button.type = 'button';
-        button.className = 'btn danger';
+        button.className = 'btn btn-sm btn-outline-danger';
         button.textContent = 'Delete';
         button.addEventListener('click', () => this.remove(this.getId(params.data ?? {})));
         return button;

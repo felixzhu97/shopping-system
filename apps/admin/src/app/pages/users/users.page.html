@@ -1,27 +1,32 @@
-<div class="page">
-  <div class="header">
-    <div class="title">Users</div>
-    <div class="actions">
+<div class="container-fluid">
+  <div class="d-flex align-items-center justify-content-between mb-3">
+    <div class="h5 mb-0">Users</div>
+    <div class="d-flex align-items-center gap-2">
       <input
+        class="form-control form-control-sm"
+        style="width: 240px;"
         [value]="search()"
         (input)="setSearch(($any($event.target)).value)"
         placeholder="Search users"
       />
-      <button class="btn" type="button" (click)="refresh()" [disabled]="loading()">Refresh</button>
+      <button class="btn btn-outline-secondary btn-sm" type="button" (click)="refresh()" [disabled]="loading()">
+        Refresh
+      </button>
     </div>
   </div>
 
   <div class="card">
-    <div class="error" *ngIf="error()">{{ error() }}</div>
-
-    <ag-grid-angular
-      class="ag-theme-quartz grid"
-      [gridOptions]="gridOptions"
-      [rowData]="filteredUsers()"
-      [columnDefs]="columnDefs"
-      [defaultColDef]="defaultColDef"
-      [getRowId]="getRowId"
-    />
+    <div class="card-body">
+      <div class="text-danger small mb-2" *ngIf="error()">{{ error() }}</div>
+      <ag-grid-angular
+        class="ag-theme-quartz grid"
+        [gridOptions]="gridOptions"
+        [rowData]="filteredUsers()"
+        [columnDefs]="columnDefs"
+        [defaultColDef]="defaultColDef"
+        [getRowId]="getRowId"
+      />
+    </div>
   </div>
 </div>
 
