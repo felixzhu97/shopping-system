@@ -158,15 +158,23 @@ export const cancelOrder = async (req: any, res: any) => {
     }
 
     order.status = 'cancelled';
-    const updatedOrder = await order.save();
+    let updatedOrder: any;
+    try {
+      updatedOrder = await order.save();
+    } catch (e) {
+      return res.status(500).json({
+        success: false,
+        message: 'Failed to cancel order',
+        error: 'Error saving order status',
+      });
+    }
 
-    await Promise.all(
-      order.items.map(item =>
-        Product.findByIdAndUpdate(item.productId, {
-          $inc: { stock: item.quantity },
-        })
-      )
-    );
+    for (const item of order.items) {
+      const product = await Product.findById(item.productId);
+      if (!product) continue;
+      product.stock += item.quantity;
+      await product.save();
+    }
 
     res.status(200).json({
       success: true,

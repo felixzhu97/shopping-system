@@ -23,8 +23,13 @@ export function adminAuth(req: Request, res: Response, next: NextFunction): void
     return;
   }
 
-  if (!adminSecret || adminSecret !== configuredSecret) {
-    res.status(403).json({ message: 'Forbidden' });
+  if (!adminSecret) {
+    res.status(403).json({ message: 'Missing admin-secret header' });
+    return;
+  }
+
+  if (adminSecret !== configuredSecret) {
+    res.status(403).json({ message: 'Invalid admin secret' });
     return;
   }
 

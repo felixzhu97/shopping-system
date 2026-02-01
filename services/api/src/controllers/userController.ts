@@ -10,12 +10,12 @@ export const register = async (req: any, res: any) => {
     const existingUser = await User.findOne({ $or: [{ email }, { phone }] });
 
     if (existingUser) {
-      return res.status(400 as number).json({ message: 'Email or phone is already in use' });
+      return res.status(400 as number).json({ message: '邮箱或手机号已被使用' });
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      return res.status(400 as number).json({ message: 'Invalid email address' });
+      return res.status(400 as number).json({ message: '请输入有效的邮箱地址' });
     }
 
     const user = new User({
@@ -41,7 +41,7 @@ export const register = async (req: any, res: any) => {
     res.status(201 as number).json(userResponse);
   } catch (error) {
     console.error('Failed to register user:', error);
-    res.status(500 as number).json({ message: 'Failed to register user' });
+    res.status(500 as number).json({ message: '注册失败' });
   }
 };
 
@@ -49,19 +49,19 @@ export const login = async (req: any, res: any) => {
   try {
     const { emailOrPhone, password } = req.body as UserLogin;
     if (!emailOrPhone || !password) {
-      return res.status(400 as number).json({ message: 'Missing credentials' });
+      return res.status(400 as number).json({ message: '缺少账号或密码' });
     }
 
     const user = await User.findOne({ $or: [{ email: emailOrPhone }, { phone: emailOrPhone }] });
 
     if (!user) {
-      return res.status(401 as number).json({ message: 'Invalid credentials' });
+      return res.status(401 as number).json({ message: '账号或密码错误，请重新输入' });
     }
 
     const isValidPassword = await (user as any).comparePassword(password);
 
     if (!isValidPassword) {
-      return res.status(401 as number).json({ message: 'Invalid credentials' });
+      return res.status(401 as number).json({ message: '账号或密码错误，请重新输入' });
     }
 
     const jwtSecret = getJwtSecret();
@@ -80,7 +80,7 @@ export const login = async (req: any, res: any) => {
     res.status(200 as number).json(userResponse);
   } catch (error) {
     console.error('Failed to login user:', error);
-    res.status(500 as number).json({ message: 'Failed to login user' });
+    res.status(500 as number).json({ message: '登录失败' });
   }
 };
 
@@ -91,7 +91,7 @@ export const getUserById = async (req: any, res: any) => {
     const user = await User.findById(id).select('-password');
 
     if (!user) {
-      return res.status(404 as number).json({ message: 'User not found' });
+      return res.status(404 as number).json({ message: '用户不存在' });
     }
 
     const userObj: any = user.toObject();
@@ -104,7 +104,7 @@ export const getUserById = async (req: any, res: any) => {
     res.status(200 as number).json(userObj);
   } catch (error) {
     console.error('Failed to fetch user:', error);
-    res.status(500 as number).json({ message: 'Failed to fetch user' });
+    res.status(500 as number).json({ message: '获取用户信息失败' });
   }
 };
 
@@ -126,20 +126,20 @@ export const updateUser = async (req: any, res: any) => {
     const user = await User.findById(id);
 
     if (!user) {
-      return res.status(404 as number).json({ message: 'User not found' });
+      return res.status(404 as number).json({ message: '用户不存在' });
     }
 
     if (phone && phone !== user.phone) {
       const existingPhone = await User.findOne({ phone });
       if (existingPhone) {
-        return res.status(400 as number).json({ message: 'Phone is already in use' });
+        return res.status(400 as number).json({ message: '手机号已被使用' });
       }
     }
 
     if (email && email !== user.email) {
       const existingEmail = await User.findOne({ email });
       if (existingEmail) {
-        return res.status(400 as number).json({ message: 'Email is already in use' });
+        return res.status(400 as number).json({ message: '邮箱已被使用' });
       }
     }
 
@@ -161,7 +161,7 @@ export const updateUser = async (req: any, res: any) => {
     res.status(200 as number).json(updatedUser);
   } catch (error) {
     console.error('Failed to update user:', error);
-    res.status(500 as number).json({ message: 'Failed to update user' });
+    res.status(500 as number).json({ message: '更新用户信息失败' });
   }
 };
 
@@ -171,16 +171,16 @@ export const resetPassword = async (req: any, res: any) => {
 
     const user = await User.findOne({ $or: [{ email: emailOrPhone }, { phone: emailOrPhone }] });
     if (!user) {
-      return res.status(404 as number).json({ message: 'Email or phone not found' });
+      return res.status(404 as number).json({ message: '邮箱或手机号不存在' });
     }
 
     user.password = newPassword;
     await user.save();
 
-    res.status(200 as number).json({ message: 'Password updated' });
+    res.status(200 as number).json({ message: '密码更新成功' });
   } catch (error) {
     console.error('Failed to reset password:', error);
-    res.status(500 as number).json({ message: 'Failed to reset password' });
+    res.status(500 as number).json({ message: '重置密码失败' });
   }
 };
 
@@ -189,6 +189,6 @@ export const getAllUsers = async (req: any, res: any) => {
     const users = await User.find().select('-password').sort({ createdAt: -1 });
     res.status(200 as number).json(users);
   } catch (error) {
-    res.status(500 as number).json({ message: 'Failed to load users' });
+    res.status(500 as number).json({ message: '获取用户列表失败' });
   }
 };

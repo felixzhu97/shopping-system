@@ -1,0 +1,4 @@
+name,description,price,image,category,stock,modelKey,originalPrice,inStock,rating,reviewCount
+Ceramic Coffee Mug,12oz ceramic mug with a matte glaze,12.99,https://example.com/images/mug.png,Home & Kitchen,25,mug-12oz,15.99,true,4.6,128
+USB-C Cable 1m,Braided USB-C to USB-C cable,8.5,https://example.com/images/usb-cable.png,Electronics,100,cable-usbc-1m,10.0,true,4.3,541
+Running Socks (3-Pack),Breathable ankle socks pack,14.0,https://example.com/images/socks.png,Clothing,60,socks-3pack,,true,4.1,89

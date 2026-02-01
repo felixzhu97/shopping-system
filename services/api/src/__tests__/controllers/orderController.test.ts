@@ -162,7 +162,7 @@ describe('Order Controller', () => {
 
       expect(mockRes.status).toHaveBeenCalledWith(404);
       expect(mockRes.json).toHaveBeenCalledWith({
-        message: '用户不存在',
+        message: 'User not found',
       });
     });
 
@@ -179,8 +179,8 @@ describe('Order Controller', () => {
 
       expect(mockRes.status).toHaveBeenCalledWith(500);
       expect(mockRes.json).toHaveBeenCalledWith({
-        message: '创建订单失败',
-        error: '商品不存在: non-existent-product',
+        message: 'Failed to create order',
+        error: 'Product not found: non-existent-product',
       });
     });
 
@@ -196,7 +196,7 @@ describe('Order Controller', () => {
 
       expect(mockRes.status).toHaveBeenCalledWith(500);
       expect(mockRes.json).toHaveBeenCalledWith({
-        message: '创建订单失败',
+        message: 'Failed to create order',
         error: 'Database error',
       });
     });
@@ -242,7 +242,7 @@ describe('Order Controller', () => {
 
       expect(mockRes.status).toHaveBeenCalledWith(500);
       expect(mockRes.json).toHaveBeenCalledWith({
-        message: '获取用户订单失败',
+        message: 'Failed to fetch user orders',
       });
     });
   });
@@ -276,7 +276,7 @@ describe('Order Controller', () => {
 
       expect(mockRes.status).toHaveBeenCalledWith(404);
       expect(mockRes.json).toHaveBeenCalledWith({
-        message: '订单不存在',
+        message: 'Order not found',
       });
     });
 
@@ -289,7 +289,7 @@ describe('Order Controller', () => {
 
       expect(mockRes.status).toHaveBeenCalledWith(500);
       expect(mockRes.json).toHaveBeenCalledWith({
-        message: '获取订单详情失败',
+        message: 'Failed to fetch order',
       });
     });
   });
@@ -324,7 +324,7 @@ describe('Order Controller', () => {
 
       expect(mockRes.status).toHaveBeenCalledWith(400);
       expect(mockRes.json).toHaveBeenCalledWith({
-        message: '无效的订单状态',
+        message: 'Invalid order status',
       });
     });
 
@@ -338,7 +338,7 @@ describe('Order Controller', () => {
 
       expect(mockRes.status).toHaveBeenCalledWith(404);
       expect(mockRes.json).toHaveBeenCalledWith({
-        message: '订单不存在',
+        message: 'Order not found',
       });
     });
 
@@ -422,7 +422,7 @@ describe('Order Controller', () => {
 
       expect(mockRes.status).toHaveBeenCalledWith(500);
       expect(mockRes.json).toHaveBeenCalledWith({
-        message: '获取所有订单失败',
+        message: 'Failed to fetch orders',
       });
     });
   });
@@ -481,7 +481,7 @@ describe('Order Controller', () => {
       expect(mockRes.status).toHaveBeenCalledWith(404);
       expect(mockRes.json).toHaveBeenCalledWith({
         success: false,
-        message: '订单不存在',
+        message: 'Order not found',
       });
     });
 
@@ -500,7 +500,7 @@ describe('Order Controller', () => {
       expect(mockRes.status).toHaveBeenCalledWith(400);
       expect(mockRes.json).toHaveBeenCalledWith({
         success: false,
-        message: '只有待处理的订单可以取消',
+        message: 'Only pending orders can be cancelled',
       });
     });
 
@@ -521,8 +521,8 @@ describe('Order Controller', () => {
       expect(mockRes.status).toHaveBeenCalledWith(500);
       expect(mockRes.json).toHaveBeenCalledWith({
         success: false,
-        message: '取消订单失败',
-        error: '保存订单状态时出错',
+        message: 'Failed to cancel order',
+        error: 'Error saving order status',
       });
     });
 
@@ -536,7 +536,7 @@ describe('Order Controller', () => {
       expect(mockRes.status).toHaveBeenCalledWith(500);
       expect(mockRes.json).toHaveBeenCalledWith({
         success: false,
-        message: '取消订单失败',
+        message: 'Failed to cancel order',
         error: 'Database error',
       });
     });

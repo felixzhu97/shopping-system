@@ -5,6 +5,8 @@ import {
   createProduct,
   updateProduct,
   deleteProduct,
+  importProductsFromCsv,
+  importProductsFromJson,
 } from "../controllers/productController";
 import { adminAuth } from "../middleware/adminAuth";
 
@@ -201,5 +203,14 @@ router.put("/:id", adminAuth, updateProduct);
  *         description: 没有管理员权限
  */
 router.delete("/:id", adminAuth, deleteProduct);
+
+router.post(
+  "/import/csv",
+  adminAuth,
+  express.text({ type: ["text/csv", "text/plain"], limit: "5mb" }),
+  importProductsFromCsv
+);
+
+router.post("/import/json", adminAuth, importProductsFromJson);
 
 export default router;

@@ -6,6 +6,7 @@ import express from 'express';
 vi.mock('../../controllers/userController', () => ({
   register: vi.fn(),
   login: vi.fn(),
+  getAllUsers: vi.fn(),
   getUserById: vi.fn(),
   updateUser: vi.fn(),
   resetPassword: vi.fn(),

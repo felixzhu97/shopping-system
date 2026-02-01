@@ -9,11 +9,11 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
 type ProductVisual = {
   id: string;
-  object: THREE.Object3D;
+  object: any;
 };
 
 type LoadedModel = {
-  scene: THREE.Object3D;
+  scene: any;
   scale: number;
 };
 
@@ -61,17 +61,17 @@ export class Products3dPage implements OnInit, OnDestroy {
     return this.products().find(p => this.getId(p) === id);
   });
 
-  private renderer: THREE.WebGLRenderer | undefined;
-  private scene: THREE.Scene | undefined;
-  private camera: THREE.PerspectiveCamera | undefined;
-  private controls: OrbitControls | undefined;
+  private renderer: any;
+  private scene: any;
+  private camera: any;
+  private controls: any;
   private animationId: number | undefined;
   private resizeObserver: ResizeObserver | undefined;
 
   private readonly raycaster = new THREE.Raycaster();
   private readonly pointer = new THREE.Vector2();
 
-  private stageGroup: THREE.Group | undefined;
+  private stageGroup: any;
 
   private currentVisual: ProductVisual | undefined;
   private readonly modelCache = new Map<string, LoadedModel>();
@@ -280,7 +280,7 @@ export class Products3dPage implements OnInit, OnDestroy {
       if (requestId !== this.modelRequestId) return;
       if (!this.stageGroup) return;
 
-      while (stageGroup.children.length) stageGroup.remove(stageGroup.children[0] as THREE.Object3D);
+      while (stageGroup.children.length) stageGroup.remove(stageGroup.children[0] as any);
       if (this.currentVisual) this.disposeObject(this.currentVisual.object);
       this.currentVisual = undefined;
 
@@ -322,7 +322,7 @@ export class Products3dPage implements OnInit, OnDestroy {
     this.selectById(id);
   }
 
-  private focusOnObject(object: THREE.Object3D): void {
+  private focusOnObject(object: any): void {
     const camera = this.camera;
     const controls = this.controls;
     if (!camera || !controls) return;
@@ -388,7 +388,7 @@ export class Products3dPage implements OnInit, OnDestroy {
     return this.defaultModelKey;
   }
 
-  private computeNormalizeScale(model: THREE.Object3D): number {
+  private computeNormalizeScale(model: any): number {
     const box = new THREE.Box3().setFromObject(model);
     const size = box.getSize(new THREE.Vector3());
     const maxDim = Math.max(size.x, size.y, size.z, 0.001);
@@ -403,7 +403,7 @@ export class Products3dPage implements OnInit, OnDestroy {
     return new Promise((resolve, reject) => {
       this.gltfLoader.load(
         asset.url,
-        (gltf) => {
+        (gltf: any) => {
           const entry: LoadedModel = {
             scene: gltf.scene,
             scale: this.computeNormalizeScale(gltf.scene),
@@ -417,16 +417,16 @@ export class Products3dPage implements OnInit, OnDestroy {
     });
   }
 
-  private createProductInstance(model: LoadedModel, productId: string): THREE.Object3D {
-    const instance = model.scene.clone(true) as THREE.Object3D;
+  private createProductInstance(model: LoadedModel, productId: string): any {
+    const instance = model.scene.clone(true) as any;
     instance.scale.setScalar(model.scale);
-    instance.traverse((node) => {
+    instance.traverse((node: any) => {
       node.userData = { ...node.userData, productId };
-      const mesh = node as unknown as THREE.Mesh;
+      const mesh = node as any;
       if (!(mesh as unknown as { isMesh?: boolean }).isMesh) return;
 
       if (mesh.geometry) mesh.geometry = mesh.geometry.clone();
-      const material = mesh.material as unknown as THREE.Material | THREE.Material[] | undefined;
+      const material = mesh.material as any;
       if (material) mesh.material = Array.isArray(material) ? material.map(m => m.clone()) : material.clone();
 
       mesh.castShadow = true;
@@ -438,8 +438,8 @@ export class Products3dPage implements OnInit, OnDestroy {
     return instance;
   }
 
-  private getHitProductId(object: THREE.Object3D | undefined): string {
-    let node: THREE.Object3D | null | undefined = object;
+  private getHitProductId(object: any): string {
+    let node: any = object;
     while (node) {
       const id = (node.userData as { productId?: string } | undefined)?.productId;
       if (typeof id === 'string' && id) return id;
@@ -448,11 +448,11 @@ export class Products3dPage implements OnInit, OnDestroy {
     return '';
   }
 
-  private disposeObject(object: THREE.Object3D): void {
-    object.traverse((node) => {
-      const mesh = node as THREE.Mesh;
-      const geometry = (mesh as unknown as { geometry?: THREE.BufferGeometry }).geometry;
-      const material = (mesh as unknown as { material?: THREE.Material | THREE.Material[] }).material;
+  private disposeObject(object: any): void {
+    object.traverse((node: any) => {
+      const mesh = node as any;
+      const geometry = (mesh as unknown as { geometry?: any }).geometry;
+      const material = (mesh as unknown as { material?: any }).material;
       if (geometry) geometry.dispose();
       if (material) {
         if (Array.isArray(material)) material.forEach(m => m.dispose());

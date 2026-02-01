@@ -9,6 +9,8 @@ vi.mock('../../controllers/productController', () => ({
   createProduct: vi.fn(),
   updateProduct: vi.fn(),
   deleteProduct: vi.fn(),
+  importProductsFromCsv: vi.fn(),
+  importProductsFromJson: vi.fn(),
 }));
 
 // Mock middleware
@@ -91,5 +93,35 @@ describe('Products Routes', () => {
     expect(response.status).toBe(200);
     expect(adminAuth).toHaveBeenCalled();
     expect(productController.deleteProduct).toHaveBeenCalled();
+  });
+
+  it('should handle POST /api/products/import/csv with admin auth', async () => {
+    (productController.importProductsFromCsv as any).mockImplementation((req: any, res: any) => {
+      res.status(201).json({ createdCount: 1 });
+    });
+
+    const csv = 'name,description,price,image,category,stock\nTest,Desc,9.99,https://example.com/a.png,Electronics,10\n';
+    const response = await request(app)
+      .post('/api/products/import/csv')
+      .set('Content-Type', 'text/csv')
+      .send(csv);
+
+    expect(response.status).toBe(201);
+    expect(adminAuth).toHaveBeenCalled();
+    expect(productController.importProductsFromCsv).toHaveBeenCalled();
+  });
+
+  it('should handle POST /api/products/import/json with admin auth', async () => {
+    (productController.importProductsFromJson as any).mockImplementation((req: any, res: any) => {
+      res.status(201).json({ createdCount: 1 });
+    });
+
+    const response = await request(app)
+      .post('/api/products/import/json')
+      .send([{ name: 'Test', description: 'Desc', price: 9.99, image: 'https://example.com/a.png', category: 'Electronics', stock: 1 }]);
+
+    expect(response.status).toBe(201);
+    expect(adminAuth).toHaveBeenCalled();
+    expect(productController.importProductsFromJson).toHaveBeenCalled();
   });
 });

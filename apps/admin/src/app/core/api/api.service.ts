@@ -48,6 +48,12 @@ export type User = {
   createdAt?: string;
 };
 
+export type ImportProductsResult = {
+  createdCount: number;
+  createdIds: string[];
+  errors: unknown[];
+};
+
 @Injectable({ providedIn: 'root' })
 export class ApiService {
   constructor(private readonly http: HttpClient) {}
@@ -66,6 +72,10 @@ export class ApiService {
 
   deleteProduct(apiBaseUrl: string, productId: string): Observable<{ message?: string }> {
     return this.http.delete<{ message?: string }>(`${apiBaseUrl}/products/${productId}`);
+  }
+
+  importProductsJson(apiBaseUrl: string, payload: unknown): Observable<ImportProductsResult> {
+    return this.http.post<ImportProductsResult>(`${apiBaseUrl}/products/import/json`, payload);
   }
 
   getOrders(apiBaseUrl: string, status: string): Observable<Order[]> {

@@ -65,7 +65,8 @@ app.use(
     allowedHeaders: ['Content-Type', 'Authorization', 'admin-secret'],
   })
 );
-app.use(express.json());
+app.use(express.json({ limit: process.env.JSON_BODY_LIMIT || '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: process.env.JSON_BODY_LIMIT || '10mb' }));
 app.use(jwtAuth);
 app.use((err, req, res, next) => {
   if (err.name === 'UnauthorizedError') {

@@ -47,7 +47,7 @@ describe('adminAuth middleware', () => {
     await adminAuth(mockReq, mockRes, mockNext);
 
     expect(mockRes.status).toHaveBeenCalledWith(403);
-    expect(mockRes.json).toHaveBeenCalledWith({ message: 'Forbidden' });
+    expect(mockRes.json).toHaveBeenCalledWith({ message: 'Missing admin-secret header' });
     expect(mockNext).not.toHaveBeenCalled();
   });
 
@@ -58,7 +58,7 @@ describe('adminAuth middleware', () => {
     await adminAuth(mockReq, mockRes, mockNext);
 
     expect(mockRes.status).toHaveBeenCalledWith(403);
-    expect(mockRes.json).toHaveBeenCalledWith({ message: 'Forbidden' });
+    expect(mockRes.json).toHaveBeenCalledWith({ message: 'Invalid admin secret' });
     expect(mockNext).not.toHaveBeenCalled();
   });
 
@@ -102,7 +102,7 @@ describe('adminAuth middleware', () => {
     await adminAuth(mockReq, mockRes, mockNext);
 
     expect(mockRes.status).toHaveBeenCalledWith(403);
-    expect(mockRes.json).toHaveBeenCalledWith({ message: 'Forbidden' });
+    expect(mockRes.json).toHaveBeenCalledWith({ message: 'Missing admin-secret header' });
     expect(mockNext).not.toHaveBeenCalled();
   });
 
@@ -113,7 +113,7 @@ describe('adminAuth middleware', () => {
     await adminAuth(mockReq, mockRes, mockNext);
 
     expect(mockRes.status).toHaveBeenCalledWith(403);
-    expect(mockRes.json).toHaveBeenCalledWith({ message: 'Forbidden' });
+    expect(mockRes.json).toHaveBeenCalledWith({ message: 'Invalid admin secret' });
     expect(mockNext).not.toHaveBeenCalled();
   });
 });

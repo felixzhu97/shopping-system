@@ -6,6 +6,8 @@ import {
   createProduct,
   updateProduct,
   deleteProduct,
+  importProductsFromCsv,
+  importProductsFromJson,
 } from '../../controllers/productController';
 import Product from '../../models/Product';
 
@@ -331,6 +333,139 @@ describe('Product Controller', () => {
       expect(mockRes.json).toHaveBeenCalledWith({
         message: '删除产品失败',
       });
+    });
+  });
+
+  describe('importProductsFromCsv', () => {
+    it('should import products from CSV successfully', async () => {
+      const csv = [
+        'name,description,price,image,category,stock,modelKey,originalPrice,inStock,rating,reviewCount',
+        'Product A,Desc A,10.5,https://example.com/a.png,Electronics,3,mk1,12.0,true,4.2,10',
+        'Product B,Desc B,20,https://example.com/b.png,Clothing,0,, ,false,0,0',
+      ].join('\n');
+
+      mockReq.body = csv;
+      mockProduct.insertMany = vi.fn().mockResolvedValue([
+        { id: 'p1' },
+        { id: 'p2' },
+      ]);
+
+      await importProductsFromCsv(mockReq as Request, mockRes as Response);
+
+      expect(mockProduct.insertMany).toHaveBeenCalled();
+      expect(mockRes.status).toHaveBeenCalledWith(201);
+      expect(mockRes.json).toHaveBeenCalledWith({
+        createdCount: 2,
+        createdIds: ['p1', 'p2'],
+        errors: [],
+      });
+    });
+
+    it('should return row-level errors when required fields missing', async () => {
+      const csv = [
+        'name,description,price,image,category,stock',
+        'Valid,Desc,9.99,https://example.com/a.png,Electronics,1',
+        ',Missing name,10,https://example.com/b.png,Electronics,1',
+      ].join('\n');
+
+      mockReq.body = csv;
+      mockProduct.insertMany = vi.fn().mockResolvedValue([{ id: 'p1' }]);
+
+      await importProductsFromCsv(mockReq as Request, mockRes as Response);
+
+      expect(mockRes.status).toHaveBeenCalledWith(201);
+      const payload = (mockRes.json as any).mock.calls[0][0];
+      expect(payload.createdCount).toBe(1);
+      expect(payload.errors.length).toBe(1);
+      expect(payload.errors[0].rowNumber).toBe(3);
+    });
+
+    it('should reject empty CSV', async () => {
+      mockReq.body = '';
+
+      await importProductsFromCsv(mockReq as Request, mockRes as Response);
+
+      expect(mockRes.status).toHaveBeenCalledWith(400);
+      expect(mockRes.json).toHaveBeenCalledWith({ message: 'CSV内容为空' });
+    });
+  });
+
+  describe('importProductsFromJson', () => {
+    it('should import products from JSON successfully', async () => {
+      mockReq.body = [
+        {
+          name: 'Product A',
+          description: 'Desc A',
+          price: 10.5,
+          image: 'https://example.com/a.png',
+          category: 'Electronics',
+          stock: 3,
+        },
+        {
+          name: 'Product B',
+          description: 'Desc B',
+          price: 20,
+          image: 'https://example.com/b.png',
+          category: 'Clothing',
+          stock: 0,
+          inStock: false,
+        },
+      ];
+
+      mockProduct.insertMany = vi.fn().mockResolvedValue([{ id: 'p1' }, { id: 'p2' }]);
+
+      await importProductsFromJson(mockReq as Request, mockRes as Response);
+
+      expect(mockProduct.insertMany).toHaveBeenCalled();
+      expect(mockRes.status).toHaveBeenCalledWith(201);
+      expect(mockRes.json).toHaveBeenCalledWith({
+        createdCount: 2,
+        createdIds: ['p1', 'p2'],
+        errors: [],
+      });
+    });
+
+    it('should reject invalid payload shape', async () => {
+      mockReq.body = { foo: 'bar' };
+
+      await importProductsFromJson(mockReq as Request, mockRes as Response);
+
+      expect(mockRes.status).toHaveBeenCalledWith(400);
+      expect(mockRes.json).toHaveBeenCalledWith({ message: 'Invalid JSON payload' });
+    });
+
+    it('should return errors when items invalid and still create valid ones', async () => {
+      mockReq.body = [
+        'not-an-object',
+        {
+          name: '',
+          description: 'Desc',
+          price: 10,
+          image: 'https://example.com/a.png',
+          category: 'Electronics',
+          stock: 1,
+        },
+        {
+          name: 'Valid',
+          description: 'Desc',
+          price: 10,
+          image: 'https://example.com/a.png',
+          category: 'Electronics',
+          stock: 1,
+        },
+      ];
+
+      mockProduct.insertMany = vi.fn().mockResolvedValue([{ id: 'p1' }]);
+
+      await importProductsFromJson(mockReq as Request, mockRes as Response);
+
+      expect(mockRes.status).toHaveBeenCalledWith(201);
+      const payload = (mockRes.json as any).mock.calls[0][0];
+      expect(payload.createdCount).toBe(1);
+      expect(payload.createdIds).toEqual(['p1']);
+      expect(payload.errors.length).toBe(2);
+      expect(payload.errors[0].index).toBe(0);
+      expect(payload.errors[1].index).toBe(1);
     });
   });
 });
