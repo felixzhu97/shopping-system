@@ -5,10 +5,10 @@ import { useTranslation } from 'react-i18next';
 const StoreHeadline = () => {
   const { t } = useTranslation();
   return (
-    <section className="py-[80px] px-6 bg-[#f5f5f7]">
-      <div className="container max-w-[1040px] mx-auto">
+    <section className="px-6 py-12 md:py-16">
+      <div className="mx-auto max-w-[1040px]">
         <div className="text-center">
-          <p className="text-[24px] font-normal text-[#1d1d1f]/90">
+          <p className="text-xl md:text-2xl font-normal text-[#1d1d1f]/90 leading-relaxed">
             {t('common.all_products_description')}
           </p>
         </div>

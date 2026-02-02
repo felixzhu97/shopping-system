@@ -10,7 +10,7 @@ export async function getProducts(category?: string): Promise<Product[]> {
   const response = await fetchApi<Product[]>(url);
 
   if (!response.success || !response.data) {
-    console.warn('使用模拟数据作为后备');
+    console.warn('Falling back to mock products');
     return category
       ? MOCK_PRODUCTS.filter(p => p.category === CATEGORY_MAPPING[category])
       : MOCK_PRODUCTS;
@@ -29,7 +29,7 @@ export async function getProduct(id: string): Promise<Product> {
   const response = await fetchApi<Product>(url);
 
   if (!response.success || !response.data) {
-    console.warn('使用模拟数据作为后备');
+    console.warn('Falling back to mock products');
     return MOCK_PRODUCTS.find(p => p.id === id) || MOCK_PRODUCTS[0];
   }
 

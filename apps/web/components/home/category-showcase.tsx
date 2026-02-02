@@ -5,12 +5,9 @@ import Image from '@/components/ui/image';
 import { Product } from '@/lib/types';
 import * as api from '@/lib/api';
 import { Button } from '@/components/ui/button';
-import { useState } from 'react';
-import { useEffect } from 'react';
-import { LoadingSpinner } from '@/components/ui/loading-spinner';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-// 大型展示卡片组件
 const HeroCard = ({
   product,
   color = 'bg-black',
@@ -42,7 +39,7 @@ const HeroCard = ({
               asChild
               variant="outline"
               size="lg"
-              className="rounded-full px-8 py-6 bg-black text-white hover: text-base"
+              className="rounded-full px-8 py-6 bg-transparent border-white/30 text-white hover:bg-white/10 hover:border-white/40 text-base"
             >
               <Link href={`/products/${product?.id}`}>{t('common.buy')}</Link>
             </Button>
@@ -61,7 +58,6 @@ const HeroCard = ({
   );
 };
 
-// 双列展示卡片组件
 const DualCard = ({ product, color = 'bg-white' }: { product: Product; color?: string }) => {
   const { t } = useTranslation();
   return (
@@ -91,7 +87,6 @@ const DualCard = ({ product, color = 'bg-white' }: { product: Product; color?: s
   );
 };
 
-// 促销卡片组件
 const PromoCard = ({
   title,
   description,
@@ -128,72 +123,101 @@ const PromoCard = ({
   );
 };
 
-// 主页展示组件
+function ShowcaseSkeleton() {
+  return (
+    <section className="px-6 pb-16">
+      <div className="mx-auto max-w-[1040px] space-y-6">
+        <div className="h-[520px] rounded-[28px] bg-white/70 shadow-lg animate-pulse" />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="h-[360px] rounded-[28px] bg-white/70 shadow-lg animate-pulse" />
+          <div className="h-[360px] rounded-[28px] bg-white/70 shadow-lg animate-pulse" />
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="h-[360px] rounded-[28px] bg-white/70 shadow-lg animate-pulse" />
+          <div className="h-[360px] rounded-[28px] bg-white/70 shadow-lg animate-pulse" />
+        </div>
+      </div>
+    </section>
+  );
+}
+
 const CategoryShowcase = () => {
   const { t } = useTranslation();
   const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const featured = featuredProducts.slice(0, 3);
 
   useEffect(() => {
-    const fetchElectronics = async () => {
+    const loadFeatured = async () => {
       try {
         const products = await api.getProducts('electronics');
-        const featuredProducts = products.filter(Boolean).slice(0, 3);
-
-        setFeaturedProducts(featuredProducts);
-        setLoading(false);
+        setFeaturedProducts(products.slice(0, 3));
       } catch (error) {
-        console.error('获取产品数据时出错:', error);
+        console.error('Failed to load featured products', error);
+      } finally {
         setLoading(false);
       }
     };
-    fetchElectronics();
+    loadFeatured();
   }, []);
 
   if (loading) {
-    return <LoadingSpinner />;
+    return <ShowcaseSkeleton />;
   }
 
   if (featuredProducts.length < 3) {
     return (
-      <div className="text-center py-8">
-        <h3 className="text-lg font-medium mb-2">{t('common.no_products_found')}</h3>
-        <p className="text-gray-500">{t('common.please_try_again')}</p>
-      </div>
+      <section className="px-6 pb-16">
+        <div className="mx-auto max-w-[1040px] text-center py-10">
+          <h3 className="text-lg font-medium mb-2">{t('common.no_products_found')}</h3>
+          <p className="text-gray-500">{t('common.please_try_again')}</p>
+        </div>
+      </section>
     );
   }
 
   return (
-    <div className="space-y-4 px-6">
-      {/* 主要产品展示 */}
-      <div className="container max-w-[1040px] mx-auto">
-        <HeroCard product={featuredProducts[0]} color="bg-black" textColor="text-white" />
+    <section className="px-6 pb-16">
+      <div className="mx-auto max-w-[1040px] flex items-end justify-between gap-4 pb-6">
+        <div>
+          <h2 className="text-2xl md:text-3xl font-semibold tracking-tight text-[#1d1d1f]">
+            {t('common.featured')}
+          </h2>
+          <p className="text-sm md:text-base text-[#1d1d1f]/70 mt-1">
+            {t('common.new_products')}
+          </p>
+        </div>
+        <Link href="/products" className="text-sm text-blue-600 hover:underline">
+          {t('common.all_products')}
+        </Link>
       </div>
 
-      {/* 双列产品展示 */}
-      <div className="container max-w-[1040px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-4">
-        <DualCard product={featuredProducts[1]} color="bg-[#fafafa]" />
-        <DualCard product={featuredProducts[2]} color="bg-[#fafafa]" />
-      </div>
+      <div className="mx-auto max-w-[1040px] space-y-6">
+        <HeroCard product={featured[0]} color="bg-black" textColor="text-white" />
 
-      {/* 促销活动展示 */}
-      <div className="container max-w-[1040px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-4">
-        <PromoCard
-          title={t('common.mothers_day_gift')}
-          description={t('common.choose_the_perfect_gift_for_your_mother')}
-          image="/mothers-day.png"
-          link="/products"
-          color="bg-[#fafafa]"
-        />
-        <PromoCard
-          title={t('common.trade_in')}
-          description={t('common.get_up_to_95_discount_on_new_devices')}
-          image="/trade-in.jpg"
-          link="/products"
-          color="bg-[#fafafa]"
-        />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <DualCard product={featured[1]} color="bg-[#fafafa]" />
+          <DualCard product={featured[2]} color="bg-[#fafafa]" />
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <PromoCard
+            title={t('common.mothers_day_gift')}
+            description={t('common.choose_the_perfect_gift_for_your_mother')}
+            image="/mothers-day.png"
+            link="/products"
+            color="bg-[#fafafa]"
+          />
+          <PromoCard
+            title={t('common.trade_in')}
+            description={t('common.get_up_to_95_discount_on_new_devices')}
+            image="/trade-in.jpg"
+            link="/products"
+            color="bg-[#fafafa]"
+          />
+        </div>
       </div>
-    </div>
+    </section>
   );
 };
 

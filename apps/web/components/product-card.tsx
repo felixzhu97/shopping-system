@@ -10,7 +10,6 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product }: ProductCardProps) {
-  // 确保产品ID是字符串
   const productId = String(product.id);
 
   return (

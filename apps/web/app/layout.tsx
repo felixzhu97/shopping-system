@@ -11,8 +11,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: '购物系统',
-  description: '一个简单的购物系统演示',
+  title: 'Shopping System',
+  description: 'A simple shopping system demo',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
