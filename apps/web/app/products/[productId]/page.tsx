@@ -38,7 +38,6 @@ function LoadingSkeleton() {
   );
 }
 
-// Apple风格的产品详情组件
 function ProductDetail({ productId }: { productId: string }) {
   const { product, relatedProducts, isLoading, error, fetchProduct, fetchRelatedProducts } =
     useProductStore();
@@ -97,7 +96,6 @@ function ProductDetail({ productId }: { productId: string }) {
     if (!product) return;
     try {
       setIsBuyNowLoading(true);
-      setIsAddToCartLoading(true);
       await addToCart(product, quantity);
       router.push('/checkout');
     } catch (err) {
@@ -130,26 +128,22 @@ function ProductDetail({ productId }: { productId: string }) {
     );
   }
 
-  // 模拟产品多张图片
   const productImages = [
     product.image,
     `https://picsum.photos/seed/${product.id}-1/800/800`,
     `https://picsum.photos/seed/${product.id}-2/800/800`,
   ];
 
-  // 处理图片点击 - 用于移动设备
   const handleImageClick = () => {
     setFullscreenImage(true);
   };
 
-  // 关闭全屏图片
   const handleCloseFullscreen = () => {
     setFullscreenImage(false);
   };
 
   return (
     <>
-      {/* 全屏图片展示 - 移动设备使用 */}
       {fullscreenImage && (
         <div
           className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4"
@@ -185,9 +179,7 @@ function ProductDetail({ productId }: { productId: string }) {
         </div>
       )}
 
-      {/* Apple风格产品详情 */}
       <div className="grid md:grid-cols-2 gap-8 lg:gap-16">
-        {/* 产品图片部分，左侧 */}
         <div className="space-y-4">
           <div
             className="aspect-square bg-[#fafafa] rounded-3xl overflow-hidden flex items-center justify-center p-8 relative cursor-zoom-in shadow-lg hover:shadow-xl transition-all duration-300 ease-out"
@@ -201,14 +193,12 @@ function ProductDetail({ productId }: { productId: string }) {
               loading="lazy"
             />
 
-            {/* 点击查看大图提示 */}
             <div className="absolute bottom-3 right-3 bg-white/80 backdrop-blur-sm rounded-full p-2 flex items-center gap-2 text-xs text-gray-600 shadow-sm">
               <Search className="h-3 w-3" />
               <span>{t('common.click_to_view_large_image')}</span>
             </div>
           </div>
 
-          {/* 缩略图导航 */}
           <div className="flex justify-center gap-4">
             {productImages.map((img, index) => (
               <button
@@ -221,7 +211,7 @@ function ProductDetail({ productId }: { productId: string }) {
               >
                 <Image
                   src={img}
-                  alt={`${product.name} 视图 ${index + 1}`}
+                  alt={`${product.name} view ${index + 1}`}
                   className="w-full h-full object-contain p-2"
                   loading="lazy"
                 />
@@ -230,16 +220,13 @@ function ProductDetail({ productId }: { productId: string }) {
           </div>
         </div>
 
-        {/* 产品信息部分，右侧 */}
         <div className="flex flex-col">
-          {/* 类别和名称 */}
           <div className="mb-6">
             <div className="text-sm text-blue-600 font-medium mb-1">
               {getCategoryLabel(product.category)}
             </div>
             <h1 className="text-4xl font-semibold text-gray-900 tracking-tight">{product.name}</h1>
 
-            {/* 评分 */}
             <div className="flex items-center mt-3">
               <div className="flex items-center">
                 {Array(5)
@@ -262,7 +249,6 @@ function ProductDetail({ productId }: { productId: string }) {
             </div>
           </div>
 
-          {/* 价格区域 */}
           <div className="mb-8">
             <div className="flex items-baseline gap-3">
               <span className="text-3xl font-medium">¥{product.price.toFixed(2)}</span>
@@ -281,12 +267,10 @@ function ProductDetail({ productId }: { productId: string }) {
             )}
           </div>
 
-          {/* 产品描述 */}
           <div className="mb-8 text-gray-600">
             <p>{product.description || t('common.product_description')}</p>
           </div>
 
-          {/* 库存和配送信息 */}
           <div className="mb-8 space-y-3">
             <div className="flex items-center text-sm">
               <div
@@ -309,7 +293,6 @@ function ProductDetail({ productId }: { productId: string }) {
             </div>
           </div>
 
-          {/* 数量选择器 */}
           <div className="mb-8">
             <div className="font-medium mb-2">{t('common.quantity')}</div>
             <div className="inline-flex items-center border border-gray-300 rounded-full">
@@ -337,7 +320,6 @@ function ProductDetail({ productId }: { productId: string }) {
             </div>
           </div>
 
-          {/* 操作按钮 */}
           <div className="flex flex-col gap-4 mt-auto">
             <Button
               size="lg"
@@ -382,7 +364,6 @@ function ProductDetail({ productId }: { productId: string }) {
         </div>
       </div>
 
-      {/* 产品详情选项卡 - Apple风格 */}
       <div className="mt-16 max-w-4xl mx-auto">
         <Tabs defaultValue="details" className="w-full">
           <TabsList className="w-full grid grid-cols-3 bg-gray-100 rounded-full p-1 h-12">
@@ -493,25 +474,25 @@ function ProductDetail({ productId }: { productId: string }) {
             <div className="space-y-8">
               {[
                 {
-                  name: '张先生',
+                  name: 'Alex',
                   rating: 5,
-                  date: '2023年12月15日',
+                  date: 'Dec 15, 2023',
                   comment:
-                    '非常满意的购物体验，产品质量超出预期，快递很快，包装也很好，会继续支持！',
+                    'Great shopping experience. The product quality exceeded my expectations, delivery was fast, and the packaging was solid.',
                 },
                 {
-                  name: '李女士',
+                  name: 'Sophia',
                   rating: 4,
-                  date: '2023年11月28日',
+                  date: 'Nov 28, 2023',
                   comment:
-                    '整体不错，使用了一周感觉质量可靠，就是价格稍贵了点，希望有更多优惠活动。',
+                    'Overall good. After a week of use it feels reliable, but the price is a bit high. Hope to see more promotions.',
                 },
                 {
-                  name: '王先生',
+                  name: 'Michael',
                   rating: 5,
-                  date: '2023年10月17日',
+                  date: 'Oct 17, 2023',
                   comment:
-                    '朋友推荐购买的，确实名不虚传，各方面都很好，尤其是做工和质感，非常推荐！',
+                    'Recommended by a friend and it lives up to the hype. Great build quality and feel. Highly recommended.',
                 },
               ].map((review, index) => (
                 <div key={index} className="bg-gray-50 rounded-2xl p-6">
@@ -543,7 +524,6 @@ function ProductDetail({ productId }: { productId: string }) {
         </Tabs>
       </div>
 
-      {/* 相关产品 - Apple风格 */}
       <div className="mt-20">
         <h2 className="text-3xl font-semibold text-center mb-12">
           {t('common.more_recommendations')}
@@ -562,13 +542,12 @@ function ProductDetail({ productId }: { productId: string }) {
   );
 }
 
-// 获取类别友好名称
 function getCategoryLabel(category: string): string {
   const categoryMap: Record<string, string> = {
-    electronics: '电子产品',
-    clothing: '服装',
-    'home-kitchen': '家居厨房',
-    books: '图书',
+    electronics: 'Electronics',
+    clothing: 'Clothing',
+    'home-kitchen': 'Home & Kitchen',
+    books: 'Books',
   };
 
   return (

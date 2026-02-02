@@ -2,7 +2,6 @@
 
 import * as React from 'react';
 import { cn } from '@/lib/utils/utils';
-import NextImage from 'next/image';
 
 export interface ImageProps extends React.ComponentPropsWithoutRef<'img'> {
   fallbackSrc?: string;
@@ -10,32 +9,30 @@ export interface ImageProps extends React.ComponentPropsWithoutRef<'img'> {
   wrapperClassName?: string;
 }
 
-// 根据类别名称获取合适的图片路径
-const getCategoryImage = (alt: string): string => {
-  const altLower = alt.toLowerCase();
+const getDefaultImageForAlt = (alt: string): string => {
+  const normalizedAlt = alt.toLowerCase();
   if (
-    altLower.includes('electronics') ||
-    altLower.includes('phone') ||
-    altLower.includes('watch') ||
-    altLower.includes('headphone')
+    normalizedAlt.includes('electronics') ||
+    normalizedAlt.includes('phone') ||
+    normalizedAlt.includes('watch') ||
+    normalizedAlt.includes('headphone')
   ) {
     return '/electronics.jpg';
   }
   if (
-    altLower.includes('clothing') ||
-    altLower.includes('shirt') ||
-    altLower.includes('jean') ||
-    altLower.includes('jacket')
+    normalizedAlt.includes('clothing') ||
+    normalizedAlt.includes('shirt') ||
+    normalizedAlt.includes('jean') ||
+    normalizedAlt.includes('jacket')
   ) {
     return '/tshirt.jpg';
   }
-  if (altLower.includes('kitchen') || altLower.includes('cook') || altLower.includes('home')) {
+  if (normalizedAlt.includes('kitchen') || normalizedAlt.includes('cook') || normalizedAlt.includes('home')) {
     return '/cookware.jpg';
   }
-  if (altLower.includes('book') || altLower.includes('novel')) {
+  if (normalizedAlt.includes('book') || normalizedAlt.includes('novel')) {
     return '/books.jpg';
   }
-  // 默认返回电子产品图片
   return '/electronics.jpg';
 };
 
@@ -52,7 +49,7 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(
         {error || !src ? (
           <img
             className={cn('object-cover transition-opacity', className)}
-            src={fallbackSrc || getCategoryImage(fallbackAlt || alt)}
+            src={fallbackSrc || getDefaultImageForAlt(fallbackAlt || alt)}
             alt={fallbackAlt || alt}
             ref={ref}
             {...props}

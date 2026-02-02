@@ -23,17 +23,21 @@ const HeroCard = ({
       className={`${color} rounded-[28px] overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300 ease-out hover:scale-[1.01]`}
     >
       <div className="block relative">
-        <div className="pt-12 px-8 text-center">
-          <h2 className={`text-[40px] font-medium ${textColor} mb-1`}>{product?.name}</h2>
-          <p className={`text-[21px] ${textColor}/90 mb-3`}>{product?.description}</p>
-          <div className="flex justify-center gap-4 text-[17px]">
+        <div className="pt-10 px-6 sm:px-8 text-center">
+          <h2 className={`text-3xl sm:text-4xl md:text-5xl font-semibold ${textColor} mb-2`}>
+            {product.name}
+          </h2>
+          <p className={`text-base sm:text-lg ${textColor}/90 mb-5 max-w-3xl mx-auto`}>
+            {product.description}
+          </p>
+          <div className="flex justify-center gap-4 text-base">
             <Button
               asChild
               variant="default"
               size="lg"
               className="rounded-full px-8 py-6 bg-white text-black hover:bg-white/90 text-base"
             >
-              <Link href={`/products/${product?.id}`}>{t('common.learn_more')}</Link>
+              <Link href={`/products/${product.id}`}>{t('common.learn_more')}</Link>
             </Button>
             <Button
               asChild
@@ -41,15 +45,16 @@ const HeroCard = ({
               size="lg"
               className="rounded-full px-8 py-6 bg-transparent border-white/30 text-white hover:bg-white/10 hover:border-white/40 text-base"
             >
-              <Link href={`/products/${product?.id}`}>{t('common.buy')}</Link>
+              <Link href={`/products/${product.id}`}>{t('common.buy')}</Link>
             </Button>
           </div>
         </div>
-        <div className="mt-8 flex justify-center">
+        <div className="mt-8 px-4 pb-10">
           <Image
-            src={product?.image}
-            alt={product?.name}
-            className="w-full h-auto object-cover"
+            src={product.image}
+            alt={product.name}
+            wrapperClassName="mx-auto w-full max-w-[860px] h-[220px] sm:h-[260px] md:h-[320px]"
+            className="w-full h-full object-contain"
             loading="lazy"
           />
         </div>
@@ -127,7 +132,7 @@ function ShowcaseSkeleton() {
   return (
     <section className="px-6 pb-16">
       <div className="mx-auto max-w-[1040px] space-y-6">
-        <div className="h-[520px] rounded-[28px] bg-white/70 shadow-lg animate-pulse" />
+        <div className="h-[460px] rounded-[28px] bg-white/70 shadow-lg animate-pulse" />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="h-[360px] rounded-[28px] bg-white/70 shadow-lg animate-pulse" />
           <div className="h-[360px] rounded-[28px] bg-white/70 shadow-lg animate-pulse" />

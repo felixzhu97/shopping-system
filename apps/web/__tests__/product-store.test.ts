@@ -1,7 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { act, renderHook } from '@testing-library/react';
 
-// Mock API functions
 vi.mock('../lib/api', () => ({
   getProducts: vi.fn(),
   getProduct: vi.fn(),
@@ -9,8 +8,22 @@ vi.mock('../lib/api', () => ({
 }));
 
 describe('Product Store', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.clearAllMocks();
+    const { useProductStore } = await import('../lib/store/productStore');
+    useProductStore.setState({
+      productsByCategory: {},
+      productsLoadedByCategory: {},
+      productsLoadingByCategory: {},
+      product: null,
+      productLoadedId: null,
+      productLoadingId: null,
+      relatedProducts: [],
+      relatedLoadedKey: null,
+      relatedLoadingKey: null,
+      isLoading: false,
+      error: null,
+    });
   });
 
   it('should initialize with default state', async () => {

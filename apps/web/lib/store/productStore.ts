@@ -8,7 +8,10 @@ interface ProductStore {
   productsLoadingByCategory: Record<string, boolean>;
   product: Product | null;
   productLoadedId: string | null;
+  productLoadingId: string | null;
   relatedProducts: Product[];
+  relatedLoadedKey: string | null;
+  relatedLoadingKey: string | null;
   isLoading: boolean;
   error: string | null;
   fetchProducts: (category?: string) => Promise<void>;
@@ -22,7 +25,10 @@ export const useProductStore = create<ProductStore>((set, get) => ({
   productsLoadingByCategory: {},
   product: null,
   productLoadedId: null,
+  productLoadingId: null,
   relatedProducts: [],
+  relatedLoadedKey: null,
+  relatedLoadingKey: null,
   isLoading: false,
   error: null,
 
@@ -54,6 +60,17 @@ export const useProductStore = create<ProductStore>((set, get) => ({
 
   fetchProduct: async id => {
     if (get().productLoadedId === id) return;
+    if (get().productLoadingId === id) return;
+
+    const cached = Object.values(get().productsByCategory)
+      .flat()
+      .find(p => p.id === id);
+    if (cached) {
+      set({ product: cached, productLoadedId: id });
+      return;
+    }
+
+    set({ productLoadingId: id });
     set({ isLoading: true, error: null });
     try {
       const product = await api.getProduct(id);
@@ -61,25 +78,43 @@ export const useProductStore = create<ProductStore>((set, get) => ({
     } catch (err) {
       set({ error: 'Failed to fetch product' });
     } finally {
-      set({ isLoading: false });
+      set({ isLoading: false, productLoadingId: null });
     }
   },
 
   fetchRelatedProducts: async (category, excludeId) => {
+    const key = `${category}:${excludeId}:4`;
+    if (get().relatedLoadedKey === key) return;
+    if (get().relatedLoadingKey === key) return;
+
+    set({ relatedLoadingKey: key });
     set({ isLoading: true, error: null });
     try {
       const recommended = await api.getRecommendations(excludeId, 4);
       const cleaned = recommended.filter((p: Product) => p.id !== excludeId).slice(0, 4);
       if (cleaned.length > 0) {
-        set({ relatedProducts: cleaned });
+        set({ relatedProducts: cleaned, relatedLoadedKey: key });
         return;
       }
+
+      const cachedProducts = get().productsByCategory[category];
+      if (cachedProducts && cachedProducts.length > 0) {
+        set({
+          relatedProducts: cachedProducts.filter((p: Product) => p.id !== excludeId).slice(0, 4),
+          relatedLoadedKey: key,
+        });
+        return;
+      }
+
       const products = await api.getProducts(category);
-      set({ relatedProducts: products.filter((p: Product) => p.id !== excludeId).slice(0, 4) });
+      set({
+        relatedProducts: products.filter((p: Product) => p.id !== excludeId).slice(0, 4),
+        relatedLoadedKey: key,
+      });
     } catch (err) {
       set({ error: 'Failed to fetch related products' });
     } finally {
-      set({ isLoading: false });
+      set({ isLoading: false, relatedLoadingKey: null });
     }
   },
 }));
