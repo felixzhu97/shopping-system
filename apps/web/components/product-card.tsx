@@ -11,6 +11,7 @@ interface ProductCardProps {
 
 export function ProductCard({ product }: ProductCardProps) {
   const productId = String(product.id);
+  const priceText = typeof product.price === 'number' ? product.price.toLocaleString() : '--';
 
   return (
     <div className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 ease-out hover:scale-[1.01]">
@@ -27,7 +28,7 @@ export function ProductCard({ product }: ProductCardProps) {
           <h3 className="text-md font-medium mb-2">{product.name}</h3>
           <div className="flex items-center gap-2 mb-4">
             <span className="text-sm font-regular text-gray-500">
-              ¥{product.price.toLocaleString()}
+              ¥{priceText}
             </span>
           </div>
         </div>

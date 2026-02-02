@@ -5,6 +5,7 @@ import { act, renderHook } from '@testing-library/react';
 vi.mock('../lib/api', () => ({
   getProducts: vi.fn(),
   getProduct: vi.fn(),
+  getRecommendations: vi.fn(),
 }));
 
 describe('Product Store', () => {
@@ -155,6 +156,42 @@ describe('Product Store', () => {
     const { result } = renderHook(() => useProductStore());
 
     expect(typeof result.current.fetchRelatedProducts).toBe('function');
+  });
+
+  it('should fetch related products using recommendations', async () => {
+    const mockProducts = [
+      {
+        id: 'prod-2',
+        name: 'Product 2',
+        price: 200,
+        image: 'image2.jpg',
+        description: 'Description 2',
+        category: 'electronics',
+        stock: 10,
+      },
+      {
+        id: 'prod-3',
+        name: 'Product 3',
+        price: 300,
+        image: 'image3.jpg',
+        description: 'Description 3',
+        category: 'electronics',
+        stock: 10,
+      },
+    ];
+
+    const { getRecommendations } = await import('../lib/api');
+    vi.mocked(getRecommendations).mockResolvedValueOnce(mockProducts as any);
+
+    const { useProductStore } = await import('../lib/store/productStore');
+    const { result } = renderHook(() => useProductStore());
+
+    await act(async () => {
+      await result.current.fetchRelatedProducts('electronics', 'prod-1');
+    });
+
+    expect(getRecommendations).toHaveBeenCalledWith('prod-1', 4);
+    expect(result.current.relatedProducts.length).toBeGreaterThan(0);
   });
 
   it('should not fetch products if already loaded', async () => {

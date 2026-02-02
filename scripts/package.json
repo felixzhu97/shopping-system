@@ -1,0 +1,18 @@
+{
+  "name": "scripts",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "seed:products200:dev": "bash seed/seedProducts200.sh",
+    "seed:products200:test": "bash seed/seedProducts200.sh",
+    "seed:products200:prod": "bash seed/seedProducts200.sh"
+  },
+  "dependencies": {
+    "dotenv": "^16.3.1",
+    "mongoose": "^7.5.0"
+  },
+  "devDependencies": {
+    "tsx": "^4.20.5",
+    "typescript": "^5.8.2"
+  }
+}

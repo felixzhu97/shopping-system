@@ -1,6 +1,6 @@
 import mongoose, { Document, Schema } from 'mongoose';
 
-export type Product = {
+export type SeedProduct = {
   name: string;
   description: string;
   price: number;
@@ -14,9 +14,9 @@ export type Product = {
   inStock?: boolean;
 };
 
-export type ProductDocument = Document & Product;
+export type SeedProductDocument = Document & SeedProduct;
 
-const ProductSchema = new Schema<ProductDocument>(
+const productSchema = new Schema<SeedProductDocument>(
   {
     name: { type: String, required: true },
     description: { type: String, required: true },
@@ -34,5 +34,7 @@ const ProductSchema = new Schema<ProductDocument>(
 );
 
 export const ProductModel =
-  mongoose.models.Product ?? mongoose.model<ProductDocument>('Product', ProductSchema);
+  mongoose.models.Product ?? mongoose.model<SeedProductDocument>('Product', productSchema);
+
+export default ProductModel;
 

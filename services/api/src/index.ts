@@ -15,6 +15,7 @@ import productRoutes from './routes/products';
 import cartRoutes from './routes/cart';
 import userRoutes from './routes/users';
 import orderRoutes from './routes/orders';
+import recommendationRoutes from './routes/recommendations';
 
 const envCandidates = [
   path.resolve(process.cwd(), '.env.local'),
@@ -43,6 +44,7 @@ const jwtAuth = expressjwt({
     '/health',
     /^\/api\/products.*/,
     /^\/api\/cart.*/,
+    /^\/api\/recommendations.*/,
   ],
 });
 
@@ -85,6 +87,7 @@ app.use('/api/products', productRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/orders', orderRoutes);
+app.use('/api/recommendations', recommendationRoutes);
 
 mongoose
   .connect(MONGODB_URI, {

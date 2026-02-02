@@ -44,7 +44,7 @@ export const useProductStore = create<ProductStore>((set, get) => ({
       }));
     } catch (err) {
       set(state => ({
-        error: '获取产品列表失败',
+        error: 'Failed to fetch products',
         productsLoadingByCategory: { ...state.productsLoadingByCategory, [category]: false },
       }));
     } finally {
@@ -59,7 +59,7 @@ export const useProductStore = create<ProductStore>((set, get) => ({
       const product = await api.getProduct(id);
       set({ product, productLoadedId: id });
     } catch (err) {
-      set({ error: '获取产品详情失败' });
+      set({ error: 'Failed to fetch product' });
     } finally {
       set({ isLoading: false });
     }
@@ -68,10 +68,16 @@ export const useProductStore = create<ProductStore>((set, get) => ({
   fetchRelatedProducts: async (category, excludeId) => {
     set({ isLoading: true, error: null });
     try {
+      const recommended = await api.getRecommendations(excludeId, 4);
+      const cleaned = recommended.filter((p: Product) => p.id !== excludeId).slice(0, 4);
+      if (cleaned.length > 0) {
+        set({ relatedProducts: cleaned });
+        return;
+      }
       const products = await api.getProducts(category);
       set({ relatedProducts: products.filter((p: Product) => p.id !== excludeId).slice(0, 4) });
     } catch (err) {
-      set({ error: '获取相关产品失败' });
+      set({ error: 'Failed to fetch related products' });
     } finally {
       set({ isLoading: false });
     }

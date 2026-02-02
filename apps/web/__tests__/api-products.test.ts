@@ -98,6 +98,32 @@ describe('Products API Functions', () => {
     expect(fetchApi).toHaveBeenCalledWith('/api/products/1');
   });
 
+  it('should get recommendations successfully', async () => {
+    const mockRecommendations = [
+      {
+        id: '2',
+        name: 'Product 2',
+        price: 200,
+        image: 'product2.jpg',
+        description: 'Description 2',
+        category: 'Books',
+        stock: 5,
+      },
+    ];
+
+    const { fetchApi } = await import('../lib/api/config');
+    vi.mocked(fetchApi).mockResolvedValueOnce({
+      success: true,
+      data: mockRecommendations,
+    });
+
+    const { getRecommendations } = await import('../lib/api/products');
+    const result = await getRecommendations('1', 4);
+
+    expect(result).toEqual(mockRecommendations);
+    expect(fetchApi).toHaveBeenCalledWith('/recommendations/1?limit=4');
+  });
+
   it('should handle API errors gracefully', async () => {
     const { fetchApi } = await import('../lib/api/config');
     vi.mocked(fetchApi).mockRejectedValueOnce(new Error('Network error'));
