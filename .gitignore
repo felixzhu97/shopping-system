@@ -10,12 +10,8 @@ build
 out
 
 # 环境变量文件
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
 .env*
+!.env.example
 
 # 调试
 npm-debug.log*
