@@ -48,16 +48,21 @@ const jwtAuth = expressjwt({
   ],
 });
 
-const allowedOrigins = process.env.CORS_ORIGINS
-  ? process.env.CORS_ORIGINS.split(',').map(v => v.trim()).filter(Boolean)
-  : [];
+const rawCorsOrigins = process.env.CORS_ORIGINS;
+
+const allowedOrigins =
+  rawCorsOrigins && rawCorsOrigins !== '*'
+    ? rawCorsOrigins.split(',').map(v => v.trim()).filter(Boolean)
+    : [];
 
 const corsOrigin =
-  allowedOrigins.length > 0
-    ? allowedOrigins
-    : process.env.NODE_ENV === 'production'
-      ? false
-      : true;
+  rawCorsOrigins === '*'
+    ? true
+    : allowedOrigins.length > 0
+      ? allowedOrigins
+      : process.env.NODE_ENV === 'production'
+        ? false
+        : true;
 
 app.use(
   cors({

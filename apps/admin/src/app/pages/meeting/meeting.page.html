@@ -44,14 +44,22 @@
 
   <div class="meeting-body">
     <div class="meeting-videos">
-      <div class="video-card">
+      <div class="video-main">
         <div class="video-title">You</div>
-        <video
-          [appVideoSrc]="localStream()"
-          autoplay
-          playsinline
-          muted
-        ></video>
+        <ng-container *ngIf="localStream(); else localPlaceholder">
+          <video
+            [appVideoSrc]="localStream()"
+            autoplay
+            playsinline
+            muted
+          ></video>
+        </ng-container>
+        <ng-template #localPlaceholder>
+          <div class="video-placeholder">
+            <div class="video-placeholder-avatar">You</div>
+            <div class="video-placeholder-text">Camera is off</div>
+          </div>
+        </ng-template>
       </div>
 
       <div class="video-grid">
@@ -60,17 +68,28 @@
           *ngFor="let p of participants()"
         >
           <div class="video-title">{{ p.name }}</div>
-          <video
-            [appVideoSrc]="p.stream"
-            autoplay
-            playsinline
-          ></video>
+          <ng-container *ngIf="p.stream; else participantPlaceholder">
+            <video
+              [appVideoSrc]="p.stream"
+              autoplay
+              playsinline
+            ></video>
+          </ng-container>
+          <ng-template #participantPlaceholder>
+            <div class="video-placeholder">
+              <div class="video-placeholder-avatar">
+                {{ getInitials(p.name) }}
+              </div>
+              <div class="video-placeholder-text">Waiting for video</div>
+            </div>
+          </ng-template>
         </div>
       </div>
     </div>
 
     <div class="meeting-chat">
-      <div class="chat-messages">
+      <div class="chat-header">Chat</div>
+      <div #chatMessagesContainer class="chat-messages">
         <div
           class="chat-message"
           *ngFor="let m of uiMessages()"

@@ -9,10 +9,11 @@ export type Session = {
 };
 
 const sessionStorageKey = 'admin.session.v1';
+const defaultApiBaseUrl = 'http://localhost:3001/api';
 
 function normalizeApiBaseUrl(input: string): string {
   let value = input.trim();
-  if (!value) return 'http://localhost:3001/api';
+  if (!value) return defaultApiBaseUrl;
   value = value.replace(/\/+$/, '');
   if (value.endsWith('/api')) return value;
   return `${value}/api`;
@@ -52,7 +53,7 @@ export class AuthService {
   }
 
   get apiBaseUrl(): string {
-    return this.sessionSignal()?.apiBaseUrl ?? 'http://localhost:3001/api';
+    return this.sessionSignal()?.apiBaseUrl ?? defaultApiBaseUrl;
   }
 
   get token(): string {

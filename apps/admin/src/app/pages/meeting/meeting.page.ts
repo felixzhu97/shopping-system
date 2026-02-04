@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Signal, computed, signal } from '@angular/core';
+import { Component, ElementRef, Signal, ViewChild, computed, effect, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 import { MeetingService } from '../../core/meeting/meeting.service';
@@ -20,6 +20,7 @@ type UiMessage = {
   styleUrl: './meeting.page.scss'
 })
 export class MeetingPage {
+  @ViewChild('chatMessagesContainer') private readonly chatMessagesRef?: ElementRef<HTMLDivElement>;
   protected readonly serverUrl = signal<string>('http://localhost:4100');
   protected readonly roomId = signal<string>('demo-room');
   protected readonly displayName = signal<string>('Admin');
@@ -36,6 +37,31 @@ export class MeetingPage {
         timestamp: m.timestamp
       }));
     });
+
+    effect(() => {
+      const _ = this.uiMessages();
+      queueMicrotask(() => {
+        const el = this.chatMessagesRef?.nativeElement;
+        if (!el) {
+          return;
+        }
+        el.scrollTop = el.scrollHeight;
+      });
+    });
+  }
+
+  protected getInitials(name: string | undefined): string {
+    const trimmed = (name ?? '').trim();
+    if (!trimmed) {
+      return '?';
+    }
+    const parts = trimmed.split(/\s+/);
+    if (parts.length === 1) {
+      return parts[0].charAt(0).toUpperCase();
+    }
+    const first = parts[0].charAt(0);
+    const last = parts[parts.length - 1].charAt(0);
+    return `${first}${last}`.toUpperCase();
   }
 
   protected get joined() {
