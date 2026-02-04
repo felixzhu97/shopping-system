@@ -18,6 +18,9 @@ package "Admin App (apps/admin)" {
     component [Admin API Client\nAngular HttpClient] as admin_api_client
     component [Crawler Client\nAngular HttpClient] as admin_crawler_client
     component [3D Viewer\nThree.js] as admin_3d_viewer
+    component [Meeting Client\nsocket.io-client] as admin_meeting_client
+    component [MeetingService\nWebRTC] as admin_meeting_service
+    component [Video Viewer\nvideo-src directive] as admin_video_viewer
 }
 
 package "Mobile App (apps/mobile)" {
@@ -31,7 +34,7 @@ package "API Service (services/api)" {
     component [Lambda Handler\nserverless-http] as api_lambda
     component [JWT Middleware\nexpress-jwt] as api_jwt
     component [Admin Auth Middleware\nadmin-secret] as api_admin_auth
-    component [Routes\nproducts, cart, users, orders] as api_routes
+    component [Routes\nproducts, cart, users, orders, recommendations] as api_routes
     component [Controllers\nTypeScript] as api_controllers
     component [Models\nMongoose] as api_models
     component [Payment Integration\npackages/payment-integration] as api_payment_pkg
@@ -52,6 +55,12 @@ package "Data Mining (services/data-mining)" {
     component [Offline Jobs\nPython scripts + notebooks] as data_mining
 }
 
+package "Meeting Signal Service (services/meeting-signal)" {
+    component [Node.js HTTP Server] as meeting_http
+    component [Socket.IO Server] as meeting_socketio
+    component [In-memory Room Store] as meeting_room_store
+}
+
 package "Shared Packages (packages/*)" {
     component [Monitoring\npackages/monitoring] as pkg_monitoring
     component [Utils\npackages/utils] as pkg_utils
@@ -62,6 +71,7 @@ package "Shared Packages (packages/*)" {
 package "Interfaces" {
     interface "REST API\nHTTPS" as rest_api
     interface "JWT Auth\nAuthorization: Bearer" as jwt_auth
+    interface "WebSocket\nSocket.IO" as websocket
 }
 
 database "MongoDB\nAtlas or local" as mongodb
@@ -80,6 +90,9 @@ web_app --> pkg_auth
 admin_app --> admin_api_client
 admin_app --> admin_crawler_client
 admin_app --> admin_3d_viewer
+admin_app --> admin_meeting_client
+admin_app --> admin_meeting_service
+admin_app --> admin_video_viewer
 admin_app --> pkg_types
 
 mobile_app --> mobile_api_client
@@ -104,6 +117,13 @@ api_controllers --> api_models
 api_controllers --> api_payment_pkg
 api_models --> mongodb
 api_app --> api_lambda
+
+admin_meeting_client --> websocket
+admin_meeting_service --> admin_meeting_client
+admin_video_viewer --> admin_meeting_service
+websocket --> meeting_socketio
+meeting_socketio --> meeting_http
+meeting_socketio --> meeting_room_store
 
 admin_crawler_client --> crawler_api
 crawler_api --> crawler_store

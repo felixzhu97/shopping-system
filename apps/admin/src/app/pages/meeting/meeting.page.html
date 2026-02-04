@@ -1,0 +1,114 @@
+<div class="meeting-page">
+  <div class="meeting-header">
+    <h2>Team Meeting</h2>
+    <div class="meeting-controls">
+      <input
+        class="form-control form-control-sm"
+        [value]="serverUrl()"
+        (input)="setServerUrl($event)"
+        placeholder="Signal server URL"
+        [disabled]="joined() || busy()"
+      />
+      <input
+        class="form-control form-control-sm"
+        [value]="roomId()"
+        (input)="setRoomId($event)"
+        placeholder="Room ID"
+        [disabled]="joined() || busy()"
+      />
+      <input
+        class="form-control form-control-sm"
+        [value]="displayName()"
+        (input)="setDisplayName($event)"
+        placeholder="Name"
+        [disabled]="joined() || busy()"
+      />
+      <button
+        class="btn btn-sm btn-primary"
+        type="button"
+        (click)="join()"
+        [disabled]="joined() || busy()"
+      >
+        Join
+      </button>
+      <button
+        class="btn btn-sm btn-outline-secondary"
+        type="button"
+        (click)="leave()"
+        [disabled]="!joined()"
+      >
+        Leave
+      </button>
+    </div>
+  </div>
+
+  <div class="meeting-body">
+    <div class="meeting-videos">
+      <div class="video-card">
+        <div class="video-title">You</div>
+        <video
+          [appVideoSrc]="localStream()"
+          autoplay
+          playsinline
+          muted
+        ></video>
+      </div>
+
+      <div class="video-grid">
+        <div
+          class="video-card"
+          *ngFor="let p of participants()"
+        >
+          <div class="video-title">{{ p.name }}</div>
+          <video
+            [appVideoSrc]="p.stream"
+            autoplay
+            playsinline
+          ></video>
+        </div>
+      </div>
+    </div>
+
+    <div class="meeting-chat">
+      <div class="chat-messages">
+        <div
+          class="chat-message"
+          *ngFor="let m of uiMessages()"
+        >
+          <div class="chat-meta">
+            <span class="chat-name">{{ m.name }}</span>
+            <span class="chat-time">{{ m.timestamp | date: 'HH:mm:ss' }}</span>
+          </div>
+          <div class="chat-text">
+            {{ m.message }}
+          </div>
+        </div>
+      </div>
+      <div class="chat-input">
+        <input
+          class="form-control form-control-sm"
+          [value]="text()"
+          (input)="setText($event)"
+          placeholder="Type a message"
+          [disabled]="!joined()"
+        />
+        <button
+          class="btn btn-sm btn-primary"
+          type="button"
+          (click)="send()"
+          [disabled]="!joined() || !text().trim()"
+        >
+          Send
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div
+    class="meeting-error alert alert-danger mt-2"
+    *ngIf="error()"
+  >
+    {{ error() }}
+  </div>
+</div>
+

@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
-// Mock process.env first
 process.env.JWT_SECRET = 'test-secret';
+process.env.ADMIN_SECRET = 'test-admin-secret';
 
 // Mock models and jwt before importing anything else
 vi.mock('../../models/User', () => ({
@@ -182,6 +182,7 @@ describe('User Controller', () => {
         firstName: 'John',
         lastName: 'Doe',
         phone: '1234567890',
+        adminSecret: 'test-admin-secret',
         token: 'jwt-token',
       });
     });

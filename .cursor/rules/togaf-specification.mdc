@@ -13,11 +13,12 @@ This repository maintains TOGAF views as PlantUML diagrams. The diagrams should 
 
 - `apps/web`: Next.js web app (fetch, Zustand, i18next)
 - `apps/mobile`: Expo + React Native app (Axios, Zustand)
-- `apps/admin`: Angular admin app (Three.js for 3D viewer)
+- `apps/admin`: Angular admin app (Three.js for 3D viewer, socket.io-client for meeting)
 - `apps/crawler-cli`: Node.js CLI crawler (cheerio)
 - `services/api`: Express API (serverless-http, mongoose, bcryptjs, swagger)
 - `services/crawler`: FastAPI crawler (httpx, BeautifulSoup4)
 - `services/data-mining`: offline Python jobs and notebooks
+- `services/meeting-signal`: Node.js + Socket.IO signaling server (WebRTC rooms, chat)
 - `packages/*`: shared packages (components, types, utils, monitoring, auth, payment integration, test utils, scripts)
 
 ## Rules

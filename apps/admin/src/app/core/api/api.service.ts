@@ -10,6 +10,7 @@ export type LoginRequest = {
 export type LoginResponse = {
   id: string;
   email: string;
+  adminSecret: string;
   token: string;
   role?: string;
 };
@@ -46,6 +47,15 @@ export type User = {
   lastName?: string;
   phone?: string;
   createdAt?: string;
+};
+
+export type CreateUserRequest = {
+  email: string;
+  password: string;
+  firstName?: string;
+  lastName?: string;
+  phone?: string;
+  role?: string;
 };
 
 export type ImportProductsResult = {
@@ -88,6 +98,10 @@ export class ApiService {
 
   getUsers(apiBaseUrl: string): Observable<User[]> {
     return this.http.get<User[]>(`${apiBaseUrl}/users`);
+  }
+
+  createUser(apiBaseUrl: string, payload: CreateUserRequest): Observable<User> {
+    return this.http.post<User>(`${apiBaseUrl}/users/register`, payload);
   }
 }
 

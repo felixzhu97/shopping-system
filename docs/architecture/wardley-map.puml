@@ -1,162 +1,132 @@
 @startuml
-title 沃德利地图 - 购物系统
+title Wardley Map - Shopping System
 
 skinparam componentStyle rectangle
 skinparam packageStyle rectangle
 skinparam linetype ortho
 
-' 定义价值流（X轴）和演化阶段（Y轴）
-' 价值流从左到右：用户需求 -> 用户界面 -> 业务逻辑 -> 数据服务 -> 基础设施
-' 演化阶段从下到上：Commodity -> Product -> Custom-built -> Genesis
-
-' Genesis（创新阶段）- 定制化、实验性组件
-package "Genesis（创新）" #LightBlue {
-    component [定制化购物体验\n个性化推荐算法] as custom_experience
-    component [创新支付方式\n加密货币支付] as crypto_payment
+package "Genesis (Innovation)" #LightBlue {
+    component [Personalized Experience\nAdvanced Experiments] as personalized_experience
+    component [Propensity Models\nML Experiments] as propensity_models
+    component [Recommender Models\nDL Experiments] as recommender_models
 }
 
-' Custom-built（定制构建阶段）- 内部开发的组件
-package "Custom-built（定制构建）" #LightGreen {
-    component [购物系统业务逻辑\n订单处理、购物车管理] as business_logic
-    component [用户认证系统\nJWT认证、权限管理] as auth_system
-    component [商品管理系统\n商品CRUD、分类管理] as product_mgmt
-    component [库存管理系统\n库存跟踪、预警] as inventory_mgmt
-    component [API服务层\nExpress.js路由和控制器] as api_layer
+package "Custom-built" #LightGreen {
+    component [Product Management\nDomain Service] as product_mgmt
+    component [Cart Management\nDomain Service] as cart_mgmt
+    component [Order Management\nDomain Service] as order_mgmt
+    component [User Management\nDomain Service] as user_mgmt
+    component [Payment Service\nOrchestration] as payment_service
+    component [Recommendation Service\nTF-IDF] as recommendation_service
+    component [Crawler Service] as crawler_service
+    component [Data Mining Jobs] as data_mining_jobs
+    component [Auth Service\nJWT and OAuth] as auth_service
+    component [API Service\nExpress and Lambda] as api_service
+    component [Meeting Signal Service\nWebRTC Signaling] as meeting_signal_service
 }
 
-' Product（产品化阶段）- 可购买的产品和服务
-package "Product（产品化）" #LightYellow {
-    component [Web前端应用\nNext.js + React] as web_app
-    component [移动应用\nReact Native] as mobile_app
-    component [MongoDB数据库\n文档数据库] as mongodb
-    component [Vercel部署平台\n无服务器部署] as vercel
-    component [支付网关集成\n第三方支付服务] as payment_gateway
-    component [UI组件库\nReact组件] as ui_library
-    component [状态管理\nZustand/Provider] as state_mgmt
+package "Product" #LightYellow {
+    component [Web Application\nNext.js] as web_app
+    component [Mobile Application\nReact Native] as mobile_app
+    component [Admin Dashboard\nAngular] as admin_app
+    component [MongoDB\nDocument Database] as mongodb
+    component [Vercel\nHosting and Edge] as vercel
+    component [AWS Lambda\nServerless Compute] as aws_lambda
+    component [Datadog\nAPM and RUM] as datadog
+    component [Serverless Framework\nDeployment] as serverless_framework
+    component [Socket.io\nRealtime] as socket_io
+    component [Shared Libraries\nAuth, Monitoring, Utils, Types] as shared_libs
 }
 
-' Commodity（商品化阶段）- 标准化、通用服务
-package "Commodity（商品化）" #LightGray {
-    component [TypeScript\n类型系统] as typescript
-    component [Node.js运行时\nJavaScript运行时] as nodejs
-    component [HTTP协议\n标准网络协议] as http
-    component [Git版本控制\n代码版本管理] as git
-    component [CDN服务\n内容分发网络] as cdn
-    component [监控服务\n系统监控和分析] as monitoring
-    component [CI/CD服务\n持续集成部署] as cicd
+package "Commodity" #LightGray {
+    component [Node.js Runtime] as nodejs
+    component [TypeScript] as typescript
+    component [HTTP Protocol] as http
+    component [CDN Service] as cdn
+    component [CI/CD Service\nGitHub Actions] as cicd
+    component [Git Repository] as git
 }
 
-' 价值流关系 - 从用户需求到基础设施
-' 用户需求层
-component [用户需求\n购买商品、管理账户] as user_need #Pink
+component [User Needs\nShopping, Account Management] as user_needs #Pink
+component [Admin Needs\nOperations and Monitoring] as admin_needs #Pink
 
-' 用户界面层
-user_need --> web_app : 通过Web访问
-user_need --> mobile_app : 通过移动端访问
+component [Payment Gateways\nAlipay, WeChat Pay, Stripe] as payment_gateways
+component [OAuth Providers\nGoogle, GitHub, Others] as oauth_providers
+component [External Websites\nProduct Sources] as external_websites
 
-' 业务逻辑层
-web_app --> business_logic : 调用业务逻辑
-mobile_app --> business_logic : 调用业务逻辑
-web_app --> auth_system : 用户认证
-mobile_app --> auth_system : 用户认证
-web_app --> product_mgmt : 商品管理
-web_app --> cart_mgmt : 购物车管理
-web_app --> order_mgmt : 订单处理
-mobile_app --> product_mgmt : 商品管理
-mobile_app --> cart_mgmt : 购物车管理
-mobile_app --> order_mgmt : 订单处理
+user_needs --> web_app : via web
+user_needs --> mobile_app : via mobile
+admin_needs --> admin_app : via browser
 
-' 数据服务层
-business_logic --> api_layer : 通过API访问
-auth_system --> api_layer : 通过API访问
-product_mgmt --> api_layer : 通过API访问
-cart_mgmt --> api_layer : 通过API访问
-order_mgmt --> api_layer : 通过API访问
-inventory_mgmt --> api_layer : 通过API访问
-api_layer --> mongodb : 数据存储
+web_app --> api_service : calls API
+mobile_app --> api_service : calls API
+admin_app --> api_service : calls API
+admin_app --> crawler_service : manages crawling
+admin_app --> meeting_signal_service : manages meetings
 
-' 基础设施层
-web_app --> vercel : 部署在
-mobile_app --> vercel : 部署在（Web版本）
-api_layer --> nodejs : 运行在
-mongodb --> cdn : 使用
-vercel --> cdn : 使用
-web_app --> monitoring : 监控
-mobile_app --> monitoring : 监控
-api_layer --> monitoring : 监控
-vercel --> cicd : 集成
+api_service --> product_mgmt
+api_service --> cart_mgmt
+api_service --> order_mgmt
+api_service --> user_mgmt
+api_service --> payment_service
+api_service --> recommendation_service
+api_service --> auth_service
 
-' 技术栈依赖关系
-web_app --> ui_library : 使用
-web_app --> state_mgmt : 使用
-web_app --> typescript : 使用
-mobile_app --> typescript : 使用
-api_layer --> typescript : 使用
-api_layer --> nodejs : 运行在
-api_layer --> http : 使用
-business_logic --> typescript : 实现
-auth_system --> typescript : 实现
+product_mgmt --> mongodb
+cart_mgmt --> mongodb
+order_mgmt --> mongodb
+user_mgmt --> mongodb
 
-' 支付相关
-order_mgmt --> payment_gateway : 集成
-order_mgmt --> crypto_payment : 可能集成（未来）
+recommendation_service --> mongodb
+recommendation_service --> personalized_experience
+recommendation_service --> propensity_models
+recommendation_service --> recommender_models
 
-' 创新功能
-business_logic --> custom_experience : 可能使用（未来）
+data_mining_jobs --> mongodb
+data_mining_jobs --> propensity_models
+data_mining_jobs --> recommender_models
 
-' 组件说明
-note right of user_need
-  用户需求是价值流的起点
-  包括购买商品、管理账户等核心需求
-end note
+crawler_service --> external_websites
+crawler_service --> data_mining_jobs
 
-note right of web_app
-  Web前端应用
-  基于Next.js和React
-  产品化阶段
-end note
+meeting_signal_service --> socket_io
 
-note right of business_logic
-  业务逻辑层
-  定制构建的核心组件
-  包括订单处理、购物车管理等
-end note
+payment_service --> payment_gateways
+auth_service --> oauth_providers
 
-note right of mongodb
-  数据存储服务
-  产品化阶段的数据库
-  使用MongoDB文档数据库
-end note
+api_service --> aws_lambda
+api_service --> nodejs
+api_service --> http
 
-note right of vercel
-  部署基础设施
-  商品化阶段的云平台
-  提供无服务器部署能力
-end note
+web_app --> vercel
+mobile_app --> vercel
+admin_app --> vercel
 
-note bottom of custom_experience
-  Genesis阶段组件
-  创新和实验性功能
-  如个性化推荐算法
-end note
+vercel --> cdn
+web_app --> cdn
+mobile_app --> cdn
+admin_app --> cdn
 
-note bottom of business_logic
-  Custom-built阶段组件
-  内部开发的核心业务逻辑
-  是系统的竞争优势所在
-end note
+web_app --> shared_libs
+mobile_app --> shared_libs
+admin_app --> shared_libs
+api_service --> shared_libs
 
-note bottom of web_app
-  Product阶段组件
-  成熟的产品和服务
-  可快速集成和使用
-end note
+web_app --> typescript
+mobile_app --> typescript
+admin_app --> typescript
+api_service --> typescript
 
-note bottom of typescript
-  Commodity阶段组件
-  标准化和通用服务
-  基础技术栈
-end note
+web_app --> datadog
+mobile_app --> datadog
+admin_app --> datadog
+api_service --> datadog
+aws_lambda --> datadog
+
+serverless_framework --> aws_lambda
+cicd --> serverless_framework
+cicd --> vercel
+git --> cicd
 
 @enduml
 

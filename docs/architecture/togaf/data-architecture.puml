@@ -41,6 +41,10 @@ package "Crawler Data (services/crawler)" {
     component [Scrape Results] as crawler_results
 }
 
+package "Meeting Data (services/meeting-signal)" {
+    component [Meeting Session (ephemeral)\nroom ID, user list, signaling cache] as meeting_session
+}
+
 package "Offline Data Mining (services/data-mining)" {
     component [Export Scripts] as export_scripts
     component [Training Scripts] as training_scripts

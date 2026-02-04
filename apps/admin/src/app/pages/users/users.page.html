@@ -12,6 +12,10 @@
       <button class="btn btn-outline-secondary btn-sm" type="button" (click)="refresh()" [disabled]="loading()">
         Refresh
       </button>
+      <button class="btn btn-primary btn-sm" type="button" (click)="openCreateModal()">
+        <i class="bi bi-plus-lg me-1"></i>
+        Create
+      </button>
     </div>
   </div>
 
@@ -29,5 +33,64 @@
       />
     </div>
   </div>
+
+  <div
+    class="modal fade"
+    [class.show]="createModalOpen()"
+    [style.display]="createModalOpen() ? 'block' : 'none'"
+    tabindex="-1"
+    role="dialog"
+    aria-modal="true"
+    *ngIf="createModalOpen()"
+  >
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Create User</h5>
+          <button type="button" class="btn-close" aria-label="Close" (click)="closeCreateModal()"></button>
+        </div>
+        <div class="modal-body">
+          <form class="row g-3" [formGroup]="form" (ngSubmit)="create()">
+            <div class="col-12">
+              <label class="form-label">Email</label>
+              <input class="form-control" formControlName="email" type="email" />
+            </div>
+            <div class="col-12">
+              <label class="form-label">Password</label>
+              <input class="form-control" formControlName="password" type="password" />
+            </div>
+            <div class="col-12 col-md-6">
+              <label class="form-label">First Name</label>
+              <input class="form-control" formControlName="firstName" />
+            </div>
+            <div class="col-12 col-md-6">
+              <label class="form-label">Last Name</label>
+              <input class="form-control" formControlName="lastName" />
+            </div>
+            <div class="col-12 col-md-6">
+              <label class="form-label">Phone</label>
+              <input class="form-control" formControlName="phone" />
+            </div>
+            <div class="col-12 col-md-6">
+              <label class="form-label">Role</label>
+              <select class="form-select" formControlName="role">
+                <option value="user">user</option>
+                <option value="admin">admin</option>
+              </select>
+            </div>
+            <div class="col-12">
+              <div class="d-flex gap-2 justify-content-end">
+                <button type="button" class="btn btn-outline-secondary" (click)="closeCreateModal()">Cancel</button>
+                <button class="btn btn-primary" type="submit" [disabled]="loading() || form.invalid">
+                  {{ loading() ? 'Saving...' : 'Create' }}
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-backdrop fade show" *ngIf="createModalOpen()" (click)="closeCreateModal()"></div>
 </div>
 

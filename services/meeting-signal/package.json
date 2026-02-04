@@ -1,0 +1,11 @@
+{
+  "name": "meeting-signal",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "socket.io": "4.8.1"
+  }
+}

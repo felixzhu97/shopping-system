@@ -66,6 +66,7 @@ export const login = async (req: any, res: any) => {
 
     const jwtSecret = getJwtSecret();
     const token = jwt.sign({ id: user._id, role: user.role }, jwtSecret, { expiresIn: '7d' });
+    const adminSecret = process.env.ADMIN_SECRET || '';
 
     const userResponse = {
       id: user._id,
@@ -74,6 +75,7 @@ export const login = async (req: any, res: any) => {
       firstName: user.firstName,
       lastName: user.lastName,
       phone: user.phone,
+      adminSecret,
       token,
     };
 

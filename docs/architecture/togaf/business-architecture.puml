@@ -17,6 +17,7 @@ package "Business Capabilities" {
     component [Payment Processing] as capability_payment
     component [Crawling and Ingestion] as capability_crawling
     component [Offline Analytics and Data Mining] as capability_data_mining
+    component [Meeting / Video Conferencing] as capability_meeting
 }
 
 package "Core Business Processes" {
@@ -24,6 +25,7 @@ package "Core Business Processes" {
     component [Admin Operations\nManage products, users, orders] as process_admin_ops
     component [Crawling Process\nCreate crawl job -> Collect items -> Review results] as process_crawling
     component [Data Mining Process\nExport data -> Train models -> Produce reports] as process_data_mining
+    component [Meeting Process\nJoin room -> Video/chat -> Leave] as process_meeting
 }
 
 package "Business Services" {
@@ -34,6 +36,7 @@ package "Business Services" {
     component [Payment Service] as service_payment
     component [Crawler Service] as service_crawler
     component [Data Mining Jobs] as service_data_mining
+    component [Meeting Signal Service] as service_meeting_signal
 }
 
 customer --> process_shopping
@@ -45,11 +48,13 @@ customer --> service_payment
 
 admin --> process_admin_ops
 admin --> process_crawling
+admin --> process_meeting
 admin --> service_product
 admin --> service_order
 admin --> service_user
 admin --> service_payment
 admin --> service_crawler
+admin --> service_meeting_signal
 
 process_shopping --> service_product
 process_shopping --> service_cart
@@ -68,6 +73,9 @@ process_crawling --> capability_crawling
 process_data_mining --> service_data_mining
 process_data_mining --> capability_data_mining
 
+process_meeting --> service_meeting_signal
+process_meeting --> capability_meeting
+
 service_product ..> capability_product
 service_cart ..> capability_cart
 service_order ..> capability_order
@@ -75,5 +83,6 @@ service_user ..> capability_user
 service_payment ..> capability_payment
 service_crawler ..> capability_crawling
 service_data_mining ..> capability_data_mining
+service_meeting_signal ..> capability_meeting
 
 @enduml

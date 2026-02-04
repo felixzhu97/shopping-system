@@ -23,8 +23,6 @@ export class LoginPage {
   protected readonly loading = signal<boolean>(false);
 
   protected readonly form = this.fb.nonNullable.group({
-    apiBaseUrl: ['http://localhost:3001', [Validators.required]],
-    adminSecret: ['', [Validators.required]],
     emailOrPhone: ['', [Validators.required]],
     password: ['', [Validators.required]],
   });
@@ -36,16 +34,17 @@ export class LoginPage {
     this.loading.set(true);
 
     const value = this.form.getRawValue();
-    const apiBaseUrl = value.apiBaseUrl;
 
-    this.api.login(this.authApiBaseUrl(apiBaseUrl), {
+    const apiBaseUrl = this.auth.apiBaseUrl;
+
+    this.api.login(apiBaseUrl, {
       emailOrPhone: value.emailOrPhone,
       password: value.password,
     }).subscribe({
       next: (response) => {
         this.auth.setSession({
           apiBaseUrl,
-          adminSecret: value.adminSecret,
+          adminSecret: response.adminSecret,
           token: response.token,
           userId: response.id,
           email: response.email,
@@ -61,13 +60,6 @@ export class LoginPage {
         this.loading.set(false);
       },
     });
-  }
-
-  private authApiBaseUrl(apiBaseUrl: string): string {
-    const trimmed = apiBaseUrl.trim().replace(/\/+$/, '');
-    if (!trimmed) return 'http://localhost:3001/api';
-    if (trimmed.endsWith('/api')) return trimmed;
-    return `${trimmed}/api`;
   }
 
   private extractErrorMessage(e: unknown): string {

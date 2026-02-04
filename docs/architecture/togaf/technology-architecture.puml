@@ -25,6 +25,8 @@ package "Admin (apps/admin)" {
     component [Chart.js] as admin_chartjs
     component [ECharts] as admin_echarts
     component [Three.js] as admin_three
+    component [socket.io-client] as admin_socketio
+    component [WebRTC] as admin_webrtc
 }
 
 package "Mobile (apps/mobile)" {
@@ -61,6 +63,12 @@ package "Data Mining (services/data-mining)" {
     component [Notebooks] as dm_notebooks
 }
 
+package "Meeting Signal (services/meeting-signal)" {
+    component [Node.js] as meeting_node
+    component [Socket.IO] as meeting_socketio
+    component [HTTP Server] as meeting_http
+}
+
 package "Data Platform" {
     database [MongoDB] as mongodb
     cloud [MongoDB Atlas] as mongodb_atlas
@@ -71,6 +79,7 @@ package "Infrastructure" {
     cloud [AWS Lambda] as aws_lambda
     cloud [Datadog] as datadog
     component [GitHub Actions] as github_actions
+    component [Node process] as meeting_deploy
 }
 
 package "Tooling" {
@@ -86,6 +95,7 @@ package "Standards" {
     interface "JWT" as jwt
     interface "HTTPS" as https
     interface "OpenAPI" as openapi
+    interface "WebSocket" as websocket
 }
 
 web_next --> web_react
@@ -104,6 +114,8 @@ admin_angular --> admin_bootstrap
 admin_angular --> admin_chartjs
 admin_angular --> admin_echarts
 admin_angular --> admin_three
+admin_angular --> admin_socketio
+admin_angular --> admin_webrtc
 
 mobile_expo --> mobile_rn
 mobile_rn --> mobile_ts
@@ -133,6 +145,12 @@ crawler_fastapi --> crawler_bs4
 
 dm_python --> mongodb
 dm_notebooks --> mongodb
+
+meeting_socketio --> meeting_node
+meeting_socketio --> meeting_http
+meeting_deploy --> meeting_node
+admin_socketio ..> websocket
+meeting_socketio ..> websocket
 
 web_next ..> rest_api
 api_express ..> rest_api
