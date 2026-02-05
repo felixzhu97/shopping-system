@@ -1,65 +1,83 @@
 <div class="meeting-page">
-  <div class="meeting-header">
-    <h2>Team Meeting</h2>
-    <div class="meeting-controls">
-      <input
-        class="form-control form-control-sm"
-        [value]="serverUrl()"
-        (input)="setServerUrl($event)"
-        placeholder="Signal server URL"
-        [disabled]="joined() || busy()"
-      />
-      <input
-        class="form-control form-control-sm"
-        [value]="roomId()"
-        (input)="setRoomId($event)"
-        placeholder="Room ID"
-        [disabled]="joined() || busy()"
-      />
-      <input
-        class="form-control form-control-sm"
-        [value]="displayName()"
-        (input)="setDisplayName($event)"
-        placeholder="Name"
-        [disabled]="joined() || busy()"
-      />
-      <button
-        class="btn btn-sm btn-primary"
-        type="button"
-        (click)="join()"
-        [disabled]="joined() || busy()"
-      >
-        Join
-      </button>
-      <button
-        class="btn btn-sm btn-outline-secondary"
-        type="button"
-        (click)="leave()"
-        [disabled]="!joined()"
-      >
-        Leave
-      </button>
-    </div>
-  </div>
-
   <div class="meeting-body">
     <div class="meeting-videos">
+      <div class="video-controls">
+        <h2 class="video-controls-title">Video</h2>
+        <div class="video-controls-row">
+          <input
+            class="form-control form-control-sm"
+            [value]="serverUrl()"
+            (input)="setServerUrl($event)"
+            placeholder="Signal server URL"
+            [disabled]="joined() || busy()"
+          />
+          <input
+            class="form-control form-control-sm"
+            [value]="roomId()"
+            (input)="setRoomId($event)"
+            placeholder="Room ID"
+            [disabled]="joined() || busy()"
+          />
+          <input
+            class="form-control form-control-sm"
+            [value]="displayName()"
+            (input)="setDisplayName($event)"
+            placeholder="Name"
+            [disabled]="joined() || busy()"
+          />
+          <button
+            class="btn btn-sm btn-primary"
+            type="button"
+            (click)="join()"
+            [disabled]="joined() || busy()"
+          >
+            Join
+          </button>
+          <button
+            class="btn btn-sm btn-outline-secondary"
+            type="button"
+            (click)="leave()"
+            [disabled]="!joined()"
+          >
+            Leave
+          </button>
+          <button
+            class="btn btn-sm btn-outline-secondary video-subtitle-btn"
+            type="button"
+            aria-label="Toggle subtitles"
+            title="Subtitles"
+            (click)="toggleSubtitle()"
+            [disabled]="!sttSupported()"
+            [class.active]="subtitleOn()"
+          >
+            CC
+          </button>
+        </div>
+      </div>
       <div class="video-main">
         <div class="video-title">You</div>
-        <ng-container *ngIf="localStream(); else localPlaceholder">
-          <video
-            [appVideoSrc]="localStream()"
-            autoplay
-            playsinline
-            muted
-          ></video>
-        </ng-container>
-        <ng-template #localPlaceholder>
-          <div class="video-placeholder">
-            <div class="video-placeholder-avatar">You</div>
-            <div class="video-placeholder-text">Camera is off</div>
+        <div class="video-main-wrap">
+          <ng-container *ngIf="localStream(); else localPlaceholder">
+            <video
+              [appVideoSrc]="localStream()"
+              autoplay
+              playsinline
+              muted
+            ></video>
+          </ng-container>
+          <ng-template #localPlaceholder>
+            <div class="video-placeholder">
+              <div class="video-placeholder-avatar">You</div>
+              <div class="video-placeholder-text">Camera is off</div>
+            </div>
+          </ng-template>
+          <div
+            class="video-subtitle"
+            *ngIf="subtitleOn() && subtitleText()"
+          >
+            {{ subtitleText() }}
           </div>
-        </ng-template>
+        </div>
       </div>
 
       <div class="video-grid">
@@ -97,6 +115,16 @@
           <div class="chat-meta">
             <span class="chat-name">{{ m.name }}</span>
             <span class="chat-time">{{ m.timestamp | date: 'HH:mm:ss' }}</span>
+            <button
+              *ngIf="ttsSupported()"
+              type="button"
+              class="chat-msg-speak btn btn-sm btn-link"
+              [attr.aria-label]="'Speak message'"
+              (click)="speakMessage(m)"
+              [disabled]="isSpeaking()"
+            >
+              Speak
+            </button>
           </div>
           <div class="chat-text">
             {{ m.message }}
@@ -111,6 +139,28 @@
           placeholder="Type a message"
           [disabled]="!joined()"
         />
+        <button
+          *ngIf="ttsSupported()"
+          class="btn btn-sm btn-outline-secondary chat-tts-btn"
+          type="button"
+          [attr.aria-label]="'Read aloud'"
+          (click)="isSpeaking() ? stopSpeaking() : speakCurrentInput()"
+          [disabled]="!joined() || !text().trim()"
+          [class.active]="isSpeaking()"
+        >
+          {{ isSpeaking() ? 'Stop' : 'Speak' }}
+        </button>
+        <button
+          *ngIf="sttSupported()"
+          class="btn btn-sm btn-outline-secondary chat-stt-btn"
+          type="button"
+          [attr.aria-label]="'Voice input'"
+          (click)="toggleListen()"
+          [disabled]="!joined()"
+          [class.active]="listenForInput()"
+        >
+          {{ listenForInput() ? 'Stop' : 'Listen' }}
+        </button>
         <button
           class="btn btn-sm btn-primary"
           type="button"

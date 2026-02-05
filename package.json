@@ -19,6 +19,7 @@
     "dev:web": "turbo run dev --filter=web",
     "dev:mobile": "turbo run start --filter=react-native-app",
     "dev:api-web": "turbo run dev --filter=api --filter=web --concurrency=3",
+    "dev:meeting-signal": "turbo run dev --filter=meeting-signal",
     "dev:web:storybook": "turbo run storybook --filter=web",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
