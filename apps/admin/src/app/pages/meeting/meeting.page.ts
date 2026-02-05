@@ -5,12 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { MeetingService } from '../../core/meeting/meeting.service';
 import { VideoSrcDirective } from '../../core/meeting/video-src.directive';
 
-type UiMessage = {
-  fromSelf: boolean;
-  name: string;
-  message: string;
-  timestamp: number;
-};
+type UiMessage = { name: string; message: string; timestamp: number };
 
 interface SpeechRecognitionResultList {
   length: number;
@@ -64,6 +59,7 @@ export class MeetingPage implements OnDestroy {
   protected readonly sttSupported = signal<boolean>(false);
 
   private static readonly SUBTITLE_HIDE_DELAY_MS = 4000;
+  private static readonly SUBTITLE_MAX_LENGTH = 100;
 
   private recognition: SpeechRecognition | null = null;
   private synthesisUtterance: SpeechSynthesisUtterance | null = null;
@@ -79,15 +75,9 @@ export class MeetingPage implements OnDestroy {
       const Recognition = window.SpeechRecognition ?? window.webkitSpeechRecognition;
       this.sttSupported.set(!!Recognition);
     }
-    this.uiMessages = computed(() => {
-      const raw = this.meeting.messages();
-      return raw.map(m => ({
-        fromSelf: false,
-        name: m.name,
-        message: m.message,
-        timestamp: m.timestamp
-      }));
-    });
+    this.uiMessages = computed(() =>
+      this.meeting.messages().map(m => ({ name: m.name, message: m.message, timestamp: m.timestamp }))
+    );
 
     effect(() => {
       const _ = this.uiMessages();
@@ -136,30 +126,20 @@ export class MeetingPage implements OnDestroy {
   }
 
   protected toggleSubtitle(): void {
-    if (!this.sttSupported()) {
-      return;
-    }
+    if (!this.sttSupported()) return;
     const next = !this.subtitleOn();
     this.subtitleOn.set(next);
-    if (next) {
-      this.subtitleText.set('');
-      this.subtitleFinalAccumulated = '';
-      if (this.subtitleHideTimer !== null) {
-        clearTimeout(this.subtitleHideTimer);
-        this.subtitleHideTimer = null;
-      }
-      if (!this.isListening()) {
-        this.startListening();
-      }
-    } else {
-      this.subtitleText.set('');
-      if (this.subtitleHideTimer !== null) {
-        clearTimeout(this.subtitleHideTimer);
-        this.subtitleHideTimer = null;
-      }
-      if (!this.listenForInput()) {
-        this.stopListening();
-      }
+    this.clearSubtitleState();
+    if (next && !this.isListening()) this.startListening();
+    else if (!next && !this.listenForInput()) this.stopListening();
+  }
+
+  private clearSubtitleState(): void {
+    this.subtitleText.set('');
+    this.subtitleFinalAccumulated = '';
+    if (this.subtitleHideTimer !== null) {
+      clearTimeout(this.subtitleHideTimer);
+      this.subtitleHideTimer = null;
     }
   }
 
@@ -190,36 +170,24 @@ export class MeetingPage implements OnDestroy {
     this.meeting.leave();
   }
 
-  protected setServerUrl(event: Event): void {
-    const target = event.target as HTMLInputElement | null;
-    if (!target) {
-      return;
-    }
-    this.serverUrl.set(target.value);
+  protected setServerUrl(e: Event): void {
+    const v = (e.target as HTMLInputElement | null)?.value;
+    if (v !== undefined) this.serverUrl.set(v);
   }
 
-  protected setRoomId(event: Event): void {
-    const target = event.target as HTMLInputElement | null;
-    if (!target) {
-      return;
-    }
-    this.roomId.set(target.value);
+  protected setRoomId(e: Event): void {
+    const v = (e.target as HTMLInputElement | null)?.value;
+    if (v !== undefined) this.roomId.set(v);
   }
 
-  protected setDisplayName(event: Event): void {
-    const target = event.target as HTMLInputElement | null;
-    if (!target) {
-      return;
-    }
-    this.displayName.set(target.value);
+  protected setDisplayName(e: Event): void {
+    const v = (e.target as HTMLInputElement | null)?.value;
+    if (v !== undefined) this.displayName.set(v);
   }
 
-  protected setText(event: Event): void {
-    const target = event.target as HTMLInputElement | null;
-    if (!target) {
-      return;
-    }
-    this.text.set(target.value);
+  protected setText(e: Event): void {
+    const v = (e.target as HTMLInputElement | null)?.value;
+    if (v !== undefined) this.text.set(v);
   }
 
   protected send(): void {
@@ -267,20 +235,11 @@ export class MeetingPage implements OnDestroy {
   }
 
   protected toggleListen(): void {
-    if (!this.sttSupported()) {
-      return;
-    }
+    if (!this.sttSupported()) return;
     const next = !this.listenForInput();
     this.listenForInput.set(next);
-    if (next) {
-      if (!this.isListening()) {
-        this.startListening();
-      }
-    } else {
-      if (!this.subtitleOn()) {
-        this.stopListening();
-      }
-    }
+    if (next && !this.isListening()) this.startListening();
+    else if (!next && !this.subtitleOn()) this.stopListening();
   }
 
   private startListening(): void {
@@ -304,30 +263,34 @@ export class MeetingPage implements OnDestroy {
           interim += transcript;
         }
       }
-      const newAccumulated = final
+      let newAccumulated = final
         ? (this.subtitleFinalAccumulated + ' ' + final).trim()
         : this.subtitleFinalAccumulated;
-      const display = (newAccumulated + (interim ? ' ' + interim : '')).trim();
+      let display = (newAccumulated + (interim ? ' ' + interim : '')).trim();
+      if (display.length > MeetingPage.SUBTITLE_MAX_LENGTH) {
+        const newPart = (final + (interim ? ' ' + interim : '')).trim();
+        newAccumulated = newPart;
+        display = newPart;
+      }
+      const acc = newAccumulated;
+      const txt = display;
       this.ngZone.run(() => {
         if (final) {
-          this.subtitleFinalAccumulated = newAccumulated;
+          this.subtitleFinalAccumulated = acc;
           if (this.listenForInput()) {
             const current = this.text().trim();
             this.text.set(current ? `${current} ${final}` : final);
           }
         }
         if (this.subtitleOn()) {
-          this.subtitleText.set(display);
+          this.subtitleText.set(txt);
           this.scheduleSubtitleHide();
         }
       });
     };
     this.recognition.onend = () => this.ngZone.run(() => this.isListening.set(false));
     this.recognition.onerror = () => this.ngZone.run(() => this.isListening.set(false));
-    this.subtitleFinalAccumulated = '';
-    this.subtitleText.set('');
-    this.subtitleHideTimer !== null && clearTimeout(this.subtitleHideTimer);
-    this.subtitleHideTimer = null;
+    this.clearSubtitleState();
     this.recognition.start();
     this.isListening.set(true);
   }
@@ -338,16 +301,11 @@ export class MeetingPage implements OnDestroy {
       this.recognition = null;
     }
     this.isListening.set(false);
-    this.subtitleFinalAccumulated = '';
-    this.subtitleText.set('');
-    if (this.subtitleHideTimer !== null) {
-      clearTimeout(this.subtitleHideTimer);
-      this.subtitleHideTimer = null;
-    }
+    this.clearSubtitleState();
   }
 
   ngOnDestroy(): void {
-    this.subtitleHideTimer !== null && clearTimeout(this.subtitleHideTimer);
+    this.clearSubtitleState();
     this.stopSpeaking();
     this.stopListening();
   }
