@@ -40,6 +40,9 @@ class ScrapedProduct(BaseModel):
     sku: Optional[str] = None
     availability: Optional[str] = None
     scraped_at: str
+    raw_html: Optional[str] = None
+    page_info: Dict[str, Any] = Field(default_factory=dict)
+    page_markdown: Optional[str] = None
 
 
 JobStatus = Literal["queued", "running", "completed", "failed"]

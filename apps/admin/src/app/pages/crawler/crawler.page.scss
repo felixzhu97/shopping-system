@@ -14,3 +14,16 @@
   line-height: 1.4;
 }
 
+.items-scroll {
+  max-height: 260px;
+  overflow: auto;
+}
+
+.tab-pane {
+  display: none;
+}
+
+.tab-pane.active {
+  display: block;
+}
+

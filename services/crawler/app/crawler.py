@@ -3,8 +3,8 @@ from __future__ import annotations
 import asyncio
 import re
 from datetime import datetime, timezone
-from typing import List, Optional, Set
-from urllib.parse import urljoin
+from typing import Dict, List, Optional, Set
+from urllib.parse import urljoin, urlparse
 
 import httpx
 from bs4 import BeautifulSoup
@@ -71,6 +71,87 @@ def _extract_links(html: str, base_url: str, selector: str, attribute: str) -> L
     return list(urls)
 
 
+def _build_page_info(html: str, url: str) -> Dict[str, object]:
+    soup = BeautifulSoup(html, "html.parser")
+    title = _normalize_text(soup.title.string) if soup.title and soup.title.string else None
+
+    description = None
+    desc_node = soup.find("meta", attrs={"name": "description"})
+    if desc_node and desc_node.get("content"):
+        description = _normalize_text(desc_node.get("content"))
+
+    headings: List[str] = []
+    for h in soup.select("h1, h2, h3"):
+        text = _normalize_text(h.get_text())
+        if text:
+            headings.append(text)
+
+    paragraphs: List[str] = []
+    for p in soup.find_all("p"):
+        text = _normalize_text(p.get_text())
+        if text:
+            paragraphs.append(text)
+        if len(paragraphs) >= 20:
+            break
+
+    links: List[Dict[str, str]] = []
+    for a in soup.find_all("a", href=True):
+        href = urljoin(url, a.get("href", ""))
+        text = _normalize_text(a.get_text()) or href
+        links.append({"text": text, "href": href})
+        if len(links) >= 50:
+            break
+
+    domain = urlparse(url).netloc
+
+    return {
+        "url": url,
+        "domain": domain,
+        "title": title,
+        "description": description,
+        "headings": headings,
+        "paragraphs": paragraphs,
+        "links": links,
+    }
+
+
+def _build_page_markdown(info: Dict[str, object]) -> str:
+    lines: List[str] = []
+    title = info.get("title") or info.get("url")
+    lines.append(f"# {title}")
+    desc = info.get("description")
+    if isinstance(desc, str) and desc:
+        lines.append("")
+        lines.append(desc)
+
+    headings = info.get("headings") or []
+    if isinstance(headings, list) and headings:
+        lines.append("")
+        lines.append("## Headings")
+        for h in headings:
+            lines.append(f"- {h}")
+
+    paragraphs = info.get("paragraphs") or []
+    if isinstance(paragraphs, list) and paragraphs:
+        lines.append("")
+        lines.append("## Content")
+        for p in paragraphs[:5]:
+            lines.append("")
+            lines.append(p)
+
+    links = info.get("links") or []
+    if isinstance(links, list) and links:
+        lines.append("")
+        lines.append("## Links")
+        for link in links:
+            href = link.get("href") if isinstance(link, dict) else None
+            text = link.get("text") if isinstance(link, dict) else None
+            if href:
+                lines.append(f"- [{text or href}]({href})")
+
+    return "\n".join(lines)
+
+
 async def _fetch_text(client: httpx.AsyncClient, url: str) -> str:
     resp = await client.get(url)
     resp.raise_for_status()
@@ -104,6 +185,9 @@ async def _scrape_product(
     sku = _extract_text(html, selectors.product.sku)
     availability = _extract_text(html, selectors.product.availability)
 
+    page_info = _build_page_info(html, url)
+    page_markdown = _build_page_markdown(page_info)
+
     return ScrapedProduct(
         source=source_name,
         url=url,
@@ -114,6 +198,9 @@ async def _scrape_product(
         sku=sku,
         availability=availability,
         scraped_at=_now_iso(),
+        raw_html=html,
+        page_info=page_info,
+        page_markdown=page_markdown,
     )
 
 

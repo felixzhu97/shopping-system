@@ -16,10 +16,25 @@ export type JobView = {
   error?: string | null;
 };
 
+export type ScrapedPage = {
+  source: string;
+  url: string;
+  title?: string | null;
+  price?: number | null;
+  currency?: string | null;
+  image_url?: string | null;
+  sku?: string | null;
+  availability?: string | null;
+  scraped_at: string;
+  raw_html?: string | null;
+  page_info?: Record<string, unknown>;
+  page_markdown?: string | null;
+};
+
 export type JobItemsView = {
   id: string;
   status: JobView['status'];
-  items: unknown[];
+  items: ScrapedPage[];
   meta?: Record<string, unknown>;
 };
 

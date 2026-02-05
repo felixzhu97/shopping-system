@@ -34,23 +34,121 @@
     <div class="col-12 col-lg-6">
       <div class="card h-100">
         <div class="card-body">
-          <div class="fw-semibold mb-3">Request body (JSON)</div>
-          <textarea class="form-control font-monospace textarea" [formControl]="form.controls.requestBody" spellcheck="false"></textarea>
+          <div class="fw-semibold mb-2">Page URL</div>
+          <div class="text-muted small mb-3">
+            Enter a single page URL to crawl and view its extracted information.
+          </div>
+
+          <div>
+            <label class="form-label form-label-sm">Page URL</label>
+            <input
+              class="form-control form-control-sm"
+              [formControl]="form.controls.pageUrl"
+              placeholder="https://example.com/product/123"
+            />
+          </div>
         </div>
       </div>
     </div>
 
     <div class="col-12 col-lg-6">
       <div class="card h-100">
-        <div class="card-body">
+        <div class="card-body d-flex flex-column">
           <div class="fw-semibold mb-3">Response</div>
+
           <div class="mb-3">
-            <div class="text-muted small mb-1">Job</div>
-            <pre class="border rounded p-2 bg-light pre">{{ job() | json }}</pre>
+            <div class="d-flex justify-content-between align-items-center mb-1">
+              <div class="text-muted small">
+                Job
+                <span *ngIf="!job()"> · No job loaded</span>
+                <span *ngIf="job() as j"> · {{ j.status }} · {{ j.count }} items</span>
+              </div>
+              <span class="badge bg-secondary" *ngIf="job() as j">{{ j.status }}</span>
+            </div>
+            <pre class="border rounded p-2 bg-light pre small">{{ job() | json }}</pre>
           </div>
-          <div>
-            <div class="text-muted small mb-1">Items</div>
-            <pre class="border rounded p-2 bg-light pre">{{ items() | json }}</pre>
+
+          <div class="flex-grow-1 d-flex flex-column">
+            <ul class="nav nav-tabs nav-tabs-sm mb-2">
+              <li class="nav-item">
+                <button
+                  class="nav-link"
+                  [class.active]="activeTab() === 'summary'"
+                  (click)="setTab('summary')"
+                  type="button"
+                >
+                  Summary
+                </button>
+              </li>
+              <li class="nav-item">
+                <button
+                  class="nav-link"
+                  [class.active]="activeTab() === 'json'"
+                  (click)="setTab('json')"
+                  type="button"
+                >
+                  Page JSON
+                </button>
+              </li>
+              <li class="nav-item">
+                <button
+                  class="nav-link"
+                  [class.active]="activeTab() === 'markdown'"
+                  (click)="setTab('markdown')"
+                  type="button"
+                >
+                  Markdown
+                </button>
+              </li>
+              <li class="nav-item">
+                <button
+                  class="nav-link"
+                  [class.active]="activeTab() === 'raw'"
+                  (click)="setTab('raw')"
+                  type="button"
+                >
+                  Raw response
+                </button>
+              </li>
+            </ul>
+
+            <div class="tab-content flex-grow-1">
+              <div class="tab-pane h-100" [class.active]="activeTab() === 'summary'">
+                <div class="text-muted small mb-1">
+                  Items
+                  <span *ngIf="!items()"> · No items loaded</span>
+                  <span *ngIf="items()"> · {{ (items()?.items?.length || 0) }} items loaded</span>
+                </div>
+                <div *ngIf="items()?.items as list" class="items-scroll">
+                  <div *ngFor="let it of list" class="border rounded p-2 mb-2 bg-white">
+                    <div class="fw-semibold small text-truncate">{{ it.title || it.url }}</div>
+                    <div class="small text-muted mb-1 text-truncate">
+                      {{ it.price }} {{ it.currency }} · {{ it.source }}
+                    </div>
+                    <div class="small mb-1 text-truncate">
+                      <a [href]="it.url" target="_blank" rel="noreferrer">{{ it.url }}</a>
+                    </div>
+                    <div class="small text-muted">Scraped at: {{ it.scraped_at }}</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="tab-pane h-100" [class.active]="activeTab() === 'json'">
+                <div *ngIf="items()?.items?.[0] as first" class="h-100">
+                  <pre class="border rounded p-2 bg-light pre h-100">{{ first.page_info || first | json }}</pre>
+                </div>
+              </div>
+
+              <div class="tab-pane h-100" [class.active]="activeTab() === 'markdown'">
+                <div *ngIf="items()?.items?.[0] as first" class="h-100">
+                  <pre class="border rounded p-2 bg-light pre h-100">{{ first.page_markdown }}</pre>
+                </div>
+              </div>
+
+              <div class="tab-pane h-100" [class.active]="activeTab() === 'raw'">
+                <pre class="border rounded p-2 bg-light pre h-100">{{ items() | json }}</pre>
+              </div>
+            </div>
           </div>
         </div>
       </div>

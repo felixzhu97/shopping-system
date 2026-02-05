@@ -30,6 +30,7 @@
     "start": "turbo run start",
     "start:api": "turbo run start --filter=api",
     "start:web": "turbo run start --filter=web",
+    "start:crawler": "cd services/crawler && uvicorn app.main:app --host 0.0.0.0 --port 8000",
     "clean": "turbo run clean && rm -rf node_modules",
     "clean:api": "turbo run clean --filter=api",
     "clean:web": "turbo run clean --filter=web",
