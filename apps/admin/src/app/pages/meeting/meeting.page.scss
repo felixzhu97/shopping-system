@@ -47,6 +47,10 @@
   width: 160px;
 }
 
+.video-translate-select {
+  width: 130px;
+}
+
 .video-main {
   background-color: #ffffff;
   border-radius: 10px;
@@ -101,11 +105,14 @@
   background: rgba(8, 8, 8, 0.85);
   border-radius: 4px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.video-subtitle-translated {
+  font-size: 14px;
+  opacity: 0.9;
 }
 
 .video-grid {
@@ -177,11 +184,19 @@
 }
 
 .chat-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
   padding: 8px 10px;
   border-bottom: 1px solid #d0d7e2;
   font-size: 13px;
   color: #111827;
   background-color: #f3f4f6;
+}
+
+.chat-translate-select {
+  width: 130px;
 }
 
 .chat-messages {
@@ -209,10 +224,19 @@
   color: #6b7280;
 }
 
-.chat-msg-speak {
+.chat-msg-speak,
+.chat-msg-translate {
   padding: 0 4px;
   font-size: 11px;
   margin-left: auto;
+}
+
+.chat-text-translated {
+  font-size: 12px;
+  color: #4b5563;
+  margin-top: 2px;
+  padding-top: 2px;
+  border-top: 1px solid #e5e7eb;
 }
 
 .chat-text {

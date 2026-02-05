@@ -21,10 +21,10 @@ This directory contains architecture documentation and PlantUML diagrams for the
 
 ## TOGAF views
 
-- `togaf/business-architecture.puml`
-- `togaf/application-architecture.puml`
+- `togaf/business-architecture.puml` (capabilities, processes, meeting with live subtitles and translation)
+- `togaf/application-architecture.puml` (apps, services, meeting-signal, speech, subtitles, translation)
 - `togaf/data-architecture.puml`
-- `togaf/technology-architecture.puml`
+- `togaf/technology-architecture.puml` (Web Speech API, Socket.IO, WebRTC, MyMemory translation API)
 
 ## Viewing diagrams
 

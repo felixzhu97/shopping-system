@@ -35,3 +35,4 @@ The API base URL and admin secret are handled by the server and admin app automa
 - Products: list/create/delete
 - Orders: list by status, update status
 - Users: list
+- Meeting: join WebRTC room, video, chat, TTS/STT, live subtitles (CC). Translation (MyMemory API): separate language selects for subtitles and chat; subtitles and chat messages can be translated to multiple target languages.

@@ -30,6 +30,7 @@ pnpm dev:api
 pnpm dev:admin
 pnpm dev:mobile
 pnpm dev:api-web
+pnpm dev:meeting-signal
 pnpm dev:web:storybook
 ```
 
@@ -75,8 +76,9 @@ shopping-system/
 
 - Web app: `apps/web`
 - Mobile app: `apps/mobile`
-- Admin app: `apps/admin`
+- Admin app: `apps/admin` (includes Team Meeting with video, chat, TTS/STT, live subtitles, and translation for subtitles and chat via MyMemory API)
 - API service: `services/api` (see `services/api/README.md` for env vars and endpoints)
+- Meeting signal service: `services/meeting-signal` (Socket.IO signaling for WebRTC rooms and chat; default port 4100)
 
 ## Contributing
 

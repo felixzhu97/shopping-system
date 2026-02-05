@@ -52,6 +52,17 @@
           >
             CC
           </button>
+          <select
+            class="form-select form-select-sm video-translate-select"
+            [value]="targetLang()"
+            (change)="setTargetLang($event)"
+            title="Translate subtitles to"
+          >
+            <option value="">No translation</option>
+            <option *ngFor="let lang of translateLanguages" [value]="lang.code">
+              {{ lang.name }}
+            </option>
+          </select>
         </div>
       </div>
       <div class="video-main">
@@ -73,9 +84,12 @@
           </ng-template>
           <div
             class="video-subtitle"
-            *ngIf="subtitleOn() && subtitleText()"
+            *ngIf="subtitleOn() && (subtitleText() || subtitleTranslated())"
           >
-            {{ subtitleText() }}
+            <span *ngIf="subtitleText()">{{ subtitleText() }}</span>
+            <span class="video-subtitle-translated" *ngIf="subtitleTranslated()">
+              {{ subtitleTranslated() }}
+            </span>
           </div>
         </div>
       </div>
@@ -106,7 +120,20 @@
     </div>
 
     <div class="meeting-chat">
-      <div class="chat-header">Chat</div>
+      <div class="chat-header">
+        <span>Chat</span>
+        <select
+          class="form-select form-select-sm chat-translate-select"
+          [value]="chatTargetLang()"
+          (change)="setChatTargetLang($event)"
+          title="Translate chat to"
+        >
+          <option value="">No translation</option>
+          <option *ngFor="let lang of translateLanguages" [value]="lang.code">
+            {{ lang.name }}
+          </option>
+        </select>
+      </div>
       <div #chatMessagesContainer class="chat-messages">
         <div
           class="chat-message"
@@ -125,9 +152,20 @@
             >
               Speak
             </button>
+            <button
+              *ngIf="chatTargetLang()"
+              type="button"
+              class="chat-msg-translate btn btn-sm btn-link"
+              aria-label="Translate message"
+              (click)="translateMessage(m)"
+              [disabled]="translatingMessageKey() === msgKey(m)"
+            >
+              {{ translatingMessageKey() === msgKey(m) ? '...' : 'Translate' }}
+            </button>
           </div>
-          <div class="chat-text">
-            {{ m.message }}
+          <div class="chat-text">{{ m.message }}</div>
+          <div class="chat-text chat-text-translated" *ngIf="translatedFor(m)">
+            {{ translatedFor(m) }}
           </div>
         </div>
       </div>

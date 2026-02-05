@@ -1,9 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, NgZone, OnDestroy, Signal, ViewChild, computed, effect, signal } from '@angular/core';
+import { Component, DestroyRef, ElementRef, NgZone, OnDestroy, Signal, ViewChild, computed, effect, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
+import { of, Subject } from 'rxjs';
+import { catchError, debounceTime, switchMap } from 'rxjs/operators';
 
 import { MeetingService } from '../../core/meeting/meeting.service';
 import { VideoSrcDirective } from '../../core/meeting/video-src.directive';
+import { TRANSLATE_LANGUAGES, TranslateService } from '../../core/translate/translate.service';
 
 type UiMessage = { name: string; message: string; timestamp: number };
 
@@ -57,6 +61,12 @@ export class MeetingPage implements OnDestroy {
   protected readonly subtitleOn = signal<boolean>(false);
   protected readonly ttsSupported = signal<boolean>(false);
   protected readonly sttSupported = signal<boolean>(false);
+  protected readonly targetLang = signal<string>('');
+  protected readonly chatTargetLang = signal<string>('');
+  protected readonly subtitleTranslated = signal<string>('');
+  protected readonly translatedMessages = signal<Record<string, string>>({});
+  protected readonly translatingMessageKey = signal<string | null>(null);
+  protected readonly translateLanguages = TRANSLATE_LANGUAGES;
 
   private static readonly SUBTITLE_HIDE_DELAY_MS = 4000;
   private static readonly SUBTITLE_MAX_LENGTH = 100;
@@ -65,10 +75,13 @@ export class MeetingPage implements OnDestroy {
   private synthesisUtterance: SpeechSynthesisUtterance | null = null;
   private subtitleFinalAccumulated = '';
   private subtitleHideTimer: ReturnType<typeof setTimeout> | null = null;
+  private readonly subtitleTranslateTrigger = new Subject<string>();
 
   constructor(
     private readonly meeting: MeetingService,
-    private readonly ngZone: NgZone
+    private readonly ngZone: NgZone,
+    private readonly translate: TranslateService,
+    private readonly destroyRef: DestroyRef
   ) {
     if (typeof window !== 'undefined') {
       this.ttsSupported.set(!!window.speechSynthesis);
@@ -88,6 +101,75 @@ export class MeetingPage implements OnDestroy {
         }
         el.scrollTop = el.scrollHeight;
       });
+    });
+
+    effect(() => {
+      const on = this.subtitleOn();
+      const lang = this.targetLang();
+      const text = this.subtitleText();
+      if (on && lang && text?.trim()) {
+        this.subtitleTranslateTrigger.next(text);
+      } else {
+        this.subtitleTranslated.set('');
+      }
+    });
+
+    this.subtitleTranslateTrigger
+      .pipe(
+        debounceTime(600),
+        switchMap((text) =>
+          this.translate.translate(text, this.targetLang()).pipe(catchError(() => of(text)))
+        ),
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe((t) => this.subtitleTranslated.set(t));
+
+    effect(() => {
+      const lang = this.chatTargetLang();
+      const messages = this.uiMessages();
+      const cache = this.translatedMessages();
+      const loadingKey = this.translatingMessageKey();
+      if (!lang) return;
+      for (const m of messages) {
+        if (!m.message?.trim()) continue;
+        const key = this.msgKey(m);
+        if (!cache[key] && loadingKey !== key) {
+          this.translateMessage(m);
+          return;
+        }
+      }
+    });
+  }
+
+  protected msgKey(m: UiMessage): string {
+    return `${m.timestamp}-${m.name}`;
+  }
+
+  protected translatedFor(m: UiMessage): string {
+    return this.translatedMessages()[this.msgKey(m)] ?? '';
+  }
+
+  protected setTargetLang(e: Event): void {
+    const v = (e.target as HTMLSelectElement | null)?.value;
+    this.targetLang.set(v ?? '');
+  }
+
+  protected setChatTargetLang(e: Event): void {
+    const v = (e.target as HTMLSelectElement | null)?.value;
+    this.chatTargetLang.set(v ?? '');
+    this.translatedMessages.set({});
+  }
+
+  protected translateMessage(m: UiMessage): void {
+    const lang = this.chatTargetLang();
+    if (!m.message?.trim() || !lang) return;
+    const key = this.msgKey(m);
+    this.translatingMessageKey.set(key);
+    this.translate.translate(m.message, lang).pipe(
+      catchError(() => of(m.message))
+    ).subscribe((t) => {
+      this.translatingMessageKey.set(null);
+      this.translatedMessages.update((prev) => ({ ...prev, [key]: t }));
     });
   }
 

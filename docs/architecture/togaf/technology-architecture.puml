@@ -27,6 +27,8 @@ package "Admin (apps/admin)" {
     component [Three.js] as admin_three
     component [socket.io-client] as admin_socketio
     component [WebRTC] as admin_webrtc
+    component [Web Speech API] as admin_speech_api
+    component [MyMemory API\nTranslation] as admin_mymemory
 }
 
 package "Mobile (apps/mobile)" {
@@ -116,6 +118,8 @@ admin_angular --> admin_echarts
 admin_angular --> admin_three
 admin_angular --> admin_socketio
 admin_angular --> admin_webrtc
+admin_angular --> admin_speech_api
+admin_angular --> admin_mymemory
 
 mobile_expo --> mobile_rn
 mobile_rn --> mobile_ts

@@ -21,6 +21,8 @@ package "Admin App (apps/admin)" {
     component [Meeting Client\nsocket.io-client] as admin_meeting_client
     component [MeetingService\nWebRTC] as admin_meeting_service
     component [Video Viewer\nvideo-src directive] as admin_video_viewer
+    component [Speech and Subtitles\nWeb Speech API TTS/STT, live CC] as admin_speech
+    component [TranslateService\nMyMemory API, subtitle + chat translation] as admin_translate
 }
 
 package "Mobile App (apps/mobile)" {
@@ -77,6 +79,7 @@ package "Interfaces" {
 database "MongoDB\nAtlas or local" as mongodb
 cloud "Datadog" as datadog
 cloud "External Websites" as external_websites
+cloud "MyMemory Translation API" as mymemory_api
 
 web_app --> web_ui_components
 web_app --> web_state_store
@@ -93,7 +96,12 @@ admin_app --> admin_3d_viewer
 admin_app --> admin_meeting_client
 admin_app --> admin_meeting_service
 admin_app --> admin_video_viewer
+admin_app --> admin_speech
+admin_app --> admin_translate
 admin_app --> pkg_types
+admin_speech --> admin_meeting_service
+admin_translate --> admin_meeting_service
+admin_translate --> mymemory_api
 
 mobile_app --> mobile_api_client
 mobile_app --> mobile_state_store

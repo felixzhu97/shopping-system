@@ -25,7 +25,7 @@ package "Core Business Processes" {
     component [Admin Operations\nManage products, users, orders] as process_admin_ops
     component [Crawling Process\nCreate crawl job -> Collect items -> Review results] as process_crawling
     component [Data Mining Process\nExport data -> Train models -> Produce reports] as process_data_mining
-    component [Meeting Process\nJoin room -> Video/chat -> Leave] as process_meeting
+    component [Meeting Process\nJoin room -> Video/chat -> Live subtitles (CC) -> Translate (subtitles + chat) -> Leave] as process_meeting
 }
 
 package "Business Services" {
