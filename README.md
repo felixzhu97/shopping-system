@@ -34,6 +34,36 @@ pnpm dev:meeting-signal
 pnpm dev:web:storybook
 ```
 
+### Local HTTPS (development)
+
+For local development with encrypted traffic between browser and web app:
+
+1. Generate a local certificate with `mkcert`:
+   - `brew install mkcert nss`
+   - `mkcert -install`
+   - `mkdir -p ~/certs && cd ~/certs && mkcert localhost 127.0.0.1 ::1`
+2. Configure local Nginx (e.g. `/opt/homebrew/etc/nginx/nginx.conf`) with an HTTPS server:
+
+```nginx
+server {
+    listen 443 ssl;
+    server_name localhost;
+
+    ssl_certificate     /Users/<user>/certs/localhost+2.pem;
+    ssl_certificate_key /Users/<user>/certs/localhost+2-key.pem;
+
+    location / {
+        proxy_pass http://127.0.0.1:3000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto https;
+    }
+}
+```
+
+3. Start the web app with `pnpm dev:web` (Next.js on `http://localhost:3000`) and Nginx, then access the storefront via `https://localhost`.
+
 ## Common commands
 
 ```bash

@@ -77,6 +77,10 @@ package "Interfaces" {
     interface "WebSocket\nSocket.IO" as websocket
 }
 
+package "Local Dev Infrastructure" {
+    component [HTTPS Proxy\nNginx + mkcert] as dev_https_proxy
+}
+
 database "MongoDB\nAtlas or local" as mongodb
 cloud "Datadog" as datadog
 cloud "External Websites" as external_websites
@@ -110,6 +114,9 @@ mobile_app --> mobile_api_client
 mobile_app --> mobile_state_store
 mobile_app --> pkg_types
 mobile_app --> pkg_utils
+
+web_app --> dev_https_proxy
+dev_https_proxy --> rest_api
 
 web_api_client --> rest_api
 web_api_client --> jwt_auth
