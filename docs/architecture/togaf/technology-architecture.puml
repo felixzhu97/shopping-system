@@ -24,6 +24,7 @@ package "Admin (apps/admin)" {
     component [Bootstrap] as admin_bootstrap
     component [Chart.js] as admin_chartjs
     component [ECharts] as admin_echarts
+    component [AG Grid] as admin_aggrid
     component [Three.js] as admin_three
     component [socket.io-client] as admin_socketio
     component [WebRTC] as admin_webrtc
@@ -115,6 +116,7 @@ admin_angular --> admin_http
 admin_angular --> admin_bootstrap
 admin_angular --> admin_chartjs
 admin_angular --> admin_echarts
+admin_angular --> admin_aggrid
 admin_angular --> admin_three
 admin_angular --> admin_socketio
 admin_angular --> admin_webrtc

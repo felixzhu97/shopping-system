@@ -16,6 +16,7 @@ package "Web App (apps/web)" {
 package "Admin App (apps/admin)" {
     component [Admin App\nAngular] as admin_app
     component [Admin API Client\nAngular HttpClient] as admin_api_client
+    component [Analytics Dashboard\nECharts, AG Grid, Orders/Products/Users tabs] as admin_analytics
     component [Crawler Client\nAngular HttpClient] as admin_crawler_client
     component [3D Viewer\nThree.js] as admin_3d_viewer
     component [Meeting Client\nsocket.io-client] as admin_meeting_client
@@ -91,8 +92,10 @@ web_app --> pkg_monitoring
 web_app --> pkg_auth
 
 admin_app --> admin_api_client
+admin_app --> admin_analytics
 admin_app --> admin_crawler_client
 admin_app --> admin_3d_viewer
+admin_analytics --> admin_api_client
 admin_app --> admin_meeting_client
 admin_app --> admin_meeting_service
 admin_app --> admin_video_viewer

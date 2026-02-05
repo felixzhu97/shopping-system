@@ -1,54 +1,181 @@
-<div class="container-fluid">
-  <div class="d-flex align-items-center justify-content-between mb-3">
-    <div class="h5 mb-0">Analytics</div>
-    <button class="btn btn-outline-secondary btn-sm" type="button" (click)="refresh()" [disabled]="loading()">
+<div class="analytics-page">
+  <header class="page-header">
+    <h1 class="page-title">Analytics</h1>
+    <button
+      class="btn btn-outline-secondary btn-sm"
+      type="button"
+      (click)="refresh()"
+      [disabled]="(activeTab() === 'orders' && loading()) || (activeTab() === 'products' && productsLoading()) || (activeTab() === 'users' && usersLoading())"
+    >
       Refresh
     </button>
-  </div>
+  </header>
 
-  <div class="card">
+  <nav class="analytics-tabs" aria-label="Analytics sections">
+    <button
+      type="button"
+      id="tab-orders"
+      class="tab-btn"
+      [class.active]="activeTab() === 'orders'"
+      (click)="setActiveTab('orders')"
+    >
+      Orders
+    </button>
+    <button
+      type="button"
+      id="tab-products"
+      class="tab-btn"
+      [class.active]="activeTab() === 'products'"
+      (click)="setActiveTab('products')"
+    >
+      Products
+    </button>
+    <button
+      type="button"
+      id="tab-users"
+      class="tab-btn"
+      [class.active]="activeTab() === 'users'"
+      (click)="setActiveTab('users')"
+    >
+      Users
+    </button>
+  </nav>
+
+  <div class="card dashboard-card">
     <div class="card-body">
-      <div class="text-danger small mb-2" *ngIf="error()">{{ error() }}</div>
-
-      <div class="row g-2">
-        <div class="col-12 col-md-6">
-          <div class="card bg-light border-0">
-            <div class="card-body">
-              <div class="text-muted small">Total orders</div>
-              <div class="h3 mb-0">{{ totalOrders() }}</div>
-            </div>
-          </div>
-        </div>
-        <div class="col-12 col-md-6">
-          <div class="card bg-light border-0">
-            <div class="card-body">
-              <div class="text-muted small">Total revenue</div>
-              <div class="h3 mb-0">{{ totalRevenue() | number : '1.0-2' }}</div>
-            </div>
-          </div>
-        </div>
+      <div class="text-danger small mb-2" *ngIf="activeTab() === 'orders' && error()">{{ error() }}</div>
+      <div class="text-danger small mb-2" *ngIf="activeTab() === 'products' && productsError()">
+        {{ productsError() }}
+      </div>
+      <div class="text-danger small mb-2" *ngIf="activeTab() === 'users' && usersError()">
+        {{ usersError() }}
       </div>
 
-      <div class="row g-3 mt-1">
-        <div class="col-12 col-lg-6">
-          <div class="card bg-light border-0 h-100">
-            <div class="card-body">
-              <div class="fw-semibold mb-2">Orders by status</div>
-              <div class="chart" #statusChart></div>
+      <div [class.tab-panel-hidden]="activeTab() !== 'orders'" role="tabpanel" aria-labelledby="tab-orders">
+        <section class="kpi-section" aria-label="Key metrics">
+          <div class="kpi-grid">
+            <div class="kpi-card">
+              <div class="kpi-label">Total Orders</div>
+              <div class="kpi-value">{{ totalOrders() | number }}</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">Total Revenue</div>
+              <div class="kpi-value">{{ formatCurrency(totalRevenue()) }}</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">Average Order Value</div>
+              <div class="kpi-value">{{ formatCurrency(averageOrderValue()) }}</div>
             </div>
           </div>
-        </div>
+        </section>
 
-        <div class="col-12 col-lg-6">
-          <div class="card bg-light border-0 h-100">
-            <div class="card-body">
-              <div class="fw-semibold mb-2">Revenue over time</div>
-              <div class="chart" #revenueChart></div>
+        <section class="charts-section">
+          <div class="chart-row chart-row-four">
+            <div class="chart-card"><div class="chart-wrap chart-wrap-sm" #ordersBarChart></div></div>
+            <div class="chart-card"><div class="chart-wrap chart-wrap-sm" #ordersLineChart></div></div>
+            <div class="chart-card"><div class="chart-wrap chart-wrap-sm" #ordersScatterChart></div></div>
+            <div class="chart-card"><div class="chart-wrap chart-wrap-sm" #ordersPieChart></div></div>
+          </div>
+        </section>
+
+        <section class="table-section" aria-label="Orders by status breakdown">
+          <h2 class="table-section-title">Orders by Status</h2>
+          <ag-grid-angular
+            class="ag-theme-quartz analytics-grid analytics-grid-status"
+            [gridOptions]="statusGridOptions"
+            [rowData]="statusStats()"
+            [columnDefs]="statusColumnDefs"
+            [defaultColDef]="statusDefaultColDef"
+            [getRowId]="statusGetRowId"
+          />
+        </section>
+      </div>
+
+      <div [class.tab-panel-hidden]="activeTab() !== 'products'" role="tabpanel" aria-labelledby="tab-products">
+        <section class="kpi-section" aria-label="Product metrics">
+          <div class="kpi-grid">
+            <div class="kpi-card">
+              <div class="kpi-label">Total Products</div>
+              <div class="kpi-value">{{ totalProducts() | number }}</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">Inventory Value</div>
+              <div class="kpi-value">{{ formatCurrency(totalInventoryValue()) }}</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">Categories</div>
+              <div class="kpi-value">{{ categoryStats().length | number }}</div>
             </div>
           </div>
-        </div>
+        </section>
+
+        <section class="charts-section">
+          <div class="chart-row chart-row-four">
+            <div class="chart-card"><div class="chart-wrap chart-wrap-sm" #productsBarChart></div></div>
+            <div class="chart-card"><div class="chart-wrap chart-wrap-sm" #productsLineChart></div></div>
+            <div class="chart-card"><div class="chart-wrap chart-wrap-sm" #productsScatterChart></div></div>
+            <div class="chart-card"><div class="chart-wrap chart-wrap-sm" #productsPieChart></div></div>
+          </div>
+        </section>
+
+        <section class="table-section" aria-label="Product list for analysis">
+          <h2 class="table-section-title">Product Data</h2>
+          <div class="analytics-grid-wrap product-table-scroll">
+            <ag-grid-angular
+              class="ag-theme-quartz analytics-grid analytics-grid-products"
+              [gridOptions]="productsGridOptions"
+              [rowData]="products()"
+              [columnDefs]="productsColumnDefs"
+              [defaultColDef]="productsDefaultColDef"
+              [getRowId]="productsGetRowId"
+            />
+          </div>
+        </section>
+      </div>
+
+      <div [class.tab-panel-hidden]="activeTab() !== 'users'" role="tabpanel" aria-labelledby="tab-users">
+        <section class="kpi-section" aria-label="User metrics">
+          <div class="kpi-grid">
+            <div class="kpi-card">
+              <div class="kpi-label">Total Users</div>
+              <div class="kpi-value">{{ totalUsers() | number }}</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">With Phone</div>
+              <div class="kpi-value">{{ usersWithPhone() | number }}</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">Roles</div>
+              <div class="kpi-value">{{ roleStats().length | number }}</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="charts-section">
+          <div class="chart-row chart-row-four">
+            <div class="chart-card"><div class="chart-wrap chart-wrap-sm" #usersBarChart></div></div>
+            <div class="chart-card"><div class="chart-wrap chart-wrap-sm" #usersLineChart></div></div>
+            <div class="chart-card"><div class="chart-wrap chart-wrap-sm" #usersScatterChart></div></div>
+            <div class="chart-card"><div class="chart-wrap chart-wrap-sm" #usersPieChart></div></div>
+          </div>
+        </section>
+
+        <section class="table-section" aria-label="User list">
+          <h2 class="table-section-title">User Data</h2>
+          <div class="analytics-grid-wrap product-table-scroll">
+            <ag-grid-angular
+              class="ag-theme-quartz analytics-grid analytics-grid-users"
+              [gridOptions]="usersGridOptions"
+              [rowData]="users()"
+              [columnDefs]="usersColumnDefs"
+              [defaultColDef]="usersDefaultColDef"
+              [getRowId]="usersGetRowId"
+            />
+          </div>
+        </section>
       </div>
     </div>
   </div>
 </div>
+
 

@@ -27,7 +27,7 @@ export class OrdersPage implements OnInit {
     if (!q) return this.orders();
     return this.orders().filter(o => {
       const id = this.getId(o);
-      const user = typeof o.userId === 'string' ? o.userId : JSON.stringify(o.userId ?? '');
+      const user = this.getUserDisplay(o.userId);
       const text = `${id} ${o.status ?? ''} ${user}`.toLowerCase();
       return text.includes(q);
     });
@@ -61,11 +61,8 @@ export class OrdersPage implements OnInit {
     { headerName: 'Id', valueGetter: p => this.getId(p.data ?? {}), minWidth: 220 },
     {
       headerName: 'User',
-      valueGetter: p => {
-        const v = p.data?.userId;
-        return typeof v === 'string' ? v : JSON.stringify(v ?? '');
-      },
-      minWidth: 220,
+      valueGetter: p => this.getUserDisplay(p.data?.userId),
+      minWidth: 180,
     },
     { field: 'totalAmount', headerName: 'Total', maxWidth: 160,  valueFormatter: p => String(p.value ?? '') },
     {
@@ -108,6 +105,13 @@ export class OrdersPage implements OnInit {
 
   protected getId(value: { id?: string; _id?: string }): string {
     return value.id || value._id || '';
+  }
+
+  protected getUserDisplay(userId: unknown): string {
+    if (userId == null) return '—';
+    if (typeof userId === 'string') return userId;
+    const obj = userId as { email?: string; id?: string };
+    return obj.email ?? obj.id ?? '—';
   }
 
   protected onCellValueChanged(event: CellValueChangedEvent<Order>): void {

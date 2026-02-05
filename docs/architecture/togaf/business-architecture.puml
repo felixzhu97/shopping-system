@@ -16,6 +16,7 @@ package "Business Capabilities" {
     component [Cart Management] as capability_cart
     component [Payment Processing] as capability_payment
     component [Crawling and Ingestion] as capability_crawling
+    component [Analytics and Reporting] as capability_analytics
     component [Offline Analytics and Data Mining] as capability_data_mining
     component [Meeting / Video Conferencing] as capability_meeting
 }
@@ -55,6 +56,7 @@ admin --> service_user
 admin --> service_payment
 admin --> service_crawler
 admin --> service_meeting_signal
+admin --> capability_analytics
 
 process_shopping --> service_product
 process_shopping --> service_cart
@@ -66,6 +68,7 @@ process_admin_ops --> capability_product
 process_admin_ops --> capability_order
 process_admin_ops --> capability_user
 process_admin_ops --> capability_payment
+process_admin_ops --> capability_analytics
 
 process_crawling --> service_crawler
 process_crawling --> capability_crawling

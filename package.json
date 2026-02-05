@@ -41,6 +41,7 @@
     "test:watch": "turbo run test:watch",
     "test:coverage": "turbo run test:coverage",
     "seed:api": "turbo run seed:products200:dev --filter=scripts",
+    "seed:orders-users": "turbo run seed:orders-users:dev --filter=scripts",
     "changeset": "changeset",
     "version": "changeset version",
     "publish": "turbo run build && changeset publish"

@@ -1,5 +1,23 @@
 # Scripts
 
+## Seed (MongoDB)
+
+Requires `MONGODB_URI` (see `.env.example`). Run product seed first so orders can link to products. Both seeds clean existing data before inserting.
+
+```bash
+pnpm run seed:products200:dev   # products only (cleans then seeds ~200)
+pnpm run seed:orders-users:dev  # users + orders (cleans then seeds; orders linked to products)
+```
+
+From repo root:
+
+```bash
+pnpm run seed:api            # products only
+pnpm run seed:orders-users   # users + orders (after products exist)
+```
+
+Optional env for orders-users: `SEED_USER_COUNT` (10), `SEED_ORDER_COUNT` (50), `SEED_ORDER_DAYS_SPAN` (60).
+
 ## Jira batch update
 
 ### batch_update_jira_tasks.py
