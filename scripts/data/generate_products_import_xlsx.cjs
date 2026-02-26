@@ -8,8 +8,6 @@ function pad(n, width) {
 }
 
 function randomInt(seed) {
-  // Linear congruential generator for deterministic pseudo-randomness
-  // seed in [0, 2^31)
   const a = 1103515245;
   const c = 12345;
   const m = 2 ** 31;
@@ -52,14 +50,14 @@ function main() {
     const category = pick(categories, seed);
 
     seed = randomInt(seed);
-    const basePrice = (seed % 20000) / 100; // 0 - 200
+    const basePrice = (seed % 20000) / 100;
     const price = Math.max(1, Number(basePrice.toFixed(2)));
 
     seed = randomInt(seed);
     const stock = clamp(seed % 500, 0, 500);
 
     seed = randomInt(seed);
-    const rating = Number(((seed % 50) / 10).toFixed(1)); // 0.0 - 4.9
+    const rating = Number(((seed % 50) / 10).toFixed(1));
 
     seed = randomInt(seed);
     const reviewCount = seed % 5000;
@@ -112,4 +110,3 @@ function main() {
 }
 
 main();
-

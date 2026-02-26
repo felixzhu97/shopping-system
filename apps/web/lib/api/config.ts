@@ -2,7 +2,7 @@ import { ApiResponse, ErrorResponse } from 'types';
 import { getTokenFromStore } from '../store/userStore';
 
 export const API_CONFIG = {
-  baseUrl: process.env.NEXT_PUBLIC_BASE_URL || 'https://localhost:3000',
+  baseUrl: process.env.NEXT_PUBLIC_BASE_URL || '',
   proxyUrl: '/api/proxy',
   productsUrl: '/products',
   cartUrl: '/cart',

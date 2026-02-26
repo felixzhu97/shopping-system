@@ -4,6 +4,7 @@ import { getMongoUri } from './seedUtils';
 import { ProductModel } from './models/Product';
 import { UserModel } from './models/User';
 import { OrderModel } from './models/Order';
+import { DEFAULT_ADMIN, DEFAULT_USER } from './defaultUsers';
 
 dotenv.config();
 
@@ -65,7 +66,16 @@ async function seedUsers(count: number): Promise<mongoose.Types.ObjectId[]> {
   const ids: mongoose.Types.ObjectId[] = [];
   const usedEmails = new Set<string>();
 
-  for (let i = 0; i < count; i++) {
+  const adminUser = await UserModel.create(DEFAULT_ADMIN);
+  ids.push(adminUser._id as mongoose.Types.ObjectId);
+  usedEmails.add(DEFAULT_ADMIN.email);
+
+  const regularUser = await UserModel.create(DEFAULT_USER);
+  ids.push(regularUser._id as mongoose.Types.ObjectId);
+  usedEmails.add(DEFAULT_USER.email);
+
+  const randomCount = Math.max(0, count - 2);
+  for (let i = 0; i < randomCount; i++) {
     let email: string;
     do {
       email = `user${i + 1}+${Math.random().toString(36).slice(2, 8)}@example.com`;
@@ -77,7 +87,7 @@ async function seedUsers(count: number): Promise<mongoose.Types.ObjectId[]> {
     const user = await UserModel.create({
       email,
       password: 'SeedPassword123',
-      role: i === 0 ? 'admin' : 'user',
+      role: 'user',
       firstName,
       lastName,
       phone: `+1${Math.floor(1000000000 + Math.random() * 9000000000)}`,

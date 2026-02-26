@@ -93,8 +93,30 @@ shopping-system/
 ├── services/    # backend services (api, crawler, data-mining, meeting-signal)
 ├── packages/    # shared packages (types, utils, auth, payment, monitoring, ...)
 ├── docs/        # documentation (api, architecture, development, devops)
-└── scripts/     # seed scripts (products, orders, users) and utilities
+├── scripts/     # seed scripts (products, orders, users) and utilities
+└── screenshots/ # app screenshots
 ```
+
+## Screenshots
+
+### Web
+
+<p align="center">
+  <img src="./screenshots/shopping-web-01.png" width="200" alt="Web 01">
+  <img src="./screenshots/shopping-web-02.png" width="200" alt="Web 02">
+  <img src="./screenshots/shopping-web-03.png" width="200" alt="Web 03">
+  <img src="./screenshots/shopping-web-04.png" width="200" alt="Web 04">
+  <img src="./screenshots/shopping-web-05.png" width="200" alt="Web 05">
+  <img src="./screenshots/shopping-web-06.png" width="200" alt="Web 06">
+</p>
+
+### Admin
+
+<p align="center">
+  <img src="./screenshots/shopping-admin-01.png" width="280" alt="Admin 01">
+  <img src="./screenshots/shopping-admin-02.png" width="280" alt="Admin 02">
+  <img src="./screenshots/shopping-admin-03.png" width="280" alt="Admin 03">
+</p>
 
 ## Documentation
 

@@ -42,6 +42,7 @@ const LoginForm = ({
   onEmailOrPhoneChange,
   onPasswordChange,
   onSubmit,
+  onFillDemo,
 }: {
   emailOrPhone: string;
   password: string;
@@ -50,6 +51,7 @@ const LoginForm = ({
   onEmailOrPhoneChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onPasswordChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onSubmit: (e: React.FormEvent) => void;
+  onFillDemo: () => void;
 }) => (
   <div className="w-full max-w-[580px] mx-auto">
     <h1 className="text-[40px] font-medium text-center mb-2">登录快捷结账</h1>
@@ -113,6 +115,10 @@ const LoginForm = ({
             创建账户 →
           </Link>
         </div>
+
+        <button type="button" onClick={onFillDemo} className="text-sm text-blue-600 hover:underline">
+          演示账户
+        </button>
       </form>
     </div>
 
@@ -230,6 +236,12 @@ export default function LoginPage() {
     setPassword(e.target.value);
   }, []);
 
+  const handleFillDemo = useCallback(() => {
+    setError('');
+    setEmailOrPhone('admin@example.com');
+    setPassword('Admin123!');
+  }, []);
+
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
@@ -244,6 +256,7 @@ export default function LoginPage() {
             onEmailOrPhoneChange={handleEmailOrPhoneChange}
             onPasswordChange={handlePasswordChange}
             onSubmit={handleSubmit}
+            onFillDemo={handleFillDemo}
           />
         </Suspense>
       </main>

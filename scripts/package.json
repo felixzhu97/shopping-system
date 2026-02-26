@@ -3,17 +3,20 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "seed:products200:dev": "bash seed/seedProducts200.sh",
-    "seed:products200:test": "bash seed/seedProducts200.sh",
-    "seed:products200:prod": "bash seed/seedProducts200.sh",
+    "generate:xlsx": "node data/generate_products_import_xlsx.cjs",
+    "seed:default-users:dev": "tsx seed/seedDefaultUsers.ts",
     "seed:orders-users:dev": "tsx seed/seedOrdersAndUsers.ts",
+    "seed:orders-users:prod": "tsx seed/seedOrdersAndUsers.ts",
     "seed:orders-users:test": "tsx seed/seedOrdersAndUsers.ts",
-    "seed:orders-users:prod": "tsx seed/seedOrdersAndUsers.ts"
+    "seed:products200:dev": "bash seed/seedProducts200.sh",
+    "seed:products200:prod": "bash seed/seedProducts200.sh",
+    "seed:products200:test": "bash seed/seedProducts200.sh"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "dotenv": "^16.3.1",
-    "mongoose": "^7.5.0"
+    "mongoose": "^7.5.0",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
