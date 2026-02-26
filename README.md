@@ -1,14 +1,58 @@
-# Shopping System Monorepo
+# 🛒 Shopping System Monorepo
 
 Monorepo for a shopping system built with Turborepo and PNPM. It includes web and mobile clients, backend services, and shared packages.
 
-## Requirements
+## 📋 Requirements
 
 - Node.js >= 20
 - PNPM (see `package.json` `packageManager`)
 - MongoDB (for the API service)
 
-## Quick start
+## ✨ Features
+
+### 🌐 Web Storefront
+
+- **🏠 Home** – Hero, category showcase, featured products
+- **📦 Products** – List, category filter, search, product detail
+- **🛒 Cart** – Add/update/remove items
+- **💳 Checkout** – Shipping address, payment, order confirmation
+- **📋 Orders** – Order list, order detail
+- **👤 Account** – Profile, settings
+- **🔐 Auth** – Login, register, reset password
+- **🌍 i18n** – English, 中文, Español
+
+### ⚙️ API
+
+- **📦 Products** – CRUD, category filter, CSV/JSON import
+- **👥 Users** – Register, login, reset password
+- **🛒 Cart** – Add, update, remove, clear
+- **📋 Orders** – Create, list, status update, cancel
+- **💡 Recommendations** – Product-based recommendations
+
+### 👨‍💼 Admin
+
+- **📦 Products** – List, create, delete
+- **📋 Orders** – List by status, update status
+- **👥 Users** – List
+- **📹 Meeting** – WebRTC video, chat, TTS/STT, live subtitles, translation
+
+## 📸 Screenshots
+
+### Web
+
+<p align="center">
+  <img src="./screenshots/shopping-web-01.png" width="320" alt="Web 01">
+  <img src="./screenshots/shopping-web-02.png" width="320" alt="Web 02">
+  <img src="./screenshots/shopping-web-03.png" width="320" alt="Web 03">
+  <img src="./screenshots/shopping-web-04.png" width="320" alt="Web 04">
+  <img src="./screenshots/shopping-web-05.png" width="320" alt="Web 05">
+  <img src="./screenshots/shopping-web-06.png" width="320" alt="Web 06">
+  <img src="./screenshots/shopping-web-07.png" width="320" alt="Web 07">
+  <img src="./screenshots/shopping-web-08.png" width="320" alt="Web 08">
+  <img src="./screenshots/shopping-web-09.png" width="320" alt="Web 09">
+</p>
+
+## 🚀 Quick start
 
 Install all dependencies:
 
@@ -34,7 +78,7 @@ pnpm dev:meeting-signal
 pnpm dev:web:storybook
 ```
 
-### Local HTTPS (development)
+### 🔒 Local HTTPS (development)
 
 For local development with encrypted traffic between browser and web app:
 
@@ -64,7 +108,7 @@ server {
 
 3. Start the web app with `pnpm dev:web` (Next.js on `http://localhost:3000`) and Nginx, then access the storefront via `https://localhost`.
 
-## Common commands
+## 💻 Common commands
 
 ```bash
 pnpm build
@@ -75,7 +119,7 @@ pnpm format
 pnpm clean
 ```
 
-Seed sample data (via `scripts`):
+🌱 Seed sample data (via `scripts`):
 
 ```bash
 pnpm seed:api
@@ -85,7 +129,7 @@ pnpm seed:orders-users
 - `seed:api` – products (cleans then seeds ~200 products)
 - `seed:orders-users` – users and orders (cleans then seeds; env: `SEED_USER_COUNT`, `SEED_ORDER_COUNT`, `SEED_ORDER_DAYS_SPAN`)
 
-## Project structure
+## 📁 Project structure
 
 ```
 shopping-system/
@@ -97,28 +141,7 @@ shopping-system/
 └── screenshots/ # app screenshots
 ```
 
-## Screenshots
-
-### Web
-
-<p align="center">
-  <img src="./screenshots/shopping-web-01.png" width="200" alt="Web 01">
-  <img src="./screenshots/shopping-web-02.png" width="200" alt="Web 02">
-  <img src="./screenshots/shopping-web-03.png" width="200" alt="Web 03">
-  <img src="./screenshots/shopping-web-04.png" width="200" alt="Web 04">
-  <img src="./screenshots/shopping-web-05.png" width="200" alt="Web 05">
-  <img src="./screenshots/shopping-web-06.png" width="200" alt="Web 06">
-</p>
-
-### Admin
-
-<p align="center">
-  <img src="./screenshots/shopping-admin-01.png" width="280" alt="Admin 01">
-  <img src="./screenshots/shopping-admin-02.png" width="280" alt="Admin 02">
-  <img src="./screenshots/shopping-admin-03.png" width="280" alt="Admin 03">
-</p>
-
-## Documentation
+## 📚 Documentation
 
 - API docs: `docs/api/api-documentation.md`
 - OpenAPI spec: `docs/api/openapi.json`
@@ -128,7 +151,7 @@ shopping-system/
 - Onboarding: `docs/development/onboarding-guide.md`
 - Testing guide: `docs/development/testing-guide.md`
 
-## Services and apps
+## 🛠️ Services and apps
 
 - **Web app** (`apps/web`): Next.js storefront
 - **Mobile app** (`apps/mobile`): Expo + React Native
@@ -136,12 +159,12 @@ shopping-system/
 - **API service** (`services/api`): Express + Mongoose; see `services/api/README.md` for env vars
 - **Meeting signal** (`services/meeting-signal`): Socket.IO signaling for WebRTC; default port 4100
 
-## Contributing
+## 🤝 Contributing
 
 - Create a branch from `main` (e.g. `feat/...`, `fix/...`, `docs/...`)
 - Keep changes focused and update docs when behavior changes
 - Use Conventional Commits for commit messages
 
-## License
+## 📄 License
 
 MIT
