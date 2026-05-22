@@ -1,4 +1,3 @@
-import { BasePaymentGateway } from './base';
 import type {
   PaymentRequest,
   PaymentResponse,
@@ -9,6 +8,8 @@ import type {
   GatewayConfig,
   PaymentCallback,
 } from '../types';
+
+import { BasePaymentGateway } from './base';
 
 /**
  * 微信支付网关

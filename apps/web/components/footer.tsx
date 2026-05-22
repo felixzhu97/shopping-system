@@ -1,8 +1,9 @@
 'use client';
 
 import Link from 'next/link';
-import { LanguageSwitcher } from './language-switcher';
 import { useTranslation } from 'react-i18next';
+
+import { LanguageSwitcher } from './language-switcher';
 
 // 扩展导航区域组件
 function ExtendedNavigation() {

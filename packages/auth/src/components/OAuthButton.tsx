@@ -1,6 +1,8 @@
 import React, { useState, useCallback } from 'react';
-import { useOAuth } from './OAuthProvider';
+
 import type { OAuthProvider as OAuthProviderType } from '../types';
+
+import { useOAuth } from './OAuthProvider';
 
 interface OAuthButtonProps {
   provider: OAuthProviderType;

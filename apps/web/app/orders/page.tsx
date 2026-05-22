@@ -3,15 +3,15 @@
 import { CheckCircle, Clock, Home, Package, Truck, XCircle } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Footer } from '@/components/footer';
 import { Navbar } from '@/components/navbar';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { getUserOrders } from '@/lib/api/orders';
-import { Order } from '@/lib/types';
 import { useUserId } from '@/lib/store/userStore';
-import { useTranslation } from 'react-i18next';
+import { Order } from '@/lib/types';
 
 export default function OrdersPage() {
   const { t } = useTranslation();

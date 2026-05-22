@@ -4,9 +4,9 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AgGridAngular } from 'ag-grid-angular';
 import type { ColDef, GetRowIdParams, GridOptions } from 'ag-grid-community';
 
+import { adminGridTheme } from '../../core/ag-grid/ag-grid-theme';
 import { ApiService, CreateUserRequest, User } from '../../core/api/api.service';
 import { AuthService } from '../../core/auth/auth.service';
-import { adminGridTheme } from '../../core/ag-grid/ag-grid-theme';
 
 @Component({
   selector: 'app-users-page',

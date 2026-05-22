@@ -1,7 +1,8 @@
-import { UserLogin, UserResetPassword } from 'types';
-import User from '../models/User';
 import jwt from 'jsonwebtoken';
+import { UserLogin, UserResetPassword } from 'types';
+
 import { getJwtSecret } from '../index';
+import User from '../models/User';
 
 export const register = async (req: any, res: any) => {
   try {

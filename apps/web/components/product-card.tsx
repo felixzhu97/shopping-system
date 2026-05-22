@@ -1,8 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { Image } from '@/components/ui/image';
 
+import { Image } from '@/components/ui/image';
 import type { Product } from '@/lib/types';
 
 interface ProductCardProps {

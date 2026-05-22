@@ -1,5 +1,6 @@
-import type { OAuthUser } from '../types';
 import type { User } from 'types';
+
+import type { OAuthUser } from '../types';
 
 /**
  * 用户信息转换工具

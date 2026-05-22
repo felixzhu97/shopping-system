@@ -1,13 +1,17 @@
 'use client';
 
-import { useState, useCallback, useEffect, useMemo } from 'react';
-import { useRouter } from 'next/navigation';
+import { EyeIcon } from 'lucide-react';
 import Link from 'next/link';
-import { Navbar } from '@/components/navbar';
+import { useRouter } from 'next/navigation';
+import { useState, useCallback, useEffect, useMemo } from 'react';
+
 import { Footer } from '@/components/footer';
-import { Input } from '@/components/ui/input';
+import { Navbar } from '@/components/navbar';
+import PasswordTips from '@/components/password-tips';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
+import { toast } from '@/components/ui/use-toast';
 import { register } from '@/lib/api/users';
 import { useDebounce } from '@/lib/hooks/use-debounce';
 import {
@@ -17,9 +21,7 @@ import {
   phoneRegex,
   passwordRegex,
 } from '@/lib/store/userStore';
-import PasswordTips from '@/components/password-tips';
-import { EyeIcon } from 'lucide-react';
-import { toast } from '@/components/ui/use-toast';
+
 
 interface FormData {
   email: string;

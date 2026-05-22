@@ -1,0 +1,14 @@
+#!/bin/sh
+
+echo "Running pre-commit checks..."
+
+echo "Running ESLint..."
+pnpm lint --max-warnings 200
+
+echo "Running TypeScript check..."
+pnpm tsc --noEmit --skipLibCheck
+
+echo "Running tests..."
+pnpm test
+
+echo "Pre-commit checks passed!"

@@ -1,12 +1,13 @@
 'use client';
 
 import Link from 'next/link';
-import Image from '@/components/ui/image';
-import { Product } from '@/lib/types';
-import * as api from '@/lib/api';
-import { Button } from '@/components/ui/button';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+
+import { Button } from '@/components/ui/button';
+import Image from '@/components/ui/image';
+import * as api from '@/lib/api';
+import { Product } from '@/lib/types';
 
 const HeroCard = ({
   product,

@@ -7,9 +7,9 @@ import type { AlignedGrid, ColDef, GetRowIdParams, GridOptions, ICellRendererPar
 import Papa from 'papaparse';
 import * as XLSX from 'xlsx';
 
+import { adminGridTheme } from '../../core/ag-grid/ag-grid-theme';
 import { ApiService, Product } from '../../core/api/api.service';
 import { AuthService } from '../../core/auth/auth.service';
-import { adminGridTheme } from '../../core/ag-grid/ag-grid-theme';
 import { MODEL_ASSETS } from '../../core/three/model-assets';
 
 @Component({

@@ -1,7 +1,5 @@
 'use client';
 
-import React, { memo, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import Link from 'next/link';
 import {
   Box,
   ChevronRight,
@@ -12,18 +10,19 @@ import {
   ShoppingCart,
   X,
 } from 'lucide-react';
+import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import React, { memo, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Badge } from '@/components/ui/badge';
-
-import PanelDropdown from '@/components/ui/panel-dropdown';
+import { Button } from '@/components/ui/button';
 import Image from '@/components/ui/image';
-import { clearUserStore, useToken } from '@/lib/store/userStore';
+import { Input } from '@/components/ui/input';
+import PanelDropdown from '@/components/ui/panel-dropdown';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { useCartItems } from '@/lib/store/cartStore';
+import { clearUserStore, useToken } from '@/lib/store/userStore';
 // 定义快捷链接数据
 const quickLinks = [
   { title: '智能设备', path: '/products?category=electronics' },

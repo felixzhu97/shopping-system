@@ -1,17 +1,18 @@
 'use client';
 
-import { memo, useEffect, useMemo } from 'react';
+import { ArrowLeft, ArrowRight, CreditCard, Package, ShoppingBag } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, ArrowRight, CreditCard, Package, ShoppingBag } from 'lucide-react';
+import { memo, useEffect, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
+import { CartItem } from '@/components/cart-item';
+import { Footer } from '@/components/footer';
+import { Navbar } from '@/components/navbar';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
-
-import { CartItem } from '@/components/cart-item';
-import { Navbar } from '@/components/navbar';
-import { Footer } from '@/components/footer';
+import { useToast } from '@/components/ui/use-toast';
 import {
   useCartItems,
   useCartUpdateQuantity,
@@ -20,8 +21,6 @@ import {
   useCartIsLoading,
   useCartError,
 } from '@/lib/store/cartStore';
-import { useToast } from '@/components/ui/use-toast';
-import { useTranslation } from 'react-i18next';
 
 // 加载状态的骨架屏组件
 const LoadingSkeleton = memo(() => (

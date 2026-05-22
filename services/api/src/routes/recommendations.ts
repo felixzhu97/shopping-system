@@ -1,4 +1,5 @@
 import express from 'express';
+
 import { getRecommendationsByProductId } from '../controllers/recommendationController';
 
 const router = express.Router();

@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
+
 import HeroSection from '../components/home/hero-section';
 
 describe('HeroSection Component', () => {

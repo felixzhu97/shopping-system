@@ -1,5 +1,6 @@
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
+
 import ProductModel, { SeedProduct } from './models/Product';
 
 dotenv.config();

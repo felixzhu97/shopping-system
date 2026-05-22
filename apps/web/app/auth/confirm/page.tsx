@@ -1,8 +1,9 @@
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Button } from '@/components/ui/button';
 import { useEffect } from 'react';
+
+import { Button } from '@/components/ui/button';
 import { useUserInfo } from '@/lib/store/userStore';
 
 export default function AuthConfirmPage() {

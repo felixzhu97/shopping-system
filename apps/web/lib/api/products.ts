@@ -1,5 +1,7 @@
 import { Product } from 'types';
+
 import { MOCK_PRODUCTS } from '../../mocks/products';
+
 import { API_CONFIG, CATEGORY_MAPPING, fetchApi } from './config';
 
 export async function getProducts(category?: string): Promise<Product[]> {

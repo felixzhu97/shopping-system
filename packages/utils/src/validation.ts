@@ -1,4 +1,5 @@
 import type { PaymentMethod } from 'types';
+
 import type {
   AddressValidationResult,
   PasswordValidationOptions,

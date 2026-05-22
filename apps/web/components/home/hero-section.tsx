@@ -1,9 +1,11 @@
 'use client';
 
-import { memo } from 'react';
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
+import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
+
+import { Button } from '@/components/ui/button';
+
 
 const HeroSection = memo(() => {
   const { t } = useTranslation();

@@ -1,6 +1,8 @@
-import { Order } from '@/lib/types';
-import { API_CONFIG, fetchApi } from './config';
 import { ApiResponse } from 'types';
+
+import { API_CONFIG, fetchApi } from './config';
+
+import { Order } from '@/lib/types';
 
 // 获取订单列表
 export async function getOrders(): Promise<Order[]> {

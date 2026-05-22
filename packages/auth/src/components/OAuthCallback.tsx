@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { useOAuth } from './OAuthProvider';
+
 import type {
   OAuthProvider as OAuthProviderType,
   OAuthToken,
   OAuthUser,
 } from '../types';
+
+import { useOAuth } from './OAuthProvider';
 
 interface OAuthCallbackProps {
   provider?: OAuthProviderType;

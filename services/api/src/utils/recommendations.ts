@@ -1,5 +1,5 @@
-import type { Product as SharedProduct } from 'types';
 import natural from 'natural';
+import type { Product as SharedProduct } from 'types';
 
 type ProductView = Pick<
   SharedProduct,

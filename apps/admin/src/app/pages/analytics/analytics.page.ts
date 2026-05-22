@@ -9,15 +9,14 @@ import {
   effect,
   signal,
 } from '@angular/core';
-
 import { AgGridAngular } from 'ag-grid-angular';
 import type { ColDef, GetRowIdParams, GridOptions } from 'ag-grid-community';
+import * as echarts from 'echarts';
 
 import { adminGridTheme } from '../../core/ag-grid/ag-grid-theme';
 import { ApiService, Order, Product, User } from '../../core/api/api.service';
 import { AuthService } from '../../core/auth/auth.service';
 
-import * as echarts from 'echarts';
 
 type AnalyticsTab = 'orders' | 'products' | 'users';
 

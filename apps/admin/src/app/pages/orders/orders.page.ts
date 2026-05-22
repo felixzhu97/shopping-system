@@ -3,9 +3,9 @@ import { Component, OnInit, computed, signal } from '@angular/core';
 import { AgGridAngular } from 'ag-grid-angular';
 import type { CellValueChangedEvent, ColDef, GetRowIdParams, GridOptions } from 'ag-grid-community';
 
+import { adminGridTheme } from '../../core/ag-grid/ag-grid-theme';
 import { ApiService, Order } from '../../core/api/api.service';
 import { AuthService } from '../../core/auth/auth.service';
-import { adminGridTheme } from '../../core/ag-grid/ag-grid-theme';
 
 @Component({
   selector: 'app-orders-page',

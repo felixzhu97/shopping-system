@@ -1,6 +1,7 @@
-import { BaseOAuthProvider } from './base';
 import type { OAuthConfig, OAuthToken, OAuthUser } from '../types';
 import { OAuthProvider } from '../types';
+
+import { BaseOAuthProvider } from './base';
 
 /**
  * GitHub OAuth 提供商

@@ -1,8 +1,8 @@
 'use client';
 
+import { ChevronDownIcon, CheckIcon } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ChevronDownIcon, CheckIcon } from 'lucide-react';
 
 // supported languages
 const languages = [

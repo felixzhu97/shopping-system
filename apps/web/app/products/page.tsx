@@ -1,9 +1,14 @@
 'use client';
 
-import { Suspense, useCallback, useEffect, useState, useTransition } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { Suspense, useCallback, useEffect, useState, useTransition } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useInView } from 'react-intersection-observer';
 
+import { Footer } from '@/components/footer';
+import { Navbar } from '@/components/navbar';
+import { ProductCard } from '@/components/product-card';
+import { ProductCardSkeleton } from '@/components/product-card-skeleton';
 import { Button } from '@/components/ui/button';
 import {
   Select,
@@ -13,14 +18,10 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
-import { ProductCard } from '@/components/product-card';
-import { Navbar } from '@/components/navbar';
-import { Footer } from '@/components/footer';
+import { useProductStore } from '@/lib/store/productStore';
 import { Product } from '@/lib/types';
 import { cn } from '@/lib/utils/utils';
-import { useProductStore } from '@/lib/store/productStore';
-import { ProductCardSkeleton } from '@/components/product-card-skeleton';
-import { useTranslation } from 'react-i18next';
+
 
 // 改造后的产品网格，以Apple Store风格展示
 function AppleStyleProductGrid({ products }: { products: Product[] }) {

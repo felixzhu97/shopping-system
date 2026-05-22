@@ -1,8 +1,5 @@
 'use client';
 
-import React, { useEffect, Suspense } from 'react';
-import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
 import {
   CheckCircle,
   Package,
@@ -13,11 +10,15 @@ import {
   Phone,
   HelpCircle,
 } from 'lucide-react';
-
-import { Button } from '@/components/ui/button';
-import { Navbar } from '@/components/navbar';
-import { Footer } from '@/components/footer';
+import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
+import React, { useEffect, Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
+
+import { Footer } from '@/components/footer';
+import { Navbar } from '@/components/navbar';
+import { Button } from '@/components/ui/button';
+
 
 // 骨架屏组件
 const SuccessPageSkeleton = () => (

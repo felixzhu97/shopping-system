@@ -1,15 +1,15 @@
 'use client';
 
-import React, { useState } from 'react';
-import Link from 'next/link';
 import { Minus, Plus, Trash2 } from 'lucide-react';
+import Link from 'next/link';
+import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Button } from '@/components/ui/button';
-import { CartItem as CartItemType } from '@/lib/types';
-import { Skeleton } from '@/components/ui/skeleton';
 import { Image } from '@/components/ui/image';
+import { Skeleton } from '@/components/ui/skeleton';
+import { CartItem as CartItemType } from '@/lib/types';
 import { cn } from '@/lib/utils/utils';
-import { useTranslation } from 'react-i18next';
 
 interface CartItemProps {
   item: CartItemType;

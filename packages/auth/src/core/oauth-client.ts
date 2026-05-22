@@ -1,3 +1,11 @@
+import { AlipayProvider } from '../providers/alipay';
+import { AppleProvider } from '../providers/apple';
+import { BaseOAuthProvider } from '../providers/base';
+import { FacebookProvider } from '../providers/facebook';
+import { GitHubProvider } from '../providers/github';
+import { GoogleProvider } from '../providers/google';
+import { WeChatProvider } from '../providers/wechat';
+import { OAuthProvider } from '../types';
 import type {
   OAuthProvider as OAuthProviderType,
   OAuthConfig,
@@ -5,15 +13,6 @@ import type {
   OAuthUser,
   OAuthOptions,
 } from '../types';
-import { OAuthProvider } from '../types';
-import { BaseOAuthProvider } from '../providers/base';
-import { GoogleProvider } from '../providers/google';
-import { FacebookProvider } from '../providers/facebook';
-import { GitHubProvider } from '../providers/github';
-import { AppleProvider } from '../providers/apple';
-import { WeChatProvider } from '../providers/wechat';
-import { AlipayProvider } from '../providers/alipay';
-import { tokenManager } from './token-manager';
 import {
   generateState,
   generateCodeVerifier,
@@ -22,6 +21,8 @@ import {
   extractStateFromUrl,
   extractErrorFromUrl,
 } from '../utils/url';
+
+import { tokenManager } from './token-manager';
 
 /**
  * OAuth 客户端

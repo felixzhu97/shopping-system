@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
+
 import { ProductCardSkeleton } from '../components/product-card-skeleton';
 
 describe('ProductCardSkeleton Component', () => {

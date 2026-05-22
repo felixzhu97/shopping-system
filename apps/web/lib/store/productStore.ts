@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+
 import * as api from '../api';
 import type { Product } from '../types';
 

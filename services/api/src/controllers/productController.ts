@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { Product as SharedProduct } from 'types';
+
 import Product from '../models/Product';
 import { mapNormalizedKey, parseCsvToRows } from '../utils/parseCsv';
 

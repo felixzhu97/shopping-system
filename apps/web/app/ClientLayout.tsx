@@ -1,11 +1,13 @@
 'use client';
 
-import { ReactNode, useEffect, Suspense, useState } from 'react';
-import { Toaster } from '@/components/ui/toaster';
-import { usePathname, useRouter } from 'next/navigation';
-import { useToken } from '@/lib/store/userStore';
-import Loading from '@/components/Loading';
 import { initDatadogRUM } from 'monitoring/client';
+import { usePathname, useRouter } from 'next/navigation';
+import { ReactNode, useEffect, Suspense, useState } from 'react';
+
+import Loading from '@/components/Loading';
+import { Toaster } from '@/components/ui/toaster';
+import { useToken } from '@/lib/store/userStore';
+
 
 // 只在客户端导入 i18n
 import '../i18n';

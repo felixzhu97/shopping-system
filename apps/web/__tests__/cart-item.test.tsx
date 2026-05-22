@@ -1,6 +1,7 @@
 import { render, screen, fireEvent } from '@testing-library/react';
-import { CartItem } from '@/components/cart-item';
 import { vi, beforeEach, describe, it, expect } from 'vitest';
+
+import { CartItem } from '@/components/cart-item';
 
 // Mock Next.js components
 vi.mock('next/link', () => ({

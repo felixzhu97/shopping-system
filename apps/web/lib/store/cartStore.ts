@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
 import type { CartItem, Product } from '../types';
+
 import { encryptedStorage } from '@/lib/utils/crypto';
 
 const CART_STORAGE_KEY = 'ss-c';

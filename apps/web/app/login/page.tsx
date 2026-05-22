@@ -1,18 +1,19 @@
 'use client';
 
-import { useState, useCallback, Suspense, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { Navbar } from '@/components/navbar';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useState, useCallback, Suspense, useEffect } from 'react';
+
 import { Footer } from '@/components/footer';
-import { Input } from '@/components/ui/input';
+import { Navbar } from '@/components/navbar';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
+import { Toaster } from '@/components/ui/toaster';
+import { useToast } from '@/components/ui/use-toast';
 import { login } from '@/lib/api/users';
 import { useDebounce } from '@/lib/hooks/use-debounce';
 import { useSaveToken, useSaveUserInfo } from '@/lib/store/userStore';
-import { useToast } from '@/components/ui/use-toast';
-import { Toaster } from '@/components/ui/toaster';
 
 // 骨架屏组件
 const LoginFormSkeleton = () => (

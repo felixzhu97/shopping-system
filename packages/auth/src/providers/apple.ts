@@ -1,6 +1,7 @@
-import { BaseOAuthProvider } from './base';
 import type { OAuthConfig, OAuthToken, OAuthUser } from '../types';
 import { OAuthProvider } from '../types';
+
+import { BaseOAuthProvider } from './base';
 
 /**
  * Apple OAuth 提供商

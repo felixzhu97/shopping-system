@@ -1,8 +1,8 @@
-import { Navbar } from '@/components/navbar';
 import { Footer } from '@/components/footer';
+import CategoryShowcase from '@/components/home/category-showcase';
 import HeroSection from '@/components/home/hero-section';
 import StoreHeadline from '@/components/home/store-headline';
-import CategoryShowcase from '@/components/home/category-showcase';
+import { Navbar } from '@/components/navbar';
 
 export default function Home() {
   return (

@@ -1,22 +1,24 @@
 'use client';
 
-import Link from 'next/link';
 import { Check, Minus, Plus, Search, ShoppingCart, Star, Truck } from 'lucide-react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import type { Usable } from 'react';
 import { use, useEffect, useRef, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useTranslation } from 'react-i18next';
+
+import { Footer } from '@/components/footer';
 import { Navbar } from '@/components/navbar';
 import { ProductCard } from '@/components/product-card';
-import { Footer } from '@/components/footer';
+import { Button } from '@/components/ui/button';
+import Image from '@/components/ui/image';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/components/ui/use-toast';
 import { useCartAddToCart } from '@/lib/store/cartStore';
-import { cn } from '@/lib/utils/utils';
 import { useProductStore } from '@/lib/store/productStore';
-import Image from '@/components/ui/image';
-import { useTranslation } from 'react-i18next';
+import { cn } from '@/lib/utils/utils';
+
 
 function LoadingSkeleton() {
   return (

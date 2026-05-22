@@ -1,5 +1,5 @@
-import { crawlSources } from './crawler.js'
 import { parseCliOptions, readCrawlerConfig } from './config.js'
+import { crawlSources } from './crawler.js'
 import { writeJsonLines } from './output.js'
 
 async function main(): Promise<void> {

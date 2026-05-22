@@ -1,7 +1,10 @@
 import { render, screen } from '@testing-library/react';
-import { Navbar } from '../components/navbar';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useRouter } from 'next/navigation';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
+import { Navbar } from '../components/navbar';
+
+
 import {
   useCartStore,
   useCartItems,

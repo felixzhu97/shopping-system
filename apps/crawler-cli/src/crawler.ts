@@ -1,5 +1,5 @@
-import { fetchText, HttpOptions } from './http.js'
 import { extractAttr, extractLinks, extractText, parsePrice } from './html.js'
+import { fetchText, HttpOptions } from './http.js'
 import { ScrapedProduct, SourceConfig } from './types.js'
 
 export type CrawlOptions = {

@@ -1,8 +1,10 @@
+import { User } from 'types';
+import { z } from 'zod';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { User } from 'types';
+
 import { encryptedStorage } from '../utils/crypto';
-import { z } from 'zod';
+
 
 export const TOKEN_KEY = 'ss-u-t';
 export const INFO_KEY = 'ss-u-i';

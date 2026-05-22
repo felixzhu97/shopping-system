@@ -1,5 +1,5 @@
-import { create } from 'zustand';
 import { User } from 'types';
+import { create } from 'zustand';
 
 export interface CheckoutFormData extends User {}
 

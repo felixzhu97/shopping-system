@@ -1,4 +1,5 @@
 import { vi } from 'vitest';
+
 import { setupBrowserMocks } from '../mocks/browser';
 
 /**

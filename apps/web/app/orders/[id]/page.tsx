@@ -1,7 +1,5 @@
 'use client';
 
-import { Usable, use, useEffect, useState, useMemo, useCallback } from 'react';
-import Link from 'next/link';
 import {
   Package,
   Truck,
@@ -14,15 +12,13 @@ import {
   CreditCard,
   Receipt,
 } from 'lucide-react';
+import Link from 'next/link';
+import { Usable, use, useEffect, useState, useMemo, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 
-import { Button } from '@/components/ui/button';
-import { Navbar } from '@/components/navbar';
 import { Footer } from '@/components/footer';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Order } from '@/lib/types';
-import { getOrderById, cancelOrder } from '@/lib/api/orders';
-import Image from '@/components/ui/image';
-import { useToast } from '@/components/ui/use-toast';
+import { Navbar } from '@/components/navbar';
+import { paymentMethods } from '@/components/payment-method';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -34,8 +30,13 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import { paymentMethods } from '@/components/payment-method';
-import { useTranslation } from 'react-i18next';
+import { Button } from '@/components/ui/button';
+import Image from '@/components/ui/image';
+import { Skeleton } from '@/components/ui/skeleton';
+import { useToast } from '@/components/ui/use-toast';
+import { getOrderById, cancelOrder } from '@/lib/api/orders';
+import { Order } from '@/lib/types';
+
 
 // 收货信息组件
 interface ShippingInfoProps {

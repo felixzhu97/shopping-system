@@ -1,7 +1,9 @@
 import { render, screen } from '@testing-library/react';
-import { PageTransition } from '../components/page-transition';
-import { describe, it, expect, vi } from 'vitest';
 import { usePathname } from 'next/navigation';
+import { describe, it, expect, vi } from 'vitest';
+
+import { PageTransition } from '../components/page-transition';
+
 
 // Mock next/navigation
 vi.mock('next/navigation', () => ({

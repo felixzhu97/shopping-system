@@ -1,5 +1,5 @@
-import { vi } from 'vitest';
 import { ReactNode } from 'react';
+import { vi } from 'vitest';
 
 export interface I18nextMockOptions {
   t?: (key: string) => string;

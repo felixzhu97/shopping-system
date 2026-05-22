@@ -1,10 +1,10 @@
 import i18n from 'i18next';
-import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
+import { initReactI18next } from 'react-i18next';
 
 import enTranslations from './lib/locales/en';
-import zhTranslations from './lib/locales/zh';
 import esTranslations from './lib/locales/es';
+import zhTranslations from './lib/locales/zh';
 import { isDev } from './lib/utils/env';
 
 // 翻译资源

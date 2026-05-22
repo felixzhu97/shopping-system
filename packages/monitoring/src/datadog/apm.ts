@@ -10,7 +10,7 @@ export function initDatadogAPM() {
   if (process.env.DD_SERVICE && process.env.DD_ENV) {
     // Only initialize in non-test environments
     if (process.env.NODE_ENV !== 'test') {
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
+       
       require('dd-trace').init({
         service: process.env.DD_SERVICE || 'shopping-api',
         env: process.env.DD_ENV || process.env.NODE_ENV || 'development',

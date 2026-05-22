@@ -1,11 +1,18 @@
 'use client';
 
-import React, { useEffect, useMemo } from 'react';
+import { AlertCircle, ChevronLeft, CreditCard } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { AlertCircle, ChevronLeft, CreditCard } from 'lucide-react';
+import React, { useEffect, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
+import { PaymentMethod } from 'types';
 
+import { provinces } from '@/components/china-region';
+import { Footer } from '@/components/footer';
+import { Navbar } from '@/components/navbar';
+import { paymentMethods } from '@/components/payment-method';
 import { Button } from '@/components/ui/button';
+import { Image } from '@/components/ui/image';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
@@ -17,23 +24,16 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
-import { useToast } from '@/components/ui/use-toast';
 import { Toaster } from '@/components/ui/toaster';
-import { Navbar } from '@/components/navbar';
-import { Footer } from '@/components/footer';
-
+import { useToast } from '@/components/ui/use-toast';
+import { createOrder } from '@/lib/api/orders';
+import { getUserById, updateUser } from '@/lib/api/users';
 import { useCheckoutStore } from '@/lib/store/checkoutStore';
 // import { useAccountStore } from '@/lib/store/accountStore';
-import { Image } from '@/components/ui/image';
-import { cn } from '@/lib/utils/utils';
-import { provinces } from '@/components/china-region';
-import { createOrder } from '@/lib/api/orders';
 import { useUserId } from '@/lib/store/userStore';
-import { getUserById, updateUser } from '@/lib/api/users';
-import { paymentMethods } from '@/components/payment-method';
+import { cn } from '@/lib/utils/utils';
 import { useCartClearCart, useCartItems } from '@/lib/store/cartStore';
-import { PaymentMethod } from 'types';
-import { useTranslation } from 'react-i18next';
+
 
 // 订单摘要商品项组件
 const OrderSummaryItem = React.memo(function OrderSummaryItem({ item }: { item: any }) {

@@ -1,12 +1,15 @@
 'use client';
 
+import { AlertCircle } from 'lucide-react';
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { Navbar } from '@/components/navbar';
-import { Footer } from '@/components/footer';
 import { useState, useEffect } from 'react';
-import { getUserById, updateUser } from '@/lib/api/users';
-import { useUserId } from '@/lib/store/userStore';
+import { PaymentMethod } from 'types';
+
+import { provinces } from '@/components/china-region';
+import { Footer } from '@/components/footer';
+import { Navbar } from '@/components/navbar';
+import { paymentMethods } from '@/components/payment-method';
+import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
@@ -16,13 +19,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { provinces } from '@/components/china-region';
-import { AlertCircle } from 'lucide-react';
-import { cn } from '@/lib/utils/utils';
+import { getUserById, updateUser } from '@/lib/api/users';
 import { useCheckoutStore } from '@/lib/store/checkoutStore';
 import { CheckoutFormData } from '@/lib/store/checkoutStore';
-import { paymentMethods } from '@/components/payment-method';
-import { PaymentMethod } from 'types';
+import { useUserId } from '@/lib/store/userStore';
+import { cn } from '@/lib/utils/utils';
+
 
 // 基础弹出层组件
 interface BaseModalProps {

@@ -1,4 +1,5 @@
 import { ApiResponse, ErrorResponse } from 'types';
+
 import { getTokenFromStore } from '../store/userStore';
 
 export const API_CONFIG = {
@@ -20,7 +21,7 @@ export const CATEGORY_MAPPING: Record<string, string> = {
 export async function fetchApi<T>(url: string, options: RequestInit = {}): Promise<ApiResponse<T>> {
   try {
     const token = getTokenFromStore();
-    let headers = {
+    const headers = {
       'Content-Type': 'application/json',
       Accept: 'application/json',
       ...options.headers,

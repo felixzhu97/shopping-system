@@ -1,4 +1,5 @@
 import type { Product } from 'types';
+
 import type { ProductImageOptions } from './types';
 
 /**

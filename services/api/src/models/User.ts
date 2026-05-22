@@ -1,5 +1,5 @@
-import mongoose, { Schema, Document } from 'mongoose';
 import bcrypt from 'bcryptjs';
+import mongoose, { Schema, Document } from 'mongoose';
 import { User as SharedUser } from 'types';
 
 export interface UserType extends SharedUser {}

@@ -1,9 +1,9 @@
-import { makeTargetSizeProducts, seedProducts } from './seedUtils';
-import { electronicsProducts } from './productData/electronics';
-import { clothingProducts } from './productData/clothing';
-import { homeKitchenProducts } from './productData/homeKitchen';
 import { booksProducts } from './productData/books';
+import { clothingProducts } from './productData/clothing';
+import { electronicsProducts } from './productData/electronics';
+import { homeKitchenProducts } from './productData/homeKitchen';
 import { sportsOutdoorsProducts } from './productData/sportsOutdoors';
+import { makeTargetSizeProducts, seedProducts } from './seedUtils';
 
 const baseProducts = [
   ...electronicsProducts,

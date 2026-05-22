@@ -1,5 +1,5 @@
-import Order from '../models/Order';
 import Cart from '../models/Cart';
+import Order from '../models/Order';
 import Product from '../models/Product';
 import User from '../models/User';
 

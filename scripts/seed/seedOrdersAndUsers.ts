@@ -1,10 +1,11 @@
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
-import { getMongoUri } from './seedUtils';
+
+import { DEFAULT_ADMIN, DEFAULT_USER } from './defaultUsers';
+import { OrderModel } from './models/Order';
 import { ProductModel } from './models/Product';
 import { UserModel } from './models/User';
-import { OrderModel } from './models/Order';
-import { DEFAULT_ADMIN, DEFAULT_USER } from './defaultUsers';
+import { getMongoUri } from './seedUtils';
 
 dotenv.config();
 

@@ -1,7 +1,9 @@
 import { render, screen } from '@testing-library/react';
-import { ThemeProvider } from '../components/theme-provider';
-import { describe, it, expect, vi } from 'vitest';
 import { type ThemeProviderProps } from 'next-themes';
+import { describe, it, expect, vi } from 'vitest';
+
+import { ThemeProvider } from '../components/theme-provider';
+
 
 // Mock window.matchMedia
 Object.defineProperty(window, 'matchMedia', {

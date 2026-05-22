@@ -1,11 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild, computed, inject, signal } from '@angular/core';
-import { ApiService, Product } from '../../core/api/api.service';
-import { AuthService } from '../../core/auth/auth.service';
-import { MODEL_ASSET_BY_KEY, MODEL_ASSETS, type ModelAsset } from '../../core/three/model-assets';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+
+import { ApiService, Product } from '../../core/api/api.service';
+import { AuthService } from '../../core/auth/auth.service';
+import { MODEL_ASSET_BY_KEY, MODEL_ASSETS, type ModelAsset } from '../../core/three/model-assets';
 
 type ProductVisual = {
   id: string;

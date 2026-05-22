@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+
 import { encryptedStorage } from '@/lib/utils/crypto';
 
 interface AccountFormData {

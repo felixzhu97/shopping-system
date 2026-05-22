@@ -1,21 +1,22 @@
 import { initDatadogAPM } from 'monitoring';
 initDatadogAPM();
 
-import express from 'express';
-import cors from 'cors';
-import dotenv from 'dotenv';
 import fs from 'fs';
 import path from 'path';
+
+import cors from 'cors';
+import dotenv from 'dotenv';
+import express from 'express';
+import { expressjwt } from 'express-jwt';
 import mongoose from 'mongoose';
 import swaggerUi from 'swagger-ui-express';
-import swaggerSpecs from './swagger';
-import { expressjwt } from 'express-jwt';
 
-import productRoutes from './routes/products';
 import cartRoutes from './routes/cart';
-import userRoutes from './routes/users';
 import orderRoutes from './routes/orders';
+import productRoutes from './routes/products';
 import recommendationRoutes from './routes/recommendations';
+import userRoutes from './routes/users';
+import swaggerSpecs from './swagger';
 
 const envCandidates = [
   path.resolve(process.cwd(), '.env.local'),

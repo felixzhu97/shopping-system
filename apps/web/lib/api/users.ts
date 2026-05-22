@@ -1,6 +1,8 @@
-import { clearUserStore } from '../store/userStore';
-import { API_CONFIG, fetchApi } from './config';
 import { User, ApiResponse, UserRegister, UserLogin, UserResetPassword } from 'types';
+
+import { clearUserStore } from '../store/userStore';
+
+import { API_CONFIG, fetchApi } from './config';
 // 获取用户信息
 export async function getUserById(id: string): Promise<User> {
   const url = `${API_CONFIG.usersUrl}/${id}`;
