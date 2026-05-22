@@ -32,9 +32,7 @@ import { useCartClearCart, useCartItems } from '@/lib/store/cartStore';
 import { useCheckoutStore } from '@/lib/store/checkoutStore';
 // import { useAccountStore } from '@/lib/store/accountStore';
 import { useUserId } from '@/lib/store/userStore';
-
-
-// 订单摘要商品项组件
+import { cn } from '@/lib/utils/utils';// 订单摘要商品项组件
 const OrderSummaryItem = React.memo(function OrderSummaryItem({ item }: { item: any }) {
   const { t } = useTranslation();
   if (!item.product) return null;

@@ -1,6 +1,6 @@
-import { extractAttr, extractLinks, extractText, parsePrice } from './html.js'
-import { fetchText, HttpOptions } from './http.js'
-import { ScrapedProduct, SourceConfig } from './types.js'
+import { extractAttr, extractLinks, extractText, parsePrice } from './html'
+import { fetchText, HttpOptions } from './http'
+import { ScrapedProduct, SourceConfig } from './types'
 
 export type CrawlOptions = {
   concurrency: number
@@ -57,12 +57,12 @@ async function scrapeProductPage(
 ): Promise<ScrapedProduct | undefined> {
   const http: HttpOptions = { timeoutMs: options.requestTimeoutMs, userAgent: buildUserAgent() }
   const html = await fetchText(url, http)
-  const title = extractText(html, selectors.title)
-  const priceText = extractText(html, selectors.price)
-  const currency = extractText(html, selectors.currency)
-  const imageUrl = extractAttr(html, selectors.image, 'src', url)
-  const sku = extractText(html, selectors.sku)
-  const availability = extractText(html, selectors.availability)
+  const title = extractText(html, selectors.title ?? '')
+  const priceText = extractText(html, selectors.price ?? '')
+  const currency = extractText(html, selectors.currency ?? '')
+  const imageUrl = extractAttr(html, selectors.image ?? '', 'src', url)
+  const sku = extractText(html, selectors.sku ?? '')
+  const availability = extractText(html, selectors.availability ?? '')
   const price = parsePrice(priceText)
 
   return {

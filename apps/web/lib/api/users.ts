@@ -11,7 +11,7 @@ export async function getUserById(id: string): Promise<User> {
     clearUserStore();
     throw new Error('获取用户信息失败');
   }
-  return response.data;
+  return response.data as unknown as User;
 }
 
 // 更新用户信息
@@ -25,7 +25,7 @@ export async function updateUserById(id: string, data: Partial<User>): Promise<U
   if (!response.success || !response.data) {
     throw new Error(response.error || '更新用户信息失败');
   }
-  return response.data;
+  return response.data as unknown as User;
 }
 
 export async function login(user: UserLogin): Promise<User> {
@@ -38,7 +38,7 @@ export async function login(user: UserLogin): Promise<User> {
   if (!res.success || !res.data) {
     throw new Error(res.error || '登录失败');
   }
-  return res.data;
+  return res.data as unknown as User;
 }
 
 // 新增注册API
@@ -52,7 +52,7 @@ export async function register(user: UserRegister): Promise<User> {
   if (!res.success || !res.data) {
     throw new Error(res.error || '注册失败');
   }
-  return res.data;
+  return res.data as unknown as User;
 }
 
 // 更新用户
@@ -66,7 +66,7 @@ export async function updateUser(id: string, user: Partial<User>): Promise<User>
   if (!response.success || !response.data) {
     throw new Error(response.error || '更新用户失败');
   }
-  return response.data;
+  return response.data as unknown as User;
 }
 
 // 重置密码
@@ -80,5 +80,5 @@ export async function resetPassword(user: UserResetPassword): Promise<User> {
   if (!response.success || !response.data) {
     throw new Error(response.error || '重置密码失败');
   }
-  return response.data;
+  return response.data as unknown as User;
 }

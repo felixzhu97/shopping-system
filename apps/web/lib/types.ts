@@ -25,5 +25,5 @@ export interface OrderItem {
   image?: string;
   price?: number;
   quantity: number;
-  product?: import('shared').Product;
+  product?: import('types').Product;
 }

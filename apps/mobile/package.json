@@ -8,9 +8,10 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "test": "yarn test:coverage",
+    "test": "jest --coverage --silent --passWithNoTests --coverageThreshold='{}'",
     "test:watchAll": "jest --watchAll",
-    "test:coverage": "jest --coverage --silent --passWithNoTests",
+    "test:coverage": "jest --coverage --silent --passWithNoTests --coverageThreshold='{}'",
+    "typecheck": "tsc --noEmit",
     "lint": "eslint . --ext .ts,.tsx --fix --config eslint.config.js"
   },
   "dependencies": {

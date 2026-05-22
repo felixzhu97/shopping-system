@@ -1,6 +1,6 @@
-import { parseCliOptions, readCrawlerConfig } from './config.js'
-import { crawlSources } from './crawler.js'
-import { writeJsonLines } from './output.js'
+import { parseCliOptions, readCrawlerConfig } from './config'
+import { crawlSources } from './crawler'
+import { writeJsonLines } from './output'
 
 async function main(): Promise<void> {
   const { configPath, outputPath } = parseCliOptions(process.argv)

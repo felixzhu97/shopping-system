@@ -92,8 +92,9 @@ export async function OPTIONS() {
   return setCorsHeaders(response);
 }
 
-export async function GET(request: NextRequest, { params }: { params: { path: string[] } }) {
-  const path = params.path ? params.path.join('/') : '';
+export async function GET(request: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
+  const { path: pathArr } = await params;
+  const path = pathArr ? pathArr.join('/') : '';
   const { searchParams } = new URL(request.url);
 
   const queryString = Array.from(searchParams.entries())
@@ -124,9 +125,10 @@ export async function GET(request: NextRequest, { params }: { params: { path: st
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { path: string[] } }
+  { params }: { params: Promise<{ path: string[] }> }
 ): Promise<NextResponse> {
-  const path = params.path ? params.path.join('/') : '';
+  const { path: pathArr } = await params;
+  const path = pathArr ? pathArr.join('/') : '';
 
   try {
     const { body, contentType } = await parseRequestBody(request);
@@ -153,8 +155,9 @@ export async function POST(
   }
 }
 
-export async function PUT(request: NextRequest, { params }: { params: { path: string[] } }) {
-  const path = params.path ? params.path.join('/') : '';
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
+  const { path: pathArr } = await params;
+  const path = pathArr ? pathArr.join('/') : '';
 
   try {
     const { body, contentType } = await parseRequestBody(request);
@@ -181,8 +184,9 @@ export async function PUT(request: NextRequest, { params }: { params: { path: st
   }
 }
 
-export async function DELETE(request: NextRequest, { params }: { params: { path: string[] } }) {
-  const path = params.path ? params.path.join('/') : '';
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
+  const { path: pathArr } = await params;
+  const path = pathArr ? pathArr.join('/') : '';
 
   try {
     const apiUrl = `${API_BASE}/${path}`;
