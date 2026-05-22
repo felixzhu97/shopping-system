@@ -38,6 +38,9 @@ jobs:
       - name: Build dependencies
         run: pnpm build --filter=types --filter=monitoring
 
+      - name: Type check
+        run: pnpm typecheck
+
       - name: Run tests
         run: pnpm test
         env:
