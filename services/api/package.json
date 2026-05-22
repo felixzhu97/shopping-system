@@ -8,7 +8,7 @@
     "build": "tsc --skipLibCheck && pnpm run bundle",
     "bundle": "esbuild src/lambda.ts --bundle --platform=node --target=node18 --outfile=dist/lambda.js --external:aws-sdk",
     "start": "node dist/lambda.js",
-    "lint": "eslint src/**/*.ts",
+    "typecheck": "tsc --noEmit --skipLibCheck",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",

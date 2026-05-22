@@ -18,9 +18,9 @@
   },
   "license": "MIT",
   "scripts": {
-    "lint": "eslint \"src/**/*.ts\"",
     "build": "tsc",
     "dev": "tsc --watch",
+    "typecheck": "tsc --noEmit",
     "clean": "rm -rf dist && rm -rf node_modules"
   },
   "dependencies": {

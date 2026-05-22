@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next build && next start",
-    "lint": "next lint",
+    "typecheck": "tsc --noEmit",
     "clean": "rm -rf .next && rm -rf node_modules",
     "test": "vitest run",
     "test:watch": "vitest",
