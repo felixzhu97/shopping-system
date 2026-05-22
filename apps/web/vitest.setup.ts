@@ -4,7 +4,7 @@ import { vi } from 'vitest';
 import i18n from './i18n';
 
 // Mock global fetch
-global.fetch = vi.fn();
+global.fetch = vi.fn() as unknown as typeof fetch;
 
 // Mock window.matchMedia
 Object.defineProperty(window, 'matchMedia', {

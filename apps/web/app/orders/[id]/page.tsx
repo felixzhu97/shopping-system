@@ -200,9 +200,9 @@ export default function OrderDetailPage({ params }: { params: Usable<{ id: strin
       .then(order => {
         if (isMounted) setOrder(order);
       })
-      .catch(error => {
+      .catch((err) => {
         if (isMounted) {
-          console.error('获取订单详情失败', error);
+          console.error('获取订单详情失败', err);
           toast({
             title: t('common.get_order_failed'),
             description: t('common.please_try_again_later'),
@@ -216,7 +216,7 @@ export default function OrderDetailPage({ params }: { params: Usable<{ id: strin
     return () => {
       isMounted = false;
     };
-  }, [id]);
+  }, [id, t, toast]);
 
   // useMemo 缓存金额和状态文本
   const orderAmount = useMemo(() => {
@@ -225,7 +225,7 @@ export default function OrderDetailPage({ params }: { params: Usable<{ id: strin
       total: order.totalAmount.toFixed(2),
       amountText: `¥${order.totalAmount.toFixed(2)}`,
     };
-  }, [order]);
+  }, [order, t]);
 
   const statusText = useMemo(() => {
     if (!order) return '';
@@ -256,7 +256,7 @@ export default function OrderDetailPage({ params }: { params: Usable<{ id: strin
         title: t('common.order_cancelled'),
         description: t('common.your_order_has_been_successfully_cancelled'),
       });
-    } catch (error) {
+    } catch {
       toast({
         title: t('common.cancel_order_failed'),
         description: t('common.please_try_again_later'),
@@ -265,7 +265,7 @@ export default function OrderDetailPage({ params }: { params: Usable<{ id: strin
     } finally {
       setIsCancelling(false);
     }
-  }, [order, toast]);
+  }, [order, toast, t]);
 
   const getStatusIcon = (status: Order['status']) => {
     switch (status) {

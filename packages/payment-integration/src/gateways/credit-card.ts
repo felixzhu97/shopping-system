@@ -38,7 +38,7 @@ export class CreditCardGateway extends BasePaymentGateway {
 
       // 生成支付参数
       const paymentId = this.generatePaymentId(request.orderId);
-      const amount = this.formatAmount(request.amount);
+      void this.formatAmount(request.amount); // 预格式化金额
 
       // TODO: 创建 Stripe Payment Intent
       // const paymentIntent = await stripe.paymentIntents.create({

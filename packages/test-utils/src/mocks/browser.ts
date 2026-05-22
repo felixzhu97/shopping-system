@@ -63,7 +63,7 @@ export function setupBrowserMocks() {
   }));
 
   // Mock global fetch
-  global.fetch = vi.fn();
+  global.fetch = vi.fn() as unknown as typeof fetch;
 
   // Mock console methods to reduce noise in tests
   global.console = {

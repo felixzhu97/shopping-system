@@ -23,59 +23,61 @@ import {
 } from '@/lib/store/cartStore';
 
 // 加载状态的骨架屏组件
-const LoadingSkeleton = memo(() => (
-  <div className="space-y-8">
-    <div className="bg-white rounded-2xl shadow-sm p-8 mb-8">
-      <div className="flex items-center justify-between pb-6 border-b">
-        <Skeleton className="h-6 w-48" />
-        <Skeleton className="h-6 w-24" />
-      </div>
-
-      <div className="py-8 space-y-8">
-        {[1, 2].map(i => (
-          <div key={i} className="flex gap-6">
-            <Skeleton className="h-24 w-24 rounded-xl" />
-            <div className="flex-1 space-y-2">
-              <Skeleton className="h-5 w-3/4" />
-              <Skeleton className="h-4 w-1/2" />
-              <div className="flex items-center justify-between mt-4">
-                <Skeleton className="h-8 w-24 rounded-full" />
-                <Skeleton className="h-5 w-20" />
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-
-    <div className="bg-white rounded-2xl shadow-sm p-8">
-      <Skeleton className="h-7 w-40 mb-6" />
-      <div className="space-y-4">
-        <div className="flex justify-between">
-          <Skeleton className="h-4 w-20" />
-          <Skeleton className="h-4 w-20" />
-        </div>
-        <div className="flex justify-between">
-          <Skeleton className="h-4 w-20" />
-          <Skeleton className="h-4 w-20" />
-        </div>
-        <div className="flex justify-between">
-          <Skeleton className="h-4 w-20" />
-          <Skeleton className="h-4 w-20" />
-        </div>
-        <Separator />
-        <div className="flex justify-between">
-          <Skeleton className="h-6 w-20" />
+const LoadingSkeleton = memo(function LoadingSkeleton() {
+  return (
+    <div className="space-y-8">
+      <div className="bg-white rounded-2xl shadow-sm p-8 mb-8">
+        <div className="flex items-center justify-between pb-6 border-b">
+          <Skeleton className="h-6 w-48" />
           <Skeleton className="h-6 w-24" />
         </div>
-        <Skeleton className="h-12 w-full rounded-full" />
+
+        <div className="py-8 space-y-8">
+          {[1, 2].map(i => (
+            <div key={i} className="flex gap-6">
+              <Skeleton className="h-24 w-24 rounded-xl" />
+              <div className="flex-1 space-y-2">
+                <Skeleton className="h-5 w-3/4" />
+                <Skeleton className="h-4 w-1/2" />
+                <div className="flex items-center justify-between mt-4">
+                  <Skeleton className="h-8 w-24 rounded-full" />
+                  <Skeleton className="h-5 w-20" />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="bg-white rounded-2xl shadow-sm p-8">
+        <Skeleton className="h-7 w-40 mb-6" />
+        <div className="space-y-4">
+          <div className="flex justify-between">
+            <Skeleton className="h-4 w-20" />
+            <Skeleton className="h-4 w-20" />
+          </div>
+          <div className="flex justify-between">
+            <Skeleton className="h-4 w-20" />
+            <Skeleton className="h-4 w-20" />
+          </div>
+          <div className="flex justify-between">
+            <Skeleton className="h-4 w-20" />
+            <Skeleton className="h-4 w-20" />
+          </div>
+          <Separator />
+          <div className="flex justify-between">
+            <Skeleton className="h-6 w-20" />
+            <Skeleton className="h-6 w-24" />
+          </div>
+          <Skeleton className="h-12 w-full rounded-full" />
+        </div>
       </div>
     </div>
-  </div>
-));
+  );
+});
 
 // 空购物车组件
-const EmptyCart = memo(() => {
+const EmptyCart = memo(function EmptyCart() {
   const { t } = useTranslation();
 
   return (
@@ -207,7 +209,7 @@ const CartList = memo(function CartList({
 });
 
 // 页面头部组件
-const PageHeader = memo(() => {
+const PageHeader = memo(function PageHeader() {
   const { t } = useTranslation();
 
   return (
@@ -244,7 +246,7 @@ export default function CartPage() {
         variant: 'destructive',
       });
     }
-  }, [error, toast]);
+  }, [error, toast, t]);
 
   const { subtotal, shipping, tax, total } = useMemo(() => {
     const subtotal = items.reduce((total, item) => {
@@ -256,7 +258,7 @@ export default function CartPage() {
     const total = subtotal + shipping + tax;
 
     return { subtotal, shipping, tax, total };
-  }, [items.length]);
+  }, [items]);
 
   const handleCheckout = () => {
     if (items.length === 0) {

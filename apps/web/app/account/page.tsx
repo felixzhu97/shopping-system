@@ -1,7 +1,6 @@
 'use client';
 
 import { AlertCircle } from 'lucide-react';
-import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { PaymentMethod } from 'types';
 
@@ -377,10 +376,6 @@ function EditPaymentMethodModal({
   useEffect(() => {
     setForm(initialData);
   }, [initialData]);
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
 
   const handlePaymentMethodChange = (value: PaymentMethod) => {
     setForm({ ...form, paymentMethod: value });

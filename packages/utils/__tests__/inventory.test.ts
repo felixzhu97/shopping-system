@@ -38,7 +38,7 @@ describe('Inventory Utils', () => {
 
     it('should handle product without stock field', () => {
       // Given
-      const productWithoutStock = { ...mockProduct, stock: undefined };
+      const productWithoutStock = { ...mockProduct, stock: undefined } as unknown as Product;
 
       // When & Then
       expect(checkStock(productWithoutStock, 1)).toBe(false);
@@ -152,7 +152,7 @@ describe('Inventory Utils', () => {
 
     it('should handle product without stock field', () => {
       // Given & When & Then
-      expect(isInStock({ ...mockProduct, inStock: undefined, stock: undefined })).toBe(false);
+      expect(isInStock({ ...mockProduct, inStock: undefined, stock: undefined } as unknown as Product)).toBe(false);
     });
   });
 });

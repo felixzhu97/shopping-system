@@ -191,7 +191,7 @@ export const getAllUsers = async (req: any, res: any) => {
   try {
     const users = await User.find().select('-password').sort({ createdAt: -1 });
     res.status(200 as number).json(users);
-  } catch (error) {
+  } catch (_error) {
     res.status(500 as number).json({ message: '获取用户列表失败' });
   }
 };

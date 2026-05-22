@@ -55,9 +55,7 @@ export const createOrder = {
    * 批量创建订单
    */
   createMany: (count: number, overrides: OrderFactoryOptions = {}): Order[] => {
-    return Array.from({ length: count }, (_, index) => {
-      const baseIndex = orderCounter;
-      orderCounter++;
+    return Array.from({ length: count }, () => {
       return createOrder.create({
         ...overrides,
         id: overrides.id || generateOrderId(),

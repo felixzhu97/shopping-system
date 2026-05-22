@@ -219,7 +219,6 @@ function ClientProductsPage() {
   // 获取所有查询参数
   const category = searchParams.get('category') || '';
   const sort = searchParams.get('sort') || 'featured';
-  const query = searchParams.get('q') || '';
 
   // 当URL参数变化时更新排序状态
   useEffect(() => {

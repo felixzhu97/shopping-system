@@ -44,9 +44,7 @@ export const createCartItem = {
    * 批量创建购物车项目
    */
   createMany: (count: number, overrides: CartItemFactoryOptions = {}): CartItem[] => {
-    return Array.from({ length: count }, (_, index) => {
-      const baseIndex = cartItemCounter;
-      cartItemCounter++;
+    return Array.from({ length: count }, () => {
       return createCartItem.create({
         ...overrides,
         productId: overrides.productId || generateProductId(),

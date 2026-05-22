@@ -47,7 +47,7 @@ const initialFormData: AccountFormData = {
 
 export const useAccountStore = create<AccountStore>()(
   persist(
-    (set, get) => ({
+    (set) => ({
       formData: initialFormData,
       setFormData: data =>
         set(state => ({

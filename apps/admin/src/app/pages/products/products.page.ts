@@ -3,7 +3,7 @@ import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AgGridAngular } from 'ag-grid-angular';
-import type { AlignedGrid, ColDef, GetRowIdParams, GridOptions, ICellRendererParams } from 'ag-grid-community';
+import type { ColDef, GetRowIdParams, GridOptions, ICellRendererParams } from 'ag-grid-community';
 import Papa from 'papaparse';
 import * as XLSX from 'xlsx';
 

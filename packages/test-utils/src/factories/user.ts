@@ -64,7 +64,7 @@ export const createUser = {
    * 批量创建用户
    */
   createMany: (count: number, overrides: UserFactoryOptions = {}): User[] => {
-    return Array.from({ length: count }, (_, index) => {
+    return Array.from({ length: count }, () => {
       const baseIndex = userCounter;
       userCounter++;
       return createUser.create({

@@ -28,11 +28,10 @@ import { Toaster } from '@/components/ui/toaster';
 import { useToast } from '@/components/ui/use-toast';
 import { createOrder } from '@/lib/api/orders';
 import { getUserById, updateUser } from '@/lib/api/users';
+import { useCartClearCart, useCartItems } from '@/lib/store/cartStore';
 import { useCheckoutStore } from '@/lib/store/checkoutStore';
 // import { useAccountStore } from '@/lib/store/accountStore';
 import { useUserId } from '@/lib/store/userStore';
-import { cn } from '@/lib/utils/utils';
-import { useCartClearCart, useCartItems } from '@/lib/store/cartStore';
 
 
 // 订单摘要商品项组件
@@ -76,7 +75,6 @@ export default function CheckoutPage() {
     setSelectedProvince,
     setSelectedCity,
     setIsSubmitting,
-    resetForm,
   } = useCheckoutStore();
   const { toast } = useToast();
   const router = useRouter();

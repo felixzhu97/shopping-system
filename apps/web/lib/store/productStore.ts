@@ -49,7 +49,7 @@ export const useProductStore = create<ProductStore>((set, get) => ({
         productsLoadedByCategory: { ...state.productsLoadedByCategory, [category]: true },
         productsLoadingByCategory: { ...state.productsLoadingByCategory, [category]: false },
       }));
-    } catch (err) {
+    } catch {
       set(state => ({
         error: 'Failed to fetch products',
         productsLoadingByCategory: { ...state.productsLoadingByCategory, [category]: false },
@@ -76,7 +76,7 @@ export const useProductStore = create<ProductStore>((set, get) => ({
     try {
       const product = await api.getProduct(id);
       set({ product, productLoadedId: id });
-    } catch (err) {
+    } catch {
       set({ error: 'Failed to fetch product' });
     } finally {
       set({ isLoading: false, productLoadingId: null });
@@ -112,7 +112,7 @@ export const useProductStore = create<ProductStore>((set, get) => ({
         relatedProducts: products.filter((p: Product) => p.id !== excludeId).slice(0, 4),
         relatedLoadedKey: key,
       });
-    } catch (err) {
+    } catch {
       set({ error: 'Failed to fetch related products' });
     } finally {
       set({ isLoading: false, relatedLoadingKey: null });

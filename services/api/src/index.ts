@@ -76,14 +76,14 @@ app.use(
 app.use(express.json({ limit: process.env.JSON_BODY_LIMIT || '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: process.env.JSON_BODY_LIMIT || '10mb' }));
 app.use(jwtAuth);
-app.use((err, req, res, next) => {
+app.use((err: Error, req: any, res: any, next: any) => {
   if (err.name === 'UnauthorizedError') {
     return res.status(401).json({ status: 'error', message: 'Invalid or expired token' });
   }
   next(err);
 });
 
-app.get('/health', (req, res) => {
+app.get('/health', (_req: any, res: any) => {
   res.status(200).json({ status: 'ok', environment: process.env.NODE_ENV });
 });
 
@@ -124,7 +124,7 @@ mongoose
     console.error('Failed to connect database:', error);
   });
 
-app.use((err: any, req: any, res: any, next: any) => {
+app.use((err: any, req: any, res: any, _next: any) => {
   console.error(err.stack);
   res.status(500).json({
     status: 'error',

@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 
 
-const HeroSection = memo(() => {
+const HeroSection = memo(function HeroSection() {
   const { t } = useTranslation();
   return (
     <section className="relative overflow-hidden bg-black">

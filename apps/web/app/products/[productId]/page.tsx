@@ -82,7 +82,7 @@ function ProductDetail({ productId }: { productId: string }) {
         description: `${product.name} × ${quantity} ${t('common.added_to_cart_message')}`,
         duration: 3000,
       });
-    } catch (err) {
+    } catch {
       toast({
         title: t('common.add_to_cart_failed'),
         description: t('common.add_to_cart_failed_message'),
@@ -100,7 +100,7 @@ function ProductDetail({ productId }: { productId: string }) {
       setIsBuyNowLoading(true);
       await addToCart(product, quantity);
       router.push('/checkout');
-    } catch (err) {
+    } catch {
       toast({
         title: t('common.operation_failed'),
         description: t('common.operation_failed_message'),

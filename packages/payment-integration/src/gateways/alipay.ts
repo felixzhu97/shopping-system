@@ -40,7 +40,7 @@ export class AlipayGateway extends BasePaymentGateway {
 
       // 生成支付参数
       const paymentId = this.generatePaymentId(request.orderId);
-      const amount = this.formatAmount(request.amount);
+      void this.formatAmount(request.amount); // 预格式化金额
 
       // TODO: 调用支付宝统一收单接口
       // const result = await alipaySdk.exec('alipay.trade.app.pay', {
@@ -198,7 +198,7 @@ export class AlipayGateway extends BasePaymentGateway {
   /**
    * 构建支付链接
    */
-  private buildPaymentUrl(request: PaymentRequest, paymentId: string): string {
+  private buildPaymentUrl(request: PaymentRequest, _paymentId: string): string {
     const baseUrl = this.config.sandbox
       ? 'https://openapi.alipaydev.com/gateway.do'
       : 'https://openapi.alipay.com/gateway.do';

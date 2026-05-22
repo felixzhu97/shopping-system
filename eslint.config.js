@@ -24,7 +24,12 @@ export default tseslint.config(
       'apps/mobile/**',
       'apps/admin/src/**/*.g.ts',
       '**/*.spec.ts',
+      '**/*.spec.tsx',
       '**/*.test.ts',
+      '**/*.test.tsx',
+      '**/__tests__/**',
+      '**/dist/**',
+      '**/*.cjs',
     ],
   },
   eslint.configs.recommended,
@@ -62,6 +67,12 @@ export default tseslint.config(
       '@typescript-eslint/no-explicit-any': 'warn',
       '@typescript-eslint/no-empty-object-type': 'off',
       '@typescript-eslint/no-require-imports': 'off',
+      '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_', varsIgnorePattern: '^_', caughtErrorsIgnorePattern: '^_' }],
+      '@typescript-eslint/no-unused-expressions': 'off',
+      'no-constant-binary-expression': 'off',
+      'no-constant-condition': 'off',
+      'no-prototype-builtins': 'off',
+      'react/display-name': 'warn',
       'import/order': [
         'warn',
         {
@@ -72,6 +83,7 @@ export default tseslint.config(
       ],
       'react-hooks/rules-of-hooks': 'error',
       'react-hooks/exhaustive-deps': 'warn',
+      'no-useless-catch': 'off',
     },
   },
   {

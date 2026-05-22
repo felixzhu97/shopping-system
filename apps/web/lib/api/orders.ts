@@ -1,5 +1,3 @@
-import { ApiResponse } from 'types';
-
 import { API_CONFIG, fetchApi } from './config';
 
 import { Order } from '@/lib/types';

@@ -11,7 +11,6 @@ import type {
   OAuthConfig,
   OAuthToken,
   OAuthUser,
-  OAuthOptions,
 } from '../types';
 import {
   generateState,

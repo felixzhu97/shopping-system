@@ -93,7 +93,7 @@ export class MeetingPage implements OnDestroy {
     );
 
     effect(() => {
-      const _ = this.uiMessages();
+      this.uiMessages();
       queueMicrotask(() => {
         const el = this.chatMessagesRef?.nativeElement;
         if (!el) {

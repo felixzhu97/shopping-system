@@ -161,7 +161,7 @@ export const cancelOrder = async (req: any, res: any) => {
     let updatedOrder: any;
     try {
       updatedOrder = await order.save();
-    } catch (e) {
+    } catch (_e) {
       return res.status(500).json({
         success: false,
         message: 'Failed to cancel order',

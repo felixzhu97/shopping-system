@@ -41,7 +41,7 @@ export class WeChatGateway extends BasePaymentGateway {
 
       // 生成支付参数
       const paymentId = this.generatePaymentId(request.orderId);
-      const amount = this.formatAmount(request.amount);
+      void this.formatAmount(request.amount); // 预格式化金额
 
       // TODO: 调用微信支付统一下单接口
       // const result = await client.transactions.jsapi({

@@ -185,7 +185,7 @@ export class AnalyticsPage implements OnInit, OnDestroy {
 
   protected readonly totalProducts = computed(() => this.products().length);
   protected readonly totalInventoryValue = computed(() =>
-    this.products().reduce((sum, p) => sum + (Number(p.price) || 0) * (Number(p.stock) ?? 0), 0)
+    this.products().reduce((sum, p) => sum + (Number(p.price) || 0) * (Number(p.stock) || 0), 0)
   );
   protected readonly categoryStats = computed(() => {
     const map = new Map<string, number>();
@@ -203,7 +203,7 @@ export class AnalyticsPage implements OnInit, OnDestroy {
     for (const p of this.products()) {
       const cat = p.category?.trim() || 'Uncategorized';
       countMap.set(cat, (countMap.get(cat) ?? 0) + 1);
-      const value = (Number(p.price) || 0) * (Number(p.stock) ?? 0);
+      const value = (Number(p.price) || 0) * (Number(p.stock) || 0);
       valueMap.set(cat, (valueMap.get(cat) ?? 0) + value);
     }
     const cats = Array.from(countMap.keys()).sort();

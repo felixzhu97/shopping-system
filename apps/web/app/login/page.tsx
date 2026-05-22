@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useState, useCallback, Suspense, useEffect } from 'react';
+import { useState, useCallback, Suspense } from 'react';
 
 import { Footer } from '@/components/footer';
 import { Navbar } from '@/components/navbar';

@@ -75,7 +75,7 @@ export const useCartStore = create<CartStore>()(
           });
 
           get()._calculateTotals();
-        } catch (error) {
+        } catch {
           set({ error: '添加商品到购物车时发生错误' });
         }
       },
@@ -93,7 +93,7 @@ export const useCartStore = create<CartStore>()(
           }));
 
           get()._calculateTotals();
-        } catch (error) {
+        } catch {
           set({ error: '更新商品数量时发生错误' });
         }
       },
@@ -105,7 +105,7 @@ export const useCartStore = create<CartStore>()(
           }));
 
           get()._calculateTotals();
-        } catch (error) {
+        } catch {
           set({ error: '移除商品时发生错误' });
         }
       },
@@ -114,7 +114,7 @@ export const useCartStore = create<CartStore>()(
         try {
           set({ items: [] });
           get()._calculateTotals();
-        } catch (error) {
+        } catch {
           set({ error: '清空购物车时发生错误' });
         }
       },
@@ -129,7 +129,7 @@ export const useCartStore = create<CartStore>()(
 
           set({ items: data.items });
           get()._calculateTotals();
-        } catch (error) {
+        } catch {
           set({ error: '获取购物车数据时发生错误' });
         } finally {
           set({ isLoading: false });

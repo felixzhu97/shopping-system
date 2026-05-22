@@ -65,7 +65,7 @@ export const createProduct = {
    * 批量创建产品
    */
   createMany: (count: number, overrides: ProductFactoryOptions = {}): Product[] => {
-    return Array.from({ length: count }, (_, index) => {
+    return Array.from({ length: count }, () => {
       const baseIndex = productCounter;
       productCounter++;
       return createProduct.create({

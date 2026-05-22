@@ -11,7 +11,7 @@ export function setupApiTests() {
   }
 
   // Mock 全局 fetch（如果需要）
-  global.fetch = vi.fn();
+  global.fetch = vi.fn() as unknown as typeof fetch;
 
   // Mock console 方法以减少测试中的噪音
   global.console = {

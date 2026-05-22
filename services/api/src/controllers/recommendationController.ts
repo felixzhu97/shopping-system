@@ -45,7 +45,7 @@ export const getRecommendationsByProductId = async (req: Request, res: Response)
 
     const recommended = recommendForProduct(String(productId), products, limit);
     return res.status(200 as number).json(recommended);
-  } catch (error) {
+  } catch (_error) {
     return res.status(500 as number).json({ message: 'Failed to get recommendations' });
   }
 };

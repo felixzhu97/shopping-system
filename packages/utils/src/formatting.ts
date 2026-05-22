@@ -19,7 +19,7 @@ export function formatCurrency(
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     }).format(amount);
-  } catch (error) {
+  } catch {
     // 如果格式化失败，返回简单格式
     return `${currency} ${amount.toFixed(2)}`;
   }
@@ -67,7 +67,7 @@ export function formatDate(
   if (format in formatMap) {
     try {
       return new Intl.DateTimeFormat(locale, formatMap[format]).format(dateObj);
-    } catch (error) {
+    } catch {
       return dateObj.toLocaleDateString(locale);
     }
   }
@@ -88,7 +88,7 @@ export function formatDate(
       .replace('HH', hours)
       .replace('mm', minutes)
       .replace('ss', seconds);
-  } catch (error) {
+  } catch {
     return dateObj.toLocaleDateString(locale);
   }
 }
@@ -118,7 +118,7 @@ export function formatNumber(
       maximumFractionDigits,
       useGrouping,
     }).format(number);
-  } catch (error) {
+  } catch {
     // 如果格式化失败，返回简单格式
     return number.toFixed(decimals);
   }
