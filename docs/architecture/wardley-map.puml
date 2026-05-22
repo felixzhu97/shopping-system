@@ -1,68 +1,86 @@
-@startuml
-title Wardley Map - Shopping System
+@startuml Wardley_Map_Chinese
+title 沃德利地图 - 购物系统 (中文版)
 
 skinparam componentStyle rectangle
 skinparam packageStyle rectangle
 skinparam linetype ortho
 
-package "Genesis (Innovation)" #LightBlue {
-    component [Personalized Experience\nAdvanced Experiments] as personalized_experience
-    component [Propensity Models\nML Experiments] as propensity_models
-    component [Recommender Models\nDL Experiments] as recommender_models
+' 自定义颜色
+skinparam backgroundColor #FEFEFE
+
+' 创世区 - 创新驱动 (Innovation)
+package "创世区 (Genesis)" #LightBlue {
+    component [个性化体验\nAdvanced Experiments] as personalized_experience
+    component [购买倾向模型\nML Experiments] as propensity_models
+    component [推荐模型\n深度学习] as recommender_models
 }
 
-package "Custom-built" #LightGreen {
-    component [Product Management\nDomain Service] as product_mgmt
-    component [Cart Management\nDomain Service] as cart_mgmt
-    component [Order Management\nDomain Service] as order_mgmt
-    component [User Management\nDomain Service] as user_mgmt
-    component [Payment Service\nOrchestration] as payment_service
-    component [Recommendation Service\nTF-IDF] as recommendation_service
-    component [Crawler Service] as crawler_service
-    component [Data Mining Jobs] as data_mining_jobs
-    component [Auth Service\nJWT and OAuth] as auth_service
-    component [API Service\nExpress and Lambda] as api_service
-    component [Meeting Signal Service\nWebRTC Signaling] as meeting_signal_service
+' 定制区 - 差异化竞争 (Custom-built)
+package "定制区 (Custom-built)" #LightGreen {
+    component [商品管理\n领域服务] as product_mgmt
+    component [购物车管理\n领域服务] as cart_mgmt
+    component [订单管理\n领域服务] as order_mgmt
+    component [用户管理\n领域服务] as user_mgmt
+    component [支付服务\n编排层] as payment_service
+    component [推荐服务\nTF-IDF算法] as recommendation_service
+    component [爬虫服务\nFastAPI] as crawler_service
+    component [数据分析作业\n机器学习训练] as data_mining_jobs
+    component [认证服务\nJWT + OAuth] as auth_service
+    component [API服务\nExpress + Lambda] as api_service
+    component [会议信令服务\nWebRTC信令] as meeting_signal_service
+    component [管理后台服务\nAngular 21] as admin_service
 }
 
-package "Product" #LightYellow {
-    component [Web Application\nNext.js] as web_app
-    component [Mobile Application\nReact Native] as mobile_app
-    component [Admin Dashboard\nAngular] as admin_app
-    component [MongoDB\nDocument Database] as mongodb
-    component [Vercel\nHosting and Edge] as vercel
-    component [AWS Lambda\nServerless Compute] as aws_lambda
-    component [Datadog\nAPM and RUM] as datadog
-    component [Serverless Framework\nDeployment] as serverless_framework
-    component [Socket.io\nRealtime] as socket_io
-    component [Shared Libraries\nAuth, Monitoring, Utils, Types] as shared_libs
+' 产品区 - 成熟稳定 (Product)
+package "产品区 (Product)" #LightYellow {
+    component [网页应用\nNext.js] as web_app
+    component [移动应用\nReact Native] as mobile_app
+    component [管理后台\nAngular] as admin_app
+    component [MongoDB\n文档数据库] as mongodb
+    component [Vercel\n托管和边缘计算] as vercel
+    component [AWS Lambda\n无服务器计算] as aws_lambda
+    component [Datadog\n应用性能监控] as datadog
+    component [Serverless框架\n部署工具] as serverless_framework
+    component [Socket.IO\n实时通信] as socket_io
+    component [共享库\n类型、工具、认证、支付] as shared_libs
+    component [ECharts\n数据分析图表] as echarts
+    component [AG Grid\n数据表格] as ag_grid
+    component [Three.js\n3D模型展示] as threejs
 }
 
-package "Commodity" #LightGray {
-    component [Node.js Runtime] as nodejs
+' 商品区 - 通用 commoditized (Commodity)
+package "商品区 (Commodity)" #LightGray {
+    component [Node.js运行时] as nodejs
     component [TypeScript] as typescript
-    component [HTTP Protocol] as http
-    component [CDN Service] as cdn
-    component [CI/CD Service\nGitHub Actions] as cicd
-    component [Git Repository] as git
+    component [HTTP协议] as http
+    component [CDN服务] as cdn
+    component [CI/CD服务\nGitHub Actions] as cicd
+    component [Git仓库] as git
+    component [React框架] as react
+    component [Zustand状态管理] as zustand
 }
 
-component [User Needs\nShopping, Account Management] as user_needs #Pink
-component [Admin Needs\nOperations and Monitoring] as admin_needs #Pink
+' 用户需求 - 业务核心
+component [用户需求\n购物、账户管理] as user_needs #Pink
+component [管理员需求\n运营和监控] as admin_needs #Pink
 
-component [Payment Gateways\nAlipay, WeChat Pay, Stripe] as payment_gateways
-component [OAuth Providers\nGoogle, GitHub, Others] as oauth_providers
-component [External Websites\nProduct Sources] as external_websites
+' 外部依赖
+component [支付网关\n支付宝、微信支付、Stripe] as payment_gateways
+component [OAuth服务商\nGoogle、GitHub等] as oauth_providers
+component [外部网站\n商品数据来源] as external_websites
+component [STUN服务器\nWebRTC穿透] as stun_server
 
-user_needs --> web_app : via web
-user_needs --> mobile_app : via mobile
-admin_needs --> admin_app : via browser
+' 依赖关系
+user_needs --> web_app : 通过网页
+user_needs --> mobile_app : 通过移动端
+admin_needs --> admin_app : 通过浏览器
 
-web_app --> api_service : calls API
-mobile_app --> api_service : calls API
-admin_app --> api_service : calls API
-admin_app --> crawler_service : manages crawling
-admin_app --> meeting_signal_service : manages meetings
+web_app --> api_service : 调用API
+mobile_app --> api_service : 调用API
+admin_app --> api_service : 调用API
+admin_app --> crawler_service : 管理爬虫
+admin_app --> meeting_signal_service : 管理会议
+admin_app --> admin_service : Angular应用
 
 api_service --> product_mgmt
 api_service --> cart_mgmt
@@ -88,8 +106,10 @@ data_mining_jobs --> recommender_models
 
 crawler_service --> external_websites
 crawler_service --> data_mining_jobs
+crawler_service --> api_service
 
 meeting_signal_service --> socket_io
+meeting_signal_service --> stun_server
 
 payment_service --> payment_gateways
 auth_service --> oauth_providers
@@ -117,6 +137,14 @@ mobile_app --> typescript
 admin_app --> typescript
 api_service --> typescript
 
+web_app --> react
+mobile_app --> react
+web_app --> zustand
+
+admin_app --> echarts
+admin_app --> ag_grid
+admin_app --> threejs
+
 web_app --> datadog
 mobile_app --> datadog
 admin_app --> datadog
@@ -128,5 +156,13 @@ cicd --> serverless_framework
 cicd --> vercel
 git --> cicd
 
-@enduml
+' 图例
+legend right
+|<color:#LightBlue> 创世区 (Genesis)</color>| 创新、实验性功能 |
+|<color:#LightGreen> 定制区 (Custom-built)</color>| 差异化、核心竞争力 |
+|<color:#LightYellow> 产品区 (Product)</color>| 成熟稳定、可替代 |
+|<color:#LightGray> 商品区 (Commodity)</color>| 通用、易获取 |
+|<color:#Pink> 用户需求</color>| 业务核心价值 |
+endlegend
 
+@enduml

@@ -36,7 +36,31 @@
 - **用户** – 列表
 - **视频会议** – WebRTC 视频、聊天、TTS/STT、实时字幕、翻译
 
-## 截图
+## C4 架构图
+
+C4 模型从不同抽象层次描述系统架构：
+
+### C1 系统上下文图
+
+![C1 系统上下文图](docs/architecture/c4/png/C1_System_Context.png)
+
+### C2 容器图
+
+![C2 容器图](docs/architecture/c4/png/C2_Container.png)
+
+### C3 组件图
+
+| API服务 | 管理后台 | 网页应用 |
+|---------|----------|----------|
+| ![API服务](docs/architecture/c4/png/C3_Component_API.png) | ![管理后台](docs/architecture/c4/png/C3_Component_Admin.png) | ![网页应用](docs/architecture/c4/png/C3_Component_Web.png) |
+
+## 沃德利地图
+
+展示技术演化和业务价值定位。
+
+![沃德利地图](docs/architecture/png/Wardley_Map_Chinese.png)
+
+## 快速开始
 
 ### 网页端
 
