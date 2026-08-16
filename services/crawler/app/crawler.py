@@ -207,7 +207,7 @@ async def _scrape_product(
 async def crawl(request: CrawlRequest) -> List[ScrapedProduct]:
     concurrency = max(1, int(request.concurrency))
     timeout = httpx.Timeout(request.request_timeout_ms / 1000.0)
-    headers = {"user-agent": "shopping-system-crawler/1.0", "accept": "text/html,application/xhtml+xml"}
+    headers = {"user-agent": "explore-commerce-crawler/1.0", "accept": "text/html,application/xhtml+xml"}
 
     async with httpx.AsyncClient(timeout=timeout, headers=headers, follow_redirects=True) as client:
         sem = asyncio.Semaphore(concurrency)

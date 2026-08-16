@@ -110,6 +110,6 @@ function dedupeUrls(urls: string[]): string[] {
 }
 
 function buildUserAgent(): string {
-  return 'shopping-system-crawler/1.0'
+  return 'explore-commerce-crawler/1.0'
 }
 

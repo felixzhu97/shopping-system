@@ -1,8 +1,8 @@
-# Shopping System C4 模型
+# Explore Commerce C4 模型
 
-本目录用 [C4 模型](https://c4model.com/) 与 [C4-PlantUML](https://github.com/plantuml-stdlib/C4-PlantUML) 描述 [Shopping System](https://github.com/felixzhu97/shopping-system)。
+本目录用 [C4 模型](https://c4model.com/) 与 [C4-PlantUML](https://github.com/plantuml-stdlib/C4-PlantUML) 描述 [Explore Commerce](https://github.com/felixzhu97/explore-commerce)。
 
-Shopping System 是电商 monorepo：Web 商店、管理后台、API 与移动端能力。系统边界是面向顾客与运营的购物平台及其数据/支付依赖。
+Explore Commerce 是电商 monorepo：Web 商店、管理后台、API 与移动端能力。系统边界是面向顾客与运营的购物平台及其数据/支付依赖。
 
 文件**扁平**存放。每个图使用 `C1-`–`C4-` 前缀；图内文案以源文件为准。
 

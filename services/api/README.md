@@ -53,7 +53,7 @@ Required variables:
 Example:
 
 ```env
-MONGODB_URI=mongodb://localhost:27017/shopping-system
+MONGODB_URI=mongodb://localhost:27017/explore-commerce
 PORT=3001
 NODE_ENV=development
 JWT_SECRET=your_jwt_secret

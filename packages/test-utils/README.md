@@ -1,4 +1,4 @@
-# @shopping-system/test-utils
+# @explore-commerce/test-utils
 
 用于购物系统项目的测试工具包，提供全面的测试工具，包括 Mock 工具、测试数据工厂、测试辅助函数和 React 测试工具。
 
@@ -9,7 +9,7 @@
 ```json
 {
   "devDependencies": {
-    "@shopping-system/test-utils": "workspace:*"
+    "@explore-commerce/test-utils": "workspace:*"
   }
 }
 ```
@@ -19,7 +19,7 @@
 ### Mock 工具
 
 ```typescript
-import { setupBrowserMocks, mockNextRouter } from '@shopping-system/test-utils';
+import { setupBrowserMocks, mockNextRouter } from '@explore-commerce/test-utils';
 
 beforeEach(() => {
   setupBrowserMocks();
@@ -30,7 +30,7 @@ beforeEach(() => {
 ### 测试数据工厂
 
 ```typescript
-import { createUser, createProduct, createCartItem, createOrder } from '@shopping-system/test-utils';
+import { createUser, createProduct, createCartItem, createOrder } from '@explore-commerce/test-utils';
 
 // 创建单个对象
 const user = createUser.create({ role: 'admin' });
@@ -46,7 +46,7 @@ const partialUser = createUser.createPartial({ firstName: 'Jane' });
 ### 测试辅助函数
 
 ```typescript
-import { createMockReq, createMockRes, delay, flushPromises } from '@shopping-system/test-utils';
+import { createMockReq, createMockRes, delay, flushPromises } from '@explore-commerce/test-utils';
 
 // 创建请求/响应对象
 const req = createMockReq({ body: { name: 'test' } });
@@ -60,7 +60,7 @@ await flushPromises();
 ### React 测试工具
 
 ```typescript
-import { renderWithProviders, renderHookWithProviders } from '@shopping-system/test-utils/react';
+import { renderWithProviders, renderHookWithProviders } from '@explore-commerce/test-utils/react';
 
 // 使用自定义渲染器
 const { container } = renderWithProviders(<MyComponent />, {
@@ -77,7 +77,7 @@ const { result } = renderHookWithProviders(() => useMyHook(), {
 ### 测试环境设置
 
 ```typescript
-import { setupWebTests, setupApiTests } from '@shopping-system/test-utils';
+import { setupWebTests, setupApiTests } from '@explore-commerce/test-utils';
 
 // 在 vitest.setup.ts 中
 setupWebTests(); // 或 setupApiTests()

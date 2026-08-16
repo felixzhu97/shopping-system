@@ -1,6 +1,6 @@
 # Glossary | 领域术语表
 
-> Shopping System — Ubiquitous Language（统一语言）
+> Explore Commerce — Ubiquitous Language（统一语言）
 
 ---
 

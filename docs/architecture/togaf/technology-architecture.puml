@@ -1,5 +1,5 @@
 @startuml
-title TOGAF Technology Architecture - Shopping System
+title TOGAF Technology Architecture - Explore Commerce
 
 skinparam componentStyle rectangle
 skinparam linetype ortho

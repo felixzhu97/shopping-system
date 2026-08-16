@@ -1,6 +1,6 @@
 export default {
   // Navbar
-  shopping_system: '购物系统',
+  shopping_system: 'Explore商城',
   all_products: '全部商品',
   electronics: '电子产品',
   clothing: '服装',

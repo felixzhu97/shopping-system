@@ -32,7 +32,7 @@ const modelKeys = [
 ] as const;
 
 export function getMongoUri(): string {
-  return process.env.MONGODB_URI || 'mongodb://localhost:27017/shopping-system';
+  return process.env.MONGODB_URI || 'mongodb://localhost:27017/explore-commerce';
 }
 
 export async function seedProducts(products: SeedProduct[]): Promise<number> {
