@@ -1,5 +1,5 @@
 {
-  "name": "@shopping-system/test-utils",
+  "name": "@explore-commerce/test-utils",
   "version": "0.0.0",
   "private": true,
   "main": "./dist/index.js",

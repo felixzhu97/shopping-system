@@ -43,8 +43,8 @@
 
 ```bash
 # 克隆项目仓库
-git clone https://github.com/your-username/shopping-system.git
-cd shopping-system
+git clone https://github.com/your-username/explore-commerce.git
+cd explore-commerce
 
 # 安装依赖
 pnpm install
@@ -76,7 +76,7 @@ pnpm --filter web storybook
 ## 3. 代码库组织
 
 ```
-shopping-system/
+explore-commerce/
 ├── apps/                  # 应用程序
 │   ├── web/               # Next.js前端应用
 │   └── api/               # Express.js后端API
@@ -379,7 +379,7 @@ A: 使用以下步骤解决冲突：
 
 - **团队会议**: 每周一上午10:00
 - **代码审查**: GitHub Pull Requests
-- **即时通讯**: Slack #shopping-system频道
+- **即时通讯**: Slack #explore-commerce频道
 - **文档共享**: Notion工作区
 - **任务管理**: JIRA项目板
 

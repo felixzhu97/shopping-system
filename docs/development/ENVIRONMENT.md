@@ -40,7 +40,7 @@ PORT=3001
 NODE_ENV=development
 
 # 数据库配置
-MONGODB_URI=mongodb://localhost:27017/shopping-system
+MONGODB_URI=mongodb://localhost:27017/explore-commerce
 
 # JWT配置
 JWT_SECRET=your-jwt-secret

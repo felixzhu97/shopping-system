@@ -1,6 +1,6 @@
 export default {
   // Navbar
-  shopping_system: 'Sistema de compras',
+  shopping_system: 'Explore Commerce',
   all_products: 'Todos los productos',
   electronics: 'Electrónica',
   clothing: 'Ropa',

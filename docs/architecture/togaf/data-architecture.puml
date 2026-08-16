@@ -1,5 +1,5 @@
 @startuml
-title TOGAF Data Architecture - Shopping System
+title TOGAF Data Architecture - Explore Commerce
 
 skinparam componentStyle rectangle
 skinparam packageStyle rectangle

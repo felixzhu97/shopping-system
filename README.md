@@ -1,11 +1,11 @@
-# Shopping System
+# Explore Commerce
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Architecture](https://img.shields.io/badge/Architecture-C4-blue.svg)](docs/developer/c4-model/)
 [![Next.js](https://img.shields.io/badge/Next.js-web-black.svg)](https://nextjs.org/)
 [![Angular](https://img.shields.io/badge/Angular-admin-red.svg)](https://angular.dev/)
 
-Shopping System brings commerce into everyday life. Our mission is to make buying and selling effortless — for people, every day.
+Explore Commerce brings commerce into everyday life. Our mission is to make buying and selling effortless — for people, every day.
 
 ## Table of Contents
 

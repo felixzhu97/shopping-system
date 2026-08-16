@@ -6,7 +6,7 @@
 
 ### 基本信息
 
-- **基础URL**: `https://api.shopping-system.com/v1` 或本地开发环境 `http://localhost:3001/v1`
+- **基础URL**: `https://api.explore-commerce.com/v1` 或本地开发环境 `http://localhost:3001/v1`
 - **内容类型**: `application/json`
 - **认证方式**: Bearer Token (JWT)
 - **API版本**: v1

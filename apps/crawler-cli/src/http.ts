@@ -7,7 +7,7 @@ export type HttpOptions = {
 }
 
 export async function fetchText(url: string, options: HttpOptions = {}): Promise<string> {
-  const { timeoutMs = 30000, userAgent = 'shopping-system-crawler/1.0' } = options
+  const { timeoutMs = 30000, userAgent = 'explore-commerce-crawler/1.0' } = options
 
   return new Promise((resolve, reject) => {
     const protocol = url.startsWith('https') ? https : http

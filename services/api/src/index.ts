@@ -29,7 +29,7 @@ dotenv.config(envPath ? { path: envPath } : undefined);
 
 const app = express();
 const PORT = process.env.PORT || 3001;
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/shopping-system';
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/explore-commerce';
 
 export const getJwtSecret = () => process.env.JWT_SECRET || 'your_jwt_secret';
 const jwtSecret = getJwtSecret();

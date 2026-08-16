@@ -27,7 +27,7 @@ Raw CSV files:
 Export data from MongoDB:
 
 ```bash
-python3 services/data-mining/export_mongo.py --mongo_uri "mongodb://localhost:27017/shopping-system-public" --db "shopping-system-public"
+python3 services/data-mining/export_mongo.py --mongo_uri "mongodb://localhost:27017/explore-commerce-public" --db "explore-commerce-public"
 ```
 
 Smoke test (synthetic data):
@@ -39,7 +39,7 @@ python3 services/data-mining/smoke_test.py
 Smoke test (MongoDB):
 
 ```bash
-MONGODB_URI="mongodb://localhost:27017/shopping-system-public" python3 services/data-mining/smoke_test.py --use_mongo --db "shopping-system-public"
+MONGODB_URI="mongodb://localhost:27017/explore-commerce-public" python3 services/data-mining/smoke_test.py --use_mongo --db "explore-commerce-public"
 ```
 
 Generate synthetic data:
