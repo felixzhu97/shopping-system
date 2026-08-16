@@ -5,9 +5,7 @@
 [![Next.js](https://img.shields.io/badge/Next.js-web-black.svg)](https://nextjs.org/)
 [![Angular](https://img.shields.io/badge/Angular-admin-red.svg)](https://angular.dev/)
 
-Shopping System brings storefront, admin, and commerce APIs together. Our mission is to help teams learn end-to-end e-commerce architecture with clear boundaries.
-
-> Architecture docs in this meta-repo. Full application source lives in the project remote.
+Shopping System brings commerce into everyday life. Our mission is to make buying and selling effortless — for people, every day.
 
 ## Table of Contents
 
