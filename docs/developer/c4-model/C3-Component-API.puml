@@ -1,0 +1,58 @@
+@startuml C3_Component_API
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+title C3 组件图 - API服务
+
+Container_Boundary(api_container, "API服务 (Node.js + Express)") {
+
+    Component(product_controller, "商品控制器", "TypeScript", "商品CRUD")
+    Component(order_controller, "订单控制器", "TypeScript", "订单管理")
+    Component(user_controller, "用户控制器", "TypeScript", "用户认证")
+    Component(cart_controller, "购物车控制器", "TypeScript", "购物车")
+    Component(recommendation_controller, "推荐控制器", "TypeScript", "商品推荐")
+
+    Component(product_service, "商品服务", "TypeScript", "商品业务逻辑")
+    Component(order_service, "订单服务", "TypeScript", "订单逻辑")
+    Component(user_service, "用户服务", "TypeScript", "认证JWT")
+    Component(cart_service, "购物车服务", "TypeScript", "购物车逻辑")
+    Component(recommendation_service, "推荐服务", "TypeScript", "推荐算法")
+
+    ComponentDb(product_repo, "商品仓储", "MongoDB", "Product集合")
+    ComponentDb(order_repo, "订单仓储", "MongoDB", "Order集合")
+    ComponentDb(user_repo, "用户仓储", "MongoDB", "User集合")
+    ComponentDb(cart_repo, "购物车仓储", "MongoDB", "Cart集合")
+
+    Component(middleware_auth, "认证中间件", "Express", "JWT验证")
+    Component(middleware_cors, "CORS中间件", "Express", "跨域")
+    Component(csv_parser, "CSV解析器", "TypeScript", "批量导入")
+}
+
+ContainerDb_Ext(mongodb, "MongoDB", "主数据库")
+System_Ext(payment_gateway, "支付网关", "支付宝、微信")
+System_Ext(oauth_providers, "OAuth服务商", "Google、GitHub")
+SystemDb_Ext(data_mining, "数据分析服务", "ML预测")
+
+Rel(product_controller, product_service, "")
+Rel(order_controller, order_service, "")
+Rel(user_controller, user_service, "")
+Rel(cart_controller, cart_service, "")
+Rel(recommendation_controller, recommendation_service, "")
+
+Rel(product_service, product_repo, "")
+Rel(order_service, order_repo, "")
+Rel(user_service, user_repo, "")
+Rel(cart_service, cart_repo, "")
+
+Rel(product_repo, mongodb, "")
+Rel(order_repo, mongodb, "")
+Rel(user_repo, mongodb, "")
+Rel(cart_repo, mongodb, "")
+
+Rel(recommendation_service, data_mining, "获取预测")
+Rel(order_service, payment_gateway, "发起支付")
+Rel(user_service, oauth_providers, "第三方登录")
+Rel(product_controller, csv_parser, "解析CSV")
+Rel(middleware_auth, user_service, "验证用户")
+
+SHOW_LEGEND()
+@enduml

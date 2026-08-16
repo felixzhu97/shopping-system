@@ -1,0 +1,56 @@
+@startuml C3_Component_Admin
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+title C3 组件图 - 管理后台应用
+
+Container_Boundary(admin_container, "管理后台 (Angular 21)") {
+
+    Component(login_page, "登录页", "Angular Component", "管理员登录")
+    Component(products_page, "商品管理页", "Angular Component", "商品CRUD")
+    Component(products_3d_page, "3D商品展示页", "Angular Component", "Three.js 3D模型")
+    Component(orders_page, "订单管理页", "Angular Component", "订单管理")
+    Component(users_page, "用户管理页", "Angular Component", "用户列表")
+    Component(crawler_page, "爬虫管理页", "Angular Component", "爬虫任务")
+    Component(analytics_page, "数据分析页", "Angular Component", "统计图表")
+    Component(meeting_page, "视频会议页", "Angular Component", "WebRTC会议")
+
+    Component(api_service, "API服务", "TypeScript", "HTTP请求")
+    Component(auth_service, "认证服务", "TypeScript", "JWT管理")
+    Component(crawler_service, "爬虫服务", "TypeScript", "爬虫API")
+    Component(meeting_service, "会议服务", "TypeScript", "WebRTC信令")
+    Component(translate_service, "翻译服务", "TypeScript", "多语言翻译")
+
+    Component(webrtc_manager, "WebRTC管理器", "TypeScript", "P2P连接")
+    Component(chat_manager, "聊天管理器", "TypeScript", "实时聊天")
+    Component(echarts_charts, "ECharts图表", "TypeScript", "数据图表")
+    Component(ag_grid_table, "AG Grid表格", "TypeScript", "数据表格")
+    Component(auth_interceptor, "认证拦截器", "HTTP Interceptor", "认证头注入")
+}
+
+Container_Ext(api_service_ext, "API服务", "REST API", "后端接口")
+Container_Ext(meeting_signal_ext, "会议信令服务", "Socket.IO", "WebRTC信令")
+
+Rel(login_page, auth_service, "登录认证")
+Rel(products_page, api_service, "获取商品")
+Rel(products_3d_page, api_service, "获取3D模型")
+Rel(orders_page, api_service, "获取订单")
+Rel(users_page, api_service, "获取用户")
+Rel(crawler_page, crawler_service, "管理爬虫")
+Rel(analytics_page, echarts_charts, "展示图表")
+Rel(analytics_page, ag_grid_table, "展示表格")
+Rel(analytics_page, api_service, "获取数据")
+Rel(meeting_page, meeting_service, "管理会议")
+Rel(meeting_page, translate_service, "翻译")
+
+Rel(meeting_service, webrtc_manager, "WebRTC")
+Rel(meeting_service, chat_manager, "聊天")
+Rel(meeting_service, meeting_signal_ext, "Socket.IO")
+Rel(chat_manager, translate_service, "翻译消息")
+
+Rel(echarts_charts, api_service, "获取数据")
+Rel(ag_grid_table, api_service, "获取数据")
+Rel(api_service, api_service_ext, "HTTP请求")
+Rel(auth_service, auth_interceptor, "Token注入")
+
+SHOW_LEGEND()
+@enduml

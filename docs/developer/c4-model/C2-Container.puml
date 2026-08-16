@@ -1,0 +1,40 @@
+@startuml C2_Container
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+title C2 容器架构图 - 购物系统
+
+Person(customer, "顾客", "使用购物系统购买商品的终端用户")
+Person(admin, "管理员", "管理系统商品、订单、用户的运营人员")
+
+System_Boundary(shopping_system, "购物系统") {
+    Container(web_app, "网页应用", "Next.js + React", "顾客端网页界面")
+    Container(mobile_app, "移动应用", "React Native + Expo", "跨平台移动端购物应用")
+    Container(admin_app, "管理后台", "Angular 21", "管理员操作界面")
+    Container(api_service, "API服务", "Node.js + Express + TypeScript", "核心业务逻辑API服务")
+    ContainerDb(mongodb, "MongoDB", "MongoDB 7", "主数据库")
+    Container(crawler_service, "爬虫服务", "Python + FastAPI", "网页数据爬取")
+    Container(data_mining_service, "数据分析服务", "Python + PyTorch", "机器学习模型")
+    Container(meeting_signal_service, "会议信令服务", "Node.js + Socket.IO", "WebRTC视频会议")
+}
+
+System_Ext(payment_gateway, "支付网关", "支付宝、微信支付")
+System_Ext(oauth_providers, "OAuth服务商", "Google、GitHub等")
+System_Ext(stripe_payment, "Stripe", "国际信用卡支付")
+
+Rel(customer, web_app, "HTTPS")
+Rel(customer, mobile_app, "HTTPS")
+Rel(admin, admin_app, "HTTPS")
+
+Rel(web_app, api_service, "REST API")
+Rel(mobile_app, api_service, "REST API")
+Rel(admin_app, api_service, "REST API")
+Rel(api_service, mongodb, "MongoDB协议")
+Rel(api_service, payment_gateway, "发起支付")
+Rel(api_service, stripe_payment, "国际支付")
+Rel(api_service, oauth_providers, "OAuth 2.0")
+Rel(crawler_service, api_service, "提交商品数据")
+Rel(api_service, data_mining_service, "训练/预测")
+Rel(admin_app, meeting_signal_service, "WebRTC信令")
+
+SHOW_LEGEND()
+@enduml

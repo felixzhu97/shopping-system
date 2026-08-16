@@ -1,0 +1,24 @@
+@startuml C1_System_Context
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+
+title C1 系统上下文图 - 购物系统
+
+Person(customer, "顾客", "使用购物系统购买商品的终端用户")
+Person(admin, "管理员", "管理系统商品、订单、用户的运营人员")
+
+System(shopping_system, "购物系统", "完整的电商购物平台")
+
+System_Ext(payment_gateway, "支付网关", "处理支付交易")
+System_Ext(oauth_providers, "OAuth服务商", "第三方登录")
+System_Ext(stripe_payment, "Stripe", "国际支付")
+SystemDb_Ext(public_data, "公开数据源", "商品信息来源")
+
+Rel(customer, shopping_system, "浏览/下单/支付", "HTTPS")
+Rel(admin, shopping_system, "管理商品/订单", "HTTPS")
+Rel(shopping_system, payment_gateway, "发起支付")
+Rel(shopping_system, stripe_payment, "国际支付", "Stripe API")
+Rel(shopping_system, oauth_providers, "第三方登录", "OAuth 2.0")
+Rel_Back(shopping_system, public_data, "爬取商品", "HTTP")
+
+SHOW_LEGEND()
+@enduml

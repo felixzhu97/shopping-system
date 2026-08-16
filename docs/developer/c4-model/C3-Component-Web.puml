@@ -1,0 +1,68 @@
+@startuml C3_Component_Web
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+title C3 组件图 - 网页应用
+
+Container_Boundary(web_container, "网页应用 (Next.js + React)") {
+
+    Component(home_page, "首页", "Next.js Page", "横幅、商品展示")
+    Component(products_page, "商品列表页", "Next.js Page", "商品列表、搜索")
+    Component(product_detail_page, "商品详情页", "Next.js Page", "商品详情、推荐")
+    Component(cart_page, "购物车页", "Next.js Page", "购物车管理")
+    Component(checkout_page, "结算页", "Next.js Page", "支付、订单确认")
+    Component(orders_page, "订单列表页", "Next.js Page", "订单历史")
+    Component(login_page, "登录页", "Next.js Page", "用户登录")
+    Component(register_page, "注册页", "Next.js Page", "用户注册")
+    Component(account_page, "账户页", "Next.js Page", "个人资料")
+
+    Component(cart_store, "购物车Store", "Zustand", "购物车状态")
+    Component(user_store, "用户Store", "Zustand", "认证状态")
+    Component(product_store, "商品Store", "Zustand", "商品缓存")
+
+    Component(products_api, "商品API", "TypeScript", "商品接口")
+    Component(orders_api, "订单API", "TypeScript", "订单接口")
+    Component(users_api, "用户API", "TypeScript", "用户接口")
+    Component(api_client, "API客户端", "TypeScript", "统一请求")
+
+    Component(product_card, "商品卡片", "React Component", "商品展示")
+    Component(ui_components, "UI组件库", "shadcn/ui", "Button、Input等")
+    Component(navbar, "导航栏", "React Component", "顶部导航")
+    Component(hero_section, "横幅区", "React Component", "首页横幅")
+    Component(footer, "页脚", "React Component", "站点页脚")
+
+    Component(i18n, "国际化", "i18next", "多语言")
+}
+
+Container_Ext(api_service_ext, "API服务", "REST API", "后端接口")
+Container_Ext(oauth_providers, "OAuth服务商", "OAuth 2.0", "第三方登录")
+
+Rel(home_page, product_store, "获取商品")
+Rel(home_page, hero_section, "横幅")
+Rel(products_page, product_store, "搜索筛选")
+Rel(product_detail_page, product_store, "商品详情")
+Rel(product_detail_page, products_api, "获取推荐")
+Rel(cart_page, cart_store, "购物车")
+Rel(checkout_page, cart_store, "读取购物车")
+Rel(orders_page, orders_api, "获取订单")
+Rel(login_page, user_store, "登录")
+Rel(login_page, oauth_providers, "OAuth登录")
+Rel(register_page, user_store, "注册")
+Rel(account_page, user_store, "账户信息")
+
+Rel(cart_store, api_client, "持久化")
+Rel(user_store, users_api, "用户操作")
+Rel(product_store, products_api, "商品操作")
+
+Rel(products_api, api_client, "")
+Rel(orders_api, api_client, "")
+Rel(users_api, api_client, "")
+Rel(api_client, api_service_ext, "REST调用")
+
+Rel(product_card, ui_components, "")
+Rel(navbar, ui_components, "")
+
+Rel(login_page, i18n, "多语言")
+Rel(register_page, i18n, "")
+
+SHOW_LEGEND()
+@enduml
