@@ -1,0 +1,153 @@
+---
+description: Core project constraints — Clean Architecture layers, monorepo layout, UI stack, test naming. Deep guides live in skills.
+alwaysApply: true
+---
+
+# Architecture & Shopping System Core
+
+## Dependency Rule
+
+```
+presentation → application → domain
+                    ↑
+infrastructure ─────┘
+```
+
+**Domain has NO dependencies on other layers** (no Express/Next/Angular/React Native/HTTP/DB imports).
+
+## Monorepo Layout
+
+```
+apps/web            # Next.js storefront
+apps/admin          # Angular admin
+apps/mobile         # React Native
+apps/crawler-cli    # Node CLI crawler
+services/api        # Express + Mongoose + AWS Lambda
+services/crawler    # Python crawler service
+services/data-mining
+services/meeting-signal
+packages/*          # types, utils, components, monitoring, auth, …
+```
+
+Clients (web / mobile / admin) call **`services/api`**. Do not call Python microservices directly from the browser or mobile app.
+
+## Layers (TypeScript)
+
+| Layer | Contains | Typical paths |
+|-------|----------|---------------|
+| `domain/` | Entities, VOs, repository/gateway interfaces | Prefer `*/domain/` when introducing CA layers |
+| `application/` | Use cases, application services, DTOs | Prefer `*/application/` |
+| `infrastructure/` | Adapters, HTTP clients, persistence, config | Prefer `*/infrastructure/` |
+| `presentation/` | Controllers, UI, route handlers | API: `controllers`/`routes`; web: `app/`; admin: Angular feature modules |
+
+### API (`services/api`)
+
+Express + Mongoose, deployable as Lambda (`serverless-http`). Current layout (evolve toward CA layers without big-bang rewrites):
+
+```
+services/api/src/
+├── controllers/      # HTTP handlers (keep thin)
+├── routes/           # Express routers
+├── models/           # Mongoose models (infra / persistence)
+├── middleware/
+├── utils/
+├── types/
+├── index.ts          # local server entry
+└── lambda.ts         # Lambda entry
+```
+
+New domain logic: prefer rich models and repository/gateway interfaces in domain; put persistence adapters and Express wiring in infrastructure / presentation. Controllers stay thin; business rules do not live in routes.
+
+### Web (`apps/web`)
+
+Next.js App Router. Feature folders under `app/` and shared UI under `components/`:
+
+```
+apps/web/
+├── app/              # routes: products, cart, checkout, account, orders, auth, …
+├── components/       # UI (incl. components/ui)
+├── lib/              # api clients, stores (Zustand), utils
+└── …
+```
+
+Import alias: `@/*` (see `apps/web/tsconfig.json`). Styling: **Tailwind** + existing `components/ui` patterns. Client state: **Zustand** where used.
+
+### Admin (`apps/admin`)
+
+Angular application. Prefer standalone components, `inject()`, and feature modules aligned with Glossary Preferred Terms. Do not invent a parallel design system; reuse existing admin patterns.
+
+### Mobile (`apps/mobile`)
+
+React Native. Keep route shells thin; shared services/hooks under `src/`. Call `services/api` only.
+
+## Forbidden in New Code
+
+- `domain/port/` packages or `*Port` interface suffix — prefer `*Repository` / `*Gateway`
+- Hexagonal `adapter/in` / `adapter/out` package names — use `presentation` / `infrastructure`
+- Browser / mobile direct calls to Python crawler / data-mining services
+
+**Legacy note:** existing Express `controllers` + Mongoose `models` may remain; new domain-facing interfaces still live in `domain/` as Repository/Gateway when introducing CA structure.
+
+## Domain Rules
+
+- No framework annotations in domain
+- Prefer rich models (behavior on entities); avoid anemic getters-only types
+- Repository/Gateway: interface in domain, implementation in infrastructure
+- Names align with [Glossary](../../docs/Glossary.md) Preferred Terms
+
+## UI & Client Stack (always)
+
+- Visual language: **Apple HIG-consistent**, minimal
+- Web styling: **Tailwind** + existing `apps/web/components/ui`
+- Client state: prefer existing **Zustand** stores in web when applicable
+- Admin: follow existing Angular + SCSS patterns
+
+## TypeScript Naming
+
+| Type | Rule | Example |
+|------|------|---------|
+| Domain model | PascalCase | `Order`, `Product` |
+| Value object | PascalCase | `OrderId` |
+| Repository | PascalCase + Repository | `OrderRepository` |
+| Use case / service | PascalCase + descriptive | `CreateOrderUseCase` |
+| Controller | PascalCase + Controller | `OrderController` |
+| Adapter (infra) | PascalCase + Adapter | `OrderMongoAdapter` |
+| Methods | camelCase | `createOrder` |
+| Constants | UPPER_SNAKE_CASE | `MAX_CART_ITEMS` |
+
+## REST / API
+
+- Express routes under `services/api` (Swagger where present)
+- Controllers stay thin; business rules in application/domain
+- Clients talk to the API service only
+
+## Test Naming
+
+```
+should_expectedResult_when_condition
+```
+
+Pyramid: Unit ~70% / Integration ~20% / E2E ~10%.  
+Details: [developer skill → testing](../skills/developer/references/testing.md)
+
+## Checklist
+
+- [ ] Domain has no outward dependencies
+- [ ] No circular dependencies
+- [ ] Entities encapsulate behavior
+- [ ] Clients call only `services/api`
+
+## Hard constraints (delivery)
+
+When **creating a Jira ticket**, **branching**, **committing**, or **opening a PR**: always follow [developer](../skills/developer/SKILL.md) §6 (`<type>/<slug>`, Chain PRs, commit/PR templates) and [Product Owner](../skills/product-owner/SKILL.md). **References** must prefer official documentation and research links ([dependency-docs](../skills/developer/references/dependency-docs.md), [sources](../skills/business-tech-analysis/references/sources.md)).
+
+User Story Map lives under `docs/product-owner/`; software architecture under `docs/developer/c4-model/`. See [living-docs](../skills/developer/references/living-docs.md).
+
+## Skills (on demand)
+
+| Task | Skill |
+|------|-------|
+| Feature / TDD / DDD / commit / UX | [developer](../skills/developer/SKILL.md) |
+| User stories / Jira | [product-owner](../skills/product-owner/SKILL.md) |
+| Business + tech analysis | [business-tech-analysis](../skills/business-tech-analysis/SKILL.md) |
+| Domain / BA (ubiquitous language) | [business-analysis](../skills/business-analysis/SKILL.md) |
