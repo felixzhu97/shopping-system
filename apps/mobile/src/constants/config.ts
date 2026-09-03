@@ -1,7 +1,7 @@
 // 应用配置
 export const AppConfig = {
   // 开发环境配置 - 从环境变量 EXPO_PUBLIC_API_URL 读取，如果未设置则使用默认值
-  devApiUrl: process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3001',
+  devApiUrl: process.env.EXPO_PUBLIC_API_URL || 'http://localhost:9300',
 
   // 生产环境配置 - 从环境变量 EXPO_PUBLIC_API_URL 读取，如果未设置则使用默认值
   prodApiUrl: process.env.EXPO_PUBLIC_API_URL || 'https://api.example.com',

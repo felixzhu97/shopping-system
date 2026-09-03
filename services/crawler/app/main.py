@@ -17,11 +17,11 @@ from .types import CrawlRequest, JobItemsView, JobView, ScrapedProduct
 app = FastAPI()
 store = JobStore()
 
-allowed_origins = os.getenv("CRAWLER_ALLOWED_ORIGINS", "http://localhost:4200")
+allowed_origins = os.getenv("CRAWLER_ALLOWED_ORIGINS", "http://localhost:4230,http://localhost:4240")
 origins = [x.strip() for x in allowed_origins.split(",") if x.strip()]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins or ["http://localhost:4200"],
+    allow_origins=origins or ["http://localhost:4230", "http://localhost:4240"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

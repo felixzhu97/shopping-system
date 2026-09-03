@@ -8,7 +8,7 @@ const crawlerBaseUrlKey = 'crawler.baseUrl.v1';
 
 function normalizeBaseUrl(input: string): string {
   const value = input.trim().replace(/\/+$/, '');
-  return value || 'http://localhost:8000';
+  return value || 'http://localhost:8200';
 }
 
 function normalizePageUrl(input: string): string {

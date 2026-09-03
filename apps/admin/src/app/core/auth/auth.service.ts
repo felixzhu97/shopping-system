@@ -9,7 +9,7 @@ export type Session = {
 };
 
 const sessionStorageKey = 'admin.session.v1';
-const defaultApiBaseUrl = 'http://localhost:3001/api';
+const defaultApiBaseUrl = 'http://localhost:9300/api';
 
 function normalizeApiBaseUrl(input: string): string {
   let value = input.trim();

@@ -19,6 +19,7 @@ try {
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  transpilePackages: ['@explore/ui'],
   eslint: {
     ignoreDuringBuilds: true,
   },

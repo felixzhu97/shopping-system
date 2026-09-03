@@ -12,6 +12,7 @@
     "clean": "rm -rf dist && rm -rf node_modules"
   },
   "dependencies": {
+    "@explore/shared-types": "file:../../../packages/shared-types",
     "typescript": "^5.2.2"
   },
   "devDependencies": {
