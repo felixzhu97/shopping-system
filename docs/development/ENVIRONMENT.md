@@ -8,10 +8,10 @@
 
 ```env
 # API配置
-NEXT_PUBLIC_API_URL=http://localhost:3001
+NEXT_PUBLIC_API_URL=http://localhost:9300
 
 # 认证相关
-NEXTAUTH_URL=http://localhost:3000
+NEXTAUTH_URL=http://localhost:4230
 NEXTAUTH_SECRET=your-secret-key
 
 # 性能监控和分析
@@ -36,7 +36,7 @@ Create `.env` under `services/api`:
 
 ```env
 # 服务器配置
-PORT=3001
+PORT=9300
 NODE_ENV=development
 
 # 数据库配置
@@ -47,7 +47,7 @@ JWT_SECRET=your-jwt-secret
 JWT_EXPIRES_IN=7d
 
 # 跨域配置
-CORS_ORIGIN=http://localhost:3000
+CORS_ORIGIN=http://localhost:4230
 
 # Datadog APM and Logging
 DD_SERVICE=shopping-api
@@ -66,7 +66,7 @@ DD_APPSEC_ENABLED=false
 
 ```env
 # API配置
-EXPO_PUBLIC_API_URL=http://localhost:3001
+EXPO_PUBLIC_API_URL=http://localhost:9300
 ```
 
 **注意**：
@@ -74,7 +74,7 @@ EXPO_PUBLIC_API_URL=http://localhost:3001
 - Expo SDK 49+ 使用 `EXPO_PUBLIC_` 前缀的环境变量
 - 这些变量会在构建时注入，运行时通过 `process.env.EXPO_PUBLIC_*` 访问
 - 支持 `.env`、`.env.local`、`.env.production` 等文件
-- 开发环境默认使用 `http://localhost:3001`
+- 开发环境默认使用 `http://localhost:9300`
 - 生产环境需要设置对应的生产 API URL
 
 ## Turborepo 远程缓存配置
@@ -127,7 +127,7 @@ TURBO_TEAM=your-team-id
 
 ### 移动应用环境变量
 
-- `EXPO_PUBLIC_API_URL`: 后端 API 的基础 URL（开发环境默认：`http://localhost:3001`）
+- `EXPO_PUBLIC_API_URL`: 后端 API 的基础 URL（开发环境默认：`http://localhost:9300`）
 
 ### Turborepo 环境变量
 

@@ -28,7 +28,7 @@ const envPath = envCandidates.find(p => fs.existsSync(p));
 dotenv.config(envPath ? { path: envPath } : undefined);
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 9300;
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/explore-commerce';
 
 export const getJwtSecret = () => process.env.JWT_SECRET || 'your_jwt_secret';

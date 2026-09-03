@@ -10,7 +10,7 @@ From repo root:
 pnpm dev:admin
 ```
 
-Then open `http://localhost:4200`.
+Then open `http://localhost:4240`.
 
 ## Environment
 
@@ -22,7 +22,7 @@ cp apps/admin/.env.example apps/admin/.env
 
 Supported variables:
 
-- `VITE_API_BASE_URL`: base URL for the backend API (default: `http://localhost:3001/api`)
+- `VITE_API_BASE_URL`: base URL for the backend API (default: `http://localhost:9300/api`)
 
 ## Login fields
 

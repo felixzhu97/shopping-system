@@ -24,7 +24,7 @@ describe('Swagger Configuration', () => {
     expect((swaggerSpecs as any).servers.length).toBeGreaterThan(0);
 
     const server = (swaggerSpecs as any).servers[0];
-    expect(server.url).toBe('http://localhost:3001');
+    expect(server.url).toBe('http://localhost:9300');
     expect(server.description).toBe('开发服务器');
   });
 

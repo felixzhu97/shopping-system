@@ -54,10 +54,10 @@ Example:
 
 ```env
 MONGODB_URI=mongodb://localhost:27017/explore-commerce
-PORT=3001
+PORT=9300
 NODE_ENV=development
 JWT_SECRET=your_jwt_secret
-CORS_ORIGINS=http://localhost:3000,http://localhost:8000
+CORS_ORIGINS=http://localhost:4230,http://localhost:4240,http://localhost:8200
 ADMIN_SECRET=your_admin_secret_here
 ```
 
@@ -100,7 +100,7 @@ For product create/update/delete requests, add the `admin-secret` header with th
 Example:
 
 ```bash
-curl -X POST "http://localhost:3001/api/products" \
+curl -X POST "http://localhost:9300/api/products" \
   -H "Content-Type: application/json" \
   -H "admin-secret: your_admin_secret_here" \
   -d '{"name":"Example","price":99.99,"description":"Example"}'
